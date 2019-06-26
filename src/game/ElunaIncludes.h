@@ -36,7 +36,7 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 
-#include "Config.h"
+//#include "Config.h"
 #include "ScriptedCreature.h"
 #include "Battleground.h"
 #include "Config/Config.h"
