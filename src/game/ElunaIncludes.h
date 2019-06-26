@@ -36,11 +36,11 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 
-//#include "Config.h"
+#include "config.h"
 #include "ScriptedCreature.h"
 #include "Battleground.h"
 #include "Config/Config.h"
-#include "BattleGroundMgr.h"
+#include "BattlegroundMgr.h"
 #include "revision.h"
 
 #include "ArenaTeam.h"
