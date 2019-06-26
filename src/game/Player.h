@@ -477,7 +477,8 @@ enum AtLoginFlags
     AT_LOGIN_NONE          = 0,
     AT_LOGIN_RENAME        = 1,
     AT_LOGIN_RESET_SPELLS  = 2,
-    AT_LOGIN_RESET_TALENTS = 4
+    AT_LOGIN_RESET_TALENTS = 4,
+    AT_LOGIN_FIRST         = 0x20
 };
 
 typedef std::map<uint32, QuestStatusData> QuestStatusMap;
@@ -993,6 +994,8 @@ class Player : public Unit, public GridObject<Player>
 
         void SetInWater(bool apply);
 
+        void InitDisplayIds();
+
         bool IsInWater() const override { return m_isInWater; }
         bool IsUnderWater() const override;
         bool IsFalling() { return GetPositionZ() < m_lastFallZ; }
@@ -1131,6 +1134,7 @@ class Player : public Unit, public GridObject<Player>
         uint8 FindEquipSlot(ItemTemplate const* proto, uint32 slot, bool swap) const;
         uint32 GetItemCount(uint32 item, bool inBankAlso = false, Item* skipItem = NULL) const;
         Item* GetItemByGuid(uint64 guid) const;
+        Item* GetItemByEntry(uint32 entry) const;
         Item* GetItemByPos(uint16 pos) const;
         Item* GetItemByPos(uint8 bag, uint8 slot) const;
         Item* GetWeaponForAttack(WeaponAttackType attackType, bool useable = false) const;
@@ -1560,17 +1564,7 @@ class Player : public Unit, public GridObject<Player>
         {
             return GetUInt32Value (PLAYER_FIELD_COINAGE);
         }
-        void ModifyMoney(int32 d)
-        {
-            if (d < 0)
-                SetMoney (GetMoney() > uint32(-d) ? GetMoney() + d : 0);
-            else
-                SetMoney (GetMoney() < uint32(MAX_MONEY_AMOUNT - d) ? GetMoney() + d : MAX_MONEY_AMOUNT);
-
-            // "At Gold Limit"
-            if (GetMoney() >= MAX_MONEY_AMOUNT)
-                SendEquipError(EQUIP_ERR_TOO_MUCH_GOLD, NULL, NULL);
-        }
+        void ModifyMoney(int32 d);
         void SetMoney(uint32 value)
         {
             SetUInt32Value (PLAYER_FIELD_COINAGE, value);
@@ -1707,13 +1701,11 @@ class Player : public Unit, public GridObject<Player>
         {
             return GetUInt32Value(PLAYER_CHARACTER_POINTS1);
         }
-        void SetFreeTalentPoints(uint32 points)
-        {
-            SetUInt32Value(PLAYER_CHARACTER_POINTS1, points);
-        }
+        void SetFreeTalentPoints(uint32 points);
         bool ResetTalents(bool no_cost = false);
         uint32 ResetTalentsCost() const;
         void InitTalentForLevel();
+        void LearnTalent(uint32 talentId, uint32 talentRank);
 
         uint32 GetFreePrimaryProfessionPoints() const
         {
@@ -1757,6 +1749,7 @@ class Player : public Unit, public GridObject<Player>
         void SendCooldownEvent(SpellEntry const* spellInfo);
         void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs) override;
         void RemoveSpellCooldown(uint32 spell_id, bool update = false);
+        void RemoveSpellCategoryCooldown(uint32 cat, bool update = false);
         void SendClearCooldown(uint32 spell_id, Unit* target);
         void RemoveArenaSpellCooldowns();
         void RemoveAllSpellCooldown();
@@ -2075,6 +2068,7 @@ class Player : public Unit, public GridObject<Player>
         uint16 GetSkillValue(uint32 skill) const;           // skill value + perm. bonus + temp bonus
         uint16 GetBaseSkillValue(uint32 skill) const;       // skill value + perm. bonus
         uint16 GetPureSkillValue(uint32 skill) const;       // skill value
+        int16 GetSkillPermBonusValue(uint32 skill) const;
         int16 GetSkillTempBonusValue(uint32 skill) const;
         bool HasSkill(uint32 skill) const;
         void LearnSkillRewardedSpells(uint32 id);
@@ -2154,6 +2148,8 @@ class Player : public Unit, public GridObject<Player>
         void ModifyArenaPoints(int32 value, bool update = true);
         uint8 GetHighestPvPRankIndex();
         uint32 GetMaxPersonalArenaRatingRequirement();
+        void SetHonorPoints(uint32 value);
+        void SetArenaPoints(uint32 value);
 
         //End of PvP System
 
@@ -2250,6 +2246,7 @@ class Player : public Unit, public GridObject<Player>
         {
             return m_bgData.bgInstanceID;
         }
+        uint32 GetBattlegroundTypeId() const { return m_bgData.bgTypeID; }
         Battleground* GetBattleground() const;
 
         static uint32 GetMinLevelForBattlegroundQueueId(uint32 queue_id);
@@ -2531,6 +2528,7 @@ class Player : public Unit, public GridObject<Player>
         {
             m_atLoginFlags |= f;
         }
+        void RemoveAtLoginFlag(AtLoginFlags f, bool in_db_also = false);
 
         LookingForGroup m_lookingForGroup;
 

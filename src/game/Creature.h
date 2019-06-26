@@ -486,6 +486,7 @@ class Creature : public Unit, public GridObject<Creature>
         void SetVirtualItemRaw(VirtualItemSlot slot, uint32 display_id, uint32 info0, uint32 info1);
 
         void SetCorpseDelay(uint32 delay) { m_corpseDelay = delay; }
+		uint32 GetCorpseDelay() const { return m_corpseDelay; }
         bool IsRacialLeader() const { return GetCreatureTemplate()->RacialLeader; }
         bool IsCivilian() const { return (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_CIVILIAN) != 0; }
         bool IsTrigger() const { return (GetCreatureTemplate()->flags_extra & CREATURE_FLAG_EXTRA_TRIGGER) != 0; }
@@ -531,6 +532,7 @@ class Creature : public Unit, public GridObject<Creature>
         void AddCreatureSpellCooldown(uint32 spellid);
         bool HasSpellCooldown(uint32 spell_id) const;
         bool HasCategoryCooldown(uint32 spell_id) const;
+		uint32 GetCreatureSpellCooldownDelay(uint32 spellId) const;
 
         bool HasSpell(uint32 spellID) const override;
 
