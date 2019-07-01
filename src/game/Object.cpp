@@ -1111,7 +1111,6 @@ WorldObject::WorldObject(bool isWorldObject):
     , m_zoneScript(NULL)
     , m_currMap(NULL)
     , m_InstanceId(0)
-    , m_phaseMask(PHASEMASK_NORMAL)
     , m_notifyflags(0), m_executed_notifies(0)
 {
     m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE | GHOST_VISIBILITY_GHOST);
@@ -1176,11 +1175,9 @@ void WorldObject::CleanupsBeforeDelete()
         RemoveFromWorld();
 }
 
-void WorldObject::_Create(uint32 guidlow, HighGuid guidhigh, uint32 phaseMask)
+void WorldObject::_Create(uint32 guidlow, HighGuid guidhigh)
 {
     Object::_Create(guidlow, 0, guidhigh);
-
-    m_phaseMask = phaseMask;
 }
 
 void WorldObject::RemoveFromWorld()
@@ -1679,7 +1676,7 @@ bool WorldObject::CanSeeOrDetect(WorldObject const* obj, bool ignoreStealth, boo
 
 bool WorldObject::CanNeverSee(WorldObject const* obj) const
 {
-    return GetMap() != obj->GetMap() || !InSamePhase(obj);
+    return GetMap() != obj->GetMap();
 }
 
 bool WorldObject::CanDetect(WorldObject const* obj, bool ignoreStealth, bool checkAlert) const
@@ -1756,7 +1753,7 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
     if (!HasInArc(float(M_PI), obj))
         return false;
 
-    GameObject const* go = obj->ToGameObject();
+    GameObject const* go = ToGameObject();
     for (uint32 i = 0; i < TOTAL_STEALTH_TYPES; ++i)
     {
         if (!(obj->m_stealth.GetFlags() & (1 << i)))
@@ -1860,7 +1857,7 @@ void WorldObject::MonsterSay(int32 textId, uint32 language, uint64 TargetGuid)
 
     Oregon::MonsterChatBuilder say_build(*this, CHAT_MSG_MONSTER_SAY, textId, language, TargetGuid);
     Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> say_do(say_build);
-    Oregon::PlayerDistWorker<Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> > say_worker(this, sWorld.getConfig(CONFIG_LISTEN_RANGE_SAY), say_do);
+    Oregon::PlayerDistWorker<Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> > say_worker(sWorld.getConfig(CONFIG_LISTEN_RANGE_SAY), say_do);
     TypeContainerVisitor<Oregon::PlayerDistWorker<Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> >, WorldTypeMapContainer > message(say_worker);
     cell.Visit(p, message, *GetMap(), *this, sWorld.getConfig(CONFIG_LISTEN_RANGE_SAY));
 }
@@ -1874,7 +1871,7 @@ void WorldObject::MonsterYell(int32 textId, uint32 language, uint64 TargetGuid)
 
     Oregon::MonsterChatBuilder say_build(*this, CHAT_MSG_MONSTER_YELL, textId, language, TargetGuid);
     Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> say_do(say_build);
-    Oregon::PlayerDistWorker<Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> > say_worker(this, sWorld.getConfig(CONFIG_LISTEN_RANGE_YELL), say_do);
+    Oregon::PlayerDistWorker<Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> > say_worker(sWorld.getConfig(CONFIG_LISTEN_RANGE_YELL), say_do);
     TypeContainerVisitor<Oregon::PlayerDistWorker<Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> >, WorldTypeMapContainer > message(say_worker);
     cell.Visit(p, message, *GetMap(), *this, sWorld.getConfig(CONFIG_LISTEN_RANGE_YELL));
 }
@@ -1901,7 +1898,7 @@ void WorldObject::MonsterTextEmote(int32 textId, uint64 TargetGuid, bool IsBossE
 
     Oregon::MonsterChatBuilder say_build(*this, IsBossEmote ? CHAT_MSG_RAID_BOSS_EMOTE : CHAT_MSG_MONSTER_EMOTE, textId, LANG_UNIVERSAL, TargetGuid);
     Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> say_do(say_build);
-    Oregon::PlayerDistWorker<Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> > say_worker(this, sWorld.getConfig(CONFIG_LISTEN_RANGE_TEXTEMOTE), say_do);
+    Oregon::PlayerDistWorker<Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> > say_worker(sWorld.getConfig(CONFIG_LISTEN_RANGE_TEXTEMOTE), say_do);
     TypeContainerVisitor<Oregon::PlayerDistWorker<Oregon::LocalizedPacketDo<Oregon::MonsterChatBuilder> >, WorldTypeMapContainer > message(say_worker);
     cell.Visit(p, message, *GetMap(), *this, sWorld.getConfig(CONFIG_LISTEN_RANGE_TEXTEMOTE));
 }
@@ -2092,7 +2089,7 @@ TempSummon* Map::SummonCreature(uint32 entry, const Position& pos, SummonPropert
         return NULL;
     }
 
-    if (!summon->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), this, PHASEMASK_NORMAL, entry, team, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()))
+    if (!summon->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), this, entry, team, pos.GetPositionX(), pos.GetPositionY(), pos.GetPositionZ(), pos.GetOrientation()))
     {
         delete summon;
         return NULL;
@@ -2172,7 +2169,7 @@ Pet* Player::SummonPet(uint32 entry, float x, float y, float z, float ang, PetTy
 
     Map* map = GetMap();
     uint32 pet_number = sObjectMgr.GeneratePetNumber();
-    if (!pet->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_PET), map, GetPhaseMask(), entry, pet_number))
+    if (!pet->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_PET), map, entry, pet_number))
     {
         sLog.outError("no such creature entry %u", entry);
         delete pet;
@@ -2262,7 +2259,7 @@ GameObject* WorldObject::SummonGameObject(uint32 entry, float x, float y, float 
     }
     Map* map = GetMap();
     GameObject* go = new GameObject();
-    if (!go->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_GAMEOBJECT), entry, map, PHASEMASK_NORMAL, x, y, z, ang, rotation0, rotation1, rotation2, rotation3, 100, GO_STATE_READY))
+    if (!go->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_GAMEOBJECT), entry, map, x, y, z, ang, rotation0, rotation1, rotation2, rotation3, 100, GO_STATE_READY))
     {
         delete go;
         return NULL;
@@ -2320,7 +2317,7 @@ Creature* WorldObject::FindNearestCreature(uint32 entry, float range, bool alive
 {
     Creature* creature = NULL;
     Oregon::NearestCreatureEntryWithLiveStateInObjectRangeCheck checker(*this, entry, alive, range);
-    Oregon::CreatureLastSearcher<Oregon::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(this, creature, checker);
+    Oregon::CreatureLastSearcher<Oregon::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(creature, checker);
     VisitNearbyObject(range, searcher);
     return creature;
 }
@@ -2329,7 +2326,7 @@ GameObject* WorldObject::FindNearestGameObject(uint32 entry, float range)
 {
     GameObject* go = NULL;
     Oregon::NearestGameObjectEntryInObjectRangeCheck checker(*this, entry, range);
-    Oregon::GameObjectLastSearcher<Oregon::NearestGameObjectEntryInObjectRangeCheck> searcher(this, go, checker);
+    Oregon::GameObjectLastSearcher<Oregon::NearestGameObjectEntryInObjectRangeCheck> searcher(go, checker);
     VisitNearbyGridObject(range, searcher);
     return go;
 }
@@ -2338,7 +2335,7 @@ GameObject* WorldObject::FindNearestGameObjectOfType(GameobjectTypes type, float
 {
     GameObject* go = NULL;
     Oregon::NearestGameObjectTypeInObjectRangeCheck checker(*this, type, range);
-    Oregon::GameObjectLastSearcher<Oregon::NearestGameObjectTypeInObjectRangeCheck> searcher(this, go, checker);
+    Oregon::GameObjectLastSearcher<Oregon::NearestGameObjectTypeInObjectRangeCheck> searcher(go, checker);
     VisitNearbyGridObject(range, searcher);
     return go;
 }
@@ -2350,7 +2347,7 @@ void WorldObject::GetGameObjectListWithEntryInGrid(std::list<GameObject*>& gameo
     cell.SetNoCreate();
 
     Oregon::AllGameObjectsWithEntryInRange check(this, entry, maxSearchRange);
-    Oregon::GameObjectListSearcher<Oregon::AllGameObjectsWithEntryInRange> searcher(this, gameobjectList, check);
+    Oregon::GameObjectListSearcher<Oregon::AllGameObjectsWithEntryInRange> searcher(gameobjectList, check);
     TypeContainerVisitor<Oregon::GameObjectListSearcher<Oregon::AllGameObjectsWithEntryInRange>, GridTypeMapContainer> visitor(searcher);
 
     cell.Visit(pair, visitor, *(this->GetMap()), *this, maxSearchRange);
@@ -2363,7 +2360,7 @@ void WorldObject::GetCreatureListWithEntryInGrid(std::list<Creature*>& creatureL
     cell.SetNoCreate();
 
     Oregon::AllCreaturesOfEntryInRange check(this, entry, maxSearchRange);
-    Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange> searcher(this, creatureList, check);
+    Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange> searcher(creatureList, check);
     TypeContainerVisitor<Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange>, GridTypeMapContainer> visitor(searcher);
 
     cell.Visit(pair, visitor, *(this->GetMap()), *this, maxSearchRange);
@@ -2598,14 +2595,6 @@ void WorldObject::MovePositionToFirstCollision(Position& pos, float dist, float 
     pos.SetOrientation(GetOrientation());
 }
 
-void WorldObject::SetPhaseMask(uint32 newPhaseMask, bool update)
-{
-    m_phaseMask = newPhaseMask;
-
-    if (update && IsInWorld())
-        UpdateObjectVisibility();
-}
-
 void WorldObject::PlayDistanceSound(uint32 sound_id, Player* target /*= NULL*/)
 {
     WorldPacket data(SMSG_PLAY_OBJECT_SOUND, 4 + 8);
@@ -2634,7 +2623,7 @@ void WorldObject::DestroyForNearbyPlayers()
 
     std::list<Player*> targets;
     Oregon::AnyPlayerInObjectRangeCheck check(this, GetVisibilityRange(), false);
-    Oregon::PlayerListSearcher<Oregon::AnyPlayerInObjectRangeCheck> searcher(this, targets, check);
+    Oregon::PlayerListSearcher<Oregon::AnyPlayerInObjectRangeCheck> searcher(targets, check);
     VisitNearbyWorldObject(GetVisibilityRange(), searcher);
     for (std::list<Player*>::const_iterator iter = targets.begin(); iter != targets.end(); ++iter)
     {
