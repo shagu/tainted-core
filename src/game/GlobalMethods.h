@@ -1445,14 +1445,14 @@ namespace LuaGlobalFunctions
                 }
 
                 Creature* pCreature = new Creature;
-                if (!pCreature->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), map, PHASEMASK_NORMAL, entry, team, x, y, z, o))
+                if (!pCreature->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), map, entry, team, x, y, z, o))
                 {
                     delete pCreature;
                     Eluna::Push(L);
                     return 1;
                 }
 
-                pCreature->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()), PHASEMASK_NORMAL);
+                pCreature->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()));
 
                 uint32 db_guid = pCreature->GetDBTableGUIDLow();
 
@@ -1480,7 +1480,7 @@ namespace LuaGlobalFunctions
                 }
 
                 TempSummon* pCreature = map->SummonCreature(entry, pos, NULL, durorresptime);
-                if (!pCreature->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), map, PHASEMASK_NORMAL, entry, team, x, y, z, o))
+                if (!pCreature->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), map, entry, team, x, y, z, o))
                 {
                     delete pCreature;
                     {
@@ -1520,7 +1520,7 @@ namespace LuaGlobalFunctions
                 }
 
                 GameObject* pGameObj = new GameObject;
-                if (!pGameObj->Create(db_lowGUID, gInfo->id, map, 0x00000001, x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f, 0, GO_STATE_READY))
+                if (!pGameObj->Create(db_lowGUID, gInfo->id, map, x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f, 0, GO_STATE_READY))
                 {
                     delete pGameObj;
                     Eluna::Push(L);
@@ -1531,7 +1531,7 @@ namespace LuaGlobalFunctions
                     pGameObj->SetRespawnTime(durorresptime);
 
                 // fill the gameobject data and save to the db
-                pGameObj->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()), PHASEMASK_NORMAL);
+                pGameObj->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()));
 
                 delete pGameObj;
 
@@ -1554,7 +1554,7 @@ namespace LuaGlobalFunctions
             {
                 GameObject* pGameObj = new GameObject;
 
-                if (!pGameObj->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_GAMEOBJECT), entry, map, 0x00000001, x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f, 0, GO_STATE_READY))
+                if (!pGameObj->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_GAMEOBJECT), entry, map, x, y, z, o, 0.0f, 0.0f, 0.0f, 0.0f, 0, GO_STATE_READY))
                 {
                     delete pGameObj;
                     Eluna::Push(L);
