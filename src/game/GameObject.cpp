@@ -669,7 +669,7 @@ void GameObject::SaveToDB(uint32 mapid, uint8 spawnMask)
     WorldDatabase.CommitTransaction();
 
     if (sWorld.getConfig(CONFIG_CREATEUPDATE_FILE))
-        sLog.CreateUpdateFile("Insert_GameObject", ss.str().c_str());
+        sLog.CreateUpdateFile(ss.str().c_str());
 }
 
 bool GameObject::LoadGameObjectFromDB(uint32 guid, Map* map, bool addToMap)
@@ -756,7 +756,7 @@ void GameObject::DeleteFromDB()
     WorldDatabase.PExecuteLog("DELETE FROM game_event_gameobject WHERE guid = '%u'", m_DBTableGuid);
 
     if (sWorld.getConfig(CONFIG_CREATEUPDATE_FILE))
-        sLog.CreateUpdateFile("Delete_GameObject", ss.str().c_str());
+        sLog.CreateUpdateFile(ss.str().c_str());
 }
 
 GameObject* GameObject::GetGameObject(WorldObject& object, uint64 guid)
