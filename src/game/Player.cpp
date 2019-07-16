@@ -2610,6 +2610,8 @@ void Player::GiveXP(uint32 xp, Unit* victim, bool disableRafBonus)
     // used by eluna
     sEluna->OnGiveXP(this, xp, victim);
 
+    sScriptMgr.OnGivePlayerXP(this, xp, victim);
+
     // XP to money conversion processed in Player::RewardQuest
     if (level >= sWorld.getConfig(CONFIG_MAX_PLAYER_LEVEL))
         return;
