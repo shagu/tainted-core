@@ -2632,7 +2632,7 @@ void Spell::handle_immediate()
     }
 
     // process immediate effects (items, ground, etc.) also initialize some variables
-    _handle_immediate_phase();
+    //_handle_immediate_phase();
 
     for (std::list<TargetInfo>::iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
     {
@@ -2757,6 +2757,7 @@ void Spell::_handle_immediate_phase()
         if (m_spellInfo->Effect[i] == SPELL_EFFECT_SEND_EVENT || m_spellInfo->Effect[i] == SPELL_EFFECT_TRANS_DOOR && !HaveTargetsForEffect(i))
         {
             HandleEffects(NULL, NULL, NULL, i);
+
         }else if (sSpellMgr.EffectTargetType[m_spellInfo->Effect[i]] == SPELL_REQUIRE_DEST)
         {
             if (!m_targets.HasDst())
