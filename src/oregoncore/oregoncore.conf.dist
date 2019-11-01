@@ -1453,6 +1453,11 @@ Die.Command.Mode = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 #
+#	Battleground.CrossFaction.Enable
+#		Description: Enable Crossfaction Battleground System.
+#        Default:     0 - (Disabled)
+#                     1 - (Enabled)
+#
 ###############################################################################
 
 Battleground.CastDeserter = 1
@@ -1462,6 +1467,7 @@ Battleground.PrematureReward = 1
 BattleGround.PrematureFinishTimer = 300000
 Battleground.LeaveWrathMode = 0
 Battleground.GiveXPForKills = 0
+Battleground.CrossFaction.Enable = 0
 
 ###############################################################################
 # ARENA CONFIG
