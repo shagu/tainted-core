@@ -5059,6 +5059,7 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                     else
                         delete newPet;
                 }
+                return;
             }
             // Bending Shinbone
             case 8856:
