@@ -169,9 +169,6 @@ void BattlegroundQueue::AddPlayer(Player* plr, GroupQueueInfo* ginfo)
     // add the pinfo to ginfo's list
     ginfo->Players[plr->GetGUID()]  = &info;
 
-
-
-
     if (sWorld.getConfig(CONFIG_BATTLEGROUND_QUEUE_ANNOUNCER_ENABLE))
     {
         //announce only once in a time
