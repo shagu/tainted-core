@@ -8,6 +8,9 @@
 #include "ScriptMgr.h"
 #include "Map.h"
 #include "Group.h"
+#include "SpellMgr.h"
+#include "Spell.h"
+#include "SpellAuras.h"
 #include "Utilities/DataMap.h"
 #include "Spell.h"
 
@@ -18,6 +21,11 @@ public:
 
     CFBGDPlayerInfo(uint8 m_fRace, uint8 m_oRace, uint32 m_fFaction, uint32 m_oFaction) : m_fRace(m_fRace), m_oRace(m_oRace), m_fFaction(m_fFaction), m_oFaction(m_oFaction) {}
     uint8 m_fRace; uint8 m_oRace; uint32 m_fFaction; uint32 m_oFaction;
+
+    uint32 getFFaction() const { return m_fFaction; }
+    uint32 getOFaction() const { return m_oFaction; }
+    uint8 getORace() const { return m_oRace; }
+    uint8 getFRace() const { return m_fRace; }
 };
 
 void CFBG::CFJoinBattleGround(Player* player)
@@ -35,12 +43,9 @@ void CFBG::CFJoinBattleGround(Player* player)
         return;
 
 
-    if (player->GetBGTeam() == ALLIANCE)
-        player->SetFaction(TEAM_ALLIANCE);
-    else
-        player->SetFaction(TEAM_HORDE);
-
-    player->SetByteValue(UNIT_FIELD_BYTES_0, 0, CFBGplayerInfo->m_fRace);
+    player->SetFaction(CFBGplayerInfo->getFFaction());
+    player->SetByteValue(UNIT_FIELD_BYTES_0, 0, CFBGplayerInfo->getFRace());
+    ReplaceRacials(player, false);
     FakeDisplayID(player);
     sWorld.InvalidatePlayerDataToAllClient(player->GetGUID());
 }
@@ -103,6 +108,8 @@ void CFBG::SetFakeValues(Player* player)
                 CFBGplayerInfo->m_fRace = i;
         }
     }
+
+    CFBGplayerInfo->m_fFaction = Player::getFactionForRace(CFBGplayerInfo->m_fRace);
 }
 
 void CFBG::CFLeaveBattleGround(Player* player)
@@ -112,8 +119,42 @@ void CFBG::CFLeaveBattleGround(Player* player)
 
     CFBGDPlayerInfo* CFBGplayerInfo = player->CustomData.GetDefault<CFBGDPlayerInfo>("CFBGDPlayerInfo");
 
-    player->SetByteValue(UNIT_FIELD_BYTES_0, 0, CFBGplayerInfo->m_oRace);
-    player->SetFaction(CFBGplayerInfo->m_oFaction);
+    player->SetByteValue(UNIT_FIELD_BYTES_0, 0, CFBGplayerInfo->getORace());
+    player->SetFaction(CFBGplayerInfo->getOFaction());
+    ReplaceRacials(player, true);
     player->InitDisplayIds();
     sWorld.InvalidatePlayerDataToAllClient(player->GetGUID());
+}
+
+void CFBG::ReplaceRacials(Player* player, bool native)
+{
+    if (!sWorld.getConfig(CONFIG_CROSSFACTION_REPLACE_RACIALS) ||!sWorld.getConfig(CONFIG_CROSSFACTION_BG_ENABLE))
+        return;
+
+    CFBGDPlayerInfo* CFBGplayerInfo = player->CustomData.GetDefault<CFBGDPlayerInfo>("CFBGDPlayerInfo");
+
+    // SpellId, Should have spell
+    auto spells = std::unordered_map<uint32, bool>();
+
+    for (auto& i : sObjectMgr.GetPlayerInfo(native ? CFBGplayerInfo->getFRace() : CFBGplayerInfo->getORace(), player->getClass())->spell)
+        if (auto spell = sSpellStore.LookupEntry(i.first))
+            if (sWorld.getConfig(CONFIG_CROSSFACTION_REPLACE_LANGUAGE) && !sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHAT))
+                spells[spell->Id] = false;
+            else if (spell->Effect[0] != SPELL_EFFECT_LANGUAGE && !sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHAT))
+                spells[spell->Id] = false;
+
+    for (auto& i : sObjectMgr.GetPlayerInfo(native ? CFBGplayerInfo->getORace() : CFBGplayerInfo->getFRace(), player->getClass())->spell)
+        if (auto spell = sSpellStore.LookupEntry(i.first))
+            if (sWorld.getConfig(CONFIG_CROSSFACTION_REPLACE_LANGUAGE) && !sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHAT))
+                spells[spell->Id] = true;
+            else if (spell->Effect[0] != SPELL_EFFECT_LANGUAGE && !sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHAT))
+                spells[spell->Id] = true;
+
+    for (auto& i : spells)
+    {
+        if (i.second)
+            player->LearnSpell(i.first);
+        else
+            player->RemoveSpell(i.first);
+    }
 }
