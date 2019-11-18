@@ -6790,6 +6790,9 @@ void Spell::EffectSendTaxi(SpellEffIndex effIndex)
     uint32 mountid = 0;
     switch (m_spellInfo->Id)
     {
+    case 42295:     // Alcaz Island Survey
+        mountid = 17697;
+        break;
     case 31606:       //Stormcrow Amulet
         mountid = 17447;
         break;
