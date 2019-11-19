@@ -70,11 +70,13 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
 {
     boss_pathaleon_the_calculatorAI(Creature* c) : ScriptedAI(c), summons(me)
     {
-        HeroicMode = me->GetMap()->IsHeroic();
+        if (me->GetMap()->IsHeroic() ? wraith = 4 : wraith = 3);
     }
 
     SummonList summons;
-    EventMap events;
+    EventMap events;   
+    ScriptedInstance* pInstance;
+    uint8 wraith;
 
     void InitializeAI()
     {
@@ -158,9 +160,11 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
             }
             break;
         case EVENT_DOMINATION:
-            DoScriptText(RAND(SAY_DOMINATION_1, SAY_DOMINATION_2), me);
             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 1, 50.0f))
+            {
+                DoScriptText(RAND(SAY_DOMINATION_1, SAY_DOMINATION_2), me);
                 me->CastSpell(target, SPELL_DOMINATION, false);
+            }
             events.ScheduleEvent(EVENT_DOMINATION, 30000);
             break;
         case EVENT_FRENZY:
@@ -174,9 +178,8 @@ struct boss_pathaleon_the_calculatorAI : public ScriptedAI
             events.ScheduleEvent(EVENT_FRENZY, 1000);
             break;
         case EVENT_SUMMON:
-            for (uint8 i = 0; i < HeroicMode ? 4:3; ++i)
-                me->CastSpell(me, SPELL_SUMMON_NETHER_WRAITH_1 + i, true);
-
+            for (uint32 i = 0; i < wraith; ++i)
+                me->CastSpell(me, SPELL_SUMMON_NETHER_WRAITH_1+ i, true);
             DoScriptText(SAY_SUMMON, me);
             events.ScheduleEvent(EVENT_SUMMON, urand(30000, 45000));
             break;
@@ -231,7 +234,6 @@ struct mob_nether_wraithAI : public ScriptedAI
         }
         DoMeleeAttackIfReady();
     }
-
 };
 CreatureAI* GetAI_mob_nether_wraith(Creature* pCreature)
 {
