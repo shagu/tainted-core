@@ -4427,6 +4427,14 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                                 }
                             }
                         }
+                        if (caster->IsValidAttackTarget(m_target))
+                        {
+                            if (m_target->IsPlayer() && m_target->IsPvP())
+                                caster->SetFlag(PLAYER_FLAGS, PLAYER_FLAGS_CONTESTED_PVP);
+
+                            caster->SetInCombatWith(m_target);
+                        }
+
                     }
                 }
                 return;
