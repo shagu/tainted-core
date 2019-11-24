@@ -2416,6 +2416,9 @@ void SpellMgr::LoadSpellCustomAttr()
 
         switch (i)
         {
+        case 30254: // Curators Evocation
+            spellInfo->Effect[1] = 0;
+            break;
         case 26029: // dark glare
         case 37433: // spout
         case 43140:
