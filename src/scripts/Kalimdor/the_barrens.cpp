@@ -294,27 +294,27 @@ enum eTwiggyFlathead
     SAY_TWIGGY_FLATHEAD_OVER    = -1000127,
 };
 
-float AffrayChallengerLoc[6][4] =
+Position const AffrayChallengerLoc[6] =
 {
-    { -1683, -4326, 2.79f, 0},
-    { -1682, -4329, 2.79f, 0},
-    { -1683, -4330, 2.79f, 0},
-    { -1680, -4334, 2.79f, 1.49f},
-    { -1674, -4326, 2.79f, 3.49f},
-    { -1677, -4334, 2.79f, 1.66f}
+    {-1683.0f, -4326.0f, 2.79f, 0.0f},
+    {-1682.0f, -4329.0f, 2.79f, 0.0f},
+    {-1683.0f, -4330.0f, 2.79f, 0.0f},
+    {-1680.0f, -4334.0f, 2.79f, 1.49f},
+    {-1674.0f, -4326.0f, 2.79f, 3.49f},
+    {-1677.0f, -4334.0f, 2.79f, 1.66f}
 };
 
 struct npc_twiggy_flatheadAI : public ScriptedAI
 {
-    npc_twiggy_flatheadAI(Creature* c) : ScriptedAI(c) {}
+    npc_twiggy_flatheadAI(Creature* creature) : ScriptedAI(creature) {}
 
     bool EventInProgress;
     bool EventGrate;
     bool EventBigWill;
-    bool Challenger_down[6];
-    uint32 Wave;
-    uint32 Wave_Timer;
-    uint32 Challenger_checker;
+    bool ChallengerDown[6];
+    uint8 Wave;
+    uint32 WaveTimer;
+    uint32 ChallengerChecker;
     uint64 PlayerGUID;
     uint64 AffrayChallenger[6];
     uint64 BigWill;
@@ -324,88 +324,71 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
         EventInProgress = false;
         EventGrate = false;
         EventBigWill = false;
-        Wave_Timer = 600000;
-        Challenger_checker = 0;
+        WaveTimer = 600000;
+        ChallengerChecker = 0;
         Wave = 0;
         PlayerGUID = 0;
 
         for (uint8 i = 0; i < 6; ++i)
         {
             AffrayChallenger[i] = 0;
-            Challenger_down[i] = false;
+            ChallengerDown[i] = false;
         }
         BigWill = 0;
     }
 
     void EnterCombat(Unit* /*who*/) { }
 
+    void EnterEvadeMode()
+    {
+        CleanUp();
+        ScriptedAI::EnterEvadeMode();
+    }
+
+    void CleanUp()
+    {
+        for (uint8 i = 0; i < 6; ++i) // unsummon challengers
+            if (AffrayChallenger[i])
+                if (Creature* creature = ObjectAccessor::GetCreature((*me), AffrayChallenger[i]))
+                    creature->DespawnOrUnsummon(1);
+
+        if (BigWill) // unsummon bigWill
+            if (Creature* creature = ObjectAccessor::GetCreature((*me), BigWill))
+                creature->DespawnOrUnsummon(1);
+    }
+
     void MoveInLineOfSight(Unit* who)
     {
-        if (!who || (!who->IsAlive())) return;
+        if (!who->IsAlive() || EventInProgress || who->GetTypeId() != TYPEID_PLAYER)
+            return;
 
-        if (me->IsWithinDistInMap(who, 10.0f) && (who->GetTypeId() == TYPEID_PLAYER) && CAST_PLR(who)->GetQuestStatus(1719) == QUEST_STATUS_INCOMPLETE && !EventInProgress)
+        if (me->IsWithinDistInMap(who, 10.0f) && who->ToPlayer()->GetQuestStatus(1719) == QUEST_STATUS_INCOMPLETE)
         {
             PlayerGUID = who->GetGUID();
             EventInProgress = true;
         }
     }
 
-    void KilledUnit(Unit* /*victim*/) { }
-
-    void UpdateAI(const uint32 diff)
+    void UpdateAI(uint32 diff)
     {
         if (EventInProgress)
         {
-            Player* pWarrior = NULL;
-
-            if (PlayerGUID)
-                pWarrior = Unit::GetPlayer(*me, PlayerGUID);
-
-            if (!pWarrior)
+            Player* pWarrior = ObjectAccessor::GetPlayer(*me, PlayerGUID);
+            if (!pWarrior || me->GetDistance2d(pWarrior) >= 200.0f)
+            {
+                EnterEvadeMode();
                 return;
+            }
 
             if (!pWarrior->IsAlive() && pWarrior->GetQuestStatus(1719) == QUEST_STATUS_INCOMPLETE)
             {
-                EventInProgress = false;
-                DoScriptText(SAY_TWIGGY_FLATHEAD_DOWN, me);
+                DoScriptText(SAY_TWIGGY_FLATHEAD_DOWN, me, nullptr);
                 pWarrior->FailQuest(1719);
-
-                for (uint8 i = 0; i < 6; ++i)
-                {
-                    if (AffrayChallenger[i])
-                    {
-                        Creature* pCreature = Unit::GetCreature((*me), AffrayChallenger[i]);
-                        if (pCreature)
-                        {
-                            if (pCreature->IsAlive())
-                            {
-                                pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
-                                pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                                pCreature->setDeathState(JUST_DIED);
-                            }
-                        }
-                    }
-                    AffrayChallenger[i] = 0;
-                    Challenger_down[i] = false;
-                }
-
-                if (BigWill)
-                {
-                    Creature* pCreature = Unit::GetCreature((*me), BigWill);
-                    if (pCreature)
-                    {
-                        if (pCreature->IsAlive())
-                        {
-                            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IN_COMBAT);
-                            pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                            pCreature->setDeathState(JUST_DIED);
-                        }
-                    }
-                }
-                BigWill = 0;
+                EnterEvadeMode();
+                return;
             }
 
-            if (!EventGrate && EventInProgress)
+            if (!EventGrate)
             {
                 float x, y, z;
                 pWarrior->GetPosition(x, y, z);
@@ -413,97 +396,95 @@ struct npc_twiggy_flatheadAI : public ScriptedAI
                 if (x >= -1684 && x <= -1674 && y >= -4334 && y <= -4324)
                 {
                     pWarrior->AreaExploredOrEventHappens(1719);
-                    DoScriptText(SAY_TWIGGY_FLATHEAD_BEGIN, me, pWarrior);
+                    DoScriptText(SAY_TWIGGY_FLATHEAD_BEGIN, me,  pWarrior);
 
                     for (uint8 i = 0; i < 6; ++i)
                     {
-                        Creature* pCreature = me->SummonCreature(NPC_AFFRAY_CHALLENGER, AffrayChallengerLoc[i][0], AffrayChallengerLoc[i][1], AffrayChallengerLoc[i][2], AffrayChallengerLoc[i][3], TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 600000);
-                        if (!pCreature)
+                        Creature* creature = me->SummonCreature(NPC_AFFRAY_CHALLENGER, AffrayChallengerLoc[i], TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 600000);
+                        if (!creature)
                             continue;
-                        pCreature->SetFaction(35);
-                        pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                        pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                        pCreature->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
-                        AffrayChallenger[i] = pCreature->GetGUID();
+
+                        creature->SetFaction(35);
+                        creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                        creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        creature->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
+                        AffrayChallenger[i] = creature->GetGUID();
                     }
-                    Wave_Timer = 5000;
-                    Challenger_checker = 1000;
+                    WaveTimer = 5000;
+                    ChallengerChecker = 1000;
                     EventGrate = true;
                 }
             }
-            else if (EventInProgress)
+            else
             {
-                if (Challenger_checker <= diff)
+                if (ChallengerChecker <= diff)
                 {
                     for (uint8 i = 0; i < 6; ++i)
                     {
                         if (AffrayChallenger[i])
                         {
-                            Creature* pCreature = Unit::GetCreature((*me), AffrayChallenger[i]);
-                            if ((!pCreature || (!pCreature->IsAlive())) && !Challenger_down[i])
+                            Creature* creature = ObjectAccessor::GetCreature(*me, AffrayChallenger[i]);
+                            if ((!creature || !creature->IsAlive()) && !ChallengerDown[i])
                             {
-                                DoScriptText(SAY_TWIGGY_FLATHEAD_DOWN, me);
-                                Challenger_down[i] = true;
+                                DoScriptText(SAY_TWIGGY_FLATHEAD_DOWN, me, nullptr);
+                                ChallengerDown[i] = true;
                             }
                         }
                     }
-                    Challenger_checker = 1000;
+                    ChallengerChecker = 1000;
                 }
-                else Challenger_checker -= diff;
+                else ChallengerChecker -= diff;
 
-                if (Wave_Timer <= diff)
+                if (WaveTimer <= diff)
                 {
-                    if (AffrayChallenger[Wave] && Wave < 6 && !EventBigWill)
+                    if (Wave < 6 && !EventBigWill)
                     {
-                        DoScriptText(SAY_TWIGGY_FLATHEAD_FRAY, me);
-                        Creature* pCreature = Unit::GetCreature((*me), AffrayChallenger[Wave]);
-                        if (pCreature && (pCreature->IsAlive()))
+                        DoScriptText(SAY_TWIGGY_FLATHEAD_FRAY, me, nullptr);
+                        Creature* creature = ObjectAccessor::GetCreature(*me, AffrayChallenger[Wave]);
+                        if (creature && creature->IsAlive())
                         {
-                            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            pCreature->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
-                            pCreature->SetFaction(14);
-                            pCreature->AI()->AttackStart(pWarrior);
-                            ++Wave;
-                            Wave_Timer = 20000;
+                            creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                            creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            creature->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
+                            creature->SetFaction(14);
+                            creature->AI()->AttackStart(pWarrior);
                         }
+                        ++Wave;
+                        WaveTimer = 20000;
                     }
                     else if (Wave >= 6 && !EventBigWill)
                     {
-                        if (Creature* pCreature = me->SummonCreature(NPC_BIG_WILL, -1722, -4341, 6.12f, 6.26f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 480000))
+                        if (Creature* creature = me->SummonCreature(NPC_BIG_WILL, -1722, -4341, 6.12f, 6.26f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 480000))
                         {
-                            BigWill = pCreature->GetGUID();
-                            //pCreature->GetMotionMaster()->MovePoint(0, -1693, -4343, 4.32f);
-                            //pCreature->GetMotionMaster()->MovePoint(1, -1684, -4333, 2.78f);
-                            pCreature->GetMotionMaster()->MovePoint(2, -1682, -4329, 2.79f);
-                            pCreature->HandleEmoteCommand(EMOTE_STATE_READYUNARMED);
+                            BigWill = creature->GetGUID();
+                            creature->GetMotionMaster()->MovePoint(2, -1682, -4329, 2.79f);
+                            creature->HandleEmoteCommand(EMOTE_ONESHOT_READYUNARMED);
                             EventBigWill = true;
-                            Wave_Timer = 1000;
+                            WaveTimer = 10000;
                         }
                     }
-                    else if (Wave >= 6 && EventBigWill && BigWill)
+                    else if (Wave >= 6 && EventBigWill)
                     {
-                        Creature* pCreature = Unit::GetCreature((*me), BigWill);
-                        if (!pCreature || !pCreature->IsAlive())
+                        Creature* creature = ObjectAccessor::GetCreature(*me, BigWill);
+                        if (!creature || !creature->IsAlive())
                         {
                             DoScriptText(SAY_TWIGGY_FLATHEAD_OVER, me);
-                            EventInProgress = false;
-                            EventBigWill = false;
-                            EventGrate = false;
-                            PlayerGUID = 0;
-                            Wave = 0;
+                            EnterEvadeMode();
+                            return;
                         }
-                        else if (pCreature) // Makes BIG WILL attackable.
+                        else if (creature) // Makes BIG WILL attackable.
                         {
-                            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            pCreature->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
-                            pCreature->SetFaction(14);
-                            pCreature->AI()->AttackStart(pWarrior);
+                            creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                            creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            creature->HandleEmoteCommand(EMOTE_ONESHOT_ROAR);
+                            creature->SetFaction(14);
+                            creature->AI()->AttackStart(pWarrior);
                         }
+                        WaveTimer = 2000;
                     }
                 }
-                else Wave_Timer -= diff;
+                else
+                    WaveTimer -= diff;
             }
         }
     }
