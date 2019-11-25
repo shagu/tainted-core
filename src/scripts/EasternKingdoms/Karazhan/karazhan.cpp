@@ -131,7 +131,6 @@ struct npc_barnesAI : public npc_escortAI
     npc_barnesAI(Creature* c) : npc_escortAI(c)
     {
         SetDespawnAtEnd(false);
-        RaidWiped = false;
         m_uiEventId = 0;
         pInstance = (ScriptedInstance*)c->GetInstanceData();
         SpellEntry* TempSpell = GET_SPELL(29683);
@@ -154,22 +153,31 @@ struct npc_barnesAI : public npc_escortAI
     uint32 TalkTimer;
     uint32 WipeTimer;
     uint32 m_uiEventId;
+    uint32 PlayersEncounter;
+    uint32 DeadPlayers;
+    const CreatureInfo* cinfo;
 
     bool PerformanceReady;
-    bool RaidWiped;
 
     void Reset()
     {
+        cinfo = me->GetCreatureTemplate();
         m_uiSpotlightGUID = 0;
-
+        PlayersEncounter = 0;
+        DeadPlayers = 0;
         TalkCount = 0;
         TalkTimer = 2000;
         WipeTimer = 5000;
-
+        SetEscortingState(STATE_ESCORT_NONE);
+        me->SetUInt32Value(UNIT_NPC_FLAGS, cinfo->npcflag);
         PerformanceReady = false;
 
         if (pInstance)
+        {
             m_uiEventId = pInstance->GetData(DATA_OPERA_PERFORMANCE);
+            pInstance->HandleGameObject(pInstance->GetData64(DATA_GO_CURTAINS), false);
+        }
+            
     }
 
     void StartEvent()
@@ -232,7 +240,10 @@ struct npc_barnesAI : public npc_escortAI
             PerformanceReady = true;
             PrepareEncounter();
             pInstance->DoUseDoorOrButton(pInstance->GetData64(DATA_GO_CURTAINS));
-            me->SetFacingTo(1.41372f);
+            me->SetFacingTo(0.000f);
+            // get the players upon performace
+            Map* map = me->GetMap();
+            PlayersEncounter = map->GetPlayersCountExceptGMs();
             break;
         }
     }
@@ -303,9 +314,23 @@ struct npc_barnesAI : public npc_escortAI
                 pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             }
         }
-
-        RaidWiped = false;
     }
+
+    void KilledUnit(Unit* /*victim*/)
+    {
+        ++DeadPlayers;
+
+        if (DeadPlayers == PlayersEncounter)
+        {
+            EnterEvadeMode();
+            Reset();
+
+            pInstance->SetData(TYPE_OPERA, NOT_STARTED);
+            if (m_uiEventId == EVENT_OZ)
+                pInstance->SetData(DATA_OPERA_OZ_DEATHCOUNT, NOT_STARTED);
+        }
+    }
+   
 
     void UpdateAI(const uint32 diff)
     {
@@ -328,44 +353,6 @@ struct npc_barnesAI : public npc_escortAI
                 ++TalkCount;
             }
             else TalkTimer -= diff;
-        }
-
-        if (PerformanceReady)
-        {
-            if (!RaidWiped)
-            {
-                if (WipeTimer <= diff)
-                {
-                    Map* pMap = me->GetMap();
-                    if (!pMap->IsDungeon())
-                        return;
-
-                    Map::PlayerList const& PlayerList = pMap->GetPlayers();
-                    if (PlayerList.isEmpty())
-                        return;
-
-                    RaidWiped = true;
-                    for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
-                    {
-                        if (i->GetSource()->IsAlive() && !i->GetSource()->IsGameMaster())
-                        {
-                            RaidWiped = false;
-                            break;
-                        }
-                    }
-
-                    if (RaidWiped)
-                    {
-                        RaidWiped = true;
-                        EnterEvadeMode();
-                        return;
-                    }
-
-                    WipeTimer = 15000;
-                }
-                else WipeTimer -= diff;
-            }
-
         }
     }
 };
@@ -393,7 +380,7 @@ bool GossipHello_npc_barnes(Player* pPlayer, Creature* pCreature)
 
             if (npc_barnesAI* pBarnesAI = CAST_AI(npc_barnesAI, pCreature->AI()))
             {
-                if (!pBarnesAI->RaidWiped)
+                if (pBarnesAI->pInstance->GetData(TYPE_OPERA) != IN_PROGRESS || pBarnesAI->pInstance->GetData(TYPE_OPERA) != DONE)
                     pPlayer->SEND_GOSSIP_MENU(8970, pCreature->GetGUID());
                 else
                     pPlayer->SEND_GOSSIP_MENU(8975, pCreature->GetGUID());

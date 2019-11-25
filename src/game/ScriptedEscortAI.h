@@ -101,6 +101,11 @@ struct npc_escortAI : public ScriptedAI
             return MaxPlayerDistance;
         }
 
+        void SetEscortingState(uint32 uiEscortState)
+        {
+            m_uiEscortState = uiEscortState;
+        }
+
         void SetDespawnAtEnd(bool despawn)
         {
             DespawnAtEnd = despawn;
