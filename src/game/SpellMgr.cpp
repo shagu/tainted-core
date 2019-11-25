@@ -1623,12 +1623,22 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
             break;
     }
 
+    //use data of highest rank spell(needed for spells which ranks have different effects)
+    spellInfo_1 = sSpellStore.LookupEntry(GetLastSpellInChain(spellId_1));
+    spellInfo_2 = sSpellStore.LookupEntry(GetLastSpellInChain(spellId_2));
+
+
     // generic spells
     if (!spellInfo_1->SpellFamilyName)
     {
-        if (spellInfo_1->SpellIconID == spellInfo_2->SpellIconID &&
-            spellInfo_1->SpellIconID != 0 && spellInfo_2->SpellIconID != 0)
-            return true;
+        if (!spellInfo_1->SpellIconID
+            || spellInfo_1->SpellIconID == 1
+            || spellInfo_1->SpellIconID != spellInfo_2->SpellIconID)
+            return false;
+
+        // Special case for Idol of terror proc
+        if (spellId_1 == 43738 || spellId_2 == 43738)
+            return false;
     }
 
     // check for class spells
@@ -1637,10 +1647,6 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
         if (spellInfo_1->SpellFamilyFlags != spellInfo_2->SpellFamilyFlags)
             return false;
     }
-
-    //use data of highest rank spell(needed for spells which ranks have different effects)
-    spellInfo_1 = sSpellStore.LookupEntry(GetLastSpellInChain(spellId_1));
-    spellInfo_2 = sSpellStore.LookupEntry(GetLastSpellInChain(spellId_2));
 
     //if spells have exactly the same effect they cannot stack
     for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
