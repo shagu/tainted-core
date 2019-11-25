@@ -325,9 +325,12 @@ struct boss_strawmanAI : public ScriptedAI
             SummonCroneIfReady(pInstance, me);
     }
 
-    void KilledUnit(Unit* /*victim*/)
+    void KilledUnit(Unit* victim)
     {
         DoScriptText(SAY_STRAWMAN_SLAY, me);
+        Creature* barnes = me->FindNearestCreature(16812, 50, true);
+        if (barnes)
+            barnes->AI()->KilledUnit(victim);
     }
 
     void UpdateAI(const uint32 diff)
@@ -422,9 +425,12 @@ struct boss_tinheadAI : public ScriptedAI
             SummonCroneIfReady(pInstance, me);
     }
 
-    void KilledUnit(Unit* /*victim*/)
+    void KilledUnit(Unit* victim)
     {
         DoScriptText(SAY_TINHEAD_SLAY, me);
+        Creature* barnes = me->FindNearestCreature(16812, 50, true);
+        if (barnes)
+            barnes->AI()->KilledUnit(victim);
     }
 
     void UpdateAI(const uint32 diff)
@@ -521,9 +527,12 @@ struct boss_roarAI : public ScriptedAI
             SummonCroneIfReady(pInstance, me);
     }
 
-    void KilledUnit(Unit* /*victim*/)
+    void KilledUnit(Unit* victim)
     {
         DoScriptText(SAY_ROAR_SLAY, me);
+        Creature* barnes = me->FindNearestCreature(16812, 50, true);
+        if (barnes)
+            barnes->AI()->KilledUnit(victim);
     }
 
     void UpdateAI(const uint32 diff)
@@ -1040,9 +1049,12 @@ struct boss_julianneAI : public ScriptedAI
         }
     }
 
-    void KilledUnit(Unit* /*victim*/)
+    void KilledUnit(Unit* victim)
     {
         DoScriptText(SAY_JULIANNE_SLAY, me);
+        Creature* barnes = me->FindNearestCreature(16812, 50, true);
+        if (barnes)
+            barnes->AI()->KilledUnit(victim);
     }
 
     void UpdateAI(const uint32 diff);
@@ -1132,9 +1144,12 @@ struct boss_romuloAI : public ScriptedAI
         }
     }
 
-    void KilledUnit(Unit* /*victim*/)
+    void KilledUnit(Unit* victim)
     {
         DoScriptText(SAY_ROMULO_SLAY, me);
+        Creature* barnes = me->FindNearestCreature(16812, 50, true);
+        if (barnes)
+            barnes->AI()->KilledUnit(victim);
     }
 
     void UpdateAI(const uint32 diff);
