@@ -1636,9 +1636,11 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
             || spellInfo_1->SpellIconID != spellInfo_2->SpellIconID)
             return false;
 
-        // Special case for Idol of terror proc
-        if (spellId_1 == 43738 || spellId_2 == 43738)
-            return false;
+        for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
+        {
+            if (spellInfo_1->SpellIconID == 240 && spellInfo_2->SpellIconID == 240 && (spellInfo_1->Effect[i] != spellInfo_2->Effect[i]))
+                return false;
+        }
     }
 
     // check for class spells
