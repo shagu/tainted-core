@@ -7,13 +7,10 @@ OregonCore is a piece of software that targets emulation of a World of Warcraft:
 Build Status
 ------------
 
-| Compiler      | Platform    | Branch 		| Status                  |
-|:--------------|:------------|:-----------:|:-----------------------:|
-| clang         | Linux x64   | master	    | [![Build Status][1]][7] |
-|:--------------|:------------|:-----------:|:-----------------------:|
-| clang			| Linux x64	  | Eluna       | [![Build Status][9]][7] |
-|:--------------|:------------|:-----------:|:-----------------------:|
-| clang			| Linux x64	  | Eluna&CFBG  | [![Build Status][10]][7]|
+| Compiler      | Platform    | Branch | Status                  |
+|:--------------|:------------|:------:|:-----------------------:|
+| clang         | Linux x64   | master | [![Build Status][1]][7] |
+
 
 Docs, Community and Support
 ---------------------------
