@@ -41,15 +41,20 @@ enum eCoilfangGOs
 {
     GO_COILFANG_WATERFALL   = 184212
 };
-
-bool AreaTrigger_at_coilfang_waterfall(Player* pPlayer, const AreaTriggerEntry* /*pAt*/)
+class AreaTrigger_at_coilfang_waterfall : public AreaTriggerScript
 {
-    if (GameObject* pGo = GetClosestGameObjectWithEntry(pPlayer, GO_COILFANG_WATERFALL, 35.0f))
-        if (pGo->getLootState() == GO_READY)
-            pGo->UseDoorOrButton();
+public:
+    AreaTrigger_at_coilfang_waterfall() : AreaTriggerScript("at_coilfang_waterfall") {}
 
-    return false;
-}
+    bool OnTrigger(Player* player, AreaTriggerEntry const* /*trigger*/)
+    {
+        if (GameObject* pGo = GetClosestGameObjectWithEntry(player, GO_COILFANG_WATERFALL, 35.0f))
+            if (pGo->getLootState() == GO_READY)
+                pGo->UseDoorOrButton();
+
+        return false;
+    }
+};
 
 /*#####
 ## at_legion_teleporter
@@ -64,26 +69,33 @@ enum eLegionTeleporter
     QUEST_GAINING_ACCESS_H  = 10604
 };
 
-bool AreaTrigger_at_legion_teleporter(Player* pPlayer, const AreaTriggerEntry* /*pAt*/)
+class AreaTrigger_at_legion_teleporter : AreaTriggerScript
 {
-    if (pPlayer->IsAlive() && !pPlayer->IsInCombat())
+public:
+    AreaTrigger_at_legion_teleporter() : AreaTriggerScript("at_legion_teleporter") {}
+
+    bool OnTrigger(Player* player, AreaTriggerEntry const* /*trigger*/)
     {
-        if (pPlayer->GetTeam() == ALLIANCE && pPlayer->GetQuestRewardStatus(QUEST_GAINING_ACCESS_A))
+        if (player->IsAlive() && !player->IsInCombat())
         {
-            pPlayer->CastSpell(pPlayer, SPELL_TELE_A_TO, false);
-            return true;
-        }
+            if (player->GetTeam() == ALLIANCE && player->GetQuestRewardStatus(QUEST_GAINING_ACCESS_A))
+            {
+                player->CastSpell(player, SPELL_TELE_A_TO, false);
+                return true;
+            }
 
-        if (pPlayer->GetTeam() == HORDE && pPlayer->GetQuestRewardStatus(QUEST_GAINING_ACCESS_H))
-        {
-            pPlayer->CastSpell(pPlayer, SPELL_TELE_H_TO, false);
-            return true;
-        }
+            if (player->GetTeam() == HORDE && player->GetQuestRewardStatus(QUEST_GAINING_ACCESS_H))
+            {
+                player->CastSpell(player, SPELL_TELE_H_TO, false);
+                return true;
+            }
 
+            return false;
+        }
         return false;
     }
-    return false;
-}
+};
+
 
 enum eRavenholdt
 {
@@ -91,13 +103,20 @@ enum eRavenholdt
     NPC_RAVENHOLDT          = 13936
 };
 
-bool AreaTrigger_at_ravenholdt(Player* pPlayer, const AreaTriggerEntry* /*pAt*/)
+class AreaTrigger_at_ravenholt : AreaTriggerScript
 {
-    if (pPlayer->GetQuestStatus(QUEST_MANOR_RAVENHOLDT) == QUEST_STATUS_INCOMPLETE)
-        pPlayer->KilledMonsterCredit(NPC_RAVENHOLDT, 0);
+public:
+    AreaTrigger_at_ravenholt() : AreaTriggerScript("at_ravenholdt") {}
 
-    return false;
-}
+    bool OnTrigger(Player* player, AreaTriggerEntry const* /*trigger*/)
+    {
+        if (player->GetQuestStatus(QUEST_MANOR_RAVENHOLDT) == QUEST_STATUS_INCOMPLETE)
+            player->KilledMonsterCredit(NPC_RAVENHOLDT, 0);
+
+        return false;
+    }
+};
+
 
 /*######
 ## at_scent_larkorwi
@@ -109,16 +128,23 @@ enum eLarkorwi
     NPC_LARKORWI_MATE           = 9683
 };
 
-bool AreaTrigger_at_scent_larkorwi(Player* player, AreaTriggerEntry const* at)
+class AreaTrigger_at_scent_larkorwi : AreaTriggerScript
 {
-    if (player->IsAlive() && !player->IsGameMaster() && player->GetQuestStatus(QUEST_SCENT_OF_LARKORWI) == QUEST_STATUS_INCOMPLETE)
+public:
+    AreaTrigger_at_scent_larkorwi() : AreaTriggerScript("at_scent_larkorwi") {}
+
+    bool OnTrigger(Player* player, AreaTriggerEntry const* trigger)
     {
-        if (!GetClosestCreatureWithEntry(player, NPC_LARKORWI_MATE, 25.0f, false))
-            player->SummonCreature(NPC_LARKORWI_MATE, at->x, at->y, at->z, 3.3f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 2 * MINUTE * IN_MILLISECONDS);
+        if (player->IsAlive() && !player->IsGameMaster() && player->GetQuestStatus(QUEST_SCENT_OF_LARKORWI) == QUEST_STATUS_INCOMPLETE)
+        {
+            if (!GetClosestCreatureWithEntry(player, NPC_LARKORWI_MATE, 25.0f, false))
+                player->SummonCreature(NPC_LARKORWI_MATE, trigger->x, trigger->y, trigger->z, 3.3f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 2 * MINUTE * IN_MILLISECONDS);
+        }
+
+        return false;
     }
 
-    return false;
-}
+};
 
 /*######
 ## at_ancient_leaf
@@ -148,24 +174,30 @@ static const AncientSpawn afSpawnLocations[MAX_ANCIENTS] =
     { NPC_HASTAT,  6193.449219f, -1137.834106f, 366.260529f, 5.77332f },    // Hastat the Ancient
 };
 
-bool AreaTrigger_at_ancient_leaf(Player* player, AreaTriggerEntry const* /*at*/)
+class AreaTrigger_at_ancient_leaf : AreaTriggerScript
 {
-    if (player->IsGameMaster() || !player->IsAlive())
-        return false;
+public:
+    AreaTrigger_at_ancient_leaf() : AreaTriggerScript("at_ancient_leaf") {}
 
-    // Handle Call Ancients event start - The area trigger summons 3 ancients
-    if (player->GetQuestStatus(QUEST_ANCIENT_LEAF) == QUEST_STATUS_COMPLETE)
+    bool OnTrigger(Player* player, AreaTriggerEntry const* trigger)
     {
-        // If ancients are already spawned, skip the rest
-        if (GetClosestCreatureWithEntry(player, NPC_VARTRUS, 50.0f) || GetClosestCreatureWithEntry(player, NPC_STOMA, 50.0f) || GetClosestCreatureWithEntry(player, NPC_HASTAT, 50.0f))
-            return true;
+        if (player->IsGameMaster() || !player->IsAlive())
+            return false;
 
-        for (uint8 i = 0; i < MAX_ANCIENTS; ++i)
-            player->SummonCreature(afSpawnLocations[i].uiEntry, afSpawnLocations[i].fX, afSpawnLocations[i].fY, afSpawnLocations[i].fZ, afSpawnLocations[i].fO, TEMPSUMMON_TIMED_DESPAWN, 5 * MINUTE * IN_MILLISECONDS);
+        // Handle Call Ancients event start - The area trigger summons 3 ancients
+        if (player->GetQuestStatus(QUEST_ANCIENT_LEAF) == QUEST_STATUS_COMPLETE)
+        {
+            // If ancients are already spawned, skip the rest
+            if (GetClosestCreatureWithEntry(player, NPC_VARTRUS, 50.0f) || GetClosestCreatureWithEntry(player, NPC_STOMA, 50.0f) || GetClosestCreatureWithEntry(player, NPC_HASTAT, 50.0f))
+                return true;
+
+            for (uint8 i = 0; i < MAX_ANCIENTS; ++i)
+                player->SummonCreature(afSpawnLocations[i].uiEntry, afSpawnLocations[i].fX, afSpawnLocations[i].fY, afSpawnLocations[i].fZ, afSpawnLocations[i].fO, TEMPSUMMON_TIMED_DESPAWN, 5 * MINUTE * IN_MILLISECONDS);
+        }
+
+        return false;
     }
-
-    return false;
-}
+};
 
 /*######
 ## at_haramad_teleport
@@ -178,48 +210,29 @@ enum
 
 static const WorldLocation haramadTeleportDest(530, -1810.465f, 5323.083f, -12.428f, 2.040f);
 
-bool AreaTrigger_at_haramad_teleport(Player* player, AreaTriggerEntry const* /*at*/)
+class AreaTrigger_at_haramad_teleport : AreaTriggerScript
 {
-    if (player->IsGameMaster() || !player->IsAlive())
+public:
+    AreaTrigger_at_haramad_teleport() : AreaTriggerScript("at_haramad_teleport") {}
+
+    bool OnTrigger(Player* player, AreaTriggerEntry const* trigger)
+    {
+        if (player->IsGameMaster() || !player->IsAlive())
+            return false;
+
+        if (player->GetQuestStatus(QUEST_SPECIAL_DELIVERY_TO_SHATTRATH) == QUEST_STATUS_INCOMPLETE)
+            player->TeleportTo(haramadTeleportDest);
+
         return false;
-
-    if (player->GetQuestStatus(QUEST_SPECIAL_DELIVERY_TO_SHATTRATH) == QUEST_STATUS_INCOMPLETE)
-        player->TeleportTo(haramadTeleportDest);
-
-    return false;
-}
+    }
+};
 
 void AddSC_areatrigger_scripts()
 {
-    Script* newscript;
-
-    newscript = new Script;
-    newscript->Name = "at_coilfang_waterfall";
-    newscript->pAreaTrigger = &AreaTrigger_at_coilfang_waterfall;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "at_legion_teleporter";
-    newscript->pAreaTrigger = &AreaTrigger_at_legion_teleporter;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "at_ravenholdt";
-    newscript->pAreaTrigger = &AreaTrigger_at_ravenholdt;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "at_scent_larkorwi";
-    newscript->pAreaTrigger = &AreaTrigger_at_scent_larkorwi;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "at_ancient_leaf";
-    newscript->pAreaTrigger = &AreaTrigger_at_ancient_leaf;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "at_haramad_teleport";
-    newscript->pAreaTrigger = &AreaTrigger_at_haramad_teleport;
-    newscript->RegisterSelf();
+    new AreaTrigger_at_coilfang_waterfall();
+    new AreaTrigger_at_legion_teleporter();
+    new AreaTrigger_at_ravenholt();
+    new AreaTrigger_at_scent_larkorwi();
+    new AreaTrigger_at_ancient_leaf();
+    new AreaTrigger_at_haramad_teleport();
 }

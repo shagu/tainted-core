@@ -539,6 +539,7 @@ void GameObject::Update(uint32 diff)
             break;
         }
     }
+    sScriptMgr.OnGameObjectUpdate(this, diff);
 }
 
 void GameObject::Refresh()

@@ -454,6 +454,7 @@ bool Transport::AddPassenger(Player* passenger)
     {
         sLog.outDetail("Player %s boarded transport %s.", passenger->GetName(), GetName());
         m_passengers.insert(passenger);
+        sScriptMgr.OnAddPassenger(this, passenger);
     }
     return true;
 }
@@ -462,6 +463,8 @@ bool Transport::RemovePassenger(Player* passenger)
 {
     if (m_passengers.erase(passenger))
         sLog.outDetail("Player %s removed from transport %s.", passenger->GetName(), GetName());
+
+    sScriptMgr.OnRemovePassenger(this, passenger);
     return true;
 }
 
@@ -472,7 +475,7 @@ void Transport::CheckForEvent(uint32 entry, uint32 wp_id)
         GetMap()->ScriptsStart(sEventScripts, sObjectMgr.TransportEventMap[key], this, NULL);
 }
 
-void Transport::Update(uint32 /*p_time*/)
+void Transport::Update(uint32 p_time)
 {
     if (m_WayPoints.size() <= 1)
         return;

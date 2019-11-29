@@ -24,7 +24,7 @@
 #include "Database/DatabaseEnv.h"
 #include "Database/SQLStorage.h"
 #include "DBCStores.h"
-
+#include "ScriptMgr.h"
 #include "AccountMgr.h"
 #include "AuctionHouseMgr.h"
 #include "Item.h"
@@ -501,6 +501,8 @@ bool AuctionHouseObject::RemoveAuction(AuctionEntry* auction, uint32 item_templa
 {
     auctionbot.DecrementItemCounts(auction, item_template);
     bool wasInMap = AuctionsMap.erase(auction->Id) ? true : false;
+    sScriptMgr.OnRemoveAuction(this, auction);
+
 
     // we need to delete the entry, it is not referenced any more
     delete auction;
@@ -531,7 +533,8 @@ void AuctionHouseObject::Update()
         uint32 tmpdata = result->Fetch()->GetUInt32();
         expiredAuctions.push_back(tmpdata);
     }
-    while (result->NextRow());
+    while 
+        (result->NextRow());
 
     while (!expiredAuctions.empty())
     {
@@ -548,7 +551,10 @@ void AuctionHouseObject::Update()
 
         ///- Either cancel the auction if there was no bidder
         if (auction->bidder == 0)
+        {
             sAuctionMgr->SendAuctionExpiredMail(auction);
+            sScriptMgr.OnAuctionExpire(this, auction);
+        }
         ///- Or perform the transaction
         else
         {
@@ -557,6 +563,7 @@ void AuctionHouseObject::Update()
             //we send the money to the seller
             sAuctionMgr->SendAuctionSuccessfulMail(auction);
             sAuctionMgr->SendAuctionWonMail(auction);
+            sScriptMgr.OnAuctionSuccessful(this, auction);
         }
 
         ///- In any case clear the auction
