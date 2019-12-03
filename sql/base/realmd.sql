@@ -23,7 +23,7 @@ CREATE TABLE `account` (
   `last_ip` varchar(30) NOT NULL DEFAULT '127.0.0.1',
   `failed_logins` int(11) unsigned NOT NULL DEFAULT '0',
   `locked` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `last_login` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_login` timestamp NULL DEFAULT NULL,
   `online` int(4) unsigned NOT NULL DEFAULT '0',
   `expansion` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `mutetime` bigint(40) unsigned NOT NULL DEFAULT '0',
