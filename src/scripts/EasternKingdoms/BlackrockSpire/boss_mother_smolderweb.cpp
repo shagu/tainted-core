@@ -29,63 +29,66 @@ EndScriptData */
 #define SPELL_MOTHERSMILK               16468
 #define SPELL_SUMMON_SPIRE_SPIDERLING   16103
 
-struct boss_mothersmolderwebAI : public ScriptedAI
+
+class boss_mother_smolderweb : public CreatureScript
 {
-    boss_mothersmolderwebAI(Creature* c) : ScriptedAI(c) {}
-
-    uint32 Crystalize_Timer;
-    uint32 MothersMilk_Timer;
-
-    void Reset()
+public: 
+    boss_mother_smolderweb() : CreatureScript("boss_mother_smolderweb") { }
+    struct boss_mother_smolderwebAI : public ScriptedAI
     {
-        Crystalize_Timer = 20000;
-        MothersMilk_Timer = 10000;
-    }
-
-    void EnterCombat(Unit* /*who*/) {}
-
-    void DamageTaken(Unit* /*done_by*/, uint32& damage)
-    {
-        if (me->GetHealth() <= damage)
-            DoCast(me, SPELL_SUMMON_SPIRE_SPIDERLING, true);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //Crystalize_Timer
-        if (Crystalize_Timer <= diff)
+        boss_mother_smolderwebAI(Creature* c) : ScriptedAI(c) {}
+    
+        uint32 Crystalize_Timer;
+        uint32 MothersMilk_Timer;
+    
+        void Reset()
         {
-            DoCast(me, SPELL_CRYSTALIZE);
-            Crystalize_Timer = 15000;
+            Crystalize_Timer = 20000;
+            MothersMilk_Timer = 10000;
         }
-        else Crystalize_Timer -= diff;
-
-        //MothersMilk_Timer
-        if (MothersMilk_Timer <= diff)
+    
+        void EnterCombat(Unit* /*who*/) {}
+    
+        void DamageTaken(Unit* /*done_by*/, uint32& damage)
         {
-            DoCast(me, SPELL_MOTHERSMILK);
-            MothersMilk_Timer = urand(5000, 12500);
+            if (me->GetHealth() <= damage)
+                DoCast(me, SPELL_SUMMON_SPIRE_SPIDERLING, true);
         }
-        else MothersMilk_Timer -= diff;
-
-        DoMeleeAttackIfReady();
+    
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+    
+            //Crystalize_Timer
+            if (Crystalize_Timer <= diff)
+            {
+                DoCast(me, SPELL_CRYSTALIZE);
+                Crystalize_Timer = 15000;
+            }
+            else Crystalize_Timer -= diff;
+    
+            //MothersMilk_Timer
+            if (MothersMilk_Timer <= diff)
+            {
+                DoCast(me, SPELL_MOTHERSMILK);
+                MothersMilk_Timer = urand(5000, 12500);
+            }
+            else MothersMilk_Timer -= diff;
+    
+            DoMeleeAttackIfReady();
+        }
+    };
+    CreatureAI* GetAI_boss_mother_smolderweb(Creature* pCreature)
+    {
+        return new boss_mother_smolderwebAI (pCreature);
     }
+    
+    
 };
-CreatureAI* GetAI_boss_mothersmolderweb(Creature* pCreature)
-{
-    return new boss_mothersmolderwebAI (pCreature);
-}
-
 void AddSC_boss_mothersmolderweb()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_mother_smolderweb";
-    newscript->GetAI = &GetAI_boss_mothersmolderweb;
-    newscript->RegisterSelf();
+    new boss_mother_smolderweb();
 }
 

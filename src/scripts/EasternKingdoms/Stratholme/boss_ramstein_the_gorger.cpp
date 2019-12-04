@@ -31,76 +31,79 @@ EndScriptData */
 
 #define C_MINDLESS_UNDEAD   11030
 
-struct boss_ramstein_the_gorgerAI : public ScriptedAI
+
+class boss_ramstein_the_gorger : public CreatureScript
 {
-    boss_ramstein_the_gorgerAI(Creature* c) : ScriptedAI(c)
+public: 
+    boss_ramstein_the_gorger() : CreatureScript("boss_ramstein_the_gorger") { }
+    struct boss_ramstein_the_gorgerAI : public ScriptedAI
     {
-        pInstance = (ScriptedInstance*)me->GetInstanceData();
-    }
-
-    ScriptedInstance* pInstance;
-
-    uint32 Trample_Timer;
-    uint32 Knockout_Timer;
-
-    void Reset()
-    {
-        Trample_Timer = 3000;
-        Knockout_Timer = 12000;
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-    }
-
-    void JustDied(Unit* /*Killer*/)
-    {
-        for (uint8 i = 0; i < 30; ++i)
+        boss_ramstein_the_gorgerAI(Creature* c) : ScriptedAI(c)
         {
-            if (Creature* mob = me->SummonCreature(C_MINDLESS_UNDEAD, 3969.35f + irand(-10, 10), -3391.87f + irand(-10, 10), 119.11f, 5.91f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 1800000))
-                mob->AI()->AttackStart(me->SelectNearestTarget(500));
+            pInstance = (ScriptedInstance*)me->GetInstanceData();
         }
-
-        if (pInstance)
-            pInstance->SetData(TYPE_RAMSTEIN, DONE);
-    }
-
-    void UpdateAI(const uint32 diff)
+    
+        ScriptedInstance* pInstance;
+    
+        uint32 Trample_Timer;
+        uint32 Knockout_Timer;
+    
+        void Reset()
+        {
+            Trample_Timer = 3000;
+            Knockout_Timer = 12000;
+        }
+    
+        void EnterCombat(Unit* /*who*/)
+        {
+        }
+    
+        void JustDied(Unit* /*Killer*/)
+        {
+            for (uint8 i = 0; i < 30; ++i)
+            {
+                if (Creature* mob = me->SummonCreature(C_MINDLESS_UNDEAD, 3969.35f + irand(-10, 10), -3391.87f + irand(-10, 10), 119.11f, 5.91f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 1800000))
+                    mob->AI()->AttackStart(me->SelectNearestTarget(500));
+            }
+    
+            if (pInstance)
+                pInstance->SetData(TYPE_RAMSTEIN, DONE);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+    
+            //Trample
+            if (Trample_Timer <= diff)
+            {
+                DoCast(me, SPELL_TRAMPLE);
+                Trample_Timer = 7000;
+            }
+            else Trample_Timer -= diff;
+    
+            //Knockout
+            if (Knockout_Timer <= diff)
+            {
+                DoCastVictim( SPELL_KNOCKOUT);
+                Knockout_Timer = 10000;
+            }
+            else Knockout_Timer -= diff;
+    
+            DoMeleeAttackIfReady();
+        }
+    };
+    CreatureAI* GetAI_boss_ramstein_the_gorger(Creature* pCreature)
     {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //Trample
-        if (Trample_Timer <= diff)
-        {
-            DoCast(me, SPELL_TRAMPLE);
-            Trample_Timer = 7000;
-        }
-        else Trample_Timer -= diff;
-
-        //Knockout
-        if (Knockout_Timer <= diff)
-        {
-            DoCastVictim( SPELL_KNOCKOUT);
-            Knockout_Timer = 10000;
-        }
-        else Knockout_Timer -= diff;
-
-        DoMeleeAttackIfReady();
+        return new boss_ramstein_the_gorgerAI (pCreature);
     }
+    
+    
 };
-CreatureAI* GetAI_boss_ramstein_the_gorger(Creature* pCreature)
-{
-    return new boss_ramstein_the_gorgerAI (pCreature);
-}
-
 void AddSC_boss_ramstein_the_gorger()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_ramstein_the_gorger";
-    newscript->GetAI = &GetAI_boss_ramstein_the_gorger;
-    newscript->RegisterSelf();
+    new boss_ramstein_the_gorger();
 }
 

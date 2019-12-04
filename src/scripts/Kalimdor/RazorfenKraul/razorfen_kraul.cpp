@@ -47,150 +47,166 @@ EndContentData */
 #define ENTRY_BOAR 4514
 #define SPELL_QUILLBOAR_CHANNELING 7083
 
-struct npc_willixAI : public npc_escortAI
+
+
+
+class npc_willix : public CreatureScript
 {
-    npc_willixAI(Creature* c) : npc_escortAI(c) {}
-
-    void WaypointReached(uint32 i)
+public: 
+    npc_willix() : CreatureScript("npc_willix") { }
+    struct npc_willixAI : public npc_escortAI
     {
-        Player* pPlayer = GetPlayerForEscort();
-
-        if (!pPlayer)
-            return;
-
-        switch (i)
+        npc_willixAI(Creature* c) : npc_escortAI(c) {}
+    
+        void WaypointReached(uint32 i)
         {
-        case 3:
-            me->HandleEmoteCommand(EMOTE_STATE_POINT);
-            DoScriptText(SAY_POINT, me, pPlayer);
-            break;
-        case 4:
-            me->SummonCreature(ENTRY_BOAR, 2137.66f, 1843.98f, 48.08f, 1.54f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 25000);
-            break;
-        case 8:
-            DoScriptText(SAY_BLUELEAF, me, pPlayer);
-            break;
-        case 9:
-            DoScriptText(SAY_DANGER, me, pPlayer);
-            break;
-        case 13:
-            DoScriptText(SAY_BAD, me, pPlayer);
-            break;
-        case 14:
-            me->SummonCreature(ENTRY_BOAR, 2078.91f, 1704.54f, 56.77f, 1.54f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 25000);
-            break;
-        case 25:
-            DoScriptText(SAY_THINK, me, pPlayer);
-            break;
-        case 31:
-            DoScriptText(SAY_SOON, me, pPlayer);
-            break;
-        case 42:
-            DoScriptText(SAY_FINALY, me, pPlayer);
-            break;
-        case 43:
-            me->SummonCreature(ENTRY_BOAR, 1956.43f, 1596.97f, 81.75f, 1.54f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 25000);
-            break;
-        case 45:
-            DoScriptText(SAY_WIN, me, pPlayer);
-            me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
-            pPlayer->GroupEventHappens(QUEST_WILLIX_THE_IMPORTER, me);
-            break;
-        case 46:
-            DoScriptText(SAY_END, me, pPlayer);
-            break;
+            Player* pPlayer = GetPlayerForEscort();
+    
+            if (!pPlayer)
+                return;
+    
+            switch (i)
+            {
+            case 3:
+                me->HandleEmoteCommand(EMOTE_STATE_POINT);
+                DoScriptText(SAY_POINT, me, pPlayer);
+                break;
+            case 4:
+                me->SummonCreature(ENTRY_BOAR, 2137.66f, 1843.98f, 48.08f, 1.54f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 25000);
+                break;
+            case 8:
+                DoScriptText(SAY_BLUELEAF, me, pPlayer);
+                break;
+            case 9:
+                DoScriptText(SAY_DANGER, me, pPlayer);
+                break;
+            case 13:
+                DoScriptText(SAY_BAD, me, pPlayer);
+                break;
+            case 14:
+                me->SummonCreature(ENTRY_BOAR, 2078.91f, 1704.54f, 56.77f, 1.54f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 25000);
+                break;
+            case 25:
+                DoScriptText(SAY_THINK, me, pPlayer);
+                break;
+            case 31:
+                DoScriptText(SAY_SOON, me, pPlayer);
+                break;
+            case 42:
+                DoScriptText(SAY_FINALY, me, pPlayer);
+                break;
+            case 43:
+                me->SummonCreature(ENTRY_BOAR, 1956.43f, 1596.97f, 81.75f, 1.54f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 25000);
+                break;
+            case 45:
+                DoScriptText(SAY_WIN, me, pPlayer);
+                me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+                pPlayer->GroupEventHappens(QUEST_WILLIX_THE_IMPORTER, me);
+                break;
+            case 46:
+                DoScriptText(SAY_END, me, pPlayer);
+                break;
+            }
         }
-    }
+    
+        void Reset() {}
+    
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoScriptText(SAY_AGGRO1, me, NULL);
+        }
+    
+        void JustSummoned(Creature* summoned)
+        {
+            summoned->AI()->AttackStart(me);
+        }
+    
+        void JustDied(Unit* /*killer*/)
+        {
+            if (Player* pPlayer = GetPlayerForEscort())
+                CAST_PLR(pPlayer)->FailQuest(QUEST_WILLIX_THE_IMPORTER);
+        }
+    };
 
-    void Reset() {}
-
-    void EnterCombat(Unit* /*who*/)
+    CreatureAI* GetAI_npc_willix(Creature* pCreature)
     {
-        DoScriptText(SAY_AGGRO1, me, NULL);
+        return new npc_willixAI(pCreature);
     }
 
-    void JustSummoned(Creature* summoned)
+    
+
+    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest)
     {
-        summoned->AI()->AttackStart(me);
+        if (quest->GetQuestId() == QUEST_WILLIX_THE_IMPORTER)
+        {
+            CAST_AI(npc_escortAI, (pCreature->AI()))->Start(true, false, pPlayer->GetGUID());
+            DoScriptText(SAY_READY, pCreature, pPlayer);
+            pCreature->SetFaction(113);
+        }
+
+        return true;
     }
 
-    void JustDied(Unit* /*killer*/)
-    {
-        if (Player* pPlayer = GetPlayerForEscort())
-            CAST_PLR(pPlayer)->FailQuest(QUEST_WILLIX_THE_IMPORTER);
-    }
+
+    
 };
 
-bool QuestAccept_npc_willix(Player* pPlayer, Creature* pCreature, Quest const* quest)
+class npc_deaths_head_ward_keeper : public CreatureScript
 {
-    if (quest->GetQuestId() == QUEST_WILLIX_THE_IMPORTER)
+public: 
+    npc_deaths_head_ward_keeper() : CreatureScript("npc_deaths_head_ward_keeper") { }
+    struct npc_deaths_head_ward_keeperAI : public ScriptedAI
     {
-        CAST_AI(npc_escortAI, (pCreature->AI()))->Start(true, false, pPlayer->GetGUID());
-        DoScriptText(SAY_READY, pCreature, pPlayer);
-        pCreature->SetFaction(113);
-    }
-
-    return true;
-}
-
-struct npc_deaths_head_ward_keeperAI : public ScriptedAI
-{
-    npc_deaths_head_ward_keeperAI(Creature* c) : ScriptedAI(c)
-    {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
-    }
-
-    ScriptedInstance* pInstance;
-    uint32 QuillboarChanneling_Timer;
-
-    void Reset()
-    {
-        QuillboarChanneling_Timer = 1500;
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!me->IsAlive())
-            return;
-
-        if (pInstance)
-            pInstance->SetData(TYPE_WARD_KEEPERS, NOT_STARTED);
-
-        if (QuillboarChanneling_Timer <= diff)
+        npc_deaths_head_ward_keeperAI(Creature* c) : ScriptedAI(c)
         {
-            if (me->IsNonMeleeSpellCast(false))
-                me->InterruptNonMeleeSpells(true);
-            DoCast(me, SPELL_QUILLBOAR_CHANNELING);
-            QuillboarChanneling_Timer = 1100;
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-        else QuillboarChanneling_Timer -= diff;
+    
+        ScriptedInstance* pInstance;
+        uint32 QuillboarChanneling_Timer;
+    
+        void Reset()
+        {
+            QuillboarChanneling_Timer = 1500;
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!me->IsAlive())
+                return;
+    
+            if (pInstance)
+                pInstance->SetData(TYPE_WARD_KEEPERS, NOT_STARTED);
+    
+            if (QuillboarChanneling_Timer <= diff)
+            {
+                if (me->IsNonMeleeSpellCast(false))
+                    me->InterruptNonMeleeSpells(true);
+                DoCast(me, SPELL_QUILLBOAR_CHANNELING);
+                QuillboarChanneling_Timer = 1100;
+            }
+            else QuillboarChanneling_Timer -= diff;
+    
+        }
+    };
 
+    CreatureAI* GetAI_npc_deaths_head_ward_keeper(Creature* pCreature)
+    {
+        return new npc_deaths_head_ward_keeperAI(pCreature);
     }
+
+    
+
+    
+
+    
 };
 
-CreatureAI* GetAI_npc_deaths_head_ward_keeper(Creature* pCreature)
-{
-    return new npc_deaths_head_ward_keeperAI(pCreature);
-}
-
-CreatureAI* GetAI_npc_willix(Creature* pCreature)
-{
-    return new npc_willixAI(pCreature);
-}
 
 void AddSC_razorfen_kraul()
 {
-    Script* newscript;
+    new npc_willix();
+    new npc_deaths_head_ward_keeper();
 
-    newscript = new Script;
-    newscript->Name = "npc_willix";
-    newscript->GetAI = &GetAI_npc_willix;
-    newscript->pQuestAccept = &QuestAccept_npc_willix;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_deaths_head_ward_keeper";
-    newscript->GetAI = &GetAI_npc_deaths_head_ward_keeper;
-    newscript->RegisterSelf();
 }
 

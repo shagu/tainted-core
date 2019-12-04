@@ -39,105 +39,105 @@ enum Yells
     YELL_EVADE                                    = -1810022
 };
 
-struct boss_galvangarAI : public ScriptedAI
+class boss_galvangar : public CreatureScript
 {
-    boss_galvangarAI(Creature* c) : ScriptedAI(c) {}
-
-
-    uint32 uiCleaveTimer;
-    uint32 uiFrighteningShoutTimer;
-    uint32 uiWhirlwind1Timer;
-    uint32 uiWhirlwind2Timer;
-    uint32 uiMortalStrikeTimer;
-    uint32 uiResetTimer;
-
-
-    void Reset()
+public:
+    boss_galvangar() : CreatureScript("boss_galvangar") { }
+    struct boss_galvangarAI : public ScriptedAI
     {
-        uiCleaveTimer                     = urand(1 * IN_MILLISECONDS, 9 * IN_MILLISECONDS);
-        uiFrighteningShoutTimer           = urand(2 * IN_MILLISECONDS, 19 * IN_MILLISECONDS);
-        uiWhirlwind1Timer                 = urand(1 * IN_MILLISECONDS, 13 * IN_MILLISECONDS);
-        uiWhirlwind2Timer                 = urand(5 * IN_MILLISECONDS, 20 * IN_MILLISECONDS);
-        uiMortalStrikeTimer               = urand(5 * IN_MILLISECONDS, 20 * IN_MILLISECONDS);
-        uiResetTimer                      = 5 * IN_MILLISECONDS;
-    }
+        boss_galvangarAI(Creature* c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* /*who*/)
-    {
-        DoScriptText(YELL_AGGRO, me);
-    }
 
-    void JustRespawned()
-    {
-        Reset();
-    }
+        uint32 uiCleaveTimer;
+        uint32 uiFrighteningShoutTimer;
+        uint32 uiWhirlwind1Timer;
+        uint32 uiWhirlwind2Timer;
+        uint32 uiMortalStrikeTimer;
+        uint32 uiResetTimer;
 
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
 
-        if (uiCleaveTimer <= diff)
+        void Reset()
         {
-            DoCastVictim( SPELL_CLEAVE);
-            uiCleaveTimer =  urand(10 * IN_MILLISECONDS, 16 * IN_MILLISECONDS);
-        }
-        else uiCleaveTimer -= diff;
-
-        if (uiFrighteningShoutTimer <= diff)
-        {
-            DoCastVictim( SPELL_FRIGHTENING_SHOUT);
-            uiFrighteningShoutTimer = urand(10 * IN_MILLISECONDS, 15 * IN_MILLISECONDS);
-        }
-        else uiFrighteningShoutTimer -= diff;
-
-        if (uiWhirlwind1Timer <= diff)
-        {
-            DoCastVictim( SPELL_WHIRLWIND1);
-            uiWhirlwind1Timer = urand(6 * IN_MILLISECONDS, 10 * IN_MILLISECONDS);
-        }
-        else uiWhirlwind1Timer -= diff;
-
-        if (uiWhirlwind2Timer <= diff)
-        {
-            DoCastVictim( SPELL_WHIRLWIND2);
-            uiWhirlwind2Timer = urand(10 * IN_MILLISECONDS, 25 * IN_MILLISECONDS);
-        }
-        else uiWhirlwind2Timer -= diff;
-
-        if (uiMortalStrikeTimer <= diff)
-        {
-            DoCastVictim( SPELL_MORTAL_STRIKE);
-            uiMortalStrikeTimer = urand(10 * IN_MILLISECONDS, 30 * IN_MILLISECONDS);
-        }
-        else uiMortalStrikeTimer -= diff;
-
-        // check if creature is not outside of building
-        if (uiResetTimer <= diff)
-        {
-            if (me->GetDistance2d(me->GetHomePosition().GetPositionX(), me->GetHomePosition().GetPositionY()) > 50)
-            {
-                EnterEvadeMode();
-                DoScriptText(YELL_EVADE, me);
-            }
+            uiCleaveTimer = urand(1 * IN_MILLISECONDS, 9 * IN_MILLISECONDS);
+            uiFrighteningShoutTimer = urand(2 * IN_MILLISECONDS, 19 * IN_MILLISECONDS);
+            uiWhirlwind1Timer = urand(1 * IN_MILLISECONDS, 13 * IN_MILLISECONDS);
+            uiWhirlwind2Timer = urand(5 * IN_MILLISECONDS, 20 * IN_MILLISECONDS);
+            uiMortalStrikeTimer = urand(5 * IN_MILLISECONDS, 20 * IN_MILLISECONDS);
             uiResetTimer = 5 * IN_MILLISECONDS;
         }
-        else uiResetTimer -= diff;
 
-        DoMeleeAttackIfReady();
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoScriptText(YELL_AGGRO, me);
+        }
+
+        void JustRespawned()
+        {
+            Reset();
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            if (uiCleaveTimer <= diff)
+            {
+                DoCastVictim(SPELL_CLEAVE);
+                uiCleaveTimer = urand(10 * IN_MILLISECONDS, 16 * IN_MILLISECONDS);
+            }
+            else uiCleaveTimer -= diff;
+
+            if (uiFrighteningShoutTimer <= diff)
+            {
+                DoCastVictim(SPELL_FRIGHTENING_SHOUT);
+                uiFrighteningShoutTimer = urand(10 * IN_MILLISECONDS, 15 * IN_MILLISECONDS);
+            }
+            else uiFrighteningShoutTimer -= diff;
+
+            if (uiWhirlwind1Timer <= diff)
+            {
+                DoCastVictim(SPELL_WHIRLWIND1);
+                uiWhirlwind1Timer = urand(6 * IN_MILLISECONDS, 10 * IN_MILLISECONDS);
+            }
+            else uiWhirlwind1Timer -= diff;
+
+            if (uiWhirlwind2Timer <= diff)
+            {
+                DoCastVictim(SPELL_WHIRLWIND2);
+                uiWhirlwind2Timer = urand(10 * IN_MILLISECONDS, 25 * IN_MILLISECONDS);
+            }
+            else uiWhirlwind2Timer -= diff;
+
+            if (uiMortalStrikeTimer <= diff)
+            {
+                DoCastVictim(SPELL_MORTAL_STRIKE);
+                uiMortalStrikeTimer = urand(10 * IN_MILLISECONDS, 30 * IN_MILLISECONDS);
+            }
+            else uiMortalStrikeTimer -= diff;
+
+            // check if creature is not outside of building
+            if (uiResetTimer <= diff)
+            {
+                if (me->GetDistance2d(me->GetHomePosition().GetPositionX(), me->GetHomePosition().GetPositionY()) > 50)
+                {
+                    EnterEvadeMode();
+                    DoScriptText(YELL_EVADE, me);
+                }
+                uiResetTimer = 5 * IN_MILLISECONDS;
+            }
+            else uiResetTimer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI_boss_galvangar(Creature* pCreature)
+    {
+        return new boss_galvangarAI(pCreature);
     }
 };
-
-CreatureAI* GetAI_boss_galvangar(Creature* pCreature)
-{
-    return new boss_galvangarAI (pCreature);
-}
-
 void AddSC_boss_galvangar()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_galvangar";
-    newscript->GetAI = &GetAI_boss_galvangar;
-    newscript->RegisterSelf();
+    new boss_galvangar();
 }

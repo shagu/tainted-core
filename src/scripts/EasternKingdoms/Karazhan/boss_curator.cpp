@@ -49,123 +49,126 @@ enum CuratorInfo
 
 };
 
-struct boss_curatorAI : public ScriptedAI
+
+class boss_curator : public CreatureScript
 {
-    boss_curatorAI(Creature* c) : ScriptedAI(c), summons(me) {}
-
-    SummonList summons;
-    EventMap events;
-
-    void Reset()
+public: 
+    boss_curator() : CreatureScript("boss_curator") { }
+    struct boss_curatorAI : public ScriptedAI
     {
-        me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_ARCANE, true);
-        summons.DespawnAll();
-    }
-
-    void KilledUnit(Unit* /*victim*/)
-    {
-        DoScriptText(RAND(SAY_KILL1, SAY_KILL2), me);
-    }
-
-    void JustDied(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_DEATH, me);
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-        DoScriptText(SAY_AGGRO, me);
-        events.ScheduleEvent(EVENT_SPELL_HATEFUL_BOLT, 10000);
-        events.ScheduleEvent(EVENT_SPELL_ASTRAL_FLARE, 6000);
-        events.ScheduleEvent(EVENT_SPELL_BERSERK, 600000);
-        events.ScheduleEvent(EVENT_CHECK_HEALTH, 1000);
-        DoZoneInCombat();
-    }
-
-    void JustSummoned(Creature* summon)
-    {
-        summons.Summon(summon);
-        if (Unit* target = summon->SelectNearbyTarget(nullptr, 40.0f))
+        boss_curatorAI(Creature* c) : ScriptedAI(c), summons(me) {}
+    
+        SummonList summons;
+        EventMap events;
+    
+        void Reset()
         {
-            summon->AI()->AttackStart(target);
-            summon->AddThreat(target, 1000.0f);
+            me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_ARCANE, true);
+            summons.DespawnAll();
         }
-        summon->SetInCombatWithZone();
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (me->HasUnitState(UNIT_STATE_CASTING))
-            return;
-
-        if (me->HasAura(SPELL_EVOCATION, 0))
-            return;
-
-        events.Update(diff);
-
-        switch (events.ExecuteEvent())
+    
+        void KilledUnit(Unit* /*victim*/)
         {
-        case EVENT_CHECK_HEALTH:
-            if (me->HealthBelowPct(16))
+            DoScriptText(RAND(SAY_KILL1, SAY_KILL2), me);
+        }
+    
+        void JustDied(Unit* /*victim*/)
+        {
+            DoScriptText(SAY_DEATH, me);
+        }
+    
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoScriptText(SAY_AGGRO, me);
+            events.ScheduleEvent(EVENT_SPELL_HATEFUL_BOLT, 10000);
+            events.ScheduleEvent(EVENT_SPELL_ASTRAL_FLARE, 6000);
+            events.ScheduleEvent(EVENT_SPELL_BERSERK, 600000);
+            events.ScheduleEvent(EVENT_CHECK_HEALTH, 1000);
+            DoZoneInCombat();
+        }
+    
+        void JustSummoned(Creature* summon)
+        {
+            summons.Summon(summon);
+            if (Unit* target = summon->SelectNearbyTarget(nullptr, 40.0f))
             {
-                events.CancelEvent(EVENT_SPELL_ASTRAL_FLARE);
-                me->CastSpell(me, SPELL_ARCANE_INFUSION, true);
+                summon->AI()->AttackStart(target);
+                summon->AddThreat(target, 1000.0f);
+            }
+            summon->SetInCombatWithZone();
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (me->HasUnitState(UNIT_STATE_CASTING))
+                return;
+    
+            if (me->HasAura(SPELL_EVOCATION, 0))
+                return;
+    
+            events.Update(diff);
+    
+            switch (events.ExecuteEvent())
+            {
+            case EVENT_CHECK_HEALTH:
+                if (me->HealthBelowPct(16))
+                {
+                    events.CancelEvent(EVENT_SPELL_ASTRAL_FLARE);
+                    me->CastSpell(me, SPELL_ARCANE_INFUSION, true);
+                    DoScriptText(SAY_ENRAGE, me, nullptr);
+                    break;
+                }
+                events.ScheduleEvent(EVENT_CHECK_HEALTH, 1000);
+                break;
+            case EVENT_SPELL_BERSERK:
                 DoScriptText(SAY_ENRAGE, me, nullptr);
+                me->InterruptNonMeleeSpells(true);
+                me->CastSpell(me, SPELL_ASTRAL_DECONSTRUCTION, true);
+                break;
+            case EVENT_SPELL_HATEFUL_BOLT:
+                if (Unit* target = SelectTarget(SELECT_TARGET_TOPAGGRO, urand(1, 2), 40.0f))
+                    me->CastSpell(target, SPELL_HATEFUL_BOLT, false);
+                events.ScheduleEvent(EVENT_SPELL_HATEFUL_BOLT, urand(5000, 7500) * (events.GetNextEventTime(EVENT_SPELL_BERSERK) == 0 ? 1 : 2));
+                break;
+            case EVENT_SPELL_ASTRAL_FLARE:
+            {
+                int32 mana = CalculatePct(me->GetMaxPower(POWER_MANA), 10);
+                me->ModifyPower(POWER_MANA, -mana);
+                if (me->GetPower(POWER_MANA) < 10.0f)
+                {
+                    DoScriptText(SAY_EVOCATE, me, nullptr);
+                    me->CastSpell(me, SPELL_EVOCATION, false);
+                    events.DelayEvents(20000);
+                    events.ScheduleEvent(EVENT_SPELL_ASTRAL_FLARE, 20000);
+                }
+                else
+                {
+                    if (roll_chance_i(50))
+                        DoScriptText(RAND(SAY_SUMMON1, SAY_SUMMON2), me, nullptr);
+                    Creature* AstralFlare = DoSpawnCreature(17096, rand() % 37, rand() % 37, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+                    events.ScheduleEvent(EVENT_SPELL_ASTRAL_FLARE, 10000);
+                }
+    
                 break;
             }
-            events.ScheduleEvent(EVENT_CHECK_HEALTH, 1000);
-            break;
-        case EVENT_SPELL_BERSERK:
-            DoScriptText(SAY_ENRAGE, me, nullptr);
-            me->InterruptNonMeleeSpells(true);
-            me->CastSpell(me, SPELL_ASTRAL_DECONSTRUCTION, true);
-            break;
-        case EVENT_SPELL_HATEFUL_BOLT:
-            if (Unit* target = SelectTarget(SELECT_TARGET_TOPAGGRO, urand(1, 2), 40.0f))
-                me->CastSpell(target, SPELL_HATEFUL_BOLT, false);
-            events.ScheduleEvent(EVENT_SPELL_HATEFUL_BOLT, urand(5000, 7500) * (events.GetNextEventTime(EVENT_SPELL_BERSERK) == 0 ? 1 : 2));
-            break;
-        case EVENT_SPELL_ASTRAL_FLARE:
-        {
-            int32 mana = CalculatePct(me->GetMaxPower(POWER_MANA), 10);
-            me->ModifyPower(POWER_MANA, -mana);
-            if (me->GetPower(POWER_MANA) < 10.0f)
-            {
-                DoScriptText(SAY_EVOCATE, me, nullptr);
-                me->CastSpell(me, SPELL_EVOCATION, false);
-                events.DelayEvents(20000);
-                events.ScheduleEvent(EVENT_SPELL_ASTRAL_FLARE, 20000);
             }
-            else
-            {
-                if (roll_chance_i(50))
-                    DoScriptText(RAND(SAY_SUMMON1, SAY_SUMMON2), me, nullptr);
-                Creature* AstralFlare = DoSpawnCreature(17096, rand() % 37, rand() % 37, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
-                events.ScheduleEvent(EVENT_SPELL_ASTRAL_FLARE, 10000);
-            }
-
-            break;
+    
+            DoMeleeAttackIfReady();
         }
-        }
-
-        DoMeleeAttackIfReady();
+    };
+    
+    CreatureAI* GetAI_boss_curator(Creature* pCreature)
+    {
+        return new boss_curatorAI (pCreature);
     }
+    
+    
 };
-
-CreatureAI* GetAI_boss_curator(Creature* pCreature)
-{
-    return new boss_curatorAI (pCreature);
-}
-
 void AddSC_boss_curator()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_curator";
-    newscript->GetAI = &GetAI_boss_curator;
-    newscript->RegisterSelf();
+    new boss_curator();
 }
 

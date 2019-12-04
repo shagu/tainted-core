@@ -1947,7 +1947,7 @@ void Aura::TriggerSpell()
         if (triggeredSpellInfo == NULL)
         {
             Creature* c = target->ToCreature();
-            if (!c || !caster || !sScriptMgr.EffectDummyCreature(caster, GetId(), SpellEffIndex(GetEffIndex()), target->ToCreature()) ||
+            if (!c || !caster || !sScriptMgr.OnDummyEffect(caster, GetId(), SpellEffIndex(GetEffIndex()), target->ToCreature()) ||
                 !c->AI()->sOnDummyEffect(caster, GetId(), SpellEffIndex(GetEffIndex())))
 
             sLog.outError("Aura::TriggerSpell: Spell %u has 0 in EffectTriggered[%d], unhandled custom case?", GetId(), GetEffIndex());

@@ -37,92 +37,95 @@ enum eEnums
     SPELL_ARCANEBUBBLE          = 9438,
 };
 
-struct boss_arcanist_doanAI : public ScriptedAI
+
+class boss_arcanist_doan : public CreatureScript
 {
-    boss_arcanist_doanAI(Creature* c) : ScriptedAI(c) {}
-
-    uint32 Polymorph_Timer;
-    uint32 AoESilence_Timer;
-    uint32 ArcaneExplosion_Timer;
-    bool bCanDetonate;
-    bool bShielded;
-
-    void Reset()
+public: 
+    boss_arcanist_doan() : CreatureScript("boss_arcanist_doan") { }
+    struct boss_arcanist_doanAI : public ScriptedAI
     {
-        Polymorph_Timer = 20000;
-        AoESilence_Timer = 15000;
-        ArcaneExplosion_Timer = 3000;
-        bCanDetonate = false;
-        bShielded = false;
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-        DoScriptText(SAY_AGGRO, me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (me->HasAura(SPELL_ARCANEBUBBLE, 0))
-            return;
-
-        //If we are <50% hp cast Arcane Bubble
-        if (!bShielded && HealthBelowPct(50))
+        boss_arcanist_doanAI(Creature* c) : ScriptedAI(c) {}
+    
+        uint32 Polymorph_Timer;
+        uint32 AoESilence_Timer;
+        uint32 ArcaneExplosion_Timer;
+        bool bCanDetonate;
+        bool bShielded;
+    
+        void Reset()
         {
-            //wait if we already casting
-            if (me->IsNonMeleeSpellCast(false))
-                return;
-
-            DoScriptText(SAY_SPECIALAE, me);
-            DoCast(me, SPELL_ARCANEBUBBLE);
-            DoCast(me, SPELL_FIREAOE);
-
-            bCanDetonate = true;
-            bShielded = true;
-        }
-
-        if (Polymorph_Timer <= diff)
-        {
-            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
-                DoCast(pTarget, SPELL_POLYMORPH);
-
             Polymorph_Timer = 20000;
+            AoESilence_Timer = 15000;
+            ArcaneExplosion_Timer = 3000;
+            bCanDetonate = false;
+            bShielded = false;
         }
-        else Polymorph_Timer -= diff;
-
-        //AoESilence_Timer
-        if (AoESilence_Timer <= diff)
+    
+        void EnterCombat(Unit* /*who*/)
         {
-            DoCastVictim( SPELL_AOESILENCE);
-            AoESilence_Timer = 15000 + rand() % 5000;
+            DoScriptText(SAY_AGGRO, me);
         }
-        else AoESilence_Timer -= diff;
-
-        //ArcaneExplosion_Timer
-        if (ArcaneExplosion_Timer <= diff)
+    
+        void UpdateAI(const uint32 diff)
         {
-            DoCastVictim( SPELL_ARCANEEXPLOSION);
-            ArcaneExplosion_Timer = 8000;
+            if (!UpdateVictim())
+                return;
+    
+            if (me->HasAura(SPELL_ARCANEBUBBLE, 0))
+                return;
+    
+            //If we are <50% hp cast Arcane Bubble
+            if (!bShielded && HealthBelowPct(50))
+            {
+                //wait if we already casting
+                if (me->IsNonMeleeSpellCast(false))
+                    return;
+    
+                DoScriptText(SAY_SPECIALAE, me);
+                DoCast(me, SPELL_ARCANEBUBBLE);
+                DoCast(me, SPELL_FIREAOE);
+    
+                bCanDetonate = true;
+                bShielded = true;
+            }
+    
+            if (Polymorph_Timer <= diff)
+            {
+                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+                    DoCast(pTarget, SPELL_POLYMORPH);
+    
+                Polymorph_Timer = 20000;
+            }
+            else Polymorph_Timer -= diff;
+    
+            //AoESilence_Timer
+            if (AoESilence_Timer <= diff)
+            {
+                DoCastVictim( SPELL_AOESILENCE);
+                AoESilence_Timer = 15000 + rand() % 5000;
+            }
+            else AoESilence_Timer -= diff;
+    
+            //ArcaneExplosion_Timer
+            if (ArcaneExplosion_Timer <= diff)
+            {
+                DoCastVictim( SPELL_ARCANEEXPLOSION);
+                ArcaneExplosion_Timer = 8000;
+            }
+            else ArcaneExplosion_Timer -= diff;
+    
+            DoMeleeAttackIfReady();
         }
-        else ArcaneExplosion_Timer -= diff;
-
-        DoMeleeAttackIfReady();
+    };
+    CreatureAI* GetAI_boss_arcanist_doan(Creature* pCreature)
+    {
+        return new boss_arcanist_doanAI (pCreature);
     }
+    
+    
 };
-CreatureAI* GetAI_boss_arcanist_doan(Creature* pCreature)
-{
-    return new boss_arcanist_doanAI (pCreature);
-}
-
 void AddSC_boss_arcanist_doan()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_arcanist_doan";
-    newscript->GetAI = &GetAI_boss_arcanist_doan;
-    newscript->RegisterSelf();
+    new boss_arcanist_doan();
 }
 

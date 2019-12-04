@@ -53,173 +53,185 @@ enum NagaDistiller
     EVENT_SPELL_RAGE                = 3
 };
 
-struct mob_naga_distillerAI : public NullCreatureAI
+
+
+class mob_naga_distiller : public CreatureScript
 {
-    mob_naga_distillerAI(Creature* c) : NullCreatureAI(c)
+public: 
+    mob_naga_distiller() : CreatureScript("mob_naga_distiller") { }
+    struct mob_naga_distillerAI : public NullCreatureAI
     {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
-    }
-
-    ScriptedInstance* pInstance;
-    uint32 spellTimer;
-
-    void Reset()
-    {
-        spellTimer = 0;
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-    }
-
-    void DoAction(int32 param)
-    {
-        if (param != 1)
-            return;
-
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        me->CastSpell(me, SPELL_WARLORDS_RAGE_NAGA, true);
-        spellTimer = 1;
-    }
-
-    void UpdateAI(uint32 diff)
-    {
-        if (spellTimer)
+        mob_naga_distillerAI(Creature* c) : NullCreatureAI(c)
         {
-            spellTimer += diff;
-            if (spellTimer >= 12000)
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+        }
+    
+        ScriptedInstance* pInstance;
+        uint32 spellTimer;
+    
+        void Reset()
+        {
+            spellTimer = 0;
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        }
+    
+        void DoAction(int32 param)
+        {
+            if (param != 1)
+                return;
+    
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->CastSpell(me, SPELL_WARLORDS_RAGE_NAGA, true);
+            spellTimer = 1;
+        }
+    
+        void UpdateAI(uint32 diff)
+        {
+            if (spellTimer)
             {
-                if (Creature* kali = me->FindNearestCreature(NPC_WARLORD_KALITHRESH, 100.0f))
-                    kali->CastSpell(kali, SPELL_WARLORDS_RAGE_PROC, true);
-                me->Kill(me, false);
+                spellTimer += diff;
+                if (spellTimer >= 12000)
+                {
+                    if (Creature* kali = me->FindNearestCreature(NPC_WARLORD_KALITHRESH, 100.0f))
+                        kali->CastSpell(kali, SPELL_WARLORDS_RAGE_PROC, true);
+                    me->Kill(me, false);
+                }
             }
         }
+    };
+
+    CreatureAI* GetAI_mob_naga_distiller(Creature* pCreature)
+    {
+        return GetInstanceAI<mob_naga_distillerAI>(pCreature);
     }
+ 
 };
 
-struct boss_warlord_kalithreshAI : public ScriptedAI
+class boss_warlord_kalithresh : public CreatureScript
 {
-    boss_warlord_kalithreshAI(Creature* c) : ScriptedAI(c)
+public: 
+    boss_warlord_kalithresh() : CreatureScript("boss_warlord_kalithresh") { }
+    struct boss_warlord_kalithreshAI : public ScriptedAI
     {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
-    }
-
-    ScriptedInstance* pInstance;
-    EventMap events;
-
-    void Reset()
-    {
-        events.Reset();
-
-        if (pInstance)
-            pInstance->SetData(TYPE_WARLORD_KALITHRESH, NOT_STARTED);
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-        DoScriptText(RAND(SAY_AGGRO1, SAY_AGGRO2, SAY_AGGRO3), me);
-
-        events.ScheduleEvent(EVENT_SPELL_REFLECTION, 10000);
-        events.ScheduleEvent(EVENT_SPELL_IMPALE, urand(7000, 14000));
-        events.ScheduleEvent(EVENT_SPELL_RAGE, 20000);
-
-        if (pInstance)
-            pInstance->SetData(TYPE_WARLORD_KALITHRESH, IN_PROGRESS);
-    }
-
-    void KilledUnit(Unit* victim)
-    {
-        if (victim->GetTypeId() == TYPEID_PLAYER)
-            DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), me);
-    }
-
-    Creature* SelectCreatureInGrid(uint32 entry, float range)
-    {
-        Creature* pCreature = NULL;
-
-        CellCoord pair(Oregon::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
-        Cell cell(pair);
-        cell.SetNoCreate();
-
-        Oregon::NearestCreatureEntryWithLiveStateInObjectRangeCheck creature_check(*me, entry, true, range);
-        Oregon::CreatureLastSearcher<Oregon::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(pCreature, creature_check);
-        TypeContainerVisitor<Oregon::CreatureLastSearcher<Oregon::NearestCreatureEntryWithLiveStateInObjectRangeCheck>, GridTypeMapContainer> creature_searcher(searcher);
-        cell.Visit(pair, creature_searcher, *(me->GetMap()), *me, me->GetGridActivationRange());
-
-        return pCreature;
-    }
-
-    void SpellHit(Unit* /*caster*/, const SpellEntry* spell)
-    {
-        //FIXME: hack :(
-        if (spell->Id == SPELL_WARLORDS_RAGE_PROC)
+        boss_warlord_kalithreshAI(Creature* c) : ScriptedAI(c)
+        {
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+        }
+    
+        ScriptedInstance* pInstance;
+        EventMap events;
+    
+        void Reset()
+        {
+            events.Reset();
+    
             if (pInstance)
-                if (pInstance->GetData(TYPE_DISTILLER) == DONE)
-                    me->RemoveAurasDueToSpell(SPELL_WARLORDS_RAGE_PROC);
-    }
-
-    void JustDied(Unit* /*Killer*/)
-    {
-        DoScriptText(SAY_DEATH, me);
-
-        if (pInstance)
-            pInstance->SetData(TYPE_WARLORD_KALITHRESH, DONE);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        events.Update(diff);
-
-        switch (events.ExecuteEvent())
-        {
-        case EVENT_SPELL_REFLECTION:
-            me->CastSpell(me, SPELL_SPELL_REFLECTION, false);
-            events.Repeat(urand(15000, 20000));
-            break;
-        case EVENT_SPELL_IMPALE:
-            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 10.0f, true))
-                me->CastSpell(target, SPELL_IMPALE, false);
-            events.Repeat(urand(7500, 12500));
-            break;
-        case EVENT_SPELL_RAGE:
-            if (Creature* distiller = me->FindNearestCreature(NPC_NAGA_DISTILLER, 100.0f))
-            {
-                me->GetMotionMaster()->MoveToTarget(NPC_NAGA_DISTILLER, 100.0f, true);
-                DoScriptText(SAY_REGEN, me);
-                distiller->AI()->DoAction(1);
-            }
-            events.Repeat(45000);
-            break;
+                pInstance->SetData(TYPE_WARLORD_KALITHRESH, NOT_STARTED);
         }
+    
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoScriptText(RAND(SAY_AGGRO1, SAY_AGGRO2, SAY_AGGRO3), me);
+    
+            events.ScheduleEvent(EVENT_SPELL_REFLECTION, 10000);
+            events.ScheduleEvent(EVENT_SPELL_IMPALE, urand(7000, 14000));
+            events.ScheduleEvent(EVENT_SPELL_RAGE, 20000);
+    
+            if (pInstance)
+                pInstance->SetData(TYPE_WARLORD_KALITHRESH, IN_PROGRESS);
+        }
+    
+        void KilledUnit(Unit* victim)
+        {
+            if (victim->GetTypeId() == TYPEID_PLAYER)
+                DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), me);
+        }
+    
+        Creature* SelectCreatureInGrid(uint32 entry, float range)
+        {
+            Creature* pCreature = NULL;
+    
+            CellCoord pair(Oregon::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
+            Cell cell(pair);
+            cell.SetNoCreate();
+    
+            Oregon::NearestCreatureEntryWithLiveStateInObjectRangeCheck creature_check(*me, entry, true, range);
+            Oregon::CreatureLastSearcher<Oregon::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(pCreature, creature_check);
+            TypeContainerVisitor<Oregon::CreatureLastSearcher<Oregon::NearestCreatureEntryWithLiveStateInObjectRangeCheck>, GridTypeMapContainer> creature_searcher(searcher);
+            cell.Visit(pair, creature_searcher, *(me->GetMap()), *me, me->GetGridActivationRange());
+    
+            return pCreature;
+        }
+    
+        void SpellHit(Unit* /*caster*/, const SpellEntry* spell)
+        {
+            //FIXME: hack :(
+            if (spell->Id == SPELL_WARLORDS_RAGE_PROC)
+                if (pInstance)
+                    if (pInstance->GetData(TYPE_DISTILLER) == DONE)
+                        me->RemoveAurasDueToSpell(SPELL_WARLORDS_RAGE_PROC);
+        }
+    
+        void JustDied(Unit* /*Killer*/)
+        {
+            DoScriptText(SAY_DEATH, me);
+    
+            if (pInstance)
+                pInstance->SetData(TYPE_WARLORD_KALITHRESH, DONE);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            events.Update(diff);
+    
+            switch (events.ExecuteEvent())
+            {
+            case EVENT_SPELL_REFLECTION:
+                me->CastSpell(me, SPELL_SPELL_REFLECTION, false);
+                events.Repeat(urand(15000, 20000));
+                break;
+            case EVENT_SPELL_IMPALE:
+                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 10.0f, true))
+                    me->CastSpell(target, SPELL_IMPALE, false);
+                events.Repeat(urand(7500, 12500));
+                break;
+            case EVENT_SPELL_RAGE:
+                if (Creature* distiller = me->FindNearestCreature(NPC_NAGA_DISTILLER, 100.0f))
+                {
+                    me->GetMotionMaster()->MoveToTarget(NPC_NAGA_DISTILLER, 100.0f, true);
+                    DoScriptText(SAY_REGEN, me);
+                    distiller->AI()->DoAction(1);
+                }
+                events.Repeat(45000);
+                break;
+            }
+    
+            DoMeleeAttackIfReady();
+        }
+    };
 
-        DoMeleeAttackIfReady();
+    CreatureAI* GetAI_boss_warlord_kalithresh(Creature* pCreature)
+    {
+        return GetInstanceAI<boss_warlord_kalithreshAI>(pCreature);
     }
+
+    
+
+    
+
+    
 };
 
-CreatureAI* GetAI_mob_naga_distiller(Creature* pCreature)
-{
-    return GetInstanceAI<mob_naga_distillerAI>(pCreature);
-}
-
-CreatureAI* GetAI_boss_warlord_kalithresh(Creature* pCreature)
-{
-    return GetInstanceAI<boss_warlord_kalithreshAI>(pCreature);
-}
 
 void AddSC_boss_warlord_kalithresh()
 {
-    Script* newscript;
+    new mob_naga_distiller();
+    new boss_warlord_kalithresh();
 
-    newscript = new Script;
-    newscript->Name = "mob_naga_distiller";
-    newscript->GetAI = &GetAI_mob_naga_distiller;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "boss_warlord_kalithresh";
-    newscript->GetAI = &GetAI_boss_warlord_kalithresh;
-    newscript->RegisterSelf();
 }
 

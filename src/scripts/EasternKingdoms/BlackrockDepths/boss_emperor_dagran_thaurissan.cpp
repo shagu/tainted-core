@@ -37,79 +37,83 @@ enum Spells
     SPELL_AVATAROFFLAME                                    = 15636
 };
 
-struct boss_draganthaurissanAI : public ScriptedAI
+
+class boss_emperor_dagran_thaurissan : public CreatureScript
 {
-    boss_draganthaurissanAI(Creature* c) : ScriptedAI(c) {}
-
-    uint32 HandOfThaurissan_Timer;
-    uint32 AvatarOfFlame_Timer;
-    //uint32 Counter;
-
-    void Reset()
+public: 
+    boss_emperor_dagran_thaurissan() : CreatureScript("boss_emperor_dagran_thaurissan") { }
+    struct boss_emperor_dagran_thaurissanAI : public ScriptedAI
     {
-        HandOfThaurissan_Timer = 4000;
-        AvatarOfFlame_Timer = 25000;
-        //Counter= 0;
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-        DoScriptText(SAY_AGGRO, me);
-        me->CallForHelp(VISIBLE_RANGE);
-    }
-
-    void KilledUnit(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_SLAY, me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        if (HandOfThaurissan_Timer <= diff)
+        boss_emperor_dagran_thaurissanAI(Creature* c) : ScriptedAI(c) {}
+    
+        uint32 HandOfThaurissan_Timer;
+        uint32 AvatarOfFlame_Timer;
+        //uint32 Counter;
+    
+        void Reset()
         {
-            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                DoCast(pTarget, SPELL_HANDOFTHAURISSAN);
-
-            //3 Hands of Thaurissan will be casted
-            //if (Counter < 3)
-            //{
-            //    HandOfThaurissan_Timer = 1000;
-            //    ++Counter;
-            //}
-            //else
-            //{
-            HandOfThaurissan_Timer = 5000;
-            //Counter = 0;
-            //}
+            HandOfThaurissan_Timer = 4000;
+            AvatarOfFlame_Timer = 25000;
+            //Counter= 0;
         }
-        else HandOfThaurissan_Timer -= diff;
-
-        //AvatarOfFlame_Timer
-        if (AvatarOfFlame_Timer <= diff)
+    
+        void EnterCombat(Unit* /*who*/)
         {
-            DoCastVictim( SPELL_AVATAROFFLAME);
-            AvatarOfFlame_Timer = 18000;
+            DoScriptText(SAY_AGGRO, me);
+            me->CallForHelp(VISIBLE_RANGE);
         }
-        else AvatarOfFlame_Timer -= diff;
-
-        DoMeleeAttackIfReady();
+    
+        void KilledUnit(Unit* /*victim*/)
+        {
+            DoScriptText(SAY_SLAY, me);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+    
+            if (HandOfThaurissan_Timer <= diff)
+            {
+                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                    DoCast(pTarget, SPELL_HANDOFTHAURISSAN);
+    
+                //3 Hands of Thaurissan will be casted
+                //if (Counter < 3)
+                //{
+                //    HandOfThaurissan_Timer = 1000;
+                //    ++Counter;
+                //}
+                //else
+                //{
+                HandOfThaurissan_Timer = 5000;
+                //Counter = 0;
+                //}
+            }
+            else HandOfThaurissan_Timer -= diff;
+    
+            //AvatarOfFlame_Timer
+            if (AvatarOfFlame_Timer <= diff)
+            {
+                DoCastVictim( SPELL_AVATAROFFLAME);
+                AvatarOfFlame_Timer = 18000;
+            }
+            else AvatarOfFlame_Timer -= diff;
+    
+            DoMeleeAttackIfReady();
+        }
+    };
+    
+    CreatureAI* GetAI_boss_emperor_draganthaurissan(Creature* pCreature)
+    {
+        return new boss_emperor_dagran_thaurissanAI (pCreature);
     }
+    
+    
 };
-
-CreatureAI* GetAI_boss_draganthaurissan(Creature* pCreature)
-{
-    return new boss_draganthaurissanAI (pCreature);
-}
-
 void AddSC_boss_draganthaurissan()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_emperor_dagran_thaurissan";
-    newscript->GetAI = &GetAI_boss_draganthaurissan;
-    newscript->RegisterSelf();
+    new boss_emperor_dagran_thaurissan();
 }
+

@@ -63,135 +63,139 @@ enum events
     EVENT_SPELL_BLINK_2 = 7
 };
 
-struct boss_talon_king_ikissAI : public ScriptedAI
+
+class boss_talon_king_ikiss : public CreatureScript
 {
-    boss_talon_king_ikissAI(Creature* c) : ScriptedAI(c)
+public: 
+    boss_talon_king_ikiss() : CreatureScript("boss_talon_king_ikiss") { }
+    struct boss_talon_king_ikissAI : public ScriptedAI
     {
-        IsHeroic = me->GetMap()->IsHeroic();
-        pInstance =(ScriptedInstance*)c->GetInstanceData();
-    }
-
-    ScriptedInstance* pInstance;
-    EventMap events;
-    bool spoken;
-    bool IsHeroic;
-
-
-    void Reset()
-    {
-        spoken = false;
-
-        if (pInstance)
-            pInstance->SetData(DATA_IKISSEVENT, NOT_STARTED);
-    }
-
-    void MoveInLineOfSight(Unit* who)
-    {
-        if (!spoken && who->GetTypeId() == TYPEID_PLAYER && who->IsAlive())
+        boss_talon_king_ikissAI(Creature* c) : ScriptedAI(c)
         {
-            DoScriptText(SAY_INTRO, me);
-            spoken = true;
-
-            ScriptedAI::MoveInLineOfSight(who);
+            IsHeroic = me->GetMap()->IsHeroic();
+            pInstance =(ScriptedInstance*)c->GetInstanceData();
         }
-    }
-
-    void EnterCombat(Unit*)
-    {
-        DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
-
-        if (pInstance)
-            pInstance->SetData(DATA_IKISSEVENT, IN_PROGRESS);
-
-        events.ScheduleEvent(EVENT_SPELL_BLINK, 35000);
-        events.ScheduleEvent(EVENT_SPELL_ARCANE_VOLLEY, 5000);
-        events.ScheduleEvent(EVENT_SPELL_POLYMORPH, 8000);
-        events.ScheduleEvent(EVENT_HEALTH_CHECK, 2000);
-        if (me->GetMap()->IsHeroic())
-            events.ScheduleEvent(EVENT_SPELL_SLOW, urand(15000, 25000));
-    }
-
-    void JustDied(Unit*)
-    {
-        DoScriptText(SAY_DEATH, me);
-
-        if (pInstance)
-            pInstance->SetData(DATA_IKISSEVENT, DONE);
-    }
-
-    void KilledUnit(Unit*)
-    {
-        DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        events.Update(diff);
-        if (me->HasUnitState(UNIT_STATE_CASTING))
-            return;
-
-
-        switch (events.ExecuteEvent())
+    
+        ScriptedInstance* pInstance;
+        EventMap events;
+        bool spoken;
+        bool IsHeroic;
+    
+    
+        void Reset()
         {
-        case EVENT_SPELL_ARCANE_VOLLEY:
-            me->CastSpell(me, IsHeroic ? H_SPELL_ARCANE_VOLLEY : SPELL_ARCANE_VOLLEY, false);
-            events.ScheduleEvent(EVENT_SPELL_ARCANE_VOLLEY, urand(7000, 12000));
-            break;
-        case EVENT_SPELL_POLYMORPH:
-            if (Unit* target = (IsHeroic? SelectTarget(SELECT_TARGET_RANDOM, 0) : SelectTarget(SELECT_TARGET_TOPAGGRO, 1)))
-                me->CastSpell(target, IsHeroic? H_SPELL_POLYMORPH :SPELL_POLYMORPH, false);
-            events.ScheduleEvent(EVENT_SPELL_POLYMORPH, urand(15000, 17500));
-            break;
-        case EVENT_SPELL_SLOW:
-            me->CastSpell(me, H_SPELL_SLOW, false);
-            events.ScheduleEvent(EVENT_SPELL_SLOW, urand(15000, 30000));
-            break;
-        case EVENT_HEALTH_CHECK:
-            if (me->HealthBelowPct(20))
+            spoken = false;
+    
+            if (pInstance)
+                pInstance->SetData(DATA_IKISSEVENT, NOT_STARTED);
+        }
+    
+        void MoveInLineOfSight(Unit* who)
+        {
+            if (!spoken && who->GetTypeId() == TYPEID_PLAYER && who->IsAlive())
             {
-                me->CastSpell(me, SPELL_MANA_SHIELD, false);
-                events.ExecuteEvent();
+                DoScriptText(SAY_INTRO, me);
+                spoken = true;
+    
+                ScriptedAI::MoveInLineOfSight(who);
+            }
+        }
+    
+        void EnterCombat(Unit*)
+        {
+            DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
+    
+            if (pInstance)
+                pInstance->SetData(DATA_IKISSEVENT, IN_PROGRESS);
+    
+            events.ScheduleEvent(EVENT_SPELL_BLINK, 35000);
+            events.ScheduleEvent(EVENT_SPELL_ARCANE_VOLLEY, 5000);
+            events.ScheduleEvent(EVENT_SPELL_POLYMORPH, 8000);
+            events.ScheduleEvent(EVENT_HEALTH_CHECK, 2000);
+            if (me->GetMap()->IsHeroic())
+                events.ScheduleEvent(EVENT_SPELL_SLOW, urand(15000, 25000));
+        }
+    
+        void JustDied(Unit*)
+        {
+            DoScriptText(SAY_DEATH, me);
+    
+            if (pInstance)
+                pInstance->SetData(DATA_IKISSEVENT, DONE);
+        }
+    
+        void KilledUnit(Unit*)
+        {
+            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
                 return;
-            }
-            events.Repeat(1000);
-            break;
-        case EVENT_SPELL_BLINK:
-            DoScriptText(EMOTE_ARCANE_EXP, me);
-            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
+    
+            events.Update(diff);
+            if (me->HasUnitState(UNIT_STATE_CASTING))
+                return;
+    
+    
+            switch (events.ExecuteEvent())
             {
-                me->CastSpell(target, SPELL_BLINK, false);
-                me->NearTeleportTo(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
-
-                DoCast(target, SPELL_BLINK_TELEPORT);
+            case EVENT_SPELL_ARCANE_VOLLEY:
+                me->CastSpell(me, IsHeroic ? H_SPELL_ARCANE_VOLLEY : SPELL_ARCANE_VOLLEY, false);
+                events.ScheduleEvent(EVENT_SPELL_ARCANE_VOLLEY, urand(7000, 12000));
+                break;
+            case EVENT_SPELL_POLYMORPH:
+                if (Unit* target = (IsHeroic? SelectTarget(SELECT_TARGET_RANDOM, 0) : SelectTarget(SELECT_TARGET_TOPAGGRO, 1)))
+                    me->CastSpell(target, IsHeroic? H_SPELL_POLYMORPH :SPELL_POLYMORPH, false);
+                events.ScheduleEvent(EVENT_SPELL_POLYMORPH, urand(15000, 17500));
+                break;
+            case EVENT_SPELL_SLOW:
+                me->CastSpell(me, H_SPELL_SLOW, false);
+                events.ScheduleEvent(EVENT_SPELL_SLOW, urand(15000, 30000));
+                break;
+            case EVENT_HEALTH_CHECK:
+                if (me->HealthBelowPct(20))
+                {
+                    me->CastSpell(me, SPELL_MANA_SHIELD, false);
+                    events.ExecuteEvent();
+                    return;
+                }
+                events.Repeat(1000);
+                break;
+            case EVENT_SPELL_BLINK:
+                DoScriptText(EMOTE_ARCANE_EXP, me);
+                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
+                {
+                    me->CastSpell(target, SPELL_BLINK, false);
+                    me->NearTeleportTo(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
+    
+                    DoCast(target, SPELL_BLINK_TELEPORT);
+                }
+                events.Repeat(urand(35000, 40000));
+                events.DelayEvents(500);
+                events.ScheduleEvent(EVENT_SPELL_BLINK_2, 0);
+                return;
+            case EVENT_SPELL_BLINK_2:
+                me->CastSpell(me, IsHeroic? H_SPELL_ARCANE_EXPLOSION : SPELL_ARCANE_EXPLOSION, false);
+                me->CastSpell(me, SPELL_ARCANE_BUBBLE, true);
+                events.ExecuteEvent();
+                break;
             }
-            events.Repeat(urand(35000, 40000));
-            events.DelayEvents(500);
-            events.ScheduleEvent(EVENT_SPELL_BLINK_2, 0);
-            return;
-        case EVENT_SPELL_BLINK_2:
-            me->CastSpell(me, IsHeroic? H_SPELL_ARCANE_EXPLOSION : SPELL_ARCANE_EXPLOSION, false);
-            me->CastSpell(me, SPELL_ARCANE_BUBBLE, true);
-            events.ExecuteEvent();
-            break;
+    
+            DoMeleeAttackIfReady();
         }
-
-        DoMeleeAttackIfReady();
+    };
+    
+    CreatureAI* GetAI_boss_talon_king_ikiss(Creature* pCreature)
+    {
+        return GetInstanceAI<boss_talon_king_ikissAI>(pCreature);
     }
+    
+    
 };
-
-CreatureAI* GetAI_boss_talon_king_ikiss(Creature* pCreature)
-{
-    return GetInstanceAI<boss_talon_king_ikissAI>(pCreature);
-}
-
 void AddSC_boss_talon_king_ikiss()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_talon_king_ikiss";
-    newscript->GetAI = &GetAI_boss_talon_king_ikiss;
-    newscript->RegisterSelf();
+    new boss_talon_king_ikiss();
 }
+

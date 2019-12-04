@@ -51,158 +51,161 @@ enum eKazzak
     SPELL_TWISTEDREFLECTION         = 21063
 };
 
-struct boss_doomlordkazzakAI : public ScriptedAI
+
+class boss_doomlord_kazzak : public CreatureScript
 {
-    boss_doomlordkazzakAI(Creature* c) : ScriptedAI(c) {}
-
-    uint32 ShadowVolley_Timer;
-    uint32 Cleave_Timer;
-    uint32 ThunderClap_Timer;
-    uint32 VoidBolt_Timer;
-    uint32 MarkOfKazzak_Timer;
-    uint32 Enrage_Timer;
-    uint32 Twisted_Reflection_Timer;
-
-    void Reset()
+public: 
+    boss_doomlord_kazzak() : CreatureScript("boss_doomlord_kazzak") { }
+    struct boss_doomlord_kazzakAI : public ScriptedAI
     {
-        ShadowVolley_Timer = 8000 + rand() % 4000;
-        Cleave_Timer = 7000;
-        ThunderClap_Timer = 16000 + rand() % 4000;
-        VoidBolt_Timer = 30000;
-        MarkOfKazzak_Timer = 25000;
-        Enrage_Timer = 54000;
-        Twisted_Reflection_Timer = 33000;                   // Timer may be incorrect
-    }
-
-	void JustRespawned()
-	{			
-		me->MonsterYellToZone(SAY_INTRO, LANG_UNIVERSAL, 0);	
-		DoPlaySoundToSet(me, 11332);
-	}
-
-    void EnterCombat(Unit* /*who*/)
-    {
-        switch (rand() % 2)
+        boss_doomlord_kazzakAI(Creature* c) : ScriptedAI(c) {}
+    
+        uint32 ShadowVolley_Timer;
+        uint32 Cleave_Timer;
+        uint32 ThunderClap_Timer;
+        uint32 VoidBolt_Timer;
+        uint32 MarkOfKazzak_Timer;
+        uint32 Enrage_Timer;
+        uint32 Twisted_Reflection_Timer;
+    
+        void Reset()
         {
-        case 0:
-            DoScriptText(SAY_AGGRO1, me);
-            break;
-        case 1:
-            DoScriptText(SAY_AGGRO2, me);
-            break;
+            ShadowVolley_Timer = 8000 + rand() % 4000;
+            Cleave_Timer = 7000;
+            ThunderClap_Timer = 16000 + rand() % 4000;
+            VoidBolt_Timer = 30000;
+            MarkOfKazzak_Timer = 25000;
+            Enrage_Timer = 54000;
+            Twisted_Reflection_Timer = 33000;                   // Timer may be incorrect
         }
-    }
-
-    void KilledUnit(Unit* victim)
-    {
-        // When Kazzak kills a player (not pets/totems), he regens some health
-        if (victim->GetTypeId() != TYPEID_PLAYER)
-            return;
-
-        DoCast(me, SPELL_CAPTURESOUL);
-
-        switch (rand() % 3)
+    
+    	void JustRespawned()
+    	{			
+    		me->MonsterYellToZone(SAY_INTRO, LANG_UNIVERSAL, 0);	
+    		DoPlaySoundToSet(me, 11332);
+    	}
+    
+        void EnterCombat(Unit* /*who*/)
         {
-        case 0:
-            DoScriptText(SAY_KILL1, me);
-            break;
-        case 1:
-            DoScriptText(SAY_KILL2, me);
-            break;
-        case 2:
-            DoScriptText(SAY_KILL3, me);
-            break;
-        }
-    }
-
-    void JustDied(Unit*)
-    {
-        DoScriptText(SAY_DEATH, me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //ShadowVolley_Timer
-        if (ShadowVolley_Timer <= diff)
-        {
-            DoCastVictim( SPELL_SHADOWVOLLEY);
-            ShadowVolley_Timer = 4000 + rand() % 2000;
-        }
-        else ShadowVolley_Timer -= diff;
-
-        //Cleave_Timer
-        if (Cleave_Timer <= diff)
-        {
-            DoCastVictim(SPELL_CLEAVE);
-            Cleave_Timer = 8000 + rand() % 4000;
-        }
-        else Cleave_Timer -= diff;
-
-        //ThunderClap_Timer
-        if (ThunderClap_Timer <= diff)
-        {
-            DoCastVictim(SPELL_THUNDERCLAP);
-            ThunderClap_Timer = 10000 + rand() % 4000;
-        }
-        else ThunderClap_Timer -= diff;
-
-        //VoidBolt_Timer
-        if (VoidBolt_Timer <= diff)
-        {
-            DoCastVictim(SPELL_VOIDBOLT);
-            VoidBolt_Timer = 15000 + rand() % 3000;
-        }
-        else VoidBolt_Timer -= diff;
-
-        //MarkOfKazzak_Timer
-        if (MarkOfKazzak_Timer <= diff)
-        {
-            Unit* victim = SelectUnit(SELECT_TARGET_RANDOM, 0);
-            if (victim->GetPower(POWER_MANA))
+            switch (rand() % 2)
             {
-                DoCast(victim, SPELL_MARKOFKAZZAK);
-                MarkOfKazzak_Timer = 20000;			
+            case 0:
+                DoScriptText(SAY_AGGRO1, me);
+                break;
+            case 1:
+                DoScriptText(SAY_AGGRO2, me);
+                break;
             }
         }
-        else MarkOfKazzak_Timer -= diff;
-
-        //Enrage_Timer
-        if (Enrage_Timer <= diff)
+    
+        void KilledUnit(Unit* victim)
         {
-            DoScriptText(EMOTE_FRENZY, me);
-			DoPlaySoundToSet(me, 11335);
-            DoCast(me, SPELL_ENRAGE);
-            Enrage_Timer = 30000;
+            // When Kazzak kills a player (not pets/totems), he regens some health
+            if (victim->GetTypeId() != TYPEID_PLAYER)
+                return;
+    
+            DoCast(me, SPELL_CAPTURESOUL);
+    
+            switch (rand() % 3)
+            {
+            case 0:
+                DoScriptText(SAY_KILL1, me);
+                break;
+            case 1:
+                DoScriptText(SAY_KILL2, me);
+                break;
+            case 2:
+                DoScriptText(SAY_KILL3, me);
+                break;
+            }
         }
-        else Enrage_Timer -= diff;
-
-        if (Twisted_Reflection_Timer <= diff)
+    
+        void JustDied(Unit*)
         {
-            DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_TWISTEDREFLECTION);
-            Twisted_Reflection_Timer = 15000;
+            DoScriptText(SAY_DEATH, me);
         }
-        else Twisted_Reflection_Timer -= diff;
-
-        DoMeleeAttackIfReady();
+    
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+    
+            //ShadowVolley_Timer
+            if (ShadowVolley_Timer <= diff)
+            {
+                DoCastVictim( SPELL_SHADOWVOLLEY);
+                ShadowVolley_Timer = 4000 + rand() % 2000;
+            }
+            else ShadowVolley_Timer -= diff;
+    
+            //Cleave_Timer
+            if (Cleave_Timer <= diff)
+            {
+                DoCastVictim(SPELL_CLEAVE);
+                Cleave_Timer = 8000 + rand() % 4000;
+            }
+            else Cleave_Timer -= diff;
+    
+            //ThunderClap_Timer
+            if (ThunderClap_Timer <= diff)
+            {
+                DoCastVictim(SPELL_THUNDERCLAP);
+                ThunderClap_Timer = 10000 + rand() % 4000;
+            }
+            else ThunderClap_Timer -= diff;
+    
+            //VoidBolt_Timer
+            if (VoidBolt_Timer <= diff)
+            {
+                DoCastVictim(SPELL_VOIDBOLT);
+                VoidBolt_Timer = 15000 + rand() % 3000;
+            }
+            else VoidBolt_Timer -= diff;
+    
+            //MarkOfKazzak_Timer
+            if (MarkOfKazzak_Timer <= diff)
+            {
+                Unit* victim = SelectUnit(SELECT_TARGET_RANDOM, 0);
+                if (victim->GetPower(POWER_MANA))
+                {
+                    DoCast(victim, SPELL_MARKOFKAZZAK);
+                    MarkOfKazzak_Timer = 20000;			
+                }
+            }
+            else MarkOfKazzak_Timer -= diff;
+    
+            //Enrage_Timer
+            if (Enrage_Timer <= diff)
+            {
+                DoScriptText(EMOTE_FRENZY, me);
+    			DoPlaySoundToSet(me, 11335);
+                DoCast(me, SPELL_ENRAGE);
+                Enrage_Timer = 30000;
+            }
+            else Enrage_Timer -= diff;
+    
+            if (Twisted_Reflection_Timer <= diff)
+            {
+                DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_TWISTEDREFLECTION);
+                Twisted_Reflection_Timer = 15000;
+            }
+            else Twisted_Reflection_Timer -= diff;
+    
+            DoMeleeAttackIfReady();
+        }
+    
+    };
+    
+    CreatureAI* GetAI_boss_doomlord_kazzak(Creature* pCreature)
+    {
+        return new boss_doomlord_kazzakAI (pCreature);
     }
-
+    
+    
 };
-
-CreatureAI* GetAI_boss_doomlordkazzak(Creature* pCreature)
-{
-    return new boss_doomlordkazzakAI (pCreature);
-}
-
 void AddSC_boss_doomlordkazzak()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_doomlord_kazzak";
-    newscript->GetAI = &GetAI_boss_doomlordkazzak;
-    newscript->RegisterSelf();
+    new boss_doomlord_kazzak();
 }
 

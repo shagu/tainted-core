@@ -29,58 +29,61 @@ EndScriptData */
 
 #define SPELL_RAVENOUSCLAW    17470
 
-struct boss_timmy_the_cruelAI : public ScriptedAI
+
+class boss_timmy_the_cruel : public CreatureScript
 {
-    boss_timmy_the_cruelAI(Creature* c) : ScriptedAI(c) {}
-
-    uint32 RavenousClaw_Timer;
-    bool HasYelled;
-
-    void Reset()
+public: 
+    boss_timmy_the_cruel() : CreatureScript("boss_timmy_the_cruel") { }
+    struct boss_timmy_the_cruelAI : public ScriptedAI
     {
-        RavenousClaw_Timer = 10000;
-        HasYelled = false;
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-        if (!HasYelled)
+        boss_timmy_the_cruelAI(Creature* c) : ScriptedAI(c) {}
+    
+        uint32 RavenousClaw_Timer;
+        bool HasYelled;
+    
+        void Reset()
         {
-            me->MonsterYell(SAY_SPAWN, LANG_UNIVERSAL, 0);
-            HasYelled = true;
+            RavenousClaw_Timer = 10000;
+            HasYelled = false;
         }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //RavenousClaw
-        if (RavenousClaw_Timer <= diff)
+    
+        void EnterCombat(Unit* /*who*/)
         {
-            //Cast
-            DoCastVictim( SPELL_RAVENOUSCLAW);
-            //15 seconds until we should cast this again
-            RavenousClaw_Timer = 15000;
+            if (!HasYelled)
+            {
+                me->MonsterYell(SAY_SPAWN, LANG_UNIVERSAL, 0);
+                HasYelled = true;
+            }
         }
-        else RavenousClaw_Timer -= diff;
-
-        DoMeleeAttackIfReady();
+    
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+    
+            //RavenousClaw
+            if (RavenousClaw_Timer <= diff)
+            {
+                //Cast
+                DoCastVictim( SPELL_RAVENOUSCLAW);
+                //15 seconds until we should cast this again
+                RavenousClaw_Timer = 15000;
+            }
+            else RavenousClaw_Timer -= diff;
+    
+            DoMeleeAttackIfReady();
+        }
+    };
+    CreatureAI* GetAI_boss_timmy_the_cruel(Creature* pCreature)
+    {
+        return new boss_timmy_the_cruelAI (pCreature);
     }
+    
+    
 };
-CreatureAI* GetAI_boss_timmy_the_cruel(Creature* pCreature)
-{
-    return new boss_timmy_the_cruelAI (pCreature);
-}
-
 void AddSC_boss_timmy_the_cruel()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_timmy_the_cruel";
-    newscript->GetAI = &GetAI_boss_timmy_the_cruel;
-    newscript->RegisterSelf();
+    new boss_timmy_the_cruel();
 }
 

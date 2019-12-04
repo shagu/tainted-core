@@ -88,495 +88,6 @@ const Position SpawnPosition[] =
     { -494.195f, -89.553f, -149.131f, 3.254f}
 };
 
-struct npc_blastmaster_emi_shortfuseAI : public npc_escortAI
-{
-    npc_blastmaster_emi_shortfuseAI(Creature* pCreature) : npc_escortAI(pCreature)
-    {
-        pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        pCreature->RestoreFaction();
-        Reset();
-    }
-
-    ScriptedInstance* pInstance;
-
-    uint8 uiPhase;
-    uint32 uiTimer;
-
-    std::list<uint64> SummonList;
-    std::list<uint64> GoSummonList;
-
-    void Reset()
-    {
-        if (!HasEscortState(STATE_ESCORT_ESCORTING))
-        {
-            uiTimer = 0;
-            uiPhase = 0;
-
-            RestoreAll();
-
-            SummonList.clear();
-            GoSummonList.clear();
-        }
-    }
-
-    void NextStep(uint32 uiTimerStep, bool bNextStep = true, uint8 uiPhaseStep = 0)
-    {
-        uiTimer = uiTimerStep;
-        if (bNextStep)
-            ++uiPhase;
-        else
-            uiPhase = uiPhaseStep;
-    }
-
-    void CaveDestruction(bool bBool)
-    {
-        if (GoSummonList.empty())
-            return;
-
-        for (std::list<uint64>::const_iterator itr = GoSummonList.begin(); itr != GoSummonList.end(); ++itr)
-        {
-            if (GameObject* pGo = GameObject::GetGameObject(*me, *itr))
-            {
-                if (pGo)
-                {
-                    if (Creature* trigger = pGo->SummonTrigger(pGo->GetPositionX(), pGo->GetPositionY(), pGo->GetPositionZ(), 0, 1))
-                    {
-                        //visual effects are not working! ¬¬
-                        trigger->CastSpell(trigger, 11542, true);
-                        trigger->CastSpell(trigger, 35470, true);
-                    }
-                    pGo->RemoveFromWorld();
-                    //pGo->CastSpell(me,12158); makes all die?!
-                }
-            }
-        }
-
-        if (bBool)
-        {
-            if (pInstance)
-                if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_RIGHT)))
-                    pInstance->HandleGameObject(0, false, pGo);
-        }
-        else if (pInstance)
-            if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_LEFT)))
-                pInstance->HandleGameObject(0, false, pGo);
-    }
-
-    void SetInFace(bool bBool)
-    {
-        if (!pInstance)
-            return;
-
-        if (bBool)
-        {
-            if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_RIGHT)))
-                me->SetFacingToObject(pGo);
-        }
-        else if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_LEFT)))
-            me->SetFacingToObject(pGo);
-    }
-
-    void RestoreAll()
-    {
-        if (!pInstance)
-            return;
-
-        if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_RIGHT)))
-            pInstance->HandleGameObject(0, false, pGo);
-
-        if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_LEFT)))
-            pInstance->HandleGameObject(0, false, pGo);
-
-        if (!GoSummonList.empty())
-            for (std::list<uint64>::const_iterator itr = GoSummonList.begin(); itr != GoSummonList.end(); ++itr)
-            {
-                if (GameObject* pGo = GameObject::GetGameObject(*me, *itr))
-                    pGo->RemoveFromWorld();
-            }
-
-        if (!SummonList.empty())
-            for (std::list<uint64>::const_iterator itr = SummonList.begin(); itr != SummonList.end(); ++itr)
-            {
-                if (Creature* pSummon = Unit::GetCreature(*me, *itr))
-                {
-                    if (pSummon->IsAlive())
-                        pSummon->DisappearAndDie(false);
-                    else
-                        pSummon->RemoveCorpse();
-                }
-            }
-    }
-
-    void AggroAllPlayers(Creature* pTemp)
-    {
-        Map::PlayerList const& PlList = me->GetMap()->GetPlayers();
-
-        if (PlList.isEmpty())
-            return;
-
-        for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
-        {
-            if (Player* pPlayer = i->GetSource())
-            {
-                if (pPlayer->IsGameMaster())
-                    continue;
-
-                if (pPlayer->IsAlive())
-                {
-                    pTemp->SetInCombatWith(pPlayer);
-                    pPlayer->SetInCombatWith(pTemp);
-                    pTemp->AddThreat(pPlayer, 0.0f);
-                }
-            }
-        }
-    }
-
-    void WaypointReached(uint32 uiPoint)
-    {
-        //just in case
-        if (GetPlayerForEscort())
-            if (me->GetFaction() != GetPlayerForEscort()->GetFaction())
-                me->SetFaction(GetPlayerForEscort()->GetFaction());
-
-        switch (uiPoint)
-        {
-        case 3:
-            SetEscortPaused(true);
-            NextStep(2000, false, 3);
-            break;
-        case 7:
-            SetEscortPaused(true);
-            NextStep(2000, false, 4);
-            break;
-        case 9:
-            NextStep(1000, false, 8);
-            break;
-        case 10:
-            NextStep(25000, false, 10);
-            break;
-        case 11:
-            SetEscortPaused(true);
-            SetInFace(true);
-            NextStep(1000, false, 11);
-            break;
-        case 12:
-            NextStep(25000, false, 18);
-            break;
-        case 13:
-            Summon(7);
-            NextStep(25000, false, 19);
-            break;
-        case 14:
-            SetInFace(false);
-            DoScriptText(SAY_BLASTMASTER_26, me);
-            SetEscortPaused(true);
-            NextStep(5000, false, 20);
-            break;
-        }
-    }
-
-    void SetData(uint32 uiI, uint32 uiValue)
-    {
-        switch (uiI)
-        {
-        case 1:
-            SetEscortPaused(true);
-            DoScriptText(SAY_BLASTMASTER_0, me);
-            NextStep(1500, true);
-            break;
-        case 2:
-            if (!pInstance)
-                return;
-
-            switch (uiValue)
-            {
-            case 1:
-                pInstance->SetData(TYPE_EVENT, IN_PROGRESS);
-                break;
-            case 2:
-                pInstance->SetData(TYPE_EVENT, DONE);
-                NextStep(5000, false, 22);
-                break;
-            }
-            break;
-        }
-    }
-
-    void Summon(uint8 uiCase)
-    {
-        switch (uiCase)
-        {
-        case 1:
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[0], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[1], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[2], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[3], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[4], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[5], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[6], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[7], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[8], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[9], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            break;
-        case 2:
-            if (GameObject* pGo = me->SummonGameObject(183410, -533.140f, -105.322f, -156.016f, 0, 0, 0, 0, 0, 1000))
-            {
-                GoSummonList.push_back(pGo->GetGUID());
-                pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE); //We can't use it!
-            }
-            Summon(3);
-            break;
-        case 3:
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[0], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[1], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[2], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[3], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            DoScriptText(SAY_BLASTMASTER_19, me);
-            break;
-        case 4:
-            if (GameObject* pGo = me->SummonGameObject(183410, -542.199f, -96.854f, -155.790f, 0, 0, 0, 0, 0, 1000))
-            {
-                GoSummonList.push_back(pGo->GetGUID());
-                pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
-            }
-            break;
-        case 5:
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[0], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[1], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[2], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            DoScriptText(SAY_BLASTMASTER_15, me);
-            break;
-        case 6:
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[10], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[11], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[12], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[13], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[14], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            break;
-        case 7:
-            if (GameObject* pGo = me->SummonGameObject(183410, -507.820f, -103.333f, -151.353f, 0, 0, 0, 0, 0, 1000))
-            {
-                GoSummonList.push_back(pGo->GetGUID());
-                pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE); //We can't use it!
-                Summon(6);
-            }
-            break;
-        case 8:
-            if (GameObject* pGo = me->SummonGameObject(183410, -511.829f, -86.249f, -151.431f, 0, 0, 0, 0, 0, 1000))
-            {
-                GoSummonList.push_back(pGo->GetGUID());
-                pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE); //We can't use it!
-            }
-            break;
-        case 9:
-            if (Creature* pGrubbis = me->SummonCreature(NPC_GRUBBIS, SpawnPosition[15], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000))
-                DoScriptText(SAY_GRUBBIS, pGrubbis);
-            me->SummonCreature(NPC_CHOMPER, SpawnPosition[16], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
-            break;
-        }
-    }
-
-    void UpdateEscortAI(const uint32 uiDiff)
-    {
-        if (uiPhase)
-        {
-            if (uiTimer <= uiDiff)
-            {
-                switch (uiPhase)
-                {
-                case 1:
-                    DoScriptText(SAY_BLASTMASTER_1, me);
-                    NextStep(1500, true);
-                    break;
-                case 2:
-                    SetEscortPaused(false);
-                    NextStep(0, false, 0);
-                    break;
-                case 3:
-                    DoScriptText(SAY_BLASTMASTER_2, me);
-                    SetEscortPaused(false);
-                    NextStep(0, false, 0);
-                    break;
-                case 4:
-                    DoScriptText(SAY_BLASTMASTER_3, me);
-                    NextStep(3000, true);
-                    break;
-                case 5:
-                    DoScriptText(SAY_BLASTMASTER_4, me);
-                    NextStep(3000, true);
-                    break;
-                case 6:
-                    SetInFace(true);
-                    DoScriptText(SAY_BLASTMASTER_5, me);
-                    Summon(1);
-                    if (pInstance)
-                        if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_RIGHT)))
-                            pInstance->HandleGameObject(0, true, pGo);
-                    NextStep(3000, true);
-                    break;
-                case 7:
-                    DoScriptText(SAY_BLASTMASTER_6, me);
-                    SetEscortPaused(false);
-                    NextStep(0, false, 0);
-                    break;
-                case 8:
-                    me->HandleEmoteCommand(EMOTE_STATE_WORK);
-                    NextStep(25000, true);
-                    break;
-                case 9:
-                    Summon(2);
-                    NextStep(0, false);
-                    break;
-                case 10:
-                    Summon(4);
-                    NextStep(0, false);
-                    break;
-                case 11:
-                    DoScriptText(SAY_BLASTMASTER_17, me);
-                    NextStep(5000, true);
-                    break;
-                case 12:
-                    DoScriptText(SAY_BLASTMASTER_18, me);
-                    NextStep(5000, true);
-                    break;
-                case 13:
-                    DoScriptText(SAY_BLASTMASTER_20, me);
-                    CaveDestruction(true);
-                    NextStep(8000, true);
-                    break;
-                case 14:
-                    DoScriptText(SAY_BLASTMASTER_21, me);
-                    NextStep(8500, true);
-                    break;
-                case 15:
-                    DoScriptText(SAY_BLASTMASTER_22, me);
-                    NextStep(2000, true);
-                    break;
-                case 16:
-                    DoScriptText(SAY_BLASTMASTER_23, me);
-                    SetInFace(false);
-                    if (pInstance)
-                        if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_LEFT)))
-                            pInstance->HandleGameObject(0, true, pGo);
-                    NextStep(2000, true);
-                    break;
-                case 17:
-                    SetEscortPaused(false);
-                    DoScriptText(SAY_BLASTMASTER_24, me);
-                    Summon(6);
-                    NextStep(0, false);
-                    break;
-                case 18:
-                    Summon(7);
-                    NextStep(0, false);
-                    break;
-                case 19:
-                    SetInFace(false);
-                    Summon(8);
-                    DoScriptText(SAY_BLASTMASTER_25, me);
-                    NextStep(0, false);
-                    break;
-                case 20:
-                    DoScriptText(SAY_BLASTMASTER_27, me);
-                    NextStep(2000, true);
-                    break;
-                case 21:
-                    Summon(9);
-                    NextStep(0, false);
-                    break;
-                case 22:
-                    CaveDestruction(false);
-                    DoScriptText(SAY_BLASTMASTER_20, me);
-                    NextStep(0, false);
-                    break;
-                }
-            }
-            else uiTimer -= uiDiff;
-        }
-
-        if (!UpdateVictim())
-            return;
-
-        DoMeleeAttackIfReady();
-    }
-
-    void JustSummoned(Creature* pSummon)
-    {
-        SummonList.push_back(pSummon->GetGUID());
-        AggroAllPlayers(pSummon);
-    }
-};
-
-CreatureAI* GetAI_npc_blastmaster_emi_shortfuse(Creature* pCreature)
-{
-    return new npc_blastmaster_emi_shortfuseAI(pCreature);
-}
-
-bool GossipHello_npc_blastmaster_emi_shortfuse(Player* pPlayer, Creature* pCreature)
-{
-    ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-
-    if (pInstance && pInstance->GetData(TYPE_EVENT) == NOT_STARTED)
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_START_EVENT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-
-    pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXT_EMI, pCreature->GetGUID());
-
-    return true;
-}
-
-bool GossipSelect_npc_blastmaster_emi_shortfuse(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-    {
-        if (npc_escortAI* pEscortAI = CAST_AI(npc_blastmaster_emi_shortfuseAI, pCreature->AI()))
-            pEscortAI->Start(true, false, pPlayer->GetGUID());
-
-        pCreature->SetFaction(pPlayer->GetFaction());
-        pCreature->AI()->SetData(1, 0);
-
-        pPlayer->CLOSE_GOSSIP_MENU();
-    }
-    return true;
-}
-
-struct boss_grubbisAI : public ScriptedAI
-{
-    boss_grubbisAI(Creature* pCreature) : ScriptedAI(pCreature)
-    {
-        SetDataSummoner();
-    }
-
-    void SetDataSummoner()
-    {
-        if (!me->IsSummon())
-            return;
-
-        if (Unit* pSummon = CAST_SUM(me)->GetSummoner())
-            CAST_CRE(pSummon)->AI()->SetData(2, 1);
-    }
-
-    void UpdateAI(const uint32 /*diff*/)
-    {
-        if (!UpdateVictim())
-            return;
-
-        DoMeleeAttackIfReady();
-    }
-
-    void JustDied(Unit* /*pKiller*/)
-    {
-        if (!me->IsSummon())
-            return;
-
-        if (Unit* pSummon = CAST_SUM(me)->GetSummoner())
-            CAST_CRE(pSummon)->AI()->SetData(2, 2);
-    }
-};
-
-CreatureAI* GetAI_boss_grubbis(Creature* pCreature)
-{
-    return new boss_grubbisAI(pCreature);
-}
 
 /*####
 # npc_kernobee
@@ -594,119 +105,618 @@ enum eKernobee
 
 #define NPC_KERNOBEE_END_TRIGGER	12995
 
-struct npc_kernobeeAI : public FollowerAI
+
+class npc_blastmaster_emi_shortfuse : public CreatureScript
 {
-	npc_kernobeeAI(Creature* pCreature) : FollowerAI(pCreature) { }
+public: 
+    npc_blastmaster_emi_shortfuse() : CreatureScript("npc_blastmaster_emi_shortfuse") { }
+    struct npc_blastmaster_emi_shortfuseAI : public npc_escortAI
+    {
+        npc_blastmaster_emi_shortfuseAI(Creature* pCreature) : npc_escortAI(pCreature)
+        {
+            pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+            pCreature->RestoreFaction();
+            Reset();
+        }
+    
+        ScriptedInstance* pInstance;
+    
+        uint8 uiPhase;
+        uint32 uiTimer;
+    
+        std::list<uint64> SummonList;
+        std::list<uint64> GoSummonList;
+    
+        void Reset()
+        {
+            if (!HasEscortState(STATE_ESCORT_ESCORTING))
+            {
+                uiTimer = 0;
+                uiPhase = 0;
+    
+                RestoreAll();
+    
+                SummonList.clear();
+                GoSummonList.clear();
+            }
+        }
+        bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+        {
+            ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
 
-	uint32 m_uiEndEventProgress;
-	uint32 m_uiEndEventTimer;
+            if (pInstance && pInstance->GetData(TYPE_EVENT) == NOT_STARTED)
+                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_START_EVENT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
-	uint64 KernobeeGUID;
+            pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXT_EMI, pCreature->GetGUID());
 
-	void Reset()
-	{		
-		m_uiEndEventProgress = 0;
-		m_uiEndEventTimer = 1000;
-		KernobeeGUID = 0;
-	}
+            return true;
+        }
 
-	void MoveInLineOfSight(Unit* pWho)
-	{
-		FollowerAI::MoveInLineOfSight(pWho);
+        bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+        {
+            if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+            {
+                if (npc_escortAI* pEscortAI = CAST_AI(npc_blastmaster_emi_shortfuseAI, pCreature->AI()))
+                    pEscortAI->Start(true, false, pPlayer->GetGUID());
 
-		if (!me->GetVictim() && !HasFollowState(STATE_FOLLOW_COMPLETE) && pWho->GetEntry() == NPC_KERNOBEE_END_TRIGGER)
-		{
-			if (me->IsWithinDistInMap(pWho, INTERACTION_DISTANCE))
-			{
-				if (Player* pPlayer = GetLeaderForFollower())
-				{
-					if (pPlayer->GetQuestStatus(QUEST_A_FINE_MESS) == QUEST_STATUS_INCOMPLETE)
-						pPlayer->GroupEventHappens(QUEST_A_FINE_MESS, me);
-				}
+                pCreature->SetFaction(pPlayer->GetFaction());
+                pCreature->AI()->SetData(1, 0);
 
-				KernobeeGUID = pWho->GetGUID();
-				SetFollowComplete(true);
-			}
-		}
-	}
+                pPlayer->CLOSE_GOSSIP_MENU();
+            }
+            return true;
+        }
+        void NextStep(uint32 uiTimerStep, bool bNextStep = true, uint8 uiPhaseStep = 0)
+        {
+            uiTimer = uiTimerStep;
+            if (bNextStep)
+                ++uiPhase;
+            else
+                uiPhase = uiPhaseStep;
+        }
+    
+        void CaveDestruction(bool bBool)
+        {
+            if (GoSummonList.empty())
+                return;
+    
+            for (std::list<uint64>::const_iterator itr = GoSummonList.begin(); itr != GoSummonList.end(); ++itr)
+            {
+                if (GameObject* pGo = GameObject::GetGameObject(*me, *itr))
+                {
+                    if (pGo)
+                    {
+                        if (Creature* trigger = pGo->SummonTrigger(pGo->GetPositionX(), pGo->GetPositionY(), pGo->GetPositionZ(), 0, 1))
+                        {
+                            //visual effects are not working! ¬¬
+                            trigger->CastSpell(trigger, 11542, true);
+                            trigger->CastSpell(trigger, 35470, true);
+                        }
+                        pGo->RemoveFromWorld();
+                        //pGo->CastSpell(me,12158); makes all die?!
+                    }
+                }
+            }
+    
+            if (bBool)
+            {
+                if (pInstance)
+                    if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_RIGHT)))
+                        pInstance->HandleGameObject(0, false, pGo);
+            }
+            else if (pInstance)
+                if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_LEFT)))
+                    pInstance->HandleGameObject(0, false, pGo);
+        }
+    
+        void SetInFace(bool bBool)
+        {
+            if (!pInstance)
+                return;
+    
+            if (bBool)
+            {
+                if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_RIGHT)))
+                    me->SetFacingToObject(pGo);
+            }
+            else if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_LEFT)))
+                me->SetFacingToObject(pGo);
+        }
+    
+        void RestoreAll()
+        {
+            if (!pInstance)
+                return;
+    
+            if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_RIGHT)))
+                pInstance->HandleGameObject(0, false, pGo);
+    
+            if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_LEFT)))
+                pInstance->HandleGameObject(0, false, pGo);
+    
+            if (!GoSummonList.empty())
+                for (std::list<uint64>::const_iterator itr = GoSummonList.begin(); itr != GoSummonList.end(); ++itr)
+                {
+                    if (GameObject* pGo = GameObject::GetGameObject(*me, *itr))
+                        pGo->RemoveFromWorld();
+                }
+    
+            if (!SummonList.empty())
+                for (std::list<uint64>::const_iterator itr = SummonList.begin(); itr != SummonList.end(); ++itr)
+                {
+                    if (Creature* pSummon = Unit::GetCreature(*me, *itr))
+                    {
+                        if (pSummon->IsAlive())
+                            pSummon->DisappearAndDie(false);
+                        else
+                            pSummon->RemoveCorpse();
+                    }
+                }
+        }
+    
+        void AggroAllPlayers(Creature* pTemp)
+        {
+            Map::PlayerList const& PlList = me->GetMap()->GetPlayers();
+    
+            if (PlList.isEmpty())
+                return;
+    
+            for (Map::PlayerList::const_iterator i = PlList.begin(); i != PlList.end(); ++i)
+            {
+                if (Player* pPlayer = i->GetSource())
+                {
+                    if (pPlayer->IsGameMaster())
+                        continue;
+    
+                    if (pPlayer->IsAlive())
+                    {
+                        pTemp->SetInCombatWith(pPlayer);
+                        pPlayer->SetInCombatWith(pTemp);
+                        pTemp->AddThreat(pPlayer, 0.0f);
+                    }
+                }
+            }
+        }
+    
+        void WaypointReached(uint32 uiPoint)
+        {
+            //just in case
+            if (GetPlayerForEscort())
+                if (me->GetFaction() != GetPlayerForEscort()->GetFaction())
+                    me->SetFaction(GetPlayerForEscort()->GetFaction());
+    
+            switch (uiPoint)
+            {
+            case 3:
+                SetEscortPaused(true);
+                NextStep(2000, false, 3);
+                break;
+            case 7:
+                SetEscortPaused(true);
+                NextStep(2000, false, 4);
+                break;
+            case 9:
+                NextStep(1000, false, 8);
+                break;
+            case 10:
+                NextStep(25000, false, 10);
+                break;
+            case 11:
+                SetEscortPaused(true);
+                SetInFace(true);
+                NextStep(1000, false, 11);
+                break;
+            case 12:
+                NextStep(25000, false, 18);
+                break;
+            case 13:
+                Summon(7);
+                NextStep(25000, false, 19);
+                break;
+            case 14:
+                SetInFace(false);
+                DoScriptText(SAY_BLASTMASTER_26, me);
+                SetEscortPaused(true);
+                NextStep(5000, false, 20);
+                break;
+            }
+        }
+    
+        void SetData(uint32 uiI, uint32 uiValue)
+        {
+            switch (uiI)
+            {
+            case 1:
+                SetEscortPaused(true);
+                DoScriptText(SAY_BLASTMASTER_0, me);
+                NextStep(1500, true);
+                break;
+            case 2:
+                if (!pInstance)
+                    return;
+    
+                switch (uiValue)
+                {
+                case 1:
+                    pInstance->SetData(TYPE_EVENT, IN_PROGRESS);
+                    break;
+                case 2:
+                    pInstance->SetData(TYPE_EVENT, DONE);
+                    NextStep(5000, false, 22);
+                    break;
+                }
+                break;
+            }
+        }
+    
+        void Summon(uint8 uiCase)
+        {
+            switch (uiCase)
+            {
+            case 1:
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[0], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[1], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[2], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[3], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[4], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[5], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[6], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[7], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[8], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[9], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                break;
+            case 2:
+                if (GameObject* pGo = me->SummonGameObject(183410, -533.140f, -105.322f, -156.016f, 0, 0, 0, 0, 0, 1000))
+                {
+                    GoSummonList.push_back(pGo->GetGUID());
+                    pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE); //We can't use it!
+                }
+                Summon(3);
+                break;
+            case 3:
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[0], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[1], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[2], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[3], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                DoScriptText(SAY_BLASTMASTER_19, me);
+                break;
+            case 4:
+                if (GameObject* pGo = me->SummonGameObject(183410, -542.199f, -96.854f, -155.790f, 0, 0, 0, 0, 0, 1000))
+                {
+                    GoSummonList.push_back(pGo->GetGUID());
+                    pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
+                }
+                break;
+            case 5:
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[0], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[1], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[2], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                DoScriptText(SAY_BLASTMASTER_15, me);
+                break;
+            case 6:
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[10], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[11], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[12], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[13], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                me->SummonCreature(NPC_CAVERNDEEP_AMBUSHER, SpawnPosition[14], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                break;
+            case 7:
+                if (GameObject* pGo = me->SummonGameObject(183410, -507.820f, -103.333f, -151.353f, 0, 0, 0, 0, 0, 1000))
+                {
+                    GoSummonList.push_back(pGo->GetGUID());
+                    pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE); //We can't use it!
+                    Summon(6);
+                }
+                break;
+            case 8:
+                if (GameObject* pGo = me->SummonGameObject(183410, -511.829f, -86.249f, -151.431f, 0, 0, 0, 0, 0, 1000))
+                {
+                    GoSummonList.push_back(pGo->GetGUID());
+                    pGo->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE); //We can't use it!
+                }
+                break;
+            case 9:
+                if (Creature* pGrubbis = me->SummonCreature(NPC_GRUBBIS, SpawnPosition[15], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000))
+                    DoScriptText(SAY_GRUBBIS, pGrubbis);
+                me->SummonCreature(NPC_CHOMPER, SpawnPosition[16], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 1800000);
+                break;
+            }
+        }
+    
+        void UpdateEscortAI(const uint32 uiDiff)
+        {
+            if (uiPhase)
+            {
+                if (uiTimer <= uiDiff)
+                {
+                    switch (uiPhase)
+                    {
+                    case 1:
+                        DoScriptText(SAY_BLASTMASTER_1, me);
+                        NextStep(1500, true);
+                        break;
+                    case 2:
+                        SetEscortPaused(false);
+                        NextStep(0, false, 0);
+                        break;
+                    case 3:
+                        DoScriptText(SAY_BLASTMASTER_2, me);
+                        SetEscortPaused(false);
+                        NextStep(0, false, 0);
+                        break;
+                    case 4:
+                        DoScriptText(SAY_BLASTMASTER_3, me);
+                        NextStep(3000, true);
+                        break;
+                    case 5:
+                        DoScriptText(SAY_BLASTMASTER_4, me);
+                        NextStep(3000, true);
+                        break;
+                    case 6:
+                        SetInFace(true);
+                        DoScriptText(SAY_BLASTMASTER_5, me);
+                        Summon(1);
+                        if (pInstance)
+                            if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_RIGHT)))
+                                pInstance->HandleGameObject(0, true, pGo);
+                        NextStep(3000, true);
+                        break;
+                    case 7:
+                        DoScriptText(SAY_BLASTMASTER_6, me);
+                        SetEscortPaused(false);
+                        NextStep(0, false, 0);
+                        break;
+                    case 8:
+                        me->HandleEmoteCommand(EMOTE_STATE_WORK);
+                        NextStep(25000, true);
+                        break;
+                    case 9:
+                        Summon(2);
+                        NextStep(0, false);
+                        break;
+                    case 10:
+                        Summon(4);
+                        NextStep(0, false);
+                        break;
+                    case 11:
+                        DoScriptText(SAY_BLASTMASTER_17, me);
+                        NextStep(5000, true);
+                        break;
+                    case 12:
+                        DoScriptText(SAY_BLASTMASTER_18, me);
+                        NextStep(5000, true);
+                        break;
+                    case 13:
+                        DoScriptText(SAY_BLASTMASTER_20, me);
+                        CaveDestruction(true);
+                        NextStep(8000, true);
+                        break;
+                    case 14:
+                        DoScriptText(SAY_BLASTMASTER_21, me);
+                        NextStep(8500, true);
+                        break;
+                    case 15:
+                        DoScriptText(SAY_BLASTMASTER_22, me);
+                        NextStep(2000, true);
+                        break;
+                    case 16:
+                        DoScriptText(SAY_BLASTMASTER_23, me);
+                        SetInFace(false);
+                        if (pInstance)
+                            if (GameObject* pGo = GameObject::GetGameObject((*me), pInstance->GetData64(DATA_GO_CAVE_IN_LEFT)))
+                                pInstance->HandleGameObject(0, true, pGo);
+                        NextStep(2000, true);
+                        break;
+                    case 17:
+                        SetEscortPaused(false);
+                        DoScriptText(SAY_BLASTMASTER_24, me);
+                        Summon(6);
+                        NextStep(0, false);
+                        break;
+                    case 18:
+                        Summon(7);
+                        NextStep(0, false);
+                        break;
+                    case 19:
+                        SetInFace(false);
+                        Summon(8);
+                        DoScriptText(SAY_BLASTMASTER_25, me);
+                        NextStep(0, false);
+                        break;
+                    case 20:
+                        DoScriptText(SAY_BLASTMASTER_27, me);
+                        NextStep(2000, true);
+                        break;
+                    case 21:
+                        Summon(9);
+                        NextStep(0, false);
+                        break;
+                    case 22:
+                        CaveDestruction(false);
+                        DoScriptText(SAY_BLASTMASTER_20, me);
+                        NextStep(0, false);
+                        break;
+                    }
+                }
+                else uiTimer -= uiDiff;
+            }
+    
+            if (!UpdateVictim())
+                return;
+    
+            DoMeleeAttackIfReady();
+        }
+    
+        void JustSummoned(Creature* pSummon)
+        {
+            SummonList.push_back(pSummon->GetGUID());
+            AggroAllPlayers(pSummon);
+        }
+    };
 
-	void UpdateFollowerAI(const uint32 uiDiff)
-	{
-		if (!UpdateVictim())
-		{
-			if (HasFollowState(STATE_FOLLOW_POSTEVENT))
-			{
-				if (m_uiEndEventTimer <= uiDiff)
-				{
-					Unit* pKernobee = Unit::GetUnit(*me, KernobeeGUID);
-					if (!pKernobee || !pKernobee->IsAlive())
-					{
-						SetFollowComplete();
-						return;
-					}
+    CreatureAI* GetAI_npc_blastmaster_emi_shortfuse(Creature* pCreature)
+    {
+        return new npc_blastmaster_emi_shortfuseAI(pCreature);
+    }
 
-					switch (m_uiEndEventProgress)
-					{
-					case 1:
-						DoScriptText(SAY_KERNOBEE_END, me);
-						m_uiEndEventTimer = 3000;
-						break;					
-					case 2:
-						SetFollowComplete();
-						break;
-					}
-
-					++m_uiEndEventProgress;
-				}
-				else
-					m_uiEndEventTimer -= uiDiff;
-			}	
-			return;
-		}
-
-		DoMeleeAttackIfReady();
-	}
 };
 
-CreatureAI* GetAI_npc_kernobee(Creature* pCreature)
+class boss_grubbis : public CreatureScript
 {
-	return new npc_kernobeeAI(pCreature);
-}
+public: 
+    boss_grubbis() : CreatureScript("boss_grubbis") { }
+    struct boss_grubbisAI : public ScriptedAI
+    {
+        boss_grubbisAI(Creature* pCreature) : ScriptedAI(pCreature)
+        {
+            SetDataSummoner();
+        }
+    
+        void SetDataSummoner()
+        {
+            if (!me->IsSummon())
+                return;
+    
+            if (Unit* pSummon = CAST_SUM(me)->GetSummoner())
+                CAST_CRE(pSummon)->AI()->SetData(2, 1);
+        }
+    
+        void UpdateAI(const uint32 /*diff*/)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            DoMeleeAttackIfReady();
+        }
+    
+        void JustDied(Unit* /*pKiller*/)
+        {
+            if (!me->IsSummon())
+                return;
+    
+            if (Unit* pSummon = CAST_SUM(me)->GetSummoner())
+                CAST_CRE(pSummon)->AI()->SetData(2, 2);
+        }
+    };
 
-bool QuestAccept_npc_kernobee(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+    CreatureAI* GetAI_boss_grubbis(Creature* pCreature)
+    {
+        return new boss_grubbisAI(pCreature);
+    }
+
+};
+
+class npc_kernobee : public CreatureScript
 {
-	if (pQuest->GetQuestId() == QUEST_A_FINE_MESS)
-	{
-		if (npc_kernobeeAI* pKernobeeAI = CAST_AI(npc_kernobeeAI, pCreature->AI()))
-		{
-			DoScriptText(SAY_KERNOBEE_START, pCreature);
-			pCreature->SetStandState(UNIT_STAND_STATE_STAND);
-			pKernobeeAI->StartFollow(pPlayer, FACTION_ESCORTEE, pQuest);
-		}
-	}
+public: 
+    npc_kernobee() : CreatureScript("npc_kernobee") { }
+    struct npc_kernobeeAI : public FollowerAI
+    {
+    	npc_kernobeeAI(Creature* pCreature) : FollowerAI(pCreature) { }
+    
+    	uint32 m_uiEndEventProgress;
+    	uint32 m_uiEndEventTimer;
+    
+    	uint64 KernobeeGUID;
+    
+    	void Reset()
+    	{		
+    		m_uiEndEventProgress = 0;
+    		m_uiEndEventTimer = 1000;
+    		KernobeeGUID = 0;
+    	}
+    
+    	void MoveInLineOfSight(Unit* pWho)
+    	{
+    		FollowerAI::MoveInLineOfSight(pWho);
+    
+    		if (!me->GetVictim() && !HasFollowState(STATE_FOLLOW_COMPLETE) && pWho->GetEntry() == NPC_KERNOBEE_END_TRIGGER)
+    		{
+    			if (me->IsWithinDistInMap(pWho, INTERACTION_DISTANCE))
+    			{
+    				if (Player* pPlayer = GetLeaderForFollower())
+    				{
+    					if (pPlayer->GetQuestStatus(QUEST_A_FINE_MESS) == QUEST_STATUS_INCOMPLETE)
+    						pPlayer->GroupEventHappens(QUEST_A_FINE_MESS, me);
+    				}
+    
+    				KernobeeGUID = pWho->GetGUID();
+    				SetFollowComplete(true);
+    			}
+    		}
+    	}
+    
+    	void UpdateFollowerAI(const uint32 uiDiff)
+    	{
+    		if (!UpdateVictim())
+    		{
+    			if (HasFollowState(STATE_FOLLOW_POSTEVENT))
+    			{
+    				if (m_uiEndEventTimer <= uiDiff)
+    				{
+    					Unit* pKernobee = Unit::GetUnit(*me, KernobeeGUID);
+    					if (!pKernobee || !pKernobee->IsAlive())
+    					{
+    						SetFollowComplete();
+    						return;
+    					}
+    
+    					switch (m_uiEndEventProgress)
+    					{
+    					case 1:
+    						DoScriptText(SAY_KERNOBEE_END, me);
+    						m_uiEndEventTimer = 3000;
+    						break;					
+    					case 2:
+    						SetFollowComplete();
+    						break;
+    					}
+    
+    					++m_uiEndEventProgress;
+    				}
+    				else
+    					m_uiEndEventTimer -= uiDiff;
+    			}	
+    			return;
+    		}
+    
+    		DoMeleeAttackIfReady();
+    	}
+    };
 
-	return true;
-}
+    CreatureAI* GetAI_npc_kernobee(Creature* pCreature)
+    {
+    	return new npc_kernobeeAI(pCreature);
+    }
+
+    
+
+    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+    {
+    	if (pQuest->GetQuestId() == QUEST_A_FINE_MESS)
+    	{
+    		if (npc_kernobeeAI* pKernobeeAI = CAST_AI(npc_kernobeeAI, pCreature->AI()))
+    		{
+    			DoScriptText(SAY_KERNOBEE_START, pCreature);
+    			pCreature->SetStandState(UNIT_STAND_STATE_STAND);
+    			pKernobeeAI->StartFollow(pPlayer, FACTION_ESCORTEE, pQuest);
+    		}
+    	}
+    
+    	return true;
+    }
+
+    
+
+    
+};
+
 
 void AddSC_gnomeregan()
 {
-    Script* newscript;
+    new npc_blastmaster_emi_shortfuse();
+    new boss_grubbis();
+    new npc_kernobee();
 
-    newscript = new Script;
-    newscript->Name = "npc_blastmaster_emi_shortfuse";
-    newscript->pGossipHello =  &GossipHello_npc_blastmaster_emi_shortfuse;
-    newscript->pGossipSelect = &GossipSelect_npc_blastmaster_emi_shortfuse;
-    newscript->GetAI = &GetAI_npc_blastmaster_emi_shortfuse;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "boss_grubbis";
-    newscript->GetAI = &GetAI_boss_grubbis;
-    newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_kernobee";
-	newscript->GetAI = &GetAI_npc_kernobee;
-	newscript->pQuestAccept = &QuestAccept_npc_kernobee;
-	newscript->RegisterSelf();
 }
+

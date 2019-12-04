@@ -34,92 +34,95 @@ EndScriptData */
 #define SPELL_SUMMONMANA        25681
 #define SPELL_GRDRSLEEP         24360                       //Greater Dreamless Sleep
 
-struct boss_moamAI : public ScriptedAI
+
+class boss_moam : public CreatureScript
 {
-    boss_moamAI(Creature* c) : ScriptedAI(c) {}
-
-    Unit* pTarget;
-    uint32 TRAMPLE_Timer;
-    uint32 DRAINMANA_Timer;
-    uint32 SUMMONMANA_Timer;
-    uint32 i;
-    uint32 j;
-
-    void Reset()
+public: 
+    boss_moam() : CreatureScript("boss_moam") { }
+    struct boss_moamAI : public ScriptedAI
     {
-        i = 0;
-        j = 0;
-        pTarget = NULL;
-        TRAMPLE_Timer = 30000;
-        DRAINMANA_Timer = 30000;
-    }
-
-    void EnterCombat(Unit* who)
-    {
-        DoScriptText(EMOTE_AGGRO, me);
-        pTarget = who;
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        //If we are 100%MANA cast Arcane Erruption
-        //if (j == 1 && me->GetMana()*100 / me->GetMaxMana() == 100 && !me->IsNonMeleeSpellCast(false))
+        boss_moamAI(Creature* c) : ScriptedAI(c) {}
+    
+        Unit* pTarget;
+        uint32 TRAMPLE_Timer;
+        uint32 DRAINMANA_Timer;
+        uint32 SUMMONMANA_Timer;
+        uint32 i;
+        uint32 j;
+    
+        void Reset()
         {
-            DoCastVictim(SPELL_ARCANEERUPTION);
-            DoScriptText(EMOTE_MANA_FULL, me);
-        }
-
-        //If we are <50%HP cast MANA FIEND (Summon Mana) and Sleep
-        //if (i == 0 && me->GetHealth()*100 / me->GetMaxHealth() <= 50 && !me->IsNonMeleeSpellCast(false))
-        {
-            i = 1;
-            DoCastVictim(SPELL_SUMMONMANA);
-            DoCastVictim(SPELL_GRDRSLEEP);
-        }
-
-        //SUMMONMANA_Timer
-        if (i == 1 && SUMMONMANA_Timer <= diff)
-        {
-            DoCastVictim(SPELL_SUMMONMANA);
-            SUMMONMANA_Timer = 90000;
-        }
-        else SUMMONMANA_Timer -= diff;
-
-        //TRAMPLE_Timer
-        if (TRAMPLE_Timer <= diff)
-        {
-            DoCastVictim(SPELL_TRAMPLE);
-            j = 1;
-
+            i = 0;
+            j = 0;
+            pTarget = NULL;
             TRAMPLE_Timer = 30000;
-        }
-        else TRAMPLE_Timer -= diff;
-
-        //DRAINMANA_Timer
-        if (DRAINMANA_Timer <= diff)
-        {
-            DoCastVictim(SPELL_DRAINMANA);
             DRAINMANA_Timer = 30000;
         }
-        else DRAINMANA_Timer -= diff;
-
-        DoMeleeAttackIfReady();
+    
+        void EnterCombat(Unit* who)
+        {
+            DoScriptText(EMOTE_AGGRO, me);
+            pTarget = who;
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            //If we are 100%MANA cast Arcane Erruption
+            //if (j == 1 && me->GetMana()*100 / me->GetMaxMana() == 100 && !me->IsNonMeleeSpellCast(false))
+            {
+                DoCastVictim(SPELL_ARCANEERUPTION);
+                DoScriptText(EMOTE_MANA_FULL, me);
+            }
+    
+            //If we are <50%HP cast MANA FIEND (Summon Mana) and Sleep
+            //if (i == 0 && me->GetHealth()*100 / me->GetMaxHealth() <= 50 && !me->IsNonMeleeSpellCast(false))
+            {
+                i = 1;
+                DoCastVictim(SPELL_SUMMONMANA);
+                DoCastVictim(SPELL_GRDRSLEEP);
+            }
+    
+            //SUMMONMANA_Timer
+            if (i == 1 && SUMMONMANA_Timer <= diff)
+            {
+                DoCastVictim(SPELL_SUMMONMANA);
+                SUMMONMANA_Timer = 90000;
+            }
+            else SUMMONMANA_Timer -= diff;
+    
+            //TRAMPLE_Timer
+            if (TRAMPLE_Timer <= diff)
+            {
+                DoCastVictim(SPELL_TRAMPLE);
+                j = 1;
+    
+                TRAMPLE_Timer = 30000;
+            }
+            else TRAMPLE_Timer -= diff;
+    
+            //DRAINMANA_Timer
+            if (DRAINMANA_Timer <= diff)
+            {
+                DoCastVictim(SPELL_DRAINMANA);
+                DRAINMANA_Timer = 30000;
+            }
+            else DRAINMANA_Timer -= diff;
+    
+            DoMeleeAttackIfReady();
+        }
+    };
+    CreatureAI* GetAI_boss_moam(Creature* pCreature)
+    {
+        return new boss_moamAI (pCreature);
     }
+    
+    
 };
-CreatureAI* GetAI_boss_moam(Creature* pCreature)
-{
-    return new boss_moamAI (pCreature);
-}
-
 void AddSC_boss_moam()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_moam";
-    newscript->GetAI = &GetAI_boss_moam;
-    newscript->RegisterSelf();
+    new boss_moam();
 }
 

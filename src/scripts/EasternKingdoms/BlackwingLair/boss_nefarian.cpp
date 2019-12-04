@@ -60,181 +60,184 @@ EndScriptData */
 #define SPELL_HUNTER                23436                   //bow broke
 #define SPELL_ROGUE                 23414                   //Paralise
 
-struct boss_nefarianAI : public ScriptedAI
+
+class boss_nefarian : public CreatureScript
 {
-    boss_nefarianAI(Creature* c) : ScriptedAI(c) {}
-
-    uint32 ShadowFlame_Timer;
-    uint32 BellowingRoar_Timer;
-    uint32 VeilOfShadow_Timer;
-    uint32 Cleave_Timer;
-    uint32 TailLash_Timer;
-    uint32 ClassCall_Timer;
-    bool Phase3;
-
-    uint32 DespawnTimer;
-
-    void Reset()
+public: 
+    boss_nefarian() : CreatureScript("boss_nefarian") { }
+    struct boss_nefarianAI : public ScriptedAI
     {
-        ShadowFlame_Timer = 12000;                          //These times are probably wrong
-        BellowingRoar_Timer = 30000;
-        VeilOfShadow_Timer = 15000;
-        Cleave_Timer = 7000;
-        TailLash_Timer = 10000;
-        ClassCall_Timer = 35000;                            //35-40 seconds
-        Phase3 = false;
-
-        DespawnTimer = 5000;
-    }
-
-    void KilledUnit(Unit* Victim)
-    {
-        if (rand() % 5)
-            return;
-
-        DoScriptText(SAY_SLAY, me, Victim);
-    }
-
-    void JustDied(Unit* /*Killer*/)
-    {
-        DoScriptText(SAY_DEATH, me);
-    }
-
-    void EnterCombat(Unit* who)
-    {
-        DoScriptText(RAND(SAY_XHEALTH, SAY_AGGRO, SAY_SHADOWFLAME), me);
-
-        DoCast(who, SPELL_SHADOWFLAME_INITIAL);
-        DoZoneInCombat();
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (DespawnTimer <= diff)
+        boss_nefarianAI(Creature* c) : ScriptedAI(c) {}
+    
+        uint32 ShadowFlame_Timer;
+        uint32 BellowingRoar_Timer;
+        uint32 VeilOfShadow_Timer;
+        uint32 Cleave_Timer;
+        uint32 TailLash_Timer;
+        uint32 ClassCall_Timer;
+        bool Phase3;
+    
+        uint32 DespawnTimer;
+    
+        void Reset()
         {
-            if (!UpdateVictim())
-                me->ForcedDespawn();
+            ShadowFlame_Timer = 12000;                          //These times are probably wrong
+            BellowingRoar_Timer = 30000;
+            VeilOfShadow_Timer = 15000;
+            Cleave_Timer = 7000;
+            TailLash_Timer = 10000;
+            ClassCall_Timer = 35000;                            //35-40 seconds
+            Phase3 = false;
+    
             DespawnTimer = 5000;
         }
-        else DespawnTimer -= diff;
-
-        if (!UpdateVictim())
-            return;
-
-        //ShadowFlame_Timer
-        if (ShadowFlame_Timer <= diff)
+    
+        void KilledUnit(Unit* Victim)
         {
-            DoCastVictim( SPELL_SHADOWFLAME);
-            ShadowFlame_Timer = 12000;
+            if (rand() % 5)
+                return;
+    
+            DoScriptText(SAY_SLAY, me, Victim);
         }
-        else ShadowFlame_Timer -= diff;
-
-        //BellowingRoar_Timer
-        if (BellowingRoar_Timer <= diff)
+    
+        void JustDied(Unit* /*Killer*/)
         {
-            DoCastVictim( SPELL_BELLOWINGROAR);
-            BellowingRoar_Timer = 30000;
+            DoScriptText(SAY_DEATH, me);
         }
-        else BellowingRoar_Timer -= diff;
-
-        //VeilOfShadow_Timer
-        if (VeilOfShadow_Timer <= diff)
+    
+        void EnterCombat(Unit* who)
         {
-            DoCastVictim( SPELL_VEILOFSHADOW);
-            VeilOfShadow_Timer = 15000;
+            DoScriptText(RAND(SAY_XHEALTH, SAY_AGGRO, SAY_SHADOWFLAME), me);
+    
+            DoCast(who, SPELL_SHADOWFLAME_INITIAL);
+            DoZoneInCombat();
         }
-        else VeilOfShadow_Timer -= diff;
-
-        //Cleave_Timer
-        if (Cleave_Timer <= diff)
+    
+        void UpdateAI(const uint32 diff)
         {
-            DoCastVictim( SPELL_CLEAVE);
-            Cleave_Timer = 7000;
-        }
-        else Cleave_Timer -= diff;
-
-        //TailLash_Timer
-        if (TailLash_Timer <= diff)
-        {
-            //Cast NYI since we need a better check for behind target
-            //DoCastVictim( SPELL_TAILLASH);
-
-            TailLash_Timer = 10000;
-        }
-        else TailLash_Timer -= diff;
-
-        //ClassCall_Timer
-        if (ClassCall_Timer <= diff)
-        {
-            //Cast a random class call
-            //On official it is based on what classes are currently on the hostil list
-            //but we can't do that yet so just randomly call one
-
-            switch (urand(0, 8))
+            if (DespawnTimer <= diff)
             {
-            case 0:
-                DoScriptText(SAY_MAGE, me);
-                DoCast(me, SPELL_MAGE);
-                break;
-            case 1:
-                DoScriptText(SAY_WARRIOR, me);
-                DoCast(me, SPELL_WARRIOR);
-                break;
-            case 2:
-                DoScriptText(SAY_DRUID, me);
-                DoCast(me, SPELL_DRUID);
-                break;
-            case 3:
-                DoScriptText(SAY_PRIEST, me);
-                DoCast(me, SPELL_PRIEST);
-                break;
-            case 4:
-                DoScriptText(SAY_PALADIN, me);
-                DoCast(me, SPELL_PALADIN);
-                break;
-            case 5:
-                DoScriptText(SAY_SHAMAN, me);
-                DoCast(me, SPELL_SHAMAN);
-                break;
-            case 6:
-                DoScriptText(SAY_WARLOCK, me);
-                DoCast(me, SPELL_WARLOCK);
-                break;
-            case 7:
-                DoScriptText(SAY_HUNTER, me);
-                DoCast(me, SPELL_HUNTER);
-                break;
-            case 8:
-                DoScriptText(SAY_ROGUE, me);
-                DoCast(me, SPELL_ROGUE);
-                break;
+                if (!UpdateVictim())
+                    me->ForcedDespawn();
+                DespawnTimer = 5000;
             }
-
-            ClassCall_Timer = 35000 + (rand() % 5000);
+            else DespawnTimer -= diff;
+    
+            if (!UpdateVictim())
+                return;
+    
+            //ShadowFlame_Timer
+            if (ShadowFlame_Timer <= diff)
+            {
+                DoCastVictim( SPELL_SHADOWFLAME);
+                ShadowFlame_Timer = 12000;
+            }
+            else ShadowFlame_Timer -= diff;
+    
+            //BellowingRoar_Timer
+            if (BellowingRoar_Timer <= diff)
+            {
+                DoCastVictim( SPELL_BELLOWINGROAR);
+                BellowingRoar_Timer = 30000;
+            }
+            else BellowingRoar_Timer -= diff;
+    
+            //VeilOfShadow_Timer
+            if (VeilOfShadow_Timer <= diff)
+            {
+                DoCastVictim( SPELL_VEILOFSHADOW);
+                VeilOfShadow_Timer = 15000;
+            }
+            else VeilOfShadow_Timer -= diff;
+    
+            //Cleave_Timer
+            if (Cleave_Timer <= diff)
+            {
+                DoCastVictim( SPELL_CLEAVE);
+                Cleave_Timer = 7000;
+            }
+            else Cleave_Timer -= diff;
+    
+            //TailLash_Timer
+            if (TailLash_Timer <= diff)
+            {
+                //Cast NYI since we need a better check for behind target
+                //DoCastVictim( SPELL_TAILLASH);
+    
+                TailLash_Timer = 10000;
+            }
+            else TailLash_Timer -= diff;
+    
+            //ClassCall_Timer
+            if (ClassCall_Timer <= diff)
+            {
+                //Cast a random class call
+                //On official it is based on what classes are currently on the hostil list
+                //but we can't do that yet so just randomly call one
+    
+                switch (urand(0, 8))
+                {
+                case 0:
+                    DoScriptText(SAY_MAGE, me);
+                    DoCast(me, SPELL_MAGE);
+                    break;
+                case 1:
+                    DoScriptText(SAY_WARRIOR, me);
+                    DoCast(me, SPELL_WARRIOR);
+                    break;
+                case 2:
+                    DoScriptText(SAY_DRUID, me);
+                    DoCast(me, SPELL_DRUID);
+                    break;
+                case 3:
+                    DoScriptText(SAY_PRIEST, me);
+                    DoCast(me, SPELL_PRIEST);
+                    break;
+                case 4:
+                    DoScriptText(SAY_PALADIN, me);
+                    DoCast(me, SPELL_PALADIN);
+                    break;
+                case 5:
+                    DoScriptText(SAY_SHAMAN, me);
+                    DoCast(me, SPELL_SHAMAN);
+                    break;
+                case 6:
+                    DoScriptText(SAY_WARLOCK, me);
+                    DoCast(me, SPELL_WARLOCK);
+                    break;
+                case 7:
+                    DoScriptText(SAY_HUNTER, me);
+                    DoCast(me, SPELL_HUNTER);
+                    break;
+                case 8:
+                    DoScriptText(SAY_ROGUE, me);
+                    DoCast(me, SPELL_ROGUE);
+                    break;
+                }
+    
+                ClassCall_Timer = 35000 + (rand() % 5000);
+            }
+            else ClassCall_Timer -= diff;
+    
+            //Phase3 begins when we are below X health
+            if (!Phase3 && HealthBelowPct(20))
+            {
+                Phase3 = true;
+                DoScriptText(SAY_RAISE_SKELETONS, me);
+            }
+    
+            DoMeleeAttackIfReady();
         }
-        else ClassCall_Timer -= diff;
-
-        //Phase3 begins when we are below X health
-        if (!Phase3 && HealthBelowPct(20))
-        {
-            Phase3 = true;
-            DoScriptText(SAY_RAISE_SKELETONS, me);
-        }
-
-        DoMeleeAttackIfReady();
+    };
+    CreatureAI* GetAI_boss_nefarian(Creature* pCreature)
+    {
+        return new boss_nefarianAI (pCreature);
     }
+    
+    
 };
-CreatureAI* GetAI_boss_nefarian(Creature* pCreature)
-{
-    return new boss_nefarianAI (pCreature);
-}
-
 void AddSC_boss_nefarian()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_nefarian";
-    newscript->GetAI = &GetAI_boss_nefarian;
-    newscript->RegisterSelf();
+    new boss_nefarian();
 }
 

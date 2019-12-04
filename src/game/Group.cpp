@@ -122,7 +122,7 @@ bool Group::Create(const uint64& guid, const char* name)
 
     if (!isBGGroup()) CharacterDatabase.CommitTransaction();
 
-    sScriptMgr.OnGroupCreated(leader->GetGroup(), leader);
+    sScriptMgr.OnGroupCreate(leader->GetGroup(), leader);
     
     return true;
 }
@@ -228,7 +228,7 @@ bool Group::AddInvite(Player* player, bool isLeader)
     player->SetGroupInvite(this);
 
     if (!isLeader)
-        sScriptMgr.OnGroupPlayerInvited(this, player);
+        sScriptMgr.OnGroupInviteMember(this, player);
 
     return true;
 }
@@ -299,7 +299,7 @@ bool Group::AddMember(const uint64& guid, const char* name)
                 player->SetDifficulty(m_difficulty);
                 player->SendDungeonDifficulty(true);
             }
-            sScriptMgr.OnGroupPlayerJoined(this, player);
+            sScriptMgr.OnGroupMemberJoin(this, player);
         }
         player->SetGroupUpdateFlag(GROUP_UPDATE_FULL);
         UpdatePlayerOutOfRange(player);
@@ -321,7 +321,7 @@ uint32 Group::RemoveMember(const uint64& guid, const RemoveMethod& method /* = G
         {
             WorldPacket data;
 
-            sScriptMgr.OnGroupPlayerRemoved(this, player, method, kicker, reason);
+            sScriptMgr.OnGroupRemoveMember(this, player, method, kicker, reason);
 
             if (method == GROUP_REMOVEMETHOD_KICK)
             {
@@ -372,7 +372,7 @@ void Group::ChangeLeader(const uint64& guid)
     Player* newLeader = sObjectMgr.GetPlayer(guid);
 
     if (oldLeader && newLeader)
-        sScriptMgr.OnGroupLeaderChanged(this, oldLeader, newLeader);
+        sScriptMgr.OnGroupChangeLeader(this, oldLeader, newLeader);
 
     WorldPacket data(SMSG_GROUP_SET_LEADER, slot->name.size() + 1);
     data << slot->name;
@@ -385,7 +385,7 @@ void Group::Disband(bool hideDestroy)
     Player* player = sObjectMgr.GetPlayer(this->GetLeaderGUID());
     
     if (player && player->GetSession())
-        sScriptMgr.OnGroupDisbanded(this, player);
+        sScriptMgr.OnGroupDisband(this, player);
 
     for (member_citerator citr = m_memberSlots.begin(); citr != m_memberSlots.end(); ++citr)
     {

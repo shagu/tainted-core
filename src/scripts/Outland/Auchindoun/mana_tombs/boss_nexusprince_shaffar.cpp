@@ -60,275 +60,312 @@ enum events
     EVENT_SPELL_BLINK = 4,
 };
 
-struct boss_nexusprince_shaffarAI : public ScriptedAI
-{
-    boss_nexusprince_shaffarAI(Creature* c) : ScriptedAI(c), summons(me) {}
 
-    SummonList summons;
-    EventMap events;
-    bool HasTaunted;
 
-    void Reset()
-    {
-        HasTaunted = false;
 
-        float dist = 8.0f;
-        float posX, posY, posZ, angle;
-        me->GetHomePosition(posX, posY, posZ, angle);
-        summons.DespawnAll();
-        events.Reset();
-        me->SummonCreature(ENTRY_BEACON, posX - dist, posY - dist, posZ, angle, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 7200000);
-        me->SummonCreature(ENTRY_BEACON, posX - dist, posY + dist, posZ, angle, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 7200000);
-        me->SummonCreature(ENTRY_BEACON, posX + dist, posY, posZ, angle, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 7200000);
-    }
-
-    void MoveInLineOfSight(Unit* who)
-    {
-        if (!HasTaunted && who->GetTypeId() == TYPEID_PLAYER && me->IsWithinDistInMap(who, 100.0f))
-        {
-            DoScriptText(SAY_INTRO, me);
-            HasTaunted = true;
-        }
-    }
-
-    void EnterCombat(Unit* who)
-    {
-
-        DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
-        me->SetInCombatWithZone();
-        summons.DoZoneInCombat();
-
-        events.ScheduleEvent(EVENT_SPELL_BEACON, 10000);
-        events.ScheduleEvent(EVENT_SPELL_FR_FI, 4000);
-        events.ScheduleEvent(EVENT_SPELL_FROST_NOVA, 15000);
-    }
-
-    void JustSummoned(Creature* summon)
-    {
-        if (summon->GetEntry() == ENTRY_BEACON)
-        {
-            summon->CastSpell(summon, SPELL_ETHEREAL_BEACON_VISUAL, false);
-
-            if (me->IsInCombat())
-                if (Unit* target = SelectTargetFromPlayerList(50.0f, NULL, true))
-                    summon->AI()->AttackStart(target);
-        }
-
-        summons.Summon(summon);
-    }
-
-    void SummonedCreatureDespawn(Creature* summon)
-    {
-        summons.Despawn(summon);
-    }
-
-    void KilledUnit(Unit* victim)
-    {
-        if (victim->GetTypeId() == TYPEID_PLAYER)
-        {
-            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
-        }
-    }
-
-    void JustDied(Unit*)
-    {
-        DoScriptText(SAY_DEAD, me);
-        summons.DespawnAll();
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-        
-        events.Update(diff);
-        switch (events.ExecuteEvent())
-        {
-        case EVENT_SPELL_FROST_NOVA:
-            me->CastSpell(me, SPELL_FROSTNOVA, false);
-            events.Repeat(urand(16000, 23000));
-            events.DelayEvents(1500);
-            events.ScheduleEvent(EVENT_SPELL_BLINK, 1500);
-            break;
-        case EVENT_SPELL_FR_FI:
-            me->CastSpell(me->GetVictim(), RAND(SPELL_FROSTBOLT, SPELL_FIREBALL), false);
-            events.Repeat(urand(3000, 4000));
-            break;
-        case EVENT_SPELL_BLINK:
-            me->CastSpell(me, SPELL_BLINK, false);
-            events.RescheduleEvent(EVENT_SPELL_FR_FI, 0);
-            break;
-        case EVENT_SPELL_BEACON:
-            if (!urand(0, 3))
-                DoScriptText(SAY_SUMMON, me);
-
-            me->CastSpell(me, SPELL_ETHEREAL_BEACON, true);
-            events.Repeat(10000);
-            break;
-        }
-
-        DoMeleeAttackIfReady();
-    }
-};
-
-CreatureAI* GetAI_boss_nexusprince_shaffar(Creature* pCreature)
-{
-    return new boss_nexusprince_shaffarAI (pCreature);
-}
 
 #define SPELL_ARCANE_BOLT               15254
 #define SPELL_ETHEREAL_APPRENTICE       32372               // Summon 18430
 
-struct mob_ethereal_beaconAI : public ScriptedAI
-{
-    mob_ethereal_beaconAI(Creature* c) : ScriptedAI(c)
-    {
-        HeroicMode = me->GetMap()->IsHeroic();
-    }
 
-    bool HeroicMode;
-    uint32 Apprentice_Timer;
-    uint32 ArcaneBolt_Timer;
-    uint32 Check_Timer;
 
-    void KillSelf()
-    {
-        me->Kill(me);
-    }
 
-    void Reset()
-    {
-        Apprentice_Timer = (HeroicMode ? 10000 : 20000);
-        ArcaneBolt_Timer = 1000;
-        Check_Timer = 1000;
-    }
-
-    void EnterCombat(Unit* who)
-    {
-        // Send Shaffar to fight
-        Creature* Shaffar = me->FindNearestCreature(ENTRY_SHAFFAR, 100);
-        if (!Shaffar || Shaffar->isDead())
-        {
-            KillSelf();
-            return;
-        }
-        if (!Shaffar->IsInCombat())
-            Shaffar->AI()->AttackStart(who);
-    }
-
-    void JustSummoned(Creature* summoned)
-    {
-        summoned->AI()->AttackStart(me->GetVictim());
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (Check_Timer <= diff)
-        {
-            Creature* Shaffar = me->FindNearestCreature(ENTRY_SHAFFAR, 100);
-            if (!Shaffar || Shaffar->isDead() || !Shaffar->IsInCombat())
-            {
-                KillSelf();
-                return;
-            }
-            Check_Timer = 1000;
-        }
-        else Check_Timer -= diff;
-
-        if (ArcaneBolt_Timer <= diff)
-        {
-            DoCastVictim(SPELL_ARCANE_BOLT);
-            ArcaneBolt_Timer = 2000 + rand() % 2500;
-        }
-        else ArcaneBolt_Timer -= diff;
-
-        if (Apprentice_Timer <= diff)
-        {
-            if (me->IsNonMeleeSpellCast(false))
-                me->InterruptNonMeleeSpells(true);
-
-            me->CastSpell(me, SPELL_ETHEREAL_APPRENTICE, true);
-            if (me->IsPet())
-                ((Pet*)me)->SetDuration(0);
-            KillSelf();
-            return;
-        }
-        else Apprentice_Timer -= diff;
-    }
-};
-
-CreatureAI* GetAI_mob_ethereal_beacon(Creature* pCreature)
-{
-    return new mob_ethereal_beaconAI (pCreature);
-}
 
 #define SPELL_ETHEREAL_APPRENTICE_FIREBOLT          32369
 #define SPELL_ETHEREAL_APPRENTICE_FROSTBOLT         32370
 
-struct mob_ethereal_apprenticeAI : public ScriptedAI
+
+
+
+
+
+
+
+class boss_nexusprince_shaffar : public CreatureScript
 {
-    mob_ethereal_apprenticeAI(Creature* c) : ScriptedAI(c) {}
-
-    uint32 Cast_Timer;
-
-    bool isFireboltTurn;
-
-    void Reset()
+public: 
+    boss_nexusprince_shaffar() : CreatureScript("boss_nexusprince_shaffar") { }
+    struct boss_nexusprince_shaffarAI : public ScriptedAI
     {
-        Cast_Timer = 3000;
-        isFireboltTurn = true;
-    }
-
-    void EnterCombat(Unit*) {}
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (Cast_Timer <= diff)
+        boss_nexusprince_shaffarAI(Creature* c) : ScriptedAI(c), summons(me) {}
+    
+        SummonList summons;
+        EventMap events;
+        bool HasTaunted;
+    
+        void Reset()
         {
-            if (isFireboltTurn)
-            {
-                me->CastSpell(me->GetVictim(), SPELL_ETHEREAL_APPRENTICE_FIREBOLT, true);
-                isFireboltTurn = false;
-            }
-            else
-            {
-                me->CastSpell(me->GetVictim(), SPELL_ETHEREAL_APPRENTICE_FROSTBOLT, true);
-                isFireboltTurn = true;
-            }
-            Cast_Timer = 3000;
+            HasTaunted = false;
+    
+            float dist = 8.0f;
+            float posX, posY, posZ, angle;
+            me->GetHomePosition(posX, posY, posZ, angle);
+            summons.DespawnAll();
+            events.Reset();
+            me->SummonCreature(ENTRY_BEACON, posX - dist, posY - dist, posZ, angle, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 7200000);
+            me->SummonCreature(ENTRY_BEACON, posX - dist, posY + dist, posZ, angle, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 7200000);
+            me->SummonCreature(ENTRY_BEACON, posX + dist, posY, posZ, angle, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 7200000);
         }
-        else Cast_Timer -= diff;
+    
+        void MoveInLineOfSight(Unit* who)
+        {
+            if (!HasTaunted && who->GetTypeId() == TYPEID_PLAYER && me->IsWithinDistInMap(who, 100.0f))
+            {
+                DoScriptText(SAY_INTRO, me);
+                HasTaunted = true;
+            }
+        }
+    
+        void EnterCombat(Unit* who)
+        {
+    
+            DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
+            me->SetInCombatWithZone();
+            summons.DoZoneInCombat();
+    
+            events.ScheduleEvent(EVENT_SPELL_BEACON, 10000);
+            events.ScheduleEvent(EVENT_SPELL_FR_FI, 4000);
+            events.ScheduleEvent(EVENT_SPELL_FROST_NOVA, 15000);
+        }
+    
+        void JustSummoned(Creature* summon)
+        {
+            if (summon->GetEntry() == ENTRY_BEACON)
+            {
+                summon->CastSpell(summon, SPELL_ETHEREAL_BEACON_VISUAL, false);
+    
+                if (me->IsInCombat())
+                    if (Unit* target = SelectTargetFromPlayerList(50.0f, NULL, true))
+                        summon->AI()->AttackStart(target);
+            }
+    
+            summons.Summon(summon);
+        }
+    
+        void SummonedCreatureDespawn(Creature* summon)
+        {
+            summons.Despawn(summon);
+        }
+    
+        void KilledUnit(Unit* victim)
+        {
+            if (victim->GetTypeId() == TYPEID_PLAYER)
+            {
+                DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
+            }
+        }
+    
+        void JustDied(Unit*)
+        {
+            DoScriptText(SAY_DEAD, me);
+            summons.DespawnAll();
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+            
+            events.Update(diff);
+            switch (events.ExecuteEvent())
+            {
+            case EVENT_SPELL_FROST_NOVA:
+                me->CastSpell(me, SPELL_FROSTNOVA, false);
+                events.Repeat(urand(16000, 23000));
+                events.DelayEvents(1500);
+                events.ScheduleEvent(EVENT_SPELL_BLINK, 1500);
+                break;
+            case EVENT_SPELL_FR_FI:
+                me->CastSpell(me->GetVictim(), RAND(SPELL_FROSTBOLT, SPELL_FIREBALL), false);
+                events.Repeat(urand(3000, 4000));
+                break;
+            case EVENT_SPELL_BLINK:
+                me->CastSpell(me, SPELL_BLINK, false);
+                events.RescheduleEvent(EVENT_SPELL_FR_FI, 0);
+                break;
+            case EVENT_SPELL_BEACON:
+                if (!urand(0, 3))
+                    DoScriptText(SAY_SUMMON, me);
+    
+                me->CastSpell(me, SPELL_ETHEREAL_BEACON, true);
+                events.Repeat(10000);
+                break;
+            }
+    
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI_boss_nexusprince_shaffar(Creature* pCreature)
+    {
+        return new boss_nexusprince_shaffarAI (pCreature);
     }
+
+    
+
+    
+
+    
 };
 
-CreatureAI* GetAI_mob_ethereal_apprentice(Creature* pCreature)
+class mob_ethereal_beacon : public CreatureScript
 {
-    return new mob_ethereal_apprenticeAI (pCreature);
-}
+public: 
+    mob_ethereal_beacon() : CreatureScript("mob_ethereal_beacon") { }
+    struct mob_ethereal_beaconAI : public ScriptedAI
+    {
+        mob_ethereal_beaconAI(Creature* c) : ScriptedAI(c)
+        {
+            HeroicMode = me->GetMap()->IsHeroic();
+        }
+    
+        bool HeroicMode;
+        uint32 Apprentice_Timer;
+        uint32 ArcaneBolt_Timer;
+        uint32 Check_Timer;
+    
+        void KillSelf()
+        {
+            me->Kill(me);
+        }
+    
+        void Reset()
+        {
+            Apprentice_Timer = (HeroicMode ? 10000 : 20000);
+            ArcaneBolt_Timer = 1000;
+            Check_Timer = 1000;
+        }
+    
+        void EnterCombat(Unit* who)
+        {
+            // Send Shaffar to fight
+            Creature* Shaffar = me->FindNearestCreature(ENTRY_SHAFFAR, 100);
+            if (!Shaffar || Shaffar->isDead())
+            {
+                KillSelf();
+                return;
+            }
+            if (!Shaffar->IsInCombat())
+                Shaffar->AI()->AttackStart(who);
+        }
+    
+        void JustSummoned(Creature* summoned)
+        {
+            summoned->AI()->AttackStart(me->GetVictim());
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (Check_Timer <= diff)
+            {
+                Creature* Shaffar = me->FindNearestCreature(ENTRY_SHAFFAR, 100);
+                if (!Shaffar || Shaffar->isDead() || !Shaffar->IsInCombat())
+                {
+                    KillSelf();
+                    return;
+                }
+                Check_Timer = 1000;
+            }
+            else Check_Timer -= diff;
+    
+            if (ArcaneBolt_Timer <= diff)
+            {
+                DoCastVictim(SPELL_ARCANE_BOLT);
+                ArcaneBolt_Timer = 2000 + rand() % 2500;
+            }
+            else ArcaneBolt_Timer -= diff;
+    
+            if (Apprentice_Timer <= diff)
+            {
+                if (me->IsNonMeleeSpellCast(false))
+                    me->InterruptNonMeleeSpells(true);
+    
+                me->CastSpell(me, SPELL_ETHEREAL_APPRENTICE, true);
+                if (me->IsPet())
+                    ((Pet*)me)->SetDuration(0);
+                KillSelf();
+                return;
+            }
+            else Apprentice_Timer -= diff;
+        }
+    };
+
+    CreatureAI* GetAI_mob_ethereal_beacon(Creature* pCreature)
+    {
+        return new mob_ethereal_beaconAI (pCreature);
+    }
+
+    
+
+    
+
+    
+};
+
+class mob_ethereal_apprentice : public CreatureScript
+{
+public: 
+    mob_ethereal_apprentice() : CreatureScript("mob_ethereal_apprentice") { }
+    struct mob_ethereal_apprenticeAI : public ScriptedAI
+    {
+        mob_ethereal_apprenticeAI(Creature* c) : ScriptedAI(c) {}
+    
+        uint32 Cast_Timer;
+    
+        bool isFireboltTurn;
+    
+        void Reset()
+        {
+            Cast_Timer = 3000;
+            isFireboltTurn = true;
+        }
+    
+        void EnterCombat(Unit*) {}
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (Cast_Timer <= diff)
+            {
+                if (isFireboltTurn)
+                {
+                    me->CastSpell(me->GetVictim(), SPELL_ETHEREAL_APPRENTICE_FIREBOLT, true);
+                    isFireboltTurn = false;
+                }
+                else
+                {
+                    me->CastSpell(me->GetVictim(), SPELL_ETHEREAL_APPRENTICE_FROSTBOLT, true);
+                    isFireboltTurn = true;
+                }
+                Cast_Timer = 3000;
+            }
+            else Cast_Timer -= diff;
+        }
+    };
+
+    CreatureAI* GetAI_mob_ethereal_apprentice(Creature* pCreature)
+    {
+        return new mob_ethereal_apprenticeAI (pCreature);
+    }
+
+    
+
+    
+
+    
+};
+
 
 void AddSC_boss_nexusprince_shaffar()
 {
-    Script* newscript;
+    new boss_nexusprince_shaffar();
+    new mob_ethereal_beacon();
+    new mob_ethereal_apprentice();
 
-    newscript = new Script;
-    newscript->Name = "boss_nexusprince_shaffar";
-    newscript->GetAI = &GetAI_boss_nexusprince_shaffar;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "mob_ethereal_beacon";
-    newscript->GetAI = &GetAI_mob_ethereal_beacon;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "mob_ethereal_apprentice";
-    newscript->GetAI = &GetAI_mob_ethereal_apprentice;
-    newscript->RegisterSelf();
 }
 

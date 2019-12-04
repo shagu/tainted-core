@@ -56,305 +56,314 @@ enum Summons
     OHGAN                 = 14988
 };
 
-struct boss_mandokirAI : public ScriptedAI
+// Ohgan
+
+
+class boss_mandokir : public CreatureScript
 {
-    boss_mandokirAI(Creature* c) : ScriptedAI(c)
+public: 
+    boss_mandokir() : CreatureScript("boss_mandokir") { }
+    struct boss_mandokirAI : public ScriptedAI
     {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
-    }
-
-    uint32 KillCount;
-    uint32 Gaze_Timer;
-    uint32 TargetInRange;
-    uint32 Cleave_Timer;
-    uint32 Whirlwind_Timer;
-    uint32 Fear_Timer;
-    uint32 MortalStrike_Timer;
-    uint32 Check_Timer;
-    float targetX;
-    float targetY;
-    float targetZ;
-
-    ScriptedInstance* pInstance;
-
-    bool endGaze;
-    bool someGazed;
-    bool RaptorDead;
-    bool CombatStart;
-
-    uint64 GazeTarget;
-
-    void Reset()
-    {
-        KillCount = 0;
-        Gaze_Timer = 33000;
-        Cleave_Timer = 7000;
-        Whirlwind_Timer = 20000;
-        Fear_Timer = 1000;
-        MortalStrike_Timer = 1000;
-        Check_Timer = 1000;
-
-        targetX = 0.0f;
-        targetY = 0.0f;
-        targetZ = 0.0f;
-        TargetInRange = 0;
-
-        GazeTarget = 0;
-
-        someGazed = false;
-        endGaze = false;
-        RaptorDead = false;
-        CombatStart = false;
-
-        DoCast(me, SPELL_MOUNT);
-    }
-
-    void KilledUnit(Unit* victim)
-    {
-        if (victim->GetTypeId() == TYPEID_PLAYER)
+        boss_mandokirAI(Creature* c) : ScriptedAI(c)
         {
-            ++KillCount;
-
-            if (KillCount == 3)
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+        }
+    
+        uint32 KillCount;
+        uint32 Gaze_Timer;
+        uint32 TargetInRange;
+        uint32 Cleave_Timer;
+        uint32 Whirlwind_Timer;
+        uint32 Fear_Timer;
+        uint32 MortalStrike_Timer;
+        uint32 Check_Timer;
+        float targetX;
+        float targetY;
+        float targetZ;
+    
+        ScriptedInstance* pInstance;
+    
+        bool endGaze;
+        bool someGazed;
+        bool RaptorDead;
+        bool CombatStart;
+    
+        uint64 GazeTarget;
+    
+        void Reset()
+        {
+            KillCount = 0;
+            Gaze_Timer = 33000;
+            Cleave_Timer = 7000;
+            Whirlwind_Timer = 20000;
+            Fear_Timer = 1000;
+            MortalStrike_Timer = 1000;
+            Check_Timer = 1000;
+    
+            targetX = 0.0f;
+            targetY = 0.0f;
+            targetZ = 0.0f;
+            TargetInRange = 0;
+    
+            GazeTarget = 0;
+    
+            someGazed = false;
+            endGaze = false;
+            RaptorDead = false;
+            CombatStart = false;
+    
+            DoCast(me, SPELL_MOUNT);
+        }
+    
+        void KilledUnit(Unit* victim)
+        {
+            if (victim->GetTypeId() == TYPEID_PLAYER)
             {
-                DoScriptText(SAY_DING_KILL, me);
-
-                if (pInstance)
+                ++KillCount;
+    
+                if (KillCount == 3)
                 {
-                    if (uint64 JindoGUID = pInstance->GetData64(DATA_JINDO))
+                    DoScriptText(SAY_DING_KILL, me);
+    
+                    if (pInstance)
                     {
-                        if (Unit* jTemp = Unit::GetUnit(*me, JindoGUID))
+                        if (uint64 JindoGUID = pInstance->GetData64(DATA_JINDO))
                         {
-                            if (jTemp->IsAlive())
-                                DoScriptText(SAY_GRATS_JINDO, jTemp);
+                            if (Unit* jTemp = Unit::GetUnit(*me, JindoGUID))
+                            {
+                                if (jTemp->IsAlive())
+                                    DoScriptText(SAY_GRATS_JINDO, jTemp);
+                            }
                         }
                     }
+                    DoCast(me, SPELL_LEVEL_UP, true);
+                    KillCount = 0;
                 }
-                DoCast(me, SPELL_LEVEL_UP, true);
-                KillCount = 0;
             }
         }
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-        DoScriptText(SAY_AGGRO, me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (me->GetVictim() && me->IsAlive())
+    
+        void EnterCombat(Unit* /*who*/)
         {
-            if (!CombatStart)
+            DoScriptText(SAY_AGGRO, me);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (me->GetVictim() && me->IsAlive())
             {
-                // At combat Start Mandokir is mounted so we must unmount it first
-                me->Dismount();
-
-                // And summon his raptor
-                me->SummonCreature(OHGAN, me->GetVictim()->GetPositionX(), me->GetVictim()->GetPositionY(), me->GetVictim()->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
-                CombatStart = true;
-            }
-
-            if (Gaze_Timer <= diff)                         // Every 20 seconds Mandokir will check this
-            {
-                if (GazeTarget)
+                if (!CombatStart)
+                {
+                    // At combat Start Mandokir is mounted so we must unmount it first
+                    me->Dismount();
+    
+                    // And summon his raptor
+                    me->SummonCreature(OHGAN, me->GetVictim()->GetPositionX(), me->GetVictim()->GetPositionY(), me->GetVictim()->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+                    CombatStart = true;
+                }
+    
+                if (Gaze_Timer <= diff)                         // Every 20 seconds Mandokir will check this
+                {
+                    if (GazeTarget)
+                    {
+                        Unit* pUnit = Unit::GetUnit(*me, GazeTarget);
+    
+                        if (pUnit && (
+                                targetX != pUnit->GetPositionX() ||
+                                targetY != pUnit->GetPositionY() ||
+                                targetZ != pUnit->GetPositionZ() ||
+                                pUnit->IsInCombat()))
+                        {
+                            if (me->IsWithinMeleeRange(pUnit))
+                                DoCast(pUnit, 24316);
+                            else
+                            {
+                                DoCast(pUnit, SPELL_CHARGE);
+                                //me->SendMonsterMove(pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ(), 0, true,1);
+                                AttackStart(pUnit);
+                            }
+                        }
+                    }
+                    someGazed = false;
+                    Gaze_Timer = 20000;
+                }
+                else
+                    Gaze_Timer -= diff;
+    
+                if (Gaze_Timer < 8000 && !someGazed)            // 8 second(cast time + expire time) before the check for the gaze effect Mandokir will cast gaze debuff on a random target
+                {
+                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                    {
+                        DoScriptText(SAY_GAZE, me, pTarget);
+                        DoCast(pTarget, SPELL_GAZE);
+                        me->MonsterWhisper(SAY_GAZE_WHISPER, pTarget->GetGUID());
+                        GazeTarget = pTarget->GetGUID();
+                        someGazed = true;
+                        endGaze = true;
+                    }
+                }
+    
+                if (Gaze_Timer < 1000 && endGaze)               // 1 second before the debuff expires, check whether the GazeTarget is in LoS
                 {
                     Unit* pUnit = Unit::GetUnit(*me, GazeTarget);
-
-                    if (pUnit && (
-                            targetX != pUnit->GetPositionX() ||
-                            targetY != pUnit->GetPositionY() ||
-                            targetZ != pUnit->GetPositionZ() ||
-                            pUnit->IsInCombat()))
+                    if (pUnit)
                     {
-                        if (me->IsWithinMeleeRange(pUnit))
-                            DoCast(pUnit, 24316);
-                        else
-                        {
-                            DoCast(pUnit, SPELL_CHARGE);
-                            //me->SendMonsterMove(pUnit->GetPositionX(), pUnit->GetPositionY(), pUnit->GetPositionZ(), 0, true,1);
-                            AttackStart(pUnit);
-                        }
+                        targetX = pUnit->GetPositionX();
+                        targetY = pUnit->GetPositionY();
+                        targetZ = pUnit->GetPositionZ();
                     }
+                    endGaze = false;
                 }
-                someGazed = false;
-                Gaze_Timer = 20000;
-            }
-            else
-                Gaze_Timer -= diff;
-
-            if (Gaze_Timer < 8000 && !someGazed)            // 8 second(cast time + expire time) before the check for the gaze effect Mandokir will cast gaze debuff on a random target
-            {
-                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+    
+                if (!someGazed)
                 {
-                    DoScriptText(SAY_GAZE, me, pTarget);
-                    DoCast(pTarget, SPELL_GAZE);
-                    me->MonsterWhisper(SAY_GAZE_WHISPER, pTarget->GetGUID());
-                    GazeTarget = pTarget->GetGUID();
-                    someGazed = true;
-                    endGaze = true;
-                }
-            }
-
-            if (Gaze_Timer < 1000 && endGaze)               // 1 second before the debuff expires, check whether the GazeTarget is in LoS
-            {
-                Unit* pUnit = Unit::GetUnit(*me, GazeTarget);
-                if (pUnit)
-                {
-                    targetX = pUnit->GetPositionX();
-                    targetY = pUnit->GetPositionY();
-                    targetZ = pUnit->GetPositionZ();
-                }
-                endGaze = false;
-            }
-
-            if (!someGazed)
-            {
-                // Cleave
-                if (Cleave_Timer <= diff)
-                {
-                    DoCastVictim( SPELL_CLEAVE);
-                    Cleave_Timer = 7000;
-                }
-                else
-                    Cleave_Timer -= diff;
-
-                // Whirlwind
-                if (Whirlwind_Timer <= diff)
-                {
-                    DoCast(me, SPELL_WHIRLWIND);
-                    Whirlwind_Timer = 18000;
-                }
-                else
-                    Whirlwind_Timer -= diff;
-
-                // If more than 3 targets in melee range Mandokir will cast fear
-                if (Fear_Timer <= diff)
-                {
-                    TargetInRange = 0;
-
-                    std::list<HostileReference*>::const_iterator i = me->getThreatManager().getThreatList().begin();
-                    for (; i != me->getThreatManager().getThreatList().end(); ++i)
+                    // Cleave
+                    if (Cleave_Timer <= diff)
                     {
-                        Unit* pUnit = Unit::GetUnit(*me, (*i)->getUnitGuid());
-                        if (pUnit && me->IsWithinMeleeRange(pUnit))
-                            ++TargetInRange;
-                    }
-
-                    if (TargetInRange > 3)
-                        DoCastVictim( SPELL_FEAR);
-
-                    Fear_Timer = 4000;
-                }
-                else
-                    Fear_Timer -= diff;
-
-                // Mortal Strike if target is below 50% hp
-                if (me->GetVictim() && me->GetVictim()->GetHealth() < me->GetVictim()->GetMaxHealth() * 0.5f)
-                {
-                    if (MortalStrike_Timer <= diff)
-                    {
-                        DoCastVictim( SPELL_MORTAL_STRIKE);
-                        MortalStrike_Timer = 15000;
+                        DoCastVictim( SPELL_CLEAVE);
+                        Cleave_Timer = 7000;
                     }
                     else
-                        MortalStrike_Timer -= diff;
-                }
-            }
-
-            // Checking if Ohgan is dead. If yes Mandokir will enrage.
-            if (Check_Timer <= diff)
-            {
-                if (pInstance)
-                {
-                    if (pInstance->GetData(TYPE_OHGAN) == DONE)
+                        Cleave_Timer -= diff;
+    
+                    // Whirlwind
+                    if (Whirlwind_Timer <= diff)
                     {
-                        if (!RaptorDead)
+                        DoCast(me, SPELL_WHIRLWIND);
+                        Whirlwind_Timer = 18000;
+                    }
+                    else
+                        Whirlwind_Timer -= diff;
+    
+                    // If more than 3 targets in melee range Mandokir will cast fear
+                    if (Fear_Timer <= diff)
+                    {
+                        TargetInRange = 0;
+    
+                        std::list<HostileReference*>::const_iterator i = me->getThreatManager().getThreatList().begin();
+                        for (; i != me->getThreatManager().getThreatList().end(); ++i)
                         {
-                            DoCast(me, SPELL_ENRAGE);
-                            RaptorDead = true;
+                            Unit* pUnit = Unit::GetUnit(*me, (*i)->getUnitGuid());
+                            if (pUnit && me->IsWithinMeleeRange(pUnit))
+                                ++TargetInRange;
                         }
+    
+                        if (TargetInRange > 3)
+                            DoCastVictim( SPELL_FEAR);
+    
+                        Fear_Timer = 4000;
+                    }
+                    else
+                        Fear_Timer -= diff;
+    
+                    // Mortal Strike if target is below 50% hp
+                    if (me->GetVictim() && me->GetVictim()->GetHealth() < me->GetVictim()->GetMaxHealth() * 0.5f)
+                    {
+                        if (MortalStrike_Timer <= diff)
+                        {
+                            DoCastVictim( SPELL_MORTAL_STRIKE);
+                            MortalStrike_Timer = 15000;
+                        }
+                        else
+                            MortalStrike_Timer -= diff;
                     }
                 }
+    
+                // Checking if Ohgan is dead. If yes Mandokir will enrage.
+                if (Check_Timer <= diff)
+                {
+                    if (pInstance)
+                    {
+                        if (pInstance->GetData(TYPE_OHGAN) == DONE)
+                        {
+                            if (!RaptorDead)
+                            {
+                                DoCast(me, SPELL_ENRAGE);
+                                RaptorDead = true;
+                            }
+                        }
+                    }
+    
+                    Check_Timer = 1000;
+                }
+                else
+                    Check_Timer -= diff;
+    
+                DoMeleeAttackIfReady();
+            }
+        }
+    };
+    CreatureAI* GetAI_boss_mandokir(Creature* pCreature)
+    {
+        return new boss_mandokirAI (pCreature);
+    }
+    
+    
+    
+};
 
-                Check_Timer = 1000;
+class mob_ohgan : public CreatureScript
+{
+public: 
+    mob_ohgan() : CreatureScript("mob_ohgan") { }
+    struct mob_ohganAI : public ScriptedAI
+    {
+        mob_ohganAI(Creature* c) : ScriptedAI(c)
+        {
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+        }
+    
+        uint32 SunderArmor_Timer;
+        ScriptedInstance* pInstance;
+    
+        void Reset()
+        {
+            SunderArmor_Timer = 5000;
+        }
+    
+        void EnterCombat(Unit* /*who*/) {}
+    
+        void JustDied(Unit* /*Killer*/)
+        {
+            if (pInstance)
+                pInstance->SetData(TYPE_OHGAN, DONE);
+        }
+    
+        void UpdateAI (const uint32 diff)
+        {
+            // Return since we have no target
+            if (!UpdateVictim())
+                return;
+    
+            // SunderArmor_Timer
+            if (SunderArmor_Timer <= diff)
+            {
+                DoCastVictim( SPELL_SUNDERARMOR);
+                SunderArmor_Timer = 10000 + rand() % 5000;
             }
             else
-                Check_Timer -= diff;
-
+                SunderArmor_Timer -= diff;
+    
             DoMeleeAttackIfReady();
         }
-    }
+    };
+    CreatureAI* GetAI_mob_ohgan(Creature* pCreature)
+    {
+        return new mob_ohganAI (pCreature);
+    }
+    
+    
+    
 };
 
-// Ohgan
-struct mob_ohganAI : public ScriptedAI
-{
-    mob_ohganAI(Creature* c) : ScriptedAI(c)
-    {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
-    }
-
-    uint32 SunderArmor_Timer;
-    ScriptedInstance* pInstance;
-
-    void Reset()
-    {
-        SunderArmor_Timer = 5000;
-    }
-
-    void EnterCombat(Unit* /*who*/) {}
-
-    void JustDied(Unit* /*Killer*/)
-    {
-        if (pInstance)
-            pInstance->SetData(TYPE_OHGAN, DONE);
-    }
-
-    void UpdateAI (const uint32 diff)
-    {
-        // Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        // SunderArmor_Timer
-        if (SunderArmor_Timer <= diff)
-        {
-            DoCastVictim( SPELL_SUNDERARMOR);
-            SunderArmor_Timer = 10000 + rand() % 5000;
-        }
-        else
-            SunderArmor_Timer -= diff;
-
-        DoMeleeAttackIfReady();
-    }
-};
-
-CreatureAI* GetAI_boss_mandokir(Creature* pCreature)
-{
-    return new boss_mandokirAI (pCreature);
-}
-
-CreatureAI* GetAI_mob_ohgan(Creature* pCreature)
-{
-    return new mob_ohganAI (pCreature);
-}
 
 void AddSC_boss_mandokir()
 {
-    Script* newscript;
+    new boss_mandokir();
+    new mob_ohgan();
 
-    newscript = new Script;
-    newscript->Name = "boss_mandokir";
-    newscript->GetAI = &GetAI_boss_mandokir;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "mob_ohgan";
-    newscript->GetAI = &GetAI_mob_ohgan;
-    newscript->RegisterSelf();
 }
 

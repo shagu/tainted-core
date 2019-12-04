@@ -35,69 +35,73 @@ enum Spells
     SPELL_SMITE                                            = 10934
 };
 
-struct boss_moira_bronzebeardAI : public ScriptedAI
+
+class boss_moira_bronzebeard : public CreatureScript
 {
-    boss_moira_bronzebeardAI(Creature* c) : ScriptedAI(c) {}
-
-    uint32 Heal_Timer;
-    uint32 MindBlast_Timer;
-    uint32 ShadowWordPain_Timer;
-    uint32 Smite_Timer;
-
-    void Reset()
+public: 
+    boss_moira_bronzebeard() : CreatureScript("boss_moira_bronzebeard") { }
+    struct boss_moira_bronzebeardAI : public ScriptedAI
     {
-        Heal_Timer = 12000;                                 //These times are probably wrong
-        MindBlast_Timer = 16000;
-        ShadowWordPain_Timer = 2000;
-        Smite_Timer = 8000;
-    }
-
-    void EnterCombat(Unit* /*who*/)
+        boss_moira_bronzebeardAI(Creature* c) : ScriptedAI(c) {}
+    
+        uint32 Heal_Timer;
+        uint32 MindBlast_Timer;
+        uint32 ShadowWordPain_Timer;
+        uint32 Smite_Timer;
+    
+        void Reset()
+        {
+            Heal_Timer = 12000;                                 //These times are probably wrong
+            MindBlast_Timer = 16000;
+            ShadowWordPain_Timer = 2000;
+            Smite_Timer = 8000;
+        }
+    
+        void EnterCombat(Unit* /*who*/)
+        {
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+    
+            //MindBlast_Timer
+            if (MindBlast_Timer <= diff)
+            {
+                DoCastVictim( SPELL_MINDBLAST);
+                MindBlast_Timer = 14000;
+            }
+            else MindBlast_Timer -= diff;
+    
+            //ShadowWordPain_Timer
+            if (ShadowWordPain_Timer <= diff)
+            {
+                DoCastVictim( SPELL_SHADOWWORDPAIN);
+                ShadowWordPain_Timer = 18000;
+            }
+            else ShadowWordPain_Timer -= diff;
+    
+            //Smite_Timer
+            if (Smite_Timer <= diff)
+            {
+                DoCastVictim( SPELL_SMITE);
+                Smite_Timer = 10000;
+            }
+            else Smite_Timer -= diff;
+    
+        }
+    };
+    CreatureAI* GetAI_boss_moira_bronzebeard(Creature* pCreature)
     {
+        return new boss_moira_bronzebeardAI (pCreature);
     }
-
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //MindBlast_Timer
-        if (MindBlast_Timer <= diff)
-        {
-            DoCastVictim( SPELL_MINDBLAST);
-            MindBlast_Timer = 14000;
-        }
-        else MindBlast_Timer -= diff;
-
-        //ShadowWordPain_Timer
-        if (ShadowWordPain_Timer <= diff)
-        {
-            DoCastVictim( SPELL_SHADOWWORDPAIN);
-            ShadowWordPain_Timer = 18000;
-        }
-        else ShadowWordPain_Timer -= diff;
-
-        //Smite_Timer
-        if (Smite_Timer <= diff)
-        {
-            DoCastVictim( SPELL_SMITE);
-            Smite_Timer = 10000;
-        }
-        else Smite_Timer -= diff;
-
-    }
+    
+    
 };
-CreatureAI* GetAI_boss_moira_bronzebeard(Creature* pCreature)
-{
-    return new boss_moira_bronzebeardAI (pCreature);
-}
-
 void AddSC_boss_moira_bronzebeard()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_moira_bronzebeard";
-    newscript->GetAI = &GetAI_boss_moira_bronzebeard;
-    newscript->RegisterSelf();
+    new boss_moira_bronzebeard();
 }
+

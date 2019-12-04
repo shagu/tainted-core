@@ -47,79 +47,82 @@ enum events
     EVENT_DARKSHELL     = 2,
 };
 
-struct boss_pandemoniusAI : public ScriptedAI
+
+class boss_pandemonius : public CreatureScript
 {
-    boss_pandemoniusAI(Creature* c) : ScriptedAI(c)
+public: 
+    boss_pandemonius() : CreatureScript("boss_pandemonius") { }
+    struct boss_pandemoniusAI : public ScriptedAI
     {
-        HeroicMode = me->GetMap()->IsHeroic();
-    }
-
-    bool HeroicMode;
-    uint32 VoidBlast_Counter;
-    EventMap events;
-
-    void Reset()
-    {
-        VoidBlast_Counter = 0;
-    }
-
-    void JustDied(Unit*)
-    {
-        DoScriptText(SAY_DEATH, me);
-    }
-
-    void KilledUnit(Unit*)
-    {
-        DoScriptText(RAND(SAY_KILL_1, SAY_KILL_2), me);
-    }
-
-    void EnterCombat(Unit*)
-    {
-        DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
-        events.ScheduleEvent(EVENT_VOIDBLAST, 30000);
-        events.ScheduleEvent(EVENT_DARKSHELL, 20000);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (me->HasUnitState(UNIT_STATE_CASTING))
-            return;
-
-        events.Update(diff);
-
-        Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0);
-
-        switch (events.ExecuteEvent())
+        boss_pandemoniusAI(Creature* c) : ScriptedAI(c)
         {
-        case EVENT_VOIDBLAST:
-            DoCast(target, HeroicMode ? H_SPELL_VOID_BLAST : SPELL_VOID_BLAST);
-            events.Repeat(25000 + rand() % 10000);
-            break;
-        case EVENT_DARKSHELL:
-            DoCast(me, HeroicMode ? H_SPELL_DARK_SHELL : SPELL_DARK_SHELL);
-            DoScriptText(EMOTE_DARK_SHELL, me);
-            events.Repeat(20000);
-            break;
+            HeroicMode = me->GetMap()->IsHeroic();
         }
-
-        DoMeleeAttackIfReady();
+    
+        bool HeroicMode;
+        uint32 VoidBlast_Counter;
+        EventMap events;
+    
+        void Reset()
+        {
+            VoidBlast_Counter = 0;
+        }
+    
+        void JustDied(Unit*)
+        {
+            DoScriptText(SAY_DEATH, me);
+        }
+    
+        void KilledUnit(Unit*)
+        {
+            DoScriptText(RAND(SAY_KILL_1, SAY_KILL_2), me);
+        }
+    
+        void EnterCombat(Unit*)
+        {
+            DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
+            events.ScheduleEvent(EVENT_VOIDBLAST, 30000);
+            events.ScheduleEvent(EVENT_DARKSHELL, 20000);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (me->HasUnitState(UNIT_STATE_CASTING))
+                return;
+    
+            events.Update(diff);
+    
+            Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0);
+    
+            switch (events.ExecuteEvent())
+            {
+            case EVENT_VOIDBLAST:
+                DoCast(target, HeroicMode ? H_SPELL_VOID_BLAST : SPELL_VOID_BLAST);
+                events.Repeat(25000 + rand() % 10000);
+                break;
+            case EVENT_DARKSHELL:
+                DoCast(me, HeroicMode ? H_SPELL_DARK_SHELL : SPELL_DARK_SHELL);
+                DoScriptText(EMOTE_DARK_SHELL, me);
+                events.Repeat(20000);
+                break;
+            }
+    
+            DoMeleeAttackIfReady();
+        }
+    };
+    
+    CreatureAI* GetAI_boss_pandemonius(Creature* pCreature)
+    {
+        return new boss_pandemoniusAI (pCreature);
     }
+    
+    
 };
-
-CreatureAI* GetAI_boss_pandemonius(Creature* pCreature)
-{
-    return new boss_pandemoniusAI (pCreature);
-}
-
 void AddSC_boss_pandemonius()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_pandemonius";
-    newscript->GetAI = &GetAI_boss_pandemonius;
-    newscript->RegisterSelf();
+    new boss_pandemonius();
 }
 

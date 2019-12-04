@@ -411,237 +411,263 @@ class BugAura : public Aura
         {}
 };
 
-struct boss_veknilashAI : public boss_twinemperorsAI
+
+
+
+
+
+
+
+
+
+
+
+class boss_veknilash : public CreatureScript
 {
-    bool IAmVeklor()
+public: 
+    boss_veknilash() : CreatureScript("boss_veknilash") { }
+    struct boss_veknilashAI : public boss_twinemperorsAI
     {
-        return false;
-    }
-    boss_veknilashAI(Creature* c) : boss_twinemperorsAI(c) {}
-
-    uint32 UpperCut_Timer;
-    uint32 UnbalancingStrike_Timer;
-    uint32 Scarabs_Timer;
-    int Rand;
-    int RandX;
-    int RandY;
-
-    Creature* Summoned;
-
-    void Reset()
-    {
-        TwinReset();
-        UpperCut_Timer = 14000 + rand() % 15000;
-        UnbalancingStrike_Timer = 8000 + rand() % 10000;
-        Scarabs_Timer = 7000 + rand() % 7000;
-
-        //Added. Can be removed if its included in DB.
-        me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_MAGIC, true);
-    }
-
-    void CastSpellOnBug(Creature* pTarget)
-    {
-        pTarget->SetFaction(14);
-        ((CreatureAI*)pTarget->AI())->AttackStart(me->getThreatManager().getHostileTarget());
-        SpellEntry* spell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_MUTATE_BUG);
-        for (int i = 0; i < 3; i++)
+        bool IAmVeklor()
         {
-            if (!spell->Effect[i])
-                continue;
-            pTarget->AddAura(new BugAura(spell, i, NULL, pTarget, pTarget));
+            return false;
         }
-        pTarget->SetHealth(pTarget->GetMaxHealth());
-    }
+        boss_veknilashAI(Creature* c) : boss_twinemperorsAI(c) {}
+    
+        uint32 UpperCut_Timer;
+        uint32 UnbalancingStrike_Timer;
+        uint32 Scarabs_Timer;
+        int Rand;
+        int RandX;
+        int RandY;
+    
+        Creature* Summoned;
+    
+        void Reset()
+        {
+            TwinReset();
+            UpperCut_Timer = 14000 + rand() % 15000;
+            UnbalancingStrike_Timer = 8000 + rand() % 10000;
+            Scarabs_Timer = 7000 + rand() % 7000;
+    
+            //Added. Can be removed if its included in DB.
+            me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_MAGIC, true);
+        }
+    
+        void CastSpellOnBug(Creature* pTarget)
+        {
+            pTarget->SetFaction(14);
+            ((CreatureAI*)pTarget->AI())->AttackStart(me->getThreatManager().getHostileTarget());
+            SpellEntry* spell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_MUTATE_BUG);
+            for (int i = 0; i < 3; i++)
+            {
+                if (!spell->Effect[i])
+                    continue;
+                pTarget->AddAura(new BugAura(spell, i, NULL, pTarget, pTarget));
+            }
+            pTarget->SetHealth(pTarget->GetMaxHealth());
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+    
+            if (!TryActivateAfterTTelep(diff))
+                return;
+    
+            //UnbalancingStrike_Timer
+            if (UnbalancingStrike_Timer <= diff)
+            {
+                DoCastVictim(SPELL_UNBALANCING_STRIKE);
+                UnbalancingStrike_Timer = 8000 + rand() % 12000;
+            }
+            else UnbalancingStrike_Timer -= diff;
+    
+            if (UpperCut_Timer <= diff)
+            {
+                Unit* randomMelee = SelectTarget(SELECT_TARGET_RANDOM, 0, NOMINAL_MELEE_RANGE, true);
+                if (randomMelee)
+                    DoCast(randomMelee, SPELL_UPPERCUT);
+                UpperCut_Timer = 15000 + rand() % 15000;
+            }
+            else UpperCut_Timer -= diff;
+    
+            HandleBugs(diff);
+    
+            //Heal brother when 60yrds close
+            TryHealBrother(diff);
+    
+            //Teleporting to brother
+            if (Teleport_Timer <= diff)
+                TeleportToMyBrother();
+            else Teleport_Timer -= diff;
+    
+            CheckEnrage(diff);
+    
+            DoMeleeAttackIfReady();
+        }
+    };
 
-    void UpdateAI(const uint32 diff)
+    CreatureAI* GetAI_boss_veknilash(Creature* pCreature)
     {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        if (!TryActivateAfterTTelep(diff))
-            return;
-
-        //UnbalancingStrike_Timer
-        if (UnbalancingStrike_Timer <= diff)
-        {
-            DoCastVictim(SPELL_UNBALANCING_STRIKE);
-            UnbalancingStrike_Timer = 8000 + rand() % 12000;
-        }
-        else UnbalancingStrike_Timer -= diff;
-
-        if (UpperCut_Timer <= diff)
-        {
-            Unit* randomMelee = SelectTarget(SELECT_TARGET_RANDOM, 0, NOMINAL_MELEE_RANGE, true);
-            if (randomMelee)
-                DoCast(randomMelee, SPELL_UPPERCUT);
-            UpperCut_Timer = 15000 + rand() % 15000;
-        }
-        else UpperCut_Timer -= diff;
-
-        HandleBugs(diff);
-
-        //Heal brother when 60yrds close
-        TryHealBrother(diff);
-
-        //Teleporting to brother
-        if (Teleport_Timer <= diff)
-            TeleportToMyBrother();
-        else Teleport_Timer -= diff;
-
-        CheckEnrage(diff);
-
-        DoMeleeAttackIfReady();
+        return new boss_veknilashAI (pCreature);
     }
+
+    
+
+    
+
+    
 };
 
-struct boss_veklorAI : public boss_twinemperorsAI
+class boss_veklor : public CreatureScript
 {
-    bool IAmVeklor()
+public: 
+    boss_veklor() : CreatureScript("boss_veklor") { }
+    struct boss_veklorAI : public boss_twinemperorsAI
     {
-        return true;
-    }
-    boss_veklorAI(Creature* c) : boss_twinemperorsAI(c) {}
-
-    uint32 ShadowBolt_Timer;
-    uint32 Blizzard_Timer;
-    uint32 ArcaneBurst_Timer;
-    uint32 Scorpions_Timer;
-    int Rand;
-    int RandX;
-    int RandY;
-
-    Creature* Summoned;
-
-    void Reset()
-    {
-        TwinReset();
-        ShadowBolt_Timer = 0;
-        Blizzard_Timer = 15000 + rand() % 5000;;
-        ArcaneBurst_Timer = 1000;
-        Scorpions_Timer = 7000 + rand() % 7000;
-
-        //Added. Can be removed if its included in DB.
-        me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, true);
-        me->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, 0);
-        me->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, 0);
-    }
-
-    void CastSpellOnBug(Creature* pTarget)
-    {
-        pTarget->SetFaction(14);
-        SpellEntry* spell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_EXPLODEBUG);
-        for (int i = 0; i < 3; i++)
+        bool IAmVeklor()
         {
-            if (!spell->Effect[i])
-                continue;
-            pTarget->AddAura(new BugAura(spell, i, NULL, pTarget, pTarget));
+            return true;
         }
-        pTarget->SetHealth(pTarget->GetMaxHealth());
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        // reset arcane burst after teleport - we need to do this because
-        // when VL jumps to VN's location there will be a warrior who will get only 2s to run away
-        // which is almost impossible
-        if (AfterTeleport)
-            ArcaneBurst_Timer = 5000;
-        if (!TryActivateAfterTTelep(diff))
-            return;
-
-        //ShadowBolt_Timer
-        if (ShadowBolt_Timer <= diff)
+        boss_veklorAI(Creature* c) : boss_twinemperorsAI(c) {}
+    
+        uint32 ShadowBolt_Timer;
+        uint32 Blizzard_Timer;
+        uint32 ArcaneBurst_Timer;
+        uint32 Scorpions_Timer;
+        int Rand;
+        int RandX;
+        int RandY;
+    
+        Creature* Summoned;
+    
+        void Reset()
         {
-            if (me->GetDistance(me->GetVictim()) > 45)
-                me->GetMotionMaster()->MoveChase(me->GetVictim(), VEKLOR_DIST, 0);
-            else
-                DoCastVictim(SPELL_SHADOWBOLT);
-            ShadowBolt_Timer = 2000;
+            TwinReset();
+            ShadowBolt_Timer = 0;
+            Blizzard_Timer = 15000 + rand() % 5000;;
+            ArcaneBurst_Timer = 1000;
+            Scorpions_Timer = 7000 + rand() % 7000;
+    
+            //Added. Can be removed if its included in DB.
+            me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, true);
+            me->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, 0);
+            me->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, 0);
         }
-        else ShadowBolt_Timer -= diff;
-
-        //Blizzard_Timer
-        if (Blizzard_Timer <= diff)
+    
+        void CastSpellOnBug(Creature* pTarget)
         {
-            Unit* pTarget = NULL;
-            pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 45, true);
-            if (pTarget)
-                DoCast(pTarget, SPELL_BLIZZARD);
-            Blizzard_Timer = 15000 + rand() % 15000;
-        }
-        else Blizzard_Timer -= diff;
-
-        if (ArcaneBurst_Timer <= diff)
-        {
-            Unit* mvic;
-            if ((mvic = SelectTarget(SELECT_TARGET_NEAREST, 0, NOMINAL_MELEE_RANGE, true)) != NULL)
+            pTarget->SetFaction(14);
+            SpellEntry* spell = (SpellEntry*)GetSpellStore()->LookupEntry(SPELL_EXPLODEBUG);
+            for (int i = 0; i < 3; i++)
             {
-                DoCast(mvic, SPELL_ARCANEBURST);
+                if (!spell->Effect[i])
+                    continue;
+                pTarget->AddAura(new BugAura(spell, i, NULL, pTarget, pTarget));
+            }
+            pTarget->SetHealth(pTarget->GetMaxHealth());
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+    
+            // reset arcane burst after teleport - we need to do this because
+            // when VL jumps to VN's location there will be a warrior who will get only 2s to run away
+            // which is almost impossible
+            if (AfterTeleport)
                 ArcaneBurst_Timer = 5000;
-            }
-        }
-        else ArcaneBurst_Timer -= diff;
-
-        HandleBugs(diff);
-
-        //Heal brother when 60yrds close
-        TryHealBrother(diff);
-
-        //Teleporting to brother
-        if (Teleport_Timer <= diff)
-            TeleportToMyBrother();
-        else Teleport_Timer -= diff;
-
-        CheckEnrage(diff);
-
-        //VL doesn't melee
-        //DoMeleeAttackIfReady();
-    }
-
-    void AttackStart(Unit* who)
-    {
-        if (!who)
-            return;
-
-        if (who->isTargetableForAttack())
-        {
-            // VL doesn't melee
-            if (me->Attack(who, false))
+            if (!TryActivateAfterTTelep(diff))
+                return;
+    
+            //ShadowBolt_Timer
+            if (ShadowBolt_Timer <= diff)
             {
-                me->GetMotionMaster()->MoveChase(who, VEKLOR_DIST, 0);
-                me->AddThreat(who, 0.0f);
+                if (me->GetDistance(me->GetVictim()) > 45)
+                    me->GetMotionMaster()->MoveChase(me->GetVictim(), VEKLOR_DIST, 0);
+                else
+                    DoCastVictim(SPELL_SHADOWBOLT);
+                ShadowBolt_Timer = 2000;
+            }
+            else ShadowBolt_Timer -= diff;
+    
+            //Blizzard_Timer
+            if (Blizzard_Timer <= diff)
+            {
+                Unit* pTarget = NULL;
+                pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 45, true);
+                if (pTarget)
+                    DoCast(pTarget, SPELL_BLIZZARD);
+                Blizzard_Timer = 15000 + rand() % 15000;
+            }
+            else Blizzard_Timer -= diff;
+    
+            if (ArcaneBurst_Timer <= diff)
+            {
+                Unit* mvic;
+                if ((mvic = SelectTarget(SELECT_TARGET_NEAREST, 0, NOMINAL_MELEE_RANGE, true)) != NULL)
+                {
+                    DoCast(mvic, SPELL_ARCANEBURST);
+                    ArcaneBurst_Timer = 5000;
+                }
+            }
+            else ArcaneBurst_Timer -= diff;
+    
+            HandleBugs(diff);
+    
+            //Heal brother when 60yrds close
+            TryHealBrother(diff);
+    
+            //Teleporting to brother
+            if (Teleport_Timer <= diff)
+                TeleportToMyBrother();
+            else Teleport_Timer -= diff;
+    
+            CheckEnrage(diff);
+    
+            //VL doesn't melee
+            //DoMeleeAttackIfReady();
+        }
+    
+        void AttackStart(Unit* who)
+        {
+            if (!who)
+                return;
+    
+            if (who->isTargetableForAttack())
+            {
+                // VL doesn't melee
+                if (me->Attack(who, false))
+                {
+                    me->GetMotionMaster()->MoveChase(who, VEKLOR_DIST, 0);
+                    me->AddThreat(who, 0.0f);
+                }
             }
         }
+    };
+
+    CreatureAI* GetAI_boss_veklor(Creature* pCreature)
+    {
+        return new boss_veklorAI (pCreature);
     }
+
+    
+
+    
+
+    
 };
 
-CreatureAI* GetAI_boss_veknilash(Creature* pCreature)
-{
-    return new boss_veknilashAI (pCreature);
-}
-
-CreatureAI* GetAI_boss_veklor(Creature* pCreature)
-{
-    return new boss_veklorAI (pCreature);
-}
 
 void AddSC_boss_twinemperors()
 {
-    Script* newscript;
+    new boss_veknilash();
+    new boss_veklor();
 
-    newscript = new Script;
-    newscript->Name = "boss_veknilash";
-    newscript->GetAI = &GetAI_boss_veknilash;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "boss_veklor";
-    newscript->GetAI = &GetAI_boss_veklor;
-    newscript->RegisterSelf();
 }
 
