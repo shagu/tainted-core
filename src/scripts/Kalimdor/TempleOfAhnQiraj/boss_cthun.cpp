@@ -422,14 +422,88 @@ public:
             }
         }
     };
-    //GetAIs
+
+
+    //GetAIs
     CreatureAI* GetAI_eye_of_cthun(Creature* pCreature)
     {
         return new eye_of_cthunAI(pCreature);
     }
-    
-    
+   
     
+};
+
+class mob_giant_flesh_tentacle : public CreatureScript
+{
+public:
+	mob_giant_flesh_tentacle() : CreatureScript("mob_giant_flesh_tentacle") { }
+
+	struct flesh_tentacleAI : public Scripted_NoMovementAI
+	{
+		flesh_tentacleAI(Creature* c) : Scripted_NoMovementAI(c), Parent(0) {}
+
+		uint64 Parent;
+		uint32 CheckTimer;
+
+		void SpawnedByCthun(uint64 p)
+		{
+			Parent = p;
+		}
+
+		void Reset()
+		{
+			CheckTimer = 1000;
+		}
+
+		void EnterCombat(Unit* /*who*/)
+		{
+		}
+
+		//Flesh tentacle functions
+		void UpdateAI(const uint32 diff)
+		{
+			//Check if we have a target
+			if (!UpdateVictim())
+				return;
+
+			if (Parent)
+			{
+				if (CheckTimer <= diff)
+				{
+					Unit* pUnit = Unit::GetUnit(*me, Parent);
+
+					if (!pUnit || !pUnit->IsAlive() || !pUnit->IsInCombat())
+					{
+						Parent = 0;
+						me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+						return;
+					}
+
+					CheckTimer = 1000;
+				}
+				else CheckTimer -= diff;
+			}
+
+			DoMeleeAttackIfReady();
+		}
+
+		void JustDied(Unit* /*killer*/)
+		{
+			if (!Parent)
+				return;
+
+			Creature* Cthun = Unit::GetCreature(*me, Parent);
+
+			if (Cthun)
+				((boss_cthun::cthunAI*)(Cthun->AI()))->FleshTentcleKilled();
+		}
+
+	};
+
+	CreatureAI* GetAI_flesh_tentacle(Creature* pCreature)
+	{
+		return new flesh_tentacleAI(pCreature);
+	}
 };
 
 class boss_cthun : public CreatureScript
@@ -929,8 +1003,10 @@ public:
     CreatureAI* GetAI_cthun(Creature* pCreature)
     {
         return new cthunAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1009,8 +1085,6 @@ public:
     {
         return new eye_tentacleAI(pCreature);
     }
-    
-    
     
 };
 
@@ -1122,8 +1196,10 @@ public:
     CreatureAI* GetAI_claw_tentacle(Creature* pCreature)
     {
         return new claw_tentacleAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1248,8 +1324,8 @@ public:
     CreatureAI* GetAI_giant_claw_tentacle(Creature* pCreature)
     {
         return new giant_claw_tentacleAI(pCreature);
-    }
-    
+    }
+
     
 };
 
@@ -1257,7 +1333,8 @@ class mob_giant_eye_tentacle : public CreatureScript
 {
 public: 
     mob_giant_eye_tentacle() : CreatureScript("mob_giant_eye_tentacle") { }
-        struct giant_eye_tentacleAI : public Scripted_NoMovementAI
+    
+    struct giant_eye_tentacleAI : public Scripted_NoMovementAI
     {
         giant_eye_tentacleAI(Creature* c) : Scripted_NoMovementAI(c)
         {
@@ -1306,91 +1383,17 @@ public:
             }
             else BeamTimer -= diff;
         }
-    };
+    };
+
     CreatureAI* GetAI_giant_eye_tentacle(Creature* pCreature)
     {
         return new giant_eye_tentacleAI(pCreature);
-    }
-    
-    
-};
-
-class mob_giant_flesh_tentacle : public CreatureScript
-{
-public: 
-    mob_giant_flesh_tentacle() : CreatureScript("mob_giant_flesh_tentacle") { }
-    
-    struct flesh_tentacleAI : public Scripted_NoMovementAI
-    {
-        flesh_tentacleAI(Creature* c) : Scripted_NoMovementAI(c), Parent(0) {}
-
-        uint64 Parent;
-        uint32 CheckTimer;
-
-        void SpawnedByCthun(uint64 p)
-        {
-            Parent = p;
-        }
-
-        void Reset()
-        {
-            CheckTimer = 1000;
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-        }
-
-        //Flesh tentacle functions
-        void UpdateAI(const uint32 diff)
-        {
-            //Check if we have a target
-            if (!UpdateVictim())
-                return;
-
-            if (Parent)
-            {
-                if (CheckTimer <= diff)
-                {
-                    Unit* pUnit = Unit::GetUnit(*me, Parent);
-
-                    if (!pUnit || !pUnit->IsAlive() || !pUnit->IsInCombat())
-                    {
-                        Parent = 0;
-                        me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
-                        return;
-                    }
-
-                    CheckTimer = 1000;
-                }
-                else CheckTimer -= diff;
-            }
-
-            DoMeleeAttackIfReady();
-        }
-
-        void JustDied(Unit* /*killer*/)
-        {
-            if (!Parent)
-                return;
-
-            Creature* Cthun = Unit::GetCreature(*me, Parent);
-
-            if (Cthun)
-                ((boss_cthun::cthunAI*)(Cthun->AI()))->FleshTentcleKilled();
-        }
-
-    };
-
-    
-    CreatureAI* GetAI_flesh_tentacle(Creature* pCreature)
-    {
-        return new flesh_tentacleAI(pCreature);
     }
-    
+
+    
+
     
 };
-
 
 void AddSC_boss_cthun()
 {

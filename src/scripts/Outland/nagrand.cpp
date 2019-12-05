@@ -291,10 +291,6 @@ enum
 
 
 
-
-
-;
-
 /*#####
 ## go_corkis_prison3 & npc_corki3
 #####*/
@@ -306,11 +302,6 @@ enum
     NPC_CORKI_CREDIT_3  = 18444,
 };
 
-
-
-
-
-;
 
 /*#####
 ## npc_kurenai_captive
@@ -526,13 +517,17 @@ public:
             }
             return;
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_shattered_rumbler(Creature* pCreature)
     {
         return new mob_shattered_rumblerAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -630,12 +625,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_lump(Creature* pCreature)
     {
         return new mob_lumpAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (player->GetQuestStatus(9918) == QUEST_STATUS_INCOMPLETE)
@@ -645,7 +643,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipHello_mob_lump(Player* player, Creature* pCreature)
     {
         if (player->GetQuestStatus(9918) == QUEST_STATUS_INCOMPLETE)
@@ -655,7 +654,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipSelect_mob_lump(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
     {
         switch (action)
@@ -679,7 +679,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -703,8 +704,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -728,13 +731,17 @@ public:
     			me->DespawnOrUnsummon(5000);
             }
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_sunspring_villager(Creature* pCreature)
     {
         return new mob_sunspring_villagerAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -742,8 +749,10 @@ class npc_altruis_the_sufferer : public CreatureScript
 {
 public: 
     npc_altruis_the_sufferer() : CreatureScript("npc_altruis_the_sufferer") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -765,7 +774,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -810,7 +820,9 @@ public:
         }
         return true;
     }
-    
+    
+
+
     bool OnQuestAccept(Player* player, Creature* /*creature*/, Quest const* /*quest*/) override
     {
         if (!player->GetQuestRewardStatus(9991))              //Survey the Land, q-id 9991
@@ -826,8 +838,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -835,8 +849,10 @@ class npc_greatmother_geyah : public CreatureScript
 {
 public: 
     npc_greatmother_geyah() : CreatureScript("npc_greatmother_geyah") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -858,7 +874,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -918,8 +935,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -927,8 +946,10 @@ class npc_lantresor_of_the_blade : public CreatureScript
 {
 public: 
     npc_lantresor_of_the_blade() : CreatureScript("npc_lantresor_of_the_blade") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -941,7 +962,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -984,8 +1006,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1098,12 +1122,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_maghar_captive(Creature* pCreature)
     {
         return new npc_maghar_captiveAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_TOTEM_KARDASH_H)
@@ -1124,8 +1151,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1160,14 +1189,196 @@ public:
                 }
             }
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_creditmarker_visit_with_ancestors(Creature* pCreature)
     {
         return new npc_creditmarker_visit_with_ancestorsAI (pCreature);
-    }
-    
-    
+    }
+
+   
+};
+
+class npc_maghar_prisoner : public CreatureScript
+{
+public:
+	npc_maghar_prisoner() : CreatureScript("npc_maghar_prisoner") { }
+	struct npc_maghar_prisonerAI : public npc_escortAI
+	{
+		npc_maghar_prisonerAI(Creature* pCreature) : npc_escortAI(pCreature) {}
+
+		uint64 uiPlayerGUID;
+
+		void Reset()
+		{
+			uiPlayerGUID = 0;
+		}
+
+		void MoveInLineOfSight(Unit* pWho)
+		{
+			if (pWho->GetTypeId() == TYPEID_PLAYER && ((Player*)pWho)->GetReputationRank(941) >= REP_FRIENDLY && me->IsWithinDistInMap(((Player*)pWho), 20))
+			{
+				if (uiPlayerGUID == pWho->GetGUID())
+					return;
+				else uiPlayerGUID = 0;
+
+				switch (urand(0, 3))
+				{
+				case 0:
+					DoScriptText(SAY_MAG_PRISONER1, me);
+					break;
+				case 1:
+					DoScriptText(SAY_MAG_PRISONER2, me);
+					break;
+				case 2:
+					DoScriptText(SAY_MAG_PRISONER3, me);
+					break;
+				case 3:
+					DoScriptText(SAY_MAG_PRISONER4, me);
+					break;
+				}
+				uiPlayerGUID = pWho->GetGUID();
+			}
+		}
+
+		uint32 WaypointID()
+		{
+			switch (me->GetGUIDLow())
+			{
+			case 65828:
+				return 1;
+				break;
+			case 65826:
+				return 1;
+				break;
+			case 65827:
+				return 1;
+				break;
+			case 65825:
+				return 1;
+				break;
+			case 65829:
+				return 1;
+				break;
+			case 65823:
+				return 2;
+				break;
+			case 65824:
+				return 2;
+				break;
+			case 65821:
+				return 2;
+				break;
+			case 65815:
+				return 2;
+				break;
+			case 65814:
+				return 3;
+				break;
+			case 65813:
+				return 4;
+				break;
+			case 65819:
+				return 5;
+				break;
+			case 65820:
+				return 5;
+				break;
+			case 65817:
+				return 6;
+				break;
+			case 65822:
+				return 6;
+				break;
+			case 65816:
+				return 6;
+				break;
+			case 65831:
+				return 7;
+				break;
+			case 65832:
+				return 7;
+				break;
+			case 65830:
+				return 7;
+				break;
+			case 65818:
+				return 8;
+				break;
+			default:
+				return 1;
+				break;
+			}
+		}
+
+		void StartRun(Player* pPlayer)
+		{
+			switch (WaypointID())
+			{
+			case 1:
+				AddWaypoint(0, -1076.000f, 8945.270f, 101.891f);
+				AddWaypoint(1, -1087.469f, 8894.919f, 102.183f);
+				Start(false, false, pPlayer->GetGUID());
+				break;
+			case 2:
+				AddWaypoint(0, -782.796f, 8875.171f, 181.745f);
+				AddWaypoint(1, -821.331f, 8913.110f, 171.417f);
+				Start(false, false, pPlayer->GetGUID());
+				break;
+			case 3:
+				AddWaypoint(0, -670.298f, 8810.587f, 196.057f);
+				AddWaypoint(1, -717.270f, 8806.274f, 184.591f);
+				Start(false, false, pPlayer->GetGUID());
+				break;
+			case 4:
+				AddWaypoint(0, -710.969f, 8763.471f, 186.513f);
+				AddWaypoint(1, -782.685f, 8874.755f, 181.740f);
+				Start(false, false, pPlayer->GetGUID());
+				break;
+			case 5:
+				AddWaypoint(0, -865.144f, 8713.610f, 248.041f);
+				AddWaypoint(1, -880.415f, 8743.203f, 233.202f);
+				Start(false, false, pPlayer->GetGUID());
+				break;
+			case 6:
+				AddWaypoint(0, -847.285f, 8722.406f, 177.255f);
+				AddWaypoint(1, -810.138f, 8731.109f, 178.226f);
+				Start(false, false, pPlayer->GetGUID());
+				break;
+			case 7:
+				AddWaypoint(0, -897.005f, 8689.280f, 170.527f);
+				AddWaypoint(1, -844.252f, 8721.320f, 177.257f);
+				Start(false, false, pPlayer->GetGUID());
+				break;
+			case 8:
+				AddWaypoint(0, -838.047f, 8691.124f, 180.549f);
+				AddWaypoint(1, -821.200f, 8712.569f, 182.702f);
+				Start(false, false, pPlayer->GetGUID());
+				break;
+			}
+			return;
+		}
+
+		void WaypointReached(uint32 uiPointId)
+		{
+			switch (uiPointId)
+			{
+			case 0:
+				SetRun();
+				break;
+			case 1:
+				me->ForcedDespawn();
+				break;
+			}
+		}
+	};
+
+	CreatureAI* GetAI_npc_maghar_prisoner(Creature* pCreature)
+	{
+		return new npc_maghar_prisonerAI(pCreature);
+	}
 };
 
 class mob_sparrowhawk : public CreatureScript
@@ -1263,13 +1474,17 @@ public:
             }
             return;
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_sparrowhawk(Creature* pCreature)
     {
         return new mob_sparrowhawkAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1277,8 +1492,8 @@ class go_maghar_prison : public GameObjectScript
 {
 public: 
     go_maghar_prison() : GameObjectScript("go_maghar_prison") { }
-    
-    
+    
+
     bool OnGossipHello(Player* pPlayer, GameObject* pGo) override
     {
     
@@ -1299,199 +1514,82 @@ public:
         }
         return false;
     }
-    
-    
     
 };
 
-class npc_maghar_prisoner : public CreatureScript
+class npc_corki1 : public CreatureScript
 {
-public: 
-    npc_maghar_prisoner() : CreatureScript("npc_maghar_prisoner") { }
-    struct npc_maghar_prisonerAI : public npc_escortAI
-    {
-        npc_maghar_prisonerAI(Creature* pCreature) : npc_escortAI(pCreature) {}
-    
-        uint64 uiPlayerGUID;
-    
-        void Reset()
-        {
-            uiPlayerGUID = 0;
-        }
-    
-        void MoveInLineOfSight(Unit* pWho)
-        {
-            if (pWho->GetTypeId() == TYPEID_PLAYER && ((Player*)pWho)->GetReputationRank(941) >= REP_FRIENDLY && me->IsWithinDistInMap(((Player*)pWho), 20))
-            {
-                if (uiPlayerGUID == pWho->GetGUID())
-                    return;
-                else uiPlayerGUID = 0;
-    
-                switch (urand(0, 3))
-                {
-                case 0:
-                    DoScriptText(SAY_MAG_PRISONER1, me);
-                    break;
-                case 1:
-                    DoScriptText(SAY_MAG_PRISONER2, me);
-                    break;
-                case 2:
-                    DoScriptText(SAY_MAG_PRISONER3, me);
-                    break;
-                case 3:
-                    DoScriptText(SAY_MAG_PRISONER4, me);
-                    break;
-                }
-                uiPlayerGUID = pWho->GetGUID();
-            }
-        }
-    
-        uint32 WaypointID()
-        {
-            switch (me->GetGUIDLow())
-            {
-            case 65828:
-                return 1;
-                break;
-            case 65826:
-                return 1;
-                break;
-            case 65827:
-                return 1;
-                break;
-            case 65825:
-                return 1;
-                break;
-            case 65829:
-                return 1;
-                break;
-            case 65823:
-                return 2;
-                break;
-            case 65824:
-                return 2;
-                break;
-            case 65821:
-                return 2;
-                break;
-            case 65815:
-                return 2;
-                break;
-            case 65814:
-                return 3;
-                break;
-            case 65813:
-                return 4;
-                break;
-            case 65819:
-                return 5;
-                break;
-            case 65820:
-                return 5;
-                break;
-            case 65817:
-                return 6;
-                break;
-            case 65822:
-                return 6;
-                break;
-            case 65816:
-                return 6;
-                break;
-            case 65831:
-                return 7;
-                break;
-            case 65832:
-                return 7;
-                break;
-            case 65830:
-                return 7;
-                break;
-            case 65818:
-                return 8;
-                break;
-            default:
-                return 1;
-                break;
-            }
-        }
-    
-        void StartRun(Player* pPlayer)
-        {
-            switch (WaypointID())
-            {
-            case 1:
-                AddWaypoint(0, -1076.000f, 8945.270f, 101.891f);
-                AddWaypoint(1, -1087.469f, 8894.919f, 102.183f);
-                Start(false, false, pPlayer->GetGUID());
-                break;
-            case 2:
-                AddWaypoint(0, -782.796f, 8875.171f, 181.745f);
-                AddWaypoint(1, -821.331f, 8913.110f, 171.417f);
-                Start(false, false, pPlayer->GetGUID());
-                break;
-            case 3:
-                AddWaypoint(0, -670.298f, 8810.587f, 196.057f);
-                AddWaypoint(1, -717.270f, 8806.274f, 184.591f);
-                Start(false, false, pPlayer->GetGUID());
-                break;
-            case 4:
-                AddWaypoint(0, -710.969f, 8763.471f, 186.513f);
-                AddWaypoint(1, -782.685f, 8874.755f, 181.740f);
-                Start(false, false, pPlayer->GetGUID());
-                break;
-            case 5:
-                AddWaypoint(0, -865.144f, 8713.610f, 248.041f);
-                AddWaypoint(1, -880.415f, 8743.203f, 233.202f);
-                Start(false, false, pPlayer->GetGUID());
-                break;
-            case 6:
-                AddWaypoint(0, -847.285f, 8722.406f, 177.255f);
-                AddWaypoint(1, -810.138f, 8731.109f, 178.226f);
-                Start(false, false, pPlayer->GetGUID());
-                break;
-            case 7:
-                AddWaypoint(0, -897.005f, 8689.280f, 170.527f);
-                AddWaypoint(1, -844.252f, 8721.320f, 177.257f);
-                Start(false, false, pPlayer->GetGUID());
-                break;
-            case 8:
-                AddWaypoint(0, -838.047f, 8691.124f, 180.549f);
-                AddWaypoint(1, -821.200f, 8712.569f, 182.702f);
-                Start(false, false, pPlayer->GetGUID());
-                break;
-            }
-            return;
-        }
-    
-        void WaypointReached(uint32 uiPointId)
-        {
-            switch (uiPointId)
-            {
-            case 0:
-                SetRun();
-                break;
-            case 1:
-                me->ForcedDespawn();
-                break;
-            }
-        }
-    };
-    
-    CreatureAI* GetAI_npc_maghar_prisoner(Creature* pCreature)
-    {
-        return new npc_maghar_prisonerAI(pCreature);
-    }
-    
-    
+public:
+	npc_corki1() : CreatureScript("npc_corki1") { }
+	struct npc_corki1AI : public npc_escortAI
+	{
+		npc_corki1AI(Creature* pCreature) : npc_escortAI(pCreature) {}
+
+		uint64 uiPlayerGUID;
+
+		void Reset()
+		{
+			uiPlayerGUID = 0;
+		}
+
+		void WaypointReached(uint32 uiPointId)
+		{
+			switch (uiPointId)
+			{
+			case 0:
+				SetRun();
+				break;
+			case 3:
+				me->ForcedDespawn();
+			}
+		}
+
+		void MoveInLineOfSight(Unit* pWho)
+		{
+			if (pWho->GetTypeId() == TYPEID_PLAYER && ((Player*)pWho)->GetReputationRank(978) >= REP_FRIENDLY && me->IsWithinDistInMap(((Player*)pWho), 20))
+			{
+				if (uiPlayerGUID == pWho->GetGUID())
+					return;
+				else uiPlayerGUID = 0;
+
+				switch (urand(0, 4))
+				{
+				case 0:
+					DoScriptText(SAY_KORKI2, me);
+					break;
+				case 1:
+					DoScriptText(SAY_KORKI3, me);
+					break;
+				case 2:
+					DoScriptText(SAY_KORKI4, me);
+					break;
+				case 3:
+					DoScriptText(SAY_KORKI5, me);
+					break;
+				case 4:
+					DoScriptText(SAY_KORKI6, me);
+					break;
+				}
+
+				uiPlayerGUID = pWho->GetGUID();
+			}
+		}
+	};
+
+
+
+	CreatureAI* GetAI_npc_corki1(Creature* pCreature)
+	{
+		return new npc_corki1AI(pCreature);
+	}
+
 };
 
 class go_corkis_prison1 : public GameObjectScript
 {
 public: 
     go_corkis_prison1() : GameObjectScript("go_corkis_prison1") { }
-    
-    
+
     bool OnGossipHello(Player* pPlayer, GameObject* pGo) override
     {
         if (pPlayer->GetQuestStatus(QUEST_HELP) == QUEST_STATUS_INCOMPLETE)
@@ -1506,84 +1604,80 @@ public:
         }
         return false;
     }
-    
-    
     
 };
 
-class npc_corki1 : public CreatureScript
+class npc_corki2 : public CreatureScript
 {
-public: 
-    npc_corki1() : CreatureScript("npc_corki1") { }
-    struct npc_corki1AI : public npc_escortAI
-    {
-        npc_corki1AI(Creature* pCreature) : npc_escortAI(pCreature) {}
-    
-        uint64 uiPlayerGUID;
-    
-        void Reset()
-        {
-            uiPlayerGUID = 0;
-        }
-    
-        void WaypointReached(uint32 uiPointId)
-        {
-            switch (uiPointId)
-            {
-            case 0:
-                SetRun();
-                break;
-            case 3:
-                me->ForcedDespawn();
-            }
-        }
-    
-        void MoveInLineOfSight(Unit* pWho)
-        {
-            if (pWho->GetTypeId() == TYPEID_PLAYER && ((Player*)pWho)->GetReputationRank(978) >= REP_FRIENDLY && me->IsWithinDistInMap(((Player*)pWho), 20))
-            {
-                if (uiPlayerGUID == pWho->GetGUID())
-                    return;
-                else uiPlayerGUID = 0;
-    
-                switch (urand(0, 4))
-                {
-                case 0:
-                    DoScriptText(SAY_KORKI2, me);
-                    break;
-                case 1:
-                    DoScriptText(SAY_KORKI3, me);
-                    break;
-                case 2:
-                    DoScriptText(SAY_KORKI4, me);
-                    break;
-                case 3:
-                    DoScriptText(SAY_KORKI5, me);
-                    break;
-                case 4:
-                    DoScriptText(SAY_KORKI6, me);
-                    break;
-                }
-    
-                uiPlayerGUID = pWho->GetGUID();
-            }
-        }
-    };
-    
-    CreatureAI* GetAI_npc_corki1(Creature* pCreature)
-    {
-        return new npc_corki1AI(pCreature);
-    }
-    
-    
+public:
+	npc_corki2() : CreatureScript("npc_corki2") { }
+	struct npc_corki2AI : public npc_escortAI
+	{
+		npc_corki2AI(Creature* pCreature) : npc_escortAI(pCreature) {}
+
+		uint64 uiPlayerGUID;
+
+		void Reset()
+		{
+			uiPlayerGUID = 0;
+		}
+
+		void WaypointReached(uint32 uiPointId)
+		{
+			switch (uiPointId)
+			{
+			case 0:
+				SetRun();
+				break;
+			case 2:
+				me->ForcedDespawn();
+			}
+		}
+
+		void MoveInLineOfSight(Unit* pWho)
+		{
+			if (pWho->GetTypeId() == TYPEID_PLAYER && ((Player*)pWho)->GetReputationRank(978) >= REP_FRIENDLY && me->IsWithinDistInMap(((Player*)pWho), 20))
+			{
+				if (uiPlayerGUID == pWho->GetGUID())
+					return;
+				else uiPlayerGUID = 0;
+
+				switch (urand(0, 4))
+				{
+				case 0:
+					DoScriptText(SAY_KORKI2, me);
+					break;
+				case 1:
+					DoScriptText(SAY_KORKI3, me);
+					break;
+				case 2:
+					DoScriptText(SAY_KORKI4, me);
+					break;
+				case 3:
+					DoScriptText(SAY_KORKI5, me);
+					break;
+				case 4:
+					DoScriptText(SAY_KORKI6, me);
+					break;
+				}
+
+				uiPlayerGUID = pWho->GetGUID();
+			}
+		}
+	};
+
+	CreatureAI* GetAI_npc_corki2(Creature* pCreature)
+	{
+		return new npc_corki2AI(pCreature);
+	}
 };
 
 class go_corkis_prison2 : public GameObjectScript
 {
 public: 
     go_corkis_prison2() : GameObjectScript("go_corkis_prison2") { }
-    
-    
+    
+
     bool OnGossipHello(Player* pPlayer, GameObject* pGo) override
     {
         if (pPlayer->GetQuestStatus(QUEST_HELP1) == QUEST_STATUS_INCOMPLETE)
@@ -1597,84 +1691,82 @@ public:
         }
         return false;
     }
-    
-    
     
+
 };
 
-class npc_corki2 : public CreatureScript
+class npc_corki3 : public CreatureScript
 {
-public: 
-    npc_corki2() : CreatureScript("npc_corki2") { }
-    struct npc_corki2AI : public npc_escortAI
-    {
-        npc_corki2AI(Creature* pCreature) : npc_escortAI(pCreature) {}
-    
-        uint64 uiPlayerGUID;
-    
-        void Reset()
-        {
-            uiPlayerGUID = 0;
-        }
-    
-        void WaypointReached(uint32 uiPointId)
-        {
-            switch (uiPointId)
-            {
-            case 0:
-                SetRun();
-                break;
-            case 2:
-                me->ForcedDespawn();
-            }
-        }
-    
-        void MoveInLineOfSight(Unit* pWho)
-        {
-            if (pWho->GetTypeId() == TYPEID_PLAYER && ((Player*)pWho)->GetReputationRank(978) >= REP_FRIENDLY && me->IsWithinDistInMap(((Player*)pWho), 20))
-            {
-                if (uiPlayerGUID == pWho->GetGUID())
-                    return;
-                else uiPlayerGUID = 0;
-    
-                switch (urand(0, 4))
-                {
-                case 0:
-                    DoScriptText(SAY_KORKI2, me);
-                    break;
-                case 1:
-                    DoScriptText(SAY_KORKI3, me);
-                    break;
-                case 2:
-                    DoScriptText(SAY_KORKI4, me);
-                    break;
-                case 3:
-                    DoScriptText(SAY_KORKI5, me);
-                    break;
-                case 4:
-                    DoScriptText(SAY_KORKI6, me);
-                    break;
-                }
-    
-                uiPlayerGUID = pWho->GetGUID();
-            }
-        }
-    };
-    
-    CreatureAI* GetAI_npc_corki2(Creature* pCreature)
-    {
-        return new npc_corki2AI(pCreature);
-    }
-    
-    
+public:
+	npc_corki3() : CreatureScript("npc_corki3") { }
+	struct npc_corki3AI : public npc_escortAI
+	{
+		npc_corki3AI(Creature* pCreature) : npc_escortAI(pCreature) {}
+
+		uint64 uiPlayerGUID;
+
+		void Reset()
+		{
+			uiPlayerGUID = 0;
+		}
+
+		void WaypointReached(uint32 uiPointId)
+		{
+			switch (uiPointId)
+			{
+			case 0:
+				SetRun();
+				break;
+			case 2:
+				me->ForcedDespawn();
+			}
+		}
+
+		void MoveInLineOfSight(Unit* pWho)
+		{
+			if (pWho->GetTypeId() == TYPEID_PLAYER && ((Player*)pWho)->GetReputationRank(978) >= REP_FRIENDLY && me->IsWithinDistInMap(((Player*)pWho), 20))
+			{
+				if (uiPlayerGUID == pWho->GetGUID())
+					return;
+				else uiPlayerGUID = 0;
+
+				switch (urand(0, 4))
+				{
+				case 0:
+					DoScriptText(SAY_KORKI2, me);
+					break;
+				case 1:
+					DoScriptText(SAY_KORKI3, me);
+					break;
+				case 2:
+					DoScriptText(SAY_KORKI4, me);
+					break;
+				case 3:
+					DoScriptText(SAY_KORKI5, me);
+					break;
+				case 4:
+					DoScriptText(SAY_KORKI6, me);
+					break;
+				}
+
+				uiPlayerGUID = pWho->GetGUID();
+			}
+		}
+	};
+
+	CreatureAI* GetAI_npc_corki3(Creature* pCreature)
+	{
+		return new npc_corki3AI(pCreature);
+	}
+
+
 };
 
 class go_corkis_prison3 : public GameObjectScript
 {
 public: 
     go_corkis_prison3() : GameObjectScript("go_corkis_prison3") { }
-    
-    
+    
     bool OnGossipHello(Player* pPlayer, GameObject* pGo) override
     {
         if (pPlayer->GetQuestStatus(QUEST_HELP2) == QUEST_STATUS_INCOMPLETE)
@@ -1688,77 +1780,14 @@ public:
         }
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
-class npc_corki3 : public CreatureScript
-{
-public: 
-    npc_corki3() : CreatureScript("npc_corki3") { }
-    struct npc_corki3AI : public npc_escortAI
-    {
-        npc_corki3AI(Creature* pCreature) : npc_escortAI(pCreature) {}
-    
-        uint64 uiPlayerGUID;
-    
-        void Reset()
-        {
-            uiPlayerGUID = 0;
-        }
-    
-        void WaypointReached(uint32 uiPointId)
-        {
-            switch (uiPointId)
-            {
-            case 0:
-                SetRun();
-                break;
-            case 2:
-                me->ForcedDespawn();
-            }
-        }
-    
-        void MoveInLineOfSight(Unit* pWho)
-        {
-            if (pWho->GetTypeId() == TYPEID_PLAYER && ((Player*)pWho)->GetReputationRank(978) >= REP_FRIENDLY && me->IsWithinDistInMap(((Player*)pWho), 20))
-            {
-                if (uiPlayerGUID == pWho->GetGUID())
-                    return;
-                else uiPlayerGUID = 0;
-    
-                switch (urand(0, 4))
-                {
-                case 0:
-                    DoScriptText(SAY_KORKI2, me);
-                    break;
-                case 1:
-                    DoScriptText(SAY_KORKI3, me);
-                    break;
-                case 2:
-                    DoScriptText(SAY_KORKI4, me);
-                    break;
-                case 3:
-                    DoScriptText(SAY_KORKI5, me);
-                    break;
-                case 4:
-                    DoScriptText(SAY_KORKI6, me);
-                    break;
-                }
-    
-                uiPlayerGUID = pWho->GetGUID();
-            }
-        }
-    };
-    
-    CreatureAI* GetAI_npc_corki3(Creature* pCreature)
-    {
-        return new npc_corki3AI(pCreature);
-    }
-    
-    
-};
+
 
 class npc_kurenai_captive : public CreatureScript
 {
@@ -1869,12 +1898,15 @@ public:
             }
             else m_uiFrostShockTimer -= uiDiff;
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_kurenai_captive(Creature* pCreature)
     {
         return new npc_kurenai_captiveAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_TOTEM_KARDASH_A)
@@ -1895,8 +1927,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -2134,13 +2168,17 @@ public:
     		}
     		else StepsTimer -= diff;
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_warmaul_pyre(Creature *creature)
     {
     	return new npc_warmaul_pyreAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2179,13 +2217,17 @@ public:
     		}
     		return;
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_fel_cannon_haf(Creature *creature)
     {
     	return new npc_fel_cannon_hafAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2233,13 +2275,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_living_cyclone(Creature *creature)
     {
     	return new npc_living_cycloneAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2289,13 +2335,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_enraged_crusher(Creature *creature)
     {
     	return new npc_enraged_crusherAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2332,13 +2382,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_storm_rager(Creature *creature)
     {
     	return new npc_storm_ragerAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2364,13 +2418,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_lake_surger(Creature *creature)
     {
     	return new npc_lake_surgerAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2407,13 +2465,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_lake_spirit(Creature *creature)
     {
     	return new npc_lake_spiritAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2463,13 +2525,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_tortured_earth_spirit(Creature *creature)
     {
     	return new npc_tortured_earth_spiritAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2506,13 +2572,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_crashing_wave_spirit(Creature *creature)
     {
     	return new npc_crashing_wave_spiritAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2565,13 +2635,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_raging_fire_soul(Creature *creature)
     {
     	return new npc_raging_fire_soulAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2647,13 +2721,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_storming_wind_ripper(Creature *creature)
     {
     	return new npc_storming_wind_ripperAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2703,13 +2781,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_rumbling_earth_heart(Creature *creature)
     {
     	return new npc_rumbling_earth_heartAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 

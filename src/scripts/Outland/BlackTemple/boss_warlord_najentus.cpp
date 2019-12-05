@@ -55,14 +55,6 @@ enum eEnums
 };
 
 
-
-
-
-
-
-
-
-
 class boss_najentus : public CreatureScript
 {
 public: 
@@ -265,43 +257,42 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_boss_najentus(Creature* pCreature)
     {
         return GetInstanceAI<boss_najentusAI>(pCreature);
-    }
-    
+    }
+
     
 };
+
 
 class go_najentus_spine : public GameObjectScript
 {
-public: 
-    go_najentus_spine() : GameObjectScript("go_najentus_spine") { }
-    
-    
-    bool OnGossipHello(Player* pPlayer, GameObject* pGo) override
-    {
-        if (ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData())
-            if (Creature* Najentus = Unit::GetCreature(*pGo, pInstance->GetData64(DATA_HIGHWARLORDNAJENTUS)))
-                if (CAST_AI(boss_najentusAI, Najentus->AI())->RemoveImpalingSpine())
-                {
-                    pPlayer->CastSpell(pPlayer, SPELL_CREATE_NAJENTUS_SPINE, true);
-                    pGo->AddObjectToRemoveList();
-                }
-        return true;
-    }
-    
-    
-    
-};
+public:
+	go_najentus_spine() : GameObjectScript("go_najentus_spine") { }
 
+	bool OnGossipHello(Player* pPlayer, GameObject* pGo) override
+	{
+		if (ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData())
+			if (Creature* Najentus = Unit::GetCreature(*pGo, pInstance->GetData64(DATA_HIGHWARLORDNAJENTUS)))
+				if (CAST_AI(boss_najentus::boss_najentusAI, Najentus->AI())->RemoveImpalingSpine())
+				{
+				pPlayer->CastSpell(pPlayer, SPELL_CREATE_NAJENTUS_SPINE, true);
+				pGo->AddObjectToRemoveList();
+				}
+		return true;
+	}
+
+
+};
 
 void AddSC_boss_najentus()
 {
     new boss_najentus();
     new go_najentus_spine();
-
 }
 

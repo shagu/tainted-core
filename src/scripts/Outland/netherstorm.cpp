@@ -704,8 +704,10 @@ class go_manaforge_control_console : public GameObjectScript
 {
 public: 
     go_manaforge_control_console() : GameObjectScript("go_manaforge_control_console") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, GameObject* _GO) override
     {
         if (_GO->GetGoType() == GAMEOBJECT_TYPE_QUESTGIVER)
@@ -749,8 +751,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -979,13 +983,17 @@ public:
                 else Wave_Timer -= diff;
             }
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_manaforge_control_console(Creature* pCreature)
     {
         return new npc_manaforge_control_consoleAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1278,13 +1286,17 @@ public:
     
     		DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_commander_dawnforge(Creature* pCreature)
     {
         return new npc_commander_dawnforgeAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1292,8 +1304,10 @@ class at_commander_dawnforge : public AreaTriggerScript
 {
 public: 
     at_commander_dawnforge() : AreaTriggerScript("at_commander_dawnforge") { }
-    
-    
+    
+
+    
+
     bool OnTrigger(Player* player, const AreaTriggerEntry* /*at*/) override
     {
         //if player lost aura or not have at all, we should not try start event.
@@ -1312,8 +1326,10 @@ public:
         }
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1321,8 +1337,10 @@ class npc_professor_dabiri : public CreatureScript
 {
 public: 
     npc_professor_dabiri() : CreatureScript("npc_professor_dabiri") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -1335,7 +1353,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1346,7 +1366,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_professor_dabiri(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1357,7 +1378,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_DIMENSIUS)
@@ -1365,8 +1387,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1465,13 +1489,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_phase_hunter(Creature* c)
     {
         return new npc_phase_hunterAI (c);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1535,12 +1563,15 @@ public:
             me->RestoreFaction();
         }
     
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_bessy(Creature* pCreature)
     {
         return new npc_bessyAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == Q_ALMABTRIEB)
@@ -1551,8 +1582,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1623,12 +1656,15 @@ public:
             }
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_maxx_a_million_escort(Creature* pCreature)
     {
         return new npc_maxx_a_million_escortAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_MARK_V_IS_ALIVE)
@@ -1641,8 +1677,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1680,13 +1718,17 @@ public:
             }
             else uiCheckTimer -= uiDiff;
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_zeppit(Creature* pCreature)
     {
         return new npc_zeppitAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1748,13 +1790,17 @@ public:
             }
         }
     
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_dr_boom(Creature* pCreature)
     {
         return new npc_dr_boomAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1810,13 +1856,17 @@ public:
                 else BoomTimer -= uiDiff;
             }
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_boom_bot(Creature* pCreature)
     {
         return new npc_boom_botAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2022,12 +2072,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_drijya(Creature* pCreature)
     {
         return new npc_drijyaAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_WARP_GATE)
@@ -2040,8 +2093,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -2079,13 +2134,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_mana_wraith(Creature* pCreature)
     {
     	return new npc_mana_wraithAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2125,13 +2184,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_warp_abberation(Creature* pCreature)
     {
     	return new npc_warp_abberationAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2196,13 +2259,17 @@ public:
     			else summon_timer -= diff;
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_scrapped_fel_reaver(Creature* pCreature)
     {
     	return new npc_scrapped_fel_reaverAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2276,13 +2343,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_mana_seeker(Creature* pCreature)
     {
     	return new npc_mana_seekerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2356,13 +2427,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_mageslayer(Creature* pCreature)
     {
     	return new npc_mageslayerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2444,13 +2519,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_naberius(Creature* pCreature)
     {
     	return new npc_naberiusAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2483,12 +2562,15 @@ public:
     			}
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_doctor_vomisa(Creature* pCreature)
     {
     	return new npc_doctor_vomisaAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
     	if (pQuest->GetQuestId() == QUEST_YOU_ROBOT)
@@ -2497,8 +2579,10 @@ public:
     	}
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -2608,13 +2692,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_negatron(Creature* pCreature)
     {
     	return new npc_negatronAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2678,13 +2766,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_farahlon_lasher(Creature* pCreature)
     {
     	return new npc_farahlon_lasherAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2754,13 +2846,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_talbuk_doe(Creature* pCreature)
     {
     	return new npc_talbuk_doeAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2830,13 +2926,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_talbuk_sire(Creature* pCreature)
     {
     	return new npc_talbuk_sireAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2883,13 +2983,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_warp_monstrosity(Creature* pCreature)
     {
     	return new npc_warp_monstrosityAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2897,8 +3001,10 @@ class npc_inactive_fel_reaver : public CreatureScript
 {
 public: 
     npc_inactive_fel_reaver() : CreatureScript("npc_inactive_fel_reaver") { }
-    
-    
+    
+
+    
+
     bool OnQuestReward(Player* pPlayer, Creature* pCreature, const Quest* pQuest, uint32 /*item*/) override
     {
     	if (pQuest->GetQuestId() == QUEST_NETHER_GAS_IN_FEL_FIRE_ENGINE)
@@ -2908,8 +3014,10 @@ public:
     	}
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -2940,14 +3048,14 @@ public:
     			spellHit = true;
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_gehenna_trigger(Creature* pCreature)
     {
     	return new gehenna_triggerAI(pCreature);
-    }
-    
-    
+    }
 };
 
 class legion_aldor_trigger : public CreatureScript
@@ -2989,14 +3097,239 @@ public:
     			}
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_legion_aldor_trigger(Creature* pCreature)
     {
     	return new legion_aldor_triggerAI(pCreature);
-    }
-    
+    }
+
     
+
+    
+};
+
+class npc_socrethar : public CreatureScript
+{
+public:
+	npc_socrethar() : CreatureScript("npc_socrethar") { }
+	struct npc_socretharAI : public ScriptedAI
+	{
+		npc_socretharAI(Creature* pCreature) : ScriptedAI(pCreature) {}
+
+		void Reset()
+		{
+			me->SetFaction(35);
+
+			// Event
+			EventStarted = false;
+			summoned = false;
+			text1 = false;
+			text2 = false;
+			text3 = false;
+			text4 = false;
+			scryer_start = false;
+
+			summon_timer = 0;
+			wait_timer = 0;
+			wait_timer1 = 0;
+			combat_timer = 0;
+			combat_timer1 = 0;
+
+			// Skills
+			barrage_timer = urand(20000, 25000);
+			sbv_timer = urand(10000, 15000);
+			backlash_timer = 9000;
+			antimagic_timer = 5000;
+			cleave_timer = 7500;
+		}
+
+		// Event
+		bool EventStarted;
+		bool summoned;
+		bool text1;
+		bool text2;
+		bool text3;
+		bool text4;
+		bool scryer_start;
+
+		uint32 summon_timer;
+		uint32 wait_timer;
+		uint32 wait_timer1;
+		uint32 combat_timer;
+		uint32 combat_timer1;
+
+		// Skills
+		uint32 barrage_timer;
+		uint32 sbv_timer;
+		uint32 backlash_timer;
+		uint32 antimagic_timer;
+		uint32 cleave_timer;
+
+		void JustSummoned(Creature* summoned)
+		{
+			summoned->GetMotionMaster()->MovePath(601601609, false);
+		}
+
+		void MoveInLineOfSight(Unit *pWho)
+		{
+			if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
+			{
+				if (plWho->GetQuestStatus(QUEST_TURNING_POINT) == QUEST_STATUS_INCOMPLETE && plWho->GetDistance(me) < 25.0f && plWho->HasItemCount(30259, 1, false))
+				{
+					switch (me->GetEntry())
+					{
+					case 20132:
+						if (!scryer_start)
+						{
+							me->SetFaction(14);
+							scryer_start = true;
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		void JustDied(Unit* killer)
+		{
+			if (Player* player = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
+			{
+				if (player->GetQuestStatus(QUEST_DEATHBLOW_TO_THE_LEGION) == QUEST_STATUS_INCOMPLETE)
+				{
+					player->CompleteQuest(QUEST_DEATHBLOW_TO_THE_LEGION);
+				}
+
+				if (Creature* adveyn = me->FindNearestCreature(NPC_ADYEN_THE_LIGHTWARDEN, 40.0f, true))
+					adveyn->DisappearAndDie(false);
+
+				if (Creature* karja = me->FindNearestCreature(NPC_ANCHORITE_KARJA, 40.0f, true))
+					karja->DisappearAndDie(false);
+
+				if (Creature* orelis = me->FindNearestCreature(NPC_EXARCH_ORELIS, 40.0f, true))
+					orelis->DisappearAndDie(false);
+			}
+		}
+
+		void UpdateAI(const uint32 diff)
+		{
+			if (!UpdateVictim())
+			{
+				if (EventStarted == true)
+				{
+					if (wait_timer <= diff && !text1)
+					{
+						me->HandleEmoteCommand(EMOTE_ONESHOT_LAUGH);
+						me->MonsterYell(SOCRETHAR_TEXT_1, LANG_UNIVERSAL, 0);
+						text1 = true;
+					}
+					else wait_timer -= diff;
+
+					if (wait_timer1 <= diff && text1 == true && !text2)
+					{
+						me->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
+						me->MonsterYell(SOCRETHAR_TEXT_2, LANG_UNIVERSAL, 0);
+						summon_timer = 5000;
+						text2 = true;
+					}
+					else wait_timer1 -= diff;
+
+					if (summon_timer <= diff && !summoned && text2 == true)
+					{
+						me->SummonCreature(NPC_KAYLAAN, 4953.0f, 3901.9f, 211.3f, 4.66f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 180000);
+						summoned = true;
+					}
+					else summon_timer -= diff;
+
+					if (combat_timer <= diff && summoned == true && !text3)
+					{
+						me->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
+						me->MonsterYell(SOCRETHAR_TEXT_3, LANG_UNIVERSAL, 0);
+						text3 = true;
+
+						if (Creature* kaylaan = me->FindNearestCreature(NPC_KAYLAAN, 20.0f, true))
+						{
+							DoCast(kaylaan, SPELL_POWER_OF_THE_LEGION);
+							kaylaan->SetFaction(14);
+
+							if (Creature* adyen = me->FindNearestCreature(NPC_ADYEN_THE_LIGHTWARDEN, 50.0f, true))
+							{
+								kaylaan->AI()->AttackStart(adyen);
+								adyen->AI()->AttackStart(kaylaan);
+							}
+
+							if (Creature* karja = me->FindNearestCreature(NPC_ANCHORITE_KARJA, 50.0f, true))
+								karja->AI()->AttackStart(kaylaan);
+
+							if (Creature* orelis = me->FindNearestCreature(NPC_EXARCH_ORELIS, 50.0f, true))
+								orelis->AI()->AttackStart(kaylaan);
+						}
+					}
+					else combat_timer -= diff;
+				}
+
+				if (combat_timer1 <= diff && text3 == true && !text4)
+				{
+					me->MonsterYell(SOCRETHAR_TEXT_4, LANG_UNIVERSAL, 0);
+					text4 = true;
+				}
+				else combat_timer1 -= diff;
+			}
+
+			if (UpdateVictim())
+			{
+				if (backlash_timer <= diff)
+				{
+					DoCastVictim(SPELL_BACKLASH);
+					backlash_timer = urand(12000, 15000);
+				}
+				else backlash_timer -= diff;
+
+				if (cleave_timer <= diff)
+				{
+					DoCastVictim(SPELL_SOCRETHAR_CLEAVE);
+					cleave_timer = 7500;
+				}
+				else cleave_timer -= diff;
+
+				if (sbv_timer <= diff)
+				{
+					DoCastVictim(SPELL_SB_VOLLEY);
+					sbv_timer = urand(18000, 20000);
+				}
+				else sbv_timer -= diff;
+
+				if (barrage_timer <= diff)
+				{
+					DoCast(me, SPELL_FB_BARRAGE);
+					barrage_timer = urand(25000, 30000);
+				}
+				else barrage_timer -= diff;
+
+				if (antimagic_timer <= diff)
+				{
+					DoCast(me, SPELL_ANTI_MAGIC);
+					antimagic_timer = 31000;
+				}
+				else antimagic_timer -= diff;
+			}
+
+			DoMeleeAttackIfReady();
+		}
+	};
+
+
+
+	CreatureAI* GetAI_npc_socrethar(Creature* pCreature)
+	{
+		return new npc_socretharAI(pCreature);
+	}
+
+
+
+
 };
 
 class adyen_lightwarden : public CreatureScript
@@ -3144,12 +3477,15 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_adyen_lightwarden(Creature* pCreature)
     {
     	return new adyen_lightwardenAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* creature) override
     {
     	if (creature->IsQuestGiver())
@@ -3161,7 +3497,8 @@ public:
     
     	return true;
     }
-    
+    
+
     bool GossipHello_adyen_lightwarden(Player* player, Creature* creature)
     {
     	if (creature->IsQuestGiver())
@@ -3173,7 +3510,8 @@ public:
     
     	return true;
     }
-    
+    
+
     bool GossipSelect_adyen_lightwarden(Player* player, Creature* creature, uint32 sender, uint32 action)
     {
     	switch (action)
@@ -3186,7 +3524,8 @@ public:
     	}
     	return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
     	switch (action)
@@ -3199,225 +3538,7 @@ public:
     	}
     	return true;
     }
-    
-    
     
-};
-
-class npc_socrethar : public CreatureScript
-{
-public: 
-    npc_socrethar() : CreatureScript("npc_socrethar") { }
-    struct npc_socretharAI : public ScriptedAI
-    {
-    	npc_socretharAI(Creature* pCreature) : ScriptedAI(pCreature) {}
-    
-    	void Reset()
-    	{
-    		me->SetFaction(35);
-    
-    		// Event
-    		EventStarted = false;
-    		summoned = false;
-    		text1 = false;
-    		text2 = false;
-    		text3 = false;
-    		text4 = false;
-    		scryer_start = false;
-    
-    		summon_timer = 0;
-    		wait_timer = 0;
-    		wait_timer1 = 0;
-    		combat_timer = 0;
-    		combat_timer1 = 0;
-    
-    		// Skills
-    		barrage_timer = urand(20000, 25000);
-    		sbv_timer = urand(10000, 15000);
-    		backlash_timer = 9000;
-    		antimagic_timer = 5000;
-    		cleave_timer = 7500;
-    	}
-    
-    	// Event
-    	bool EventStarted;
-    	bool summoned;
-    	bool text1; 
-    	bool text2;
-    	bool text3;
-    	bool text4;
-    	bool scryer_start;
-    
-    	uint32 summon_timer;
-    	uint32 wait_timer;
-    	uint32 wait_timer1;
-    	uint32 combat_timer;
-    	uint32 combat_timer1;
-    
-    	// Skills
-    	uint32 barrage_timer;
-    	uint32 sbv_timer;
-    	uint32 backlash_timer;
-    	uint32 antimagic_timer;
-    	uint32 cleave_timer;
-    
-    	void JustSummoned(Creature* summoned)
-    	{
-    		summoned->GetMotionMaster()->MovePath(601601609, false);
-    	}
-    
-    	void MoveInLineOfSight(Unit *pWho)
-    	{
-    		if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
-    		{
-    			if (plWho->GetQuestStatus(QUEST_TURNING_POINT) == QUEST_STATUS_INCOMPLETE && plWho->GetDistance(me) < 25.0f && plWho->HasItemCount(30259, 1, false))
-    			{
-    				switch (me->GetEntry())
-    				{
-    				case 20132:
-    					if (!scryer_start)
-    					{
-    						me->SetFaction(14);	
-    						scryer_start = true;
-    					}
-    					break;
-    				}
-    			}
-    		}
-    	}
-    
-    	void JustDied(Unit* killer)
-    	{
-    		if (Player* player = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
-    		{
-    			if (player->GetQuestStatus(QUEST_DEATHBLOW_TO_THE_LEGION) == QUEST_STATUS_INCOMPLETE)
-    			{
-    				player->CompleteQuest(QUEST_DEATHBLOW_TO_THE_LEGION);
-    			}
-    
-    			if (Creature* adveyn = me->FindNearestCreature(NPC_ADYEN_THE_LIGHTWARDEN, 40.0f, true))
-    				adveyn->DisappearAndDie(false);
-    
-    			if (Creature* karja = me->FindNearestCreature(NPC_ANCHORITE_KARJA, 40.0f, true))
-    				karja->DisappearAndDie(false);
-    
-    			if (Creature* orelis = me->FindNearestCreature(NPC_EXARCH_ORELIS, 40.0f, true))
-    				orelis->DisappearAndDie(false);
-    		}
-    	}
-    
-    	void UpdateAI(const uint32 diff)
-    	{
-    		if (!UpdateVictim())
-    		{
-    			if (EventStarted == true)
-    			{
-    				if (wait_timer <= diff && !text1)
-    				{
-    					me->HandleEmoteCommand(EMOTE_ONESHOT_LAUGH);
-    					me->MonsterYell(SOCRETHAR_TEXT_1, LANG_UNIVERSAL, 0);				
-    					text1 = true;
-    				}
-    				else wait_timer -= diff;
-    
-    				if (wait_timer1 <= diff && text1 == true && !text2)
-    				{
-    					me->HandleEmoteCommand(EMOTE_ONESHOT_TALK);
-    					me->MonsterYell(SOCRETHAR_TEXT_2, LANG_UNIVERSAL, 0);
-    					summon_timer = 5000;
-    					text2 = true;
-    				}
-    				else wait_timer1 -= diff;
-    
-    				if (summon_timer <= diff && !summoned && text2 == true)
-    				{
-    					me->SummonCreature(NPC_KAYLAAN, 4953.0f, 3901.9f, 211.3f, 4.66f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 180000);
-    					summoned = true;
-    				}
-    				else summon_timer -= diff;
-    
-    				if (combat_timer <= diff && summoned == true && !text3)
-    				{
-    					me->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-    					me->MonsterYell(SOCRETHAR_TEXT_3, LANG_UNIVERSAL, 0);
-    					text3 = true;
-    
-    					if (Creature* kaylaan = me->FindNearestCreature(NPC_KAYLAAN, 20.0f, true))
-    					{
-    						DoCast(kaylaan, SPELL_POWER_OF_THE_LEGION);
-    						kaylaan->SetFaction(14);
-    
-    						if (Creature* adyen = me->FindNearestCreature(NPC_ADYEN_THE_LIGHTWARDEN, 50.0f, true))
-    						{
-    							kaylaan->AI()->AttackStart(adyen);
-    							adyen->AI()->AttackStart(kaylaan);
-    						}
-    
-    						if (Creature* karja = me->FindNearestCreature(NPC_ANCHORITE_KARJA, 50.0f, true))
-    							karja->AI()->AttackStart(kaylaan);
-    
-    						if (Creature* orelis = me->FindNearestCreature(NPC_EXARCH_ORELIS, 50.0f, true))
-    							orelis->AI()->AttackStart(kaylaan);
-    					}
-    				}
-    				else combat_timer -= diff;
-    			}
-    
-    			if (combat_timer1 <= diff && text3 == true && !text4)
-    			{
-    				me->MonsterYell(SOCRETHAR_TEXT_4, LANG_UNIVERSAL, 0);
-    				text4 = true;
-    			}
-    			else combat_timer1 -= diff;
-    		}
-    
-    		if (UpdateVictim())
-    		{
-    			if (backlash_timer <= diff)
-    			{
-    				DoCastVictim(SPELL_BACKLASH);
-    				backlash_timer = urand(12000, 15000);
-    			}
-    			else backlash_timer -= diff;
-    
-    			if (cleave_timer <= diff)
-    			{
-    				DoCastVictim(SPELL_SOCRETHAR_CLEAVE);
-    				cleave_timer = 7500;
-    			}
-    			else cleave_timer -= diff;
-    
-    			if (sbv_timer <= diff)
-    			{
-    				DoCastVictim(SPELL_SB_VOLLEY);
-    				sbv_timer = urand(18000, 20000);
-    			}
-    			else sbv_timer -= diff;
-    
-    			if (barrage_timer <= diff)
-    			{
-    				DoCast(me, SPELL_FB_BARRAGE);
-    				barrage_timer = urand(25000, 30000);
-    			}
-    			else barrage_timer -= diff;
-    
-    			if (antimagic_timer <= diff)
-    			{
-    				DoCast(me, SPELL_ANTI_MAGIC);
-    				antimagic_timer = 31000;
-    			}
-    			else antimagic_timer -= diff;
-    		}
-    
-    		DoMeleeAttackIfReady();
-    	}
-    };
-    
-    CreatureAI* GetAI_npc_socrethar(Creature* pCreature)
-    {
-    	return new npc_socretharAI(pCreature);
-    }
-    
     
 };
 
@@ -3711,12 +3832,15 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_kaylaan(Creature* pCreature)
     {
     	return new npc_kaylaanAI(pCreature);
-    }
+    }
+
     bool OnQuestReward(Player* pPlayer, Creature* pCreature, Quest const* quest, uint32 /* item */) override
     {
     	if (quest->GetQuestId() == QUEST_A_DARK_PACT)
@@ -3724,8 +3848,10 @@ public:
     	
     	return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3757,13 +3883,17 @@ public:
     			}
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_socre_helper(Creature* pCreature)
     {
     	return new npc_socre_helperAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3802,13 +3932,17 @@ public:
     			else reCast_timer -= diff;
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_legion_beam_trigger(Creature* pCreature)
     {
     	return new legion_beam_triggerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3855,13 +3989,17 @@ public:
     			else reCast_timer -= diff;
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_arena_event_controller(Creature* pCreature)
     {
     	return new arena_event_controllerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3938,12 +4076,15 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_windtrader_marid(Creature* pCreature)
     {
     	return new npc_windtrader_maridAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* creature) override
     {
     	if (creature->IsQuestGiver())
@@ -3955,7 +4096,8 @@ public:
     
     	return true;
     }
-    
+    
+
     bool GossipHello_npc_windtrader_marid(Player* player, Creature* creature)
     {
     	if (creature->IsQuestGiver())
@@ -3967,7 +4109,8 @@ public:
     
     	return true;
     }
-    
+    
+
     bool GossipSelect_npc_windtrader_marid(Player* player, Creature* creature, uint32 sender, uint32 action)
     {
     	switch (action)
@@ -3981,7 +4124,8 @@ public:
     	}
     	return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
     	switch (action)
@@ -3995,9 +4139,87 @@ public:
     	}
     	return true;
     }
-    
-    
-    
+};
+
+class npc_salhadaar : public CreatureScript
+{
+public:
+	npc_salhadaar() : CreatureScript("npc_salhadaar") { }
+	struct npc_salhadaarAI : public ScriptedAI
+	{
+		npc_salhadaarAI(Creature* pCreature) : ScriptedAI(pCreature) {}
+
+		void Reset()
+		{
+			me->SetFaction(35);
+
+			Count = 0;
+			summoncopy = false;
+			arcaneflux_timer = 8000;
+			statis_timer = 18000;
+
+		}
+
+		uint8 Count;
+		uint32 arcaneflux_timer;
+		uint32 statis_timer;
+		bool summoncopy;
+
+		void Activate()
+		{
+			++Count;
+
+			if (Count == 3)
+			{
+				if (me->HasAura(40225))
+					me->RemoveAurasDueToSpell(40225);
+
+				me->SetFaction(14);
+				me->MonsterYell(YELL_SALH_AGGRO, LANG_UNIVERSAL, 0);
+			}
+		}
+
+		void UpdateAI(const uint32 diff)
+		{
+			if (!UpdateVictim())
+				return;
+
+			if (me->HasUnitState(UNIT_STATE_CASTING))
+				return;
+
+			if (!summoncopy && HealthBelowPct(50))
+			{
+				DoCast(36847);
+				DoCast(36848);
+				summoncopy = true;
+			}
+
+			if (statis_timer <= diff)
+			{
+				Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0);
+				DoCast(target, 36527);
+				statis_timer = urand(14000, 18000);
+			}
+			else statis_timer -= diff;
+
+			if (arcaneflux_timer <= diff)
+			{
+				DoCast(36533);
+				arcaneflux_timer = 35000;
+			}
+			else arcaneflux_timer -= diff;
+
+			DoMeleeAttackIfReady();
+		}
+	};
+
+
+
+	CreatureAI* GetAI_npc_salhadaar(Creature* pCreature)
+	{
+		return new npc_salhadaarAI(pCreature);
+	}
+
 };
 
 class npc_captured_protectorate : public CreatureScript
@@ -4043,8 +4265,10 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_captured_protectorate(Creature* pCreature)
     {
     	npc_captured_protectorateAI* protectorateAI = new npc_captured_protectorateAI(pCreature);
@@ -4067,7 +4291,8 @@ public:
     	protectorateAI->AddWaypoint(15, 4254.55f, 2180.13f, 137.052f, 0);
     
     	return protectorateAI;
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
     	if (quest->GetQuestId() == QUEST_ESCAPE_FROM_THE_STAGING_GROUNDS)
@@ -4081,9 +4306,6 @@ public:
     		
     	return true;
     }
-    
-    
-    
 };
 
 class npc_protectorate_demolitionist : public CreatureScript
@@ -4170,8 +4392,10 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_protectorate_demolitionist(Creature* pCreature)
     {
     	npc_protectorate_demolitionistAI* protectorateAI = new npc_protectorate_demolitionistAI(pCreature);
@@ -4192,9 +4416,7 @@ public:
     	protectorateAI->AddWaypoint(13, 3861.2f, 2349.6f, 115.0f, 0);
     
     	return protectorateAI;
-    }
-    
-    
+    }
 };
 
 class npc_energy_ball : public CreatureScript
@@ -4252,95 +4474,17 @@ public:
     			else beam_timer -= diff;
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_energy_ball(Creature* pCreature)
     {
     	return new npc_energy_ballAI(pCreature);
-    }
-    
+    }
     
 };
 
-class npc_salhadaar : public CreatureScript
-{
-public: 
-    npc_salhadaar() : CreatureScript("npc_salhadaar") { }
-    struct npc_salhadaarAI : public ScriptedAI
-    {
-    	npc_salhadaarAI(Creature* pCreature) : ScriptedAI(pCreature) {}
-    
-    	void Reset()
-    	{
-    		me->SetFaction(35);
-    
-    		Count = 0;
-    		summoncopy = false;
-    		arcaneflux_timer = 8000;
-    		statis_timer = 18000;
-    
-    	}
-    
-    	uint8 Count;
-    	uint32 arcaneflux_timer;
-    	uint32 statis_timer;
-    	bool summoncopy;
-    
-    	void Activate()
-    	{
-    		++Count;
-    
-    		if (Count == 3)
-    		{
-    			if (me->HasAura(40225))
-    				me->RemoveAurasDueToSpell(40225);
-    
-    			me->SetFaction(14);
-    			me->MonsterYell(YELL_SALH_AGGRO, LANG_UNIVERSAL, 0);
-    		}
-    	}
-    
-    	void UpdateAI(const uint32 diff)
-    	{
-    		if (!UpdateVictim())
-    			return;
-    
-    		if (me->HasUnitState(UNIT_STATE_CASTING))
-    			return;
-    
-    		if (!summoncopy && HealthBelowPct(50))
-    		{
-    			DoCast(36847);
-    			DoCast(36848);
-    			summoncopy = true;
-    		}
-    
-    		if (statis_timer <= diff)
-    		{
-    			Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0);
-    			DoCast(target, 36527);
-    			statis_timer = urand(14000, 18000);
-    		}
-    		else statis_timer -= diff;
-    
-    		if (arcaneflux_timer <= diff)
-    		{
-    			DoCast(36533);
-    			arcaneflux_timer = 35000;
-    		}
-    		else arcaneflux_timer -= diff;
-    
-    		DoMeleeAttackIfReady();
-    	}
-    };
-    
-    CreatureAI* GetAI_npc_salhadaar(Creature* pCreature)
-    {
-    	return new npc_salhadaarAI(pCreature);
-    }
-    
-    
-};
 
 class npc_captain_saeed : public CreatureScript
 {
@@ -4606,8 +4750,10 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_captain_saeed(Creature* pCreature)
     {
     	npc_captain_saeedAI* captain_saeedAI = new npc_captain_saeedAI(pCreature);
@@ -4636,7 +4782,8 @@ public:
     	captain_saeedAI->AddWaypoint(21, 3948.4f, 2021.4f, 256.4f, 0);	     // Disappear with all adds
     
     	return captain_saeedAI;
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* creature) override
     {
     	if (creature->IsQuestGiver())
@@ -4658,7 +4805,9 @@ public:
     
     	return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
     	switch (action)
@@ -4681,8 +4830,10 @@ public:
     	}
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -4789,13 +4940,17 @@ public:
     			DoMeleeAttackIfReady();
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_dimensius_devourer(Creature* pCreature)
     {
     	return new npc_dimensius_devourerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -4917,12 +5072,15 @@ public:
     			break;
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_commander_ameer(Creature* pCreature)
     {
     	return new npc_commander_ameerAI(pCreature);
-    }
+    }
+
     bool OnQuestReward(Player* pPlayer, Creature* pCreature, Quest const* quest, uint32 /* item */) override
     {
     	if (quest->GetQuestId() == QUEST_A_MISSION_OF_MERCY)
@@ -4934,8 +5092,10 @@ public:
     
     	return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -5051,15 +5211,18 @@ public:
     			DoMeleeAttackIfReady();
     		}
     	}
-    };
+    };
+
     
     CreatureAI* GetAI_reflection_of_ya_six(Creature* pCreature)
     {
         return new npc_reflection_of_ya_sixAI(pCreature);
     }
 
-    
-    
+    
+
+    
+
     
 };
 

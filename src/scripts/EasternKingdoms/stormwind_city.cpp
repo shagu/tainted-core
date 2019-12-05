@@ -192,8 +192,10 @@ class npc_archmage_malin : public CreatureScript
 {
 public: 
     npc_archmage_malin() : CreatureScript("npc_archmage_malin") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -206,7 +208,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF)
@@ -217,8 +221,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -261,12 +267,15 @@ public:
                 EnterEvadeMode();
             }
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_bartleby(Creature* pCreature)
     {
         return new npc_bartlebyAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest) override
     {
         if (pQuest->GetQuestId() == 1640)
@@ -277,8 +286,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -311,12 +322,15 @@ public:
                 EnterEvadeMode();
             }
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_dashel_stonefist(Creature* pCreature)
     {
         return new npc_dashel_stonefistAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest) override
     {
         if (pQuest->GetQuestId() == 1447)
@@ -326,8 +340,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -352,13 +368,17 @@ public:
                     me->MonsterSay("Greetings, citizen.", LANG_COMMON, 0);
             }
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_general_marcus_jonathan(Creature* pCreature)
     {
         return new npc_general_marcus_jonathanAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -366,8 +386,7 @@ class npc_lady_katrana_prestor : public CreatureScript
 {
 public: 
     npc_lady_katrana_prestor() : CreatureScript("npc_lady_katrana_prestor") { }
-    
-    
+  
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -404,17 +423,288 @@ public:
         }
         return true;
     }
-    
-    
-    
+   
+};
+
+class npc_stormwind_royal_guard : public CreatureScript
+{
+public:
+	npc_stormwind_royal_guard() : CreatureScript("npc_stormwind_royal_guard") { }
+	struct npc_stormwind_royal_guardAI : public ScriptedAI
+	{
+		npc_stormwind_royal_guardAI(Creature* pCreature) : ScriptedAI(pCreature) {}
+
+		uint32 uiSpybotTimer;
+		uint32 uiSpybotPhase;
+		uint8 PointID;
+		uint64 SpybotGUID;
+		uint8 MovePoint;
+		bool IsMove;
+
+		void Reset()
+		{
+			uiSpybotTimer = 0;
+			uiSpybotPhase = 0;
+			PointID = 0;
+			MovePoint = 0;
+			SpybotGUID = 0;
+			IsMove = false;
+		}
+
+		void UpdateAI(const uint32 uiDiff)
+		{
+			if (uiSpybotPhase)
+			{
+				if (uiSpybotTimer <= uiDiff)
+				{
+					switch (uiSpybotPhase)
+					{
+					case 1:
+						if (Unit* pSpybot = me->GetUnit(*me, SpybotGUID))
+							me->SetFacingToObject(pSpybot);
+						uiSpybotTimer = 1000;
+						++uiSpybotPhase;
+						break;
+					case 2:
+						me->SetStandState(UNIT_STAND_STATE_KNEEL);
+						uiSpybotTimer = 3000;
+						++uiSpybotPhase;
+						break;
+					case 3:
+						me->SetStandState(UNIT_STAND_STATE_STAND);
+						uiSpybotTimer = 5000;
+						++uiSpybotPhase;
+						break;
+					case 4:
+						me->GetMotionMaster()->MoveTargetedHome();
+						me->SendMovementFlagUpdate();
+						uiSpybotPhase = 0;
+					}
+				}
+				else uiSpybotTimer -= uiDiff;
+			}
+
+			if (!IsMove && MovePoint)
+			{
+				IsMove = true;
+
+				switch (MovePoint)
+				{
+				case 1:
+					me->GetMotionMaster()->MovePoint(1, P1[PointID].m_fX, P1[PointID].m_fY, P1[PointID].m_fZ);
+					me->SetReactState(REACT_PASSIVE);
+					break;
+				case 2:
+					me->GetMotionMaster()->MovePoint(2, P2[PointID].m_fX, P2[PointID].m_fY, P2[PointID].m_fZ);
+					break;
+				}
+			}
+		}
+
+		void MovementInform(uint32 type, uint32 id)
+		{
+			if (type != POINT_MOTION_TYPE)
+				return;
+
+			switch (id)
+			{
+			case 1:
+				IsMove = false;
+				MovePoint = 2;
+				break;
+			case 2:
+				me->ForcedDespawn(60000); //Despawn after 1 min
+				break;
+			}
+		}
+	};
+
+
+
+	CreatureAI* GetAI_npc_stormwind_royal_guard(Creature* pCreature)
+	{
+		return new npc_stormwind_royal_guardAI(pCreature);
+	}
+
+};
+
+class npc_tyrion_spybot : public CreatureScript
+{
+public:
+	npc_tyrion_spybot() : CreatureScript("npc_tyrion_spybot") { }
+	struct npc_tyrion_spybotAI : public npc_escortAI
+	{
+		npc_tyrion_spybotAI(Creature* pCreature) : npc_escortAI(pCreature) {}
+
+		uint32 uiTimer;
+		uint32 uiPhase;
+
+		void Reset()
+		{
+			uiTimer = 0;
+			uiPhase = 0;
+		}
+
+		void WaypointReached(uint32 uiPointId)
+		{
+			switch (uiPointId)
+			{
+			case 3:
+				DoGuardList();
+				SetEscortPaused(true);
+				DoScriptText(SAY_SPYBOT_1, me);
+				uiTimer = 5000;
+				uiPhase = 5;
+				break;
+			case 9:
+				if (Creature* pLescovar = me->FindNearestCreature(NPC_LORD_GREGOR_LESCOVAR, 10.0f))
+					pLescovar->SetFacingToObject(me);
+				SetEscortPaused(true);
+				DoScriptText(SAY_SPYBOT_3, me);
+				uiTimer = 3000;
+				uiPhase = 8;
+				break;
+			case 16:
+				me->UpdateEntry(NPC_TYRION_SPYBOT);
+				me->SetWalk(false);
+				DoCast(SPELL_FADED);
+				break;
+			}
+		}
+
+		void DoGuardList()
+		{
+			float x, y, z;
+			std::list<Creature*> lCreatureList;
+
+			me->GetPosition(x, y, z);
+			CellCoord pair(Oregon::ComputeCellCoord(x, y));
+			Cell cell(pair);
+			cell.SetNoCreate();
+
+			Oregon::AllCreaturesOfEntryInRange check(me, NPC_STORMWIND_ROYAL, 10);
+			Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange> searcher(lCreatureList, check);
+			TypeContainerVisitor<Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
+			cell.Visit(pair, cSearcher, *(me->GetMap()), *me, me->GetGridActivationRange());
+
+			if (!lCreatureList.empty())
+			{
+				for (std::list<Creature*>::iterator itr = lCreatureList.begin(); itr != lCreatureList.end(); ++itr)
+				{
+					CAST_AI(npc_stormwind_royal_guard::npc_stormwind_royal_guardAI, (*itr)->AI())->SpybotGUID = me->GetGUID();
+					CAST_AI(npc_stormwind_royal_guard::npc_stormwind_royal_guardAI, (*itr)->AI())->uiSpybotPhase = 1;
+				}
+			}
+		}
+
+		void UpdateAI(const uint32 uiDiff)
+		{
+			if (uiPhase)
+			{
+				if (uiTimer <= uiDiff)
+				{
+					switch (uiPhase)
+					{
+					case 1:
+						DoScriptText(SAY_QUEST_ACCEPT_ATTACK, me);
+						uiTimer = 3000;
+						uiPhase = 2;
+						break;
+					case 2:
+						if (Creature* pTyrion = me->FindNearestCreature(NPC_TYRION, 10.0f))
+							DoScriptText(SAY_TYRION_1, pTyrion);
+						uiTimer = 3000;
+						uiPhase = 3;
+						break;
+					case 3:
+						me->SetName("Priestess Tyriona");
+						me->SetDisplayId(6703);
+						me->SetEntry(7779);
+						uiTimer = 2000;
+						uiPhase = 4;
+						break;
+					case 4:
+						if (Creature* pTyrion = me->FindNearestCreature(NPC_TYRION, 10.0f))
+							pTyrion->GetMotionMaster()->MoveTargetedHome();
+						SetEscortPaused(false);
+						uiPhase = 0;
+						uiTimer = 0;
+						break;
+					case 5:
+						if (Creature* pGuard = me->FindNearestCreature(NPC_STORMWIND_ROYAL, 10.0f, true))
+							DoScriptText(SAY_GUARD_1, pGuard);
+						uiTimer = 3000;
+						uiPhase = 6;
+						break;
+					case 6:
+						DoScriptText(SAY_SPYBOT_2, me);
+						uiTimer = 3000;
+						uiPhase = 7;
+						break;
+					case 7:
+						SetEscortPaused(false);
+						uiTimer = 0;
+						uiPhase = 0;
+						break;
+					case 8:
+						if (Creature* pLescovar = me->FindNearestCreature(NPC_LORD_GREGOR_LESCOVAR, 10.0f))
+						{
+							DoScriptText(SAY_LESCOVAR_1, pLescovar);
+							me->SetFacingToObject(pLescovar);
+							pLescovar->SetFacingToObject(me);
+						}
+						uiTimer = 3000;
+						uiPhase = 9;
+						break;
+					case 9:
+						DoScriptText(SAY_SPYBOT_4, me);
+						uiTimer = 1000;
+						uiPhase = 10;
+						break;
+					case 10:
+						me->HandleEmoteCommand(EMOTE_ONESHOT_BOW);
+						uiPhase = 11;
+						uiTimer = 2000;
+						break;
+					case 11:
+						SetEscortPaused(false);
+						if (Creature* pLescovar = me->FindNearestCreature(NPC_LORD_GREGOR_LESCOVAR, 10.0f))
+						{
+							if (Player* pPlayer = GetPlayerForEscort())
+							{
+								CAST_AI(npc_lord_gregor_lescovar::npc_lord_gregor_lescovarAI, pLescovar->AI())->Start(false, false, pPlayer->GetGUID());
+								CAST_AI(npc_lord_gregor_lescovar::npc_lord_gregor_lescovarAI, pLescovar->AI())->SetMaxPlayerDistance(200.0f);
+							}
+							uiTimer = 0;
+							uiPhase = 0;
+							break;
+						}
+					}
+				}
+				else uiTimer -= uiDiff;
+			}
+
+			npc_escortAI::UpdateAI(uiDiff);
+
+			if (!UpdateVictim())
+				return;
+
+			DoMeleeAttackIfReady();
+		}
+	};
+
+	CreatureAI* GetAI_npc_tyrion_spybot(Creature* pCreature)
+	{
+		return new npc_tyrion_spybotAI(pCreature);
+	}
+
 };
 
 class npc_tyrion : public CreatureScript
 {
 public: 
     npc_tyrion() : CreatureScript("npc_tyrion") { }
-    
-    
+   
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_THE_ATTACK)
@@ -432,183 +722,13 @@ public:
         }
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
-class npc_tyrion_spybot : public CreatureScript
-{
-public: 
-    npc_tyrion_spybot() : CreatureScript("npc_tyrion_spybot") { }
-    struct npc_tyrion_spybotAI : public npc_escortAI
-    {
-        npc_tyrion_spybotAI(Creature* pCreature) : npc_escortAI(pCreature) {}
-    
-        uint32 uiTimer;
-        uint32 uiPhase;
-    
-        void Reset()
-        {
-            uiTimer = 0;
-            uiPhase = 0;
-        }
-    
-        void WaypointReached(uint32 uiPointId)
-        {
-            switch (uiPointId)
-            {
-            case 3:
-                DoGuardList();
-                SetEscortPaused(true);
-                DoScriptText(SAY_SPYBOT_1, me);
-                uiTimer = 5000;
-                uiPhase = 5;
-                break;
-            case 9:
-                if (Creature* pLescovar = me->FindNearestCreature(NPC_LORD_GREGOR_LESCOVAR, 10.0f))
-                    pLescovar->SetFacingToObject(me);
-                SetEscortPaused(true);
-                DoScriptText(SAY_SPYBOT_3, me);
-                uiTimer = 3000;
-                uiPhase = 8;
-                break;
-            case 16:
-                me->UpdateEntry(NPC_TYRION_SPYBOT);
-                me->SetWalk(false);
-                DoCast(SPELL_FADED);
-                break;
-            }
-        }
-    
-        void DoGuardList()
-        {
-            float x, y, z;
-            std::list<Creature*> lCreatureList;
-    
-            me->GetPosition(x, y, z);
-            CellCoord pair(Oregon::ComputeCellCoord(x, y));
-            Cell cell(pair);
-            cell.SetNoCreate();
-    
-            Oregon::AllCreaturesOfEntryInRange check(me, NPC_STORMWIND_ROYAL, 10);
-            Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange> searcher(lCreatureList, check);
-            TypeContainerVisitor<Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
-            cell.Visit(pair, cSearcher, *(me->GetMap()), *me, me->GetGridActivationRange());
-    
-            if (!lCreatureList.empty())
-            {
-                for (std::list<Creature*>::iterator itr = lCreatureList.begin(); itr != lCreatureList.end(); ++itr)
-                {
-                    CAST_AI(npc_stormwind_royal_guard::npc_stormwind_royal_guardAI, (*itr)->AI())->SpybotGUID = me->GetGUID();
-                    CAST_AI(npc_stormwind_royal_guard::npc_stormwind_royal_guardAI, (*itr)->AI())->uiSpybotPhase = 1;
-                }
-            }
-        }
-    
-        void UpdateAI(const uint32 uiDiff)
-        {
-            if (uiPhase)
-            {
-                if (uiTimer <= uiDiff)
-                {
-                    switch (uiPhase)
-                    {
-                    case 1:
-                        DoScriptText(SAY_QUEST_ACCEPT_ATTACK, me);
-                        uiTimer = 3000;
-                        uiPhase = 2;
-                        break;
-                    case 2:
-                        if (Creature* pTyrion = me->FindNearestCreature(NPC_TYRION, 10.0f))
-                            DoScriptText(SAY_TYRION_1, pTyrion);
-                        uiTimer = 3000;
-                        uiPhase = 3;
-                        break;
-                    case 3:
-                        me->SetName("Priestess Tyriona");
-                        me->SetDisplayId(6703);
-                        me->SetEntry(7779);
-                        uiTimer = 2000;
-                        uiPhase = 4;
-                        break;
-                    case 4:
-                        if (Creature* pTyrion = me->FindNearestCreature(NPC_TYRION, 10.0f))
-                            pTyrion->GetMotionMaster()->MoveTargetedHome();
-                        SetEscortPaused(false);
-                        uiPhase = 0;
-                        uiTimer = 0;
-                        break;
-                    case 5:
-                        if (Creature* pGuard = me->FindNearestCreature(NPC_STORMWIND_ROYAL, 10.0f, true))
-                            DoScriptText(SAY_GUARD_1, pGuard);
-                        uiTimer = 3000;
-                        uiPhase = 6;
-                        break;
-                    case 6:
-                        DoScriptText(SAY_SPYBOT_2, me);
-                        uiTimer = 3000;
-                        uiPhase = 7;
-                        break;
-                    case 7:
-                        SetEscortPaused(false);
-                        uiTimer = 0;
-                        uiPhase = 0;
-                        break;
-                    case 8:
-                        if (Creature* pLescovar = me->FindNearestCreature(NPC_LORD_GREGOR_LESCOVAR, 10.0f))
-                        {
-                            DoScriptText(SAY_LESCOVAR_1, pLescovar);
-                            me->SetFacingToObject(pLescovar);
-                            pLescovar->SetFacingToObject(me);
-                        }
-                        uiTimer = 3000;
-                        uiPhase = 9;
-                        break;
-                    case 9:
-                        DoScriptText(SAY_SPYBOT_4, me);
-                        uiTimer = 1000;
-                        uiPhase = 10;
-                        break;
-                    case 10:
-                        me->HandleEmoteCommand(EMOTE_ONESHOT_BOW);
-                        uiPhase = 11;
-                        uiTimer = 2000;
-                        break;
-                    case 11:
-                        SetEscortPaused(false);
-                        if (Creature* pLescovar = me->FindNearestCreature(NPC_LORD_GREGOR_LESCOVAR, 10.0f))
-                        {
-                            if (Player* pPlayer = GetPlayerForEscort())
-                            {
-                                CAST_AI(npc_lord_gregor_lescovar::npc_lord_gregor_lescovarAI, pLescovar->AI())->Start(false, false, pPlayer->GetGUID());
-                                CAST_AI(npc_lord_gregor_lescovar::npc_lord_gregor_lescovarAI, pLescovar->AI())->SetMaxPlayerDistance(200.0f);
-                            }
-                            uiTimer = 0;
-                            uiPhase = 0;
-                            break;
-                        }
-                    }
-                }
-                else uiTimer -= uiDiff;
-            }
-    
-            npc_escortAI::UpdateAI(uiDiff);
-    
-            if (!UpdateVictim())
-                return;
-    
-            DoMeleeAttackIfReady();
-        }
-    };
-    
-    CreatureAI* GetAI_npc_tyrion_spybot(Creature* pCreature)
-    {
-        return new npc_tyrion_spybotAI(pCreature);
-    }
-    
-    
-};
 
 class npc_lord_gregor_lescovar : public CreatureScript
 {
@@ -766,13 +886,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_lord_gregor_lescovar(Creature* pCreature)
     {
         return new npc_lord_gregor_lescovarAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -821,114 +945,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_marzon_silent_blade(Creature* pCreature)
     {
         return new npc_marzon_silent_bladeAI(pCreature);
-    }
-    
-    
-};
+    }
 
-class npc_stormwind_royal_guard : public CreatureScript
-{
-public: 
-    npc_stormwind_royal_guard() : CreatureScript("npc_stormwind_royal_guard") { }
-    struct npc_stormwind_royal_guardAI : public ScriptedAI
-    {
-        npc_stormwind_royal_guardAI(Creature* pCreature) : ScriptedAI(pCreature) {}
     
-        uint32 uiSpybotTimer;
-        uint32 uiSpybotPhase;
-        uint8 PointID;
-        uint64 SpybotGUID;
-        uint8 MovePoint;
-        bool IsMove;
-    
-        void Reset()
-        {
-            uiSpybotTimer = 0;
-            uiSpybotPhase = 0;
-            PointID = 0;
-            MovePoint = 0;
-            SpybotGUID = 0;
-            IsMove = false;
-        }
-    
-        void UpdateAI(const uint32 uiDiff)
-        {
-            if (uiSpybotPhase)
-            {
-                if (uiSpybotTimer <= uiDiff)
-                {
-                    switch (uiSpybotPhase)
-                    {
-                    case 1:
-                        if ( Unit* pSpybot = me->GetUnit(*me, SpybotGUID))
-                            me->SetFacingToObject(pSpybot);
-                        uiSpybotTimer = 1000;
-                        ++uiSpybotPhase;
-                        break;
-                    case 2:
-                        me->SetStandState(UNIT_STAND_STATE_KNEEL);
-                        uiSpybotTimer = 3000;
-                        ++uiSpybotPhase;
-                        break;
-                    case 3:
-                        me->SetStandState(UNIT_STAND_STATE_STAND);
-                        uiSpybotTimer = 5000;
-                        ++uiSpybotPhase;
-                        break;
-                    case 4:
-                        me->GetMotionMaster()->MoveTargetedHome();
-                        me->SendMovementFlagUpdate();
-                        uiSpybotPhase = 0;
-                    }
-                }
-                else uiSpybotTimer -= uiDiff;
-            }
-    
-            if (!IsMove && MovePoint)
-            {
-                IsMove = true;
-    
-                switch (MovePoint)
-                {
-                case 1:
-                    me->GetMotionMaster()->MovePoint(1, P1[PointID].m_fX, P1[PointID].m_fY, P1[PointID].m_fZ);
-                    me->SetReactState(REACT_PASSIVE);
-                    break;
-                case 2:
-                    me->GetMotionMaster()->MovePoint(2, P2[PointID].m_fX, P2[PointID].m_fY, P2[PointID].m_fZ);
-                    break;
-                }
-            }
-        }
-    
-        void MovementInform(uint32 type, uint32 id)
-        {
-            if (type != POINT_MOTION_TYPE)
-                return;
-    
-            switch (id)
-            {
-            case 1:
-                IsMove = false;
-                MovePoint = 2;
-                break;
-            case 2:
-                me->ForcedDespawn(60000); //Despawn after 1 min
-                break;
-            }
-        }
-    };
-    
-    CreatureAI* GetAI_npc_stormwind_royal_guard(Creature* pCreature)
-    {
-        return new npc_stormwind_royal_guardAI(pCreature);
-    }
-    
+
     
 };
 

@@ -249,9 +249,6 @@ enum eRogueSpells
 };
 
 
-
-
-
 enum eWarlockSpells
 {
     SPELL_IMMOLATE              = 44267,
@@ -264,17 +261,11 @@ enum eWarlockSpells
 };
 
 
-
-
-
 enum eKickDown
 {
     SPELL_KNOCKDOWN     = 11428,
     SPELL_SNAP_KICK     = 46182
 };
-
-
-
 
 
 enum eMageSpells
@@ -289,9 +280,6 @@ enum eMageSpells
 };
 
 
-
-
-
 enum eWarriorSpells
 {
     SPELL_INTERCEPT_STUN        = 27577,
@@ -302,10 +290,6 @@ enum eWarriorSpells
     SPELL_BATTLE_SHOUT          = 27578,
     SPELL_MORTAL_STRIKE         = 44268
 };
-
-
-
-
 
 enum eHunterSpells
 {
@@ -318,9 +302,6 @@ enum eHunterSpells
 
     NPC_SLIVER                  = 24552
 };
-
-
-
 
 
 enum ApokoSpells
@@ -336,9 +317,6 @@ enum ApokoSpells
     SPELL_EARTHBIND_TOTEM       = 15786
 };
 
-
-
-
 enum eEngineerSpells
 {
     SPELL_GOBLIN_DRAGON_GUN     = 44272,
@@ -348,16 +326,6 @@ enum eEngineerSpells
     SPELL_FEL_IRON_BOMB         = 46024,
     SPELL_SHEEP_EXPLOSION       = 44279
 };
-
-
-
-
-
-//
-
-//;
-
-
 
 
 class boss_priestess_delrissa : public CreatureScript

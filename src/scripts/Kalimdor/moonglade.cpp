@@ -271,24 +271,282 @@ Location PristessHomePoint[] =
 ######*/
 
 
+class npc_clintar_spirit : public CreatureScript
+{
+public:
+	npc_clintar_spirit() : CreatureScript("npc_clintar_spirit") { }
+	struct npc_clintar_spiritAI : public npc_escortAI
+	{
+	public:
+		npc_clintar_spiritAI(Creature* c) : npc_escortAI(c) {}
+
+		uint32 Step;
+		uint32 CurrWP;
+		uint32 Event_Timer;
+		uint32 checkPlayer_Timer;
+
+		uint64 PlayerGUID;
+
+		bool Event_onWait;
+
+		void Reset()
+		{
+			if (!PlayerGUID)
+			{
+				Step = 0;
+				CurrWP = 0;
+				Event_Timer = 0;
+				PlayerGUID = 0;
+				checkPlayer_Timer = 1000;
+				Event_onWait = false;
+			}
+		}
+
+		void JustDied(Unit* /*killer*/)
+		{
+			if (!PlayerGUID)
+				return;
+
+			Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
+			if (pPlayer && pPlayer->GetQuestStatus(10965) == QUEST_STATUS_INCOMPLETE)
+			{
+				pPlayer->FailQuest(10965);
+				PlayerGUID = 0;
+				Reset();
+			}
+		}
+
+		void EnterEvadeMode()
+		{
+			Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
+			if (pPlayer && pPlayer->IsInCombat() && pPlayer->getAttackerForHelper())
+			{
+				AttackStart(pPlayer->getAttackerForHelper());
+				return;
+			}
+			npc_escortAI::EnterEvadeMode();
+		}
+
+		void EnterCombat(Unit* who)
+		{
+			uint32 rnd = rand() % 2;
+			switch (rnd)
+			{
+			case 0:
+				DoScriptText(CLINTAR_SPIRIT_SAY_UNDER_ATTACK_1, me, who);
+				break;
+			case 1:
+				DoScriptText(CLINTAR_SPIRIT_SAY_UNDER_ATTACK_2, me, who);
+				break;
+			}
+		}
+
+		void StartEvent(Player* pPlayer)
+		{
+			if (!pPlayer)
+				return;
+			if (pPlayer->GetQuestStatus(10965) == QUEST_STATUS_INCOMPLETE)
+			{
+				for (uint8 i = 0; i < 41; ++i)
+					AddWaypoint(i, Clintar_spirit_WP[i][0], Clintar_spirit_WP[i][1], Clintar_spirit_WP[i][2], (uint32)Clintar_spirit_WP[i][4]);
+				PlayerGUID = pPlayer->GetGUID();
+				Start(true, false, PlayerGUID);
+			}
+			return;
+		}
+
+		void UpdateAI(const uint32 diff)
+		{
+			npc_escortAI::UpdateAI(diff);
+
+			if (!PlayerGUID)
+			{
+				me->setDeathState(JUST_DIED);
+				return;
+			}
+
+			if (!me->IsInCombat() && !Event_onWait)
+			{
+				if (checkPlayer_Timer <= diff)
+				{
+					Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
+					if (pPlayer && pPlayer->IsInCombat() && pPlayer->getAttackerForHelper())
+						AttackStart(pPlayer->getAttackerForHelper());
+					checkPlayer_Timer = 1000;
+				}
+				else checkPlayer_Timer -= diff;
+			}
+
+			if (Event_onWait && Event_Timer <= diff)
+			{
+
+				Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
+				if (!pPlayer || (pPlayer && pPlayer->GetQuestStatus(10965) == QUEST_STATUS_NONE))
+				{
+					me->setDeathState(JUST_DIED);
+					return;
+				}
+
+				switch (CurrWP)
+				{
+				case 0:
+					switch (Step)
+					{
+					case 0:
+						me->Say(CLINTAR_SPIRIT_SAY_START, 0, PlayerGUID);
+						Event_Timer = 8000;
+						Step = 1;
+						break;
+					case 1:
+						Event_onWait = false;
+						break;
+					}
+					break;
+				case 6:
+					switch (Step)
+					{
+					case 0:
+						me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 133);
+						Event_Timer = 5000;
+						Step = 1;
+						break;
+					case 1:
+						me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+						DoScriptText(CLINTAR_SPIRIT_SAY_GET_ONE, me, pPlayer);
+						Event_onWait = false;
+						break;
+					}
+					break;
+				case 15:
+					switch (Step)
+					{
+					case 0:
+						me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 133);
+						Event_Timer = 5000;
+						Step = 1;
+						break;
+					case 1:
+						me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+						Event_onWait = false;
+						break;
+					}
+					break;
+				case 16:
+					switch (Step)
+					{
+					case 0:
+						DoScriptText(CLINTAR_SPIRIT_SAY_GET_TWO, me, pPlayer);
+						Event_Timer = 15000;
+						Step = 1;
+						break;
+					case 1:
+						Event_onWait = false;
+						break;
+					}
+					break;
+				case 20:
+					switch (Step)
+					{
+					case 0:
+					{
+						Creature* mob = me->SummonCreature(ASPECT_RAVEN, ASPECT_RAVEN_SUMMON_X, ASPECT_RAVEN_SUMMON_Y, ASPECT_RAVEN_SUMMON_Z, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 2000);
+						if (mob)
+						{
+							mob->AddThreat(me, 10000.0f);
+							mob->AI()->AttackStart(me);
+						}
+						Event_Timer = 2000;
+						Step = 1;
+						break;
+					}
+					case 1:
+						Event_onWait = false;
+						break;
+					}
+					break;
+				case 24:
+					switch (Step)
+					{
+					case 0:
+						me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 133);
+						Event_Timer = 5000;
+						Step = 1;
+						break;
+					case 1:
+						me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+						Event_onWait = false;
+						break;
+					}
+					break;
+				case 25:
+					switch (Step)
+					{
+					case 0:
+						DoScriptText(CLINTAR_SPIRIT_SAY_GET_THREE, me, pPlayer);
+						Event_Timer = 4000;
+						Step = 1;
+						break;
+					case 1:
+						Event_onWait = false;
+						break;
+					}
+					break;
+				case 40:
+					switch (Step)
+					{
+					case 0:
+						me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 2);
+						DoScriptText(CLINTAR_SPIRIT_SAY_GET_FINAL, me, pPlayer);
+						pPlayer->CompleteQuest(10965);
+						Event_Timer = 1500;
+						Step = 1;
+						break;
+					case 1:
+						me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
+						Event_Timer = 3000;
+						Step = 2;
+						break;
+					case 2:
+						pPlayer->TalkedToCreature(me->GetEntry(), me->GetGUID());
+						PlayerGUID = 0;
+						Reset();
+						me->setDeathState(JUST_DIED);
+						break;
+					}
+					break;
+				default:
+					Event_onWait = false;
+					break;
+				}
+
+			}
+			else if (Event_onWait) Event_Timer -= diff;
+		}
+
+		void WaypointReached(uint32 id)
+		{
+			CurrWP = id;
+			Event_Timer = 0;
+			Step = 0;
+			Event_onWait = true;
+		}
+	};
 
 
+	CreatureAI* GetAI_npc_clintar_spirit(Creature* pCreature)
+	{
+		return new npc_clintar_spiritAI(pCreature);
+	}
 
-
-
-
-
-
-
-
+};
 
 
 class npc_bunthen_plainswind : public CreatureScript
 {
 public: 
     npc_bunthen_plainswind() : CreatureScript("npc_bunthen_plainswind") { }
-    
-    
+   
+ 
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->getClass() != CLASS_DRUID)
@@ -311,7 +569,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -337,8 +596,6 @@ public:
         }
         return true;
     }
-    
-    
     
 };
 
@@ -346,8 +603,8 @@ class npc_great_bear_spirit : public CreatureScript
 {
 public: 
     npc_great_bear_spirit() : CreatureScript("npc_great_bear_spirit") { }
-    
-    
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         //ally or horde quest
@@ -361,7 +618,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -388,76 +646,77 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
 class npc_silva_filnaveth : public CreatureScript
 {
-public: 
-    npc_silva_filnaveth() : CreatureScript("npc_silva_filnaveth") { }
-    
-    
-    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
-    {
-        if (pPlayer->getClass() != CLASS_DRUID)
-            pPlayer->SEND_GOSSIP_MENU(4913, pCreature->GetGUID());
-        else if (pPlayer->GetTeam() != ALLIANCE)
-        {
-            if (pPlayer->GetQuestStatus(QUEST_SEA_LION_HORDE) == QUEST_STATUS_INCOMPLETE)
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_AQ_AGI, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-    
-            pPlayer->SEND_GOSSIP_MENU(4915, pCreature->GetGUID());
-        }
-        else if (pPlayer->getClass() == CLASS_DRUID && pPlayer->GetTeam() == ALLIANCE)
-        {
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_RUTHERAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    
-            if (pPlayer->GetQuestStatus(QUEST_SEA_LION_ALLY) == QUEST_STATUS_INCOMPLETE)
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_AQ_AGI, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-    
-            pPlayer->SEND_GOSSIP_MENU(4914, pCreature->GetGUID());
-        }
-        return true;
-    }
-    
-    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
-    {
-        switch (uiAction)
-        {
-        case GOSSIP_ACTION_INFO_DEF + 1:
-            pPlayer->CLOSE_GOSSIP_MENU();
-            if (pPlayer->getClass() == CLASS_DRUID && pPlayer->GetTeam() == ALLIANCE)
-            {
-                std::vector<uint32> nodes;
-    
-                nodes.resize(2);
-                nodes[0] = 62;                              // Nighthaven, Moonglade
-                nodes[1] = 27;                              // Rut'theran Village, Teldrassil
-                pPlayer->ActivateTaxiPathTo(nodes);
-            }
-            break;
-        case GOSSIP_ACTION_INFO_DEF + 2:
-            pPlayer->SEND_GOSSIP_MENU(5374, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF + 3:
-            pPlayer->SEND_GOSSIP_MENU(5375, pCreature->GetGUID());
-            break;
-        }
-        return true;
-    }
-    
-    
-    
+public:
+	npc_silva_filnaveth() : CreatureScript("npc_silva_filnaveth") { }
+
+
+
+
+	bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+	{
+		if (pPlayer->getClass() != CLASS_DRUID)
+			pPlayer->SEND_GOSSIP_MENU(4913, pCreature->GetGUID());
+		else if (pPlayer->GetTeam() != ALLIANCE)
+		{
+			if (pPlayer->GetQuestStatus(QUEST_SEA_LION_HORDE) == QUEST_STATUS_INCOMPLETE)
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_AQ_AGI, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+
+			pPlayer->SEND_GOSSIP_MENU(4915, pCreature->GetGUID());
+		}
+		else if (pPlayer->getClass() == CLASS_DRUID && pPlayer->GetTeam() == ALLIANCE)
+		{
+			pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_RUTHERAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+			if (pPlayer->GetQuestStatus(QUEST_SEA_LION_ALLY) == QUEST_STATUS_INCOMPLETE)
+				pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_AQ_AGI, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+
+			pPlayer->SEND_GOSSIP_MENU(4914, pCreature->GetGUID());
+		}
+		return true;
+	}
+
+	bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+	{
+		switch (uiAction)
+		{
+		case GOSSIP_ACTION_INFO_DEF + 1:
+			pPlayer->CLOSE_GOSSIP_MENU();
+			if (pPlayer->getClass() == CLASS_DRUID && pPlayer->GetTeam() == ALLIANCE)
+			{
+				std::vector<uint32> nodes;
+
+				nodes.resize(2);
+				nodes[0] = 62;                              // Nighthaven, Moonglade
+				nodes[1] = 27;                              // Rut'theran Village, Teldrassil
+				pPlayer->ActivateTaxiPathTo(nodes);
+			}
+			break;
+		case GOSSIP_ACTION_INFO_DEF + 2:
+			pPlayer->SEND_GOSSIP_MENU(5374, pCreature->GetGUID());
+			break;
+		case GOSSIP_ACTION_INFO_DEF + 3:
+			pPlayer->SEND_GOSSIP_MENU(5375, pCreature->GetGUID());
+			break;
+		}
+		return true;
+	}
+
 };
 
 class npc_clintar_dreamwalker : public CreatureScript
 {
 public: 
     npc_clintar_dreamwalker() : CreatureScript("npc_clintar_dreamwalker") { }
-    
-    
+    
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == 10965)
@@ -468,279 +727,10 @@ public:
         }
         return true;
     }
-    
-    
+    
     
 };
 
-class npc_clintar_spirit : public CreatureScript
-{
-public: 
-    npc_clintar_spirit() : CreatureScript("npc_clintar_spirit") { }
-    struct npc_clintar_spiritAI : public npc_escortAI
-    {
-        public:
-            npc_clintar_spiritAI(Creature* c) : npc_escortAI(c) {}
-    
-            uint32 Step;
-            uint32 CurrWP;
-            uint32 Event_Timer;
-            uint32 checkPlayer_Timer;
-    
-            uint64 PlayerGUID;
-    
-            bool Event_onWait;
-    
-            void Reset()
-            {
-                if (!PlayerGUID)
-                {
-                    Step = 0;
-                    CurrWP = 0;
-                    Event_Timer = 0;
-                    PlayerGUID = 0;
-                    checkPlayer_Timer = 1000;
-                    Event_onWait = false;
-                }
-            }
-    
-            void JustDied(Unit* /*killer*/)
-            {
-                if (!PlayerGUID)
-                    return;
-    
-                Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
-                if (pPlayer && pPlayer->GetQuestStatus(10965) == QUEST_STATUS_INCOMPLETE)
-                {
-                    pPlayer->FailQuest(10965);
-                    PlayerGUID = 0;
-                    Reset();
-                }
-            }
-    
-            void EnterEvadeMode()
-            {
-                Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
-                if (pPlayer && pPlayer->IsInCombat() && pPlayer->getAttackerForHelper())
-                {
-                    AttackStart(pPlayer->getAttackerForHelper());
-                    return;
-                }
-                npc_escortAI::EnterEvadeMode();
-            }
-    
-            void EnterCombat(Unit* who)
-            {
-                uint32 rnd = rand() % 2;
-                switch (rnd)
-                {
-                case 0:
-                    DoScriptText(CLINTAR_SPIRIT_SAY_UNDER_ATTACK_1, me, who);
-                    break;
-                case 1:
-                    DoScriptText(CLINTAR_SPIRIT_SAY_UNDER_ATTACK_2, me, who);
-                    break;
-                }
-            }
-    
-            void StartEvent(Player* pPlayer)
-            {
-                if (!pPlayer)
-                    return;
-                if (pPlayer->GetQuestStatus(10965) == QUEST_STATUS_INCOMPLETE)
-                {
-                    for (uint8 i = 0; i < 41; ++i)
-                        AddWaypoint(i, Clintar_spirit_WP[i][0], Clintar_spirit_WP[i][1], Clintar_spirit_WP[i][2], (uint32)Clintar_spirit_WP[i][4]);
-                    PlayerGUID = pPlayer->GetGUID();
-                    Start(true, false, PlayerGUID);
-                }
-                return;
-            }
-    
-            void UpdateAI(const uint32 diff)
-            {
-                npc_escortAI::UpdateAI(diff);
-    
-                if (!PlayerGUID)
-                {
-                    me->setDeathState(JUST_DIED);
-                    return;
-                }
-    
-                if (!me->IsInCombat() && !Event_onWait)
-                {
-                    if (checkPlayer_Timer <= diff)
-                    {
-                        Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
-                        if (pPlayer && pPlayer->IsInCombat() && pPlayer->getAttackerForHelper())
-                            AttackStart(pPlayer->getAttackerForHelper());
-                        checkPlayer_Timer = 1000;
-                    }
-                    else checkPlayer_Timer -= diff;
-                }
-    
-                if (Event_onWait && Event_Timer <= diff)
-                {
-    
-                    Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
-                    if (!pPlayer || (pPlayer && pPlayer->GetQuestStatus(10965) == QUEST_STATUS_NONE))
-                    {
-                        me->setDeathState(JUST_DIED);
-                        return;
-                    }
-    
-                    switch (CurrWP)
-                    {
-                    case 0:
-                        switch (Step)
-                        {
-                        case 0:
-                            me->Say(CLINTAR_SPIRIT_SAY_START, 0, PlayerGUID);
-                            Event_Timer = 8000;
-                            Step = 1;
-                            break;
-                        case 1:
-                            Event_onWait = false;
-                            break;
-                        }
-                        break;
-                    case 6:
-                        switch (Step)
-                        {
-                        case 0:
-                            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 133);
-                            Event_Timer = 5000;
-                            Step = 1;
-                            break;
-                        case 1:
-                            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
-                            DoScriptText(CLINTAR_SPIRIT_SAY_GET_ONE, me, pPlayer);
-                            Event_onWait = false;
-                            break;
-                        }
-                        break;
-                    case 15:
-                        switch (Step)
-                        {
-                        case 0:
-                            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 133);
-                            Event_Timer = 5000;
-                            Step = 1;
-                            break;
-                        case 1:
-                            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
-                            Event_onWait = false;
-                            break;
-                        }
-                        break;
-                    case 16:
-                        switch (Step)
-                        {
-                        case 0:
-                            DoScriptText(CLINTAR_SPIRIT_SAY_GET_TWO, me, pPlayer);
-                            Event_Timer = 15000;
-                            Step = 1;
-                            break;
-                        case 1:
-                            Event_onWait = false;
-                            break;
-                        }
-                        break;
-                    case 20:
-                        switch (Step)
-                        {
-                        case 0:
-                            {
-                                Creature* mob = me->SummonCreature(ASPECT_RAVEN, ASPECT_RAVEN_SUMMON_X, ASPECT_RAVEN_SUMMON_Y, ASPECT_RAVEN_SUMMON_Z, 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 2000);
-                                if (mob)
-                                {
-                                    mob->AddThreat(me, 10000.0f);
-                                    mob->AI()->AttackStart(me);
-                                }
-                                Event_Timer = 2000;
-                                Step = 1;
-                                break;
-                            }
-                        case 1:
-                            Event_onWait = false;
-                            break;
-                        }
-                        break;
-                    case 24:
-                        switch (Step)
-                        {
-                        case 0:
-                            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 133);
-                            Event_Timer = 5000;
-                            Step = 1;
-                            break;
-                        case 1:
-                            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
-                            Event_onWait = false;
-                            break;
-                        }
-                        break;
-                    case 25:
-                        switch (Step)
-                        {
-                        case 0:
-                            DoScriptText(CLINTAR_SPIRIT_SAY_GET_THREE, me, pPlayer);
-                            Event_Timer = 4000;
-                            Step = 1;
-                            break;
-                        case 1:
-                            Event_onWait = false;
-                            break;
-                        }
-                        break;
-                    case 40:
-                        switch (Step)
-                        {
-                        case 0:
-                            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 2);
-                            DoScriptText(CLINTAR_SPIRIT_SAY_GET_FINAL, me, pPlayer);
-                            pPlayer->CompleteQuest(10965);
-                            Event_Timer = 1500;
-                            Step = 1;
-                            break;
-                        case 1:
-                            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
-                            Event_Timer = 3000;
-                            Step = 2;
-                            break;
-                        case 2:
-                            pPlayer->TalkedToCreature(me->GetEntry(), me->GetGUID());
-                            PlayerGUID = 0;
-                            Reset();
-                            me->setDeathState(JUST_DIED);
-                            break;
-                        }
-                        break;
-                    default:
-                        Event_onWait = false;
-                        break;
-                    }
-    
-                }
-                else if (Event_onWait) Event_Timer -= diff;
-            }
-    
-            void WaypointReached(uint32 id)
-            {
-                CurrWP = id;
-                Event_Timer = 0;
-                Step = 0;
-                Event_onWait = true;
-            }
-    };
-    
-    CreatureAI* GetAI_npc_clintar_spirit(Creature* pCreature)
-    {
-        return new npc_clintar_spiritAI (pCreature);
-    }
-    
-    
-};
 
 class npc_remulos : public CreatureScript
 {
@@ -1163,12 +1153,15 @@ public:
             if (Player* pPlayer = GetPlayerForEscort())
                 pPlayer->GroupEventHappens(QUEST_NIGHTMARE_MANIFESTS, me);
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_remulos(Creature* pCreature)
     {
         return new npc_remulosAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_NIGHTMARE_MANIFESTS)
@@ -1187,8 +1180,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1538,13 +1533,17 @@ public:
                     }
                 }
             }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_eranikus(Creature* pCreature)
     {
         return new npc_eranikusAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 

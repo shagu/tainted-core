@@ -1328,32 +1328,6 @@ public:
 
 };
 
-
-
-
-class script_name : public CreatureScript
-{
-public:
-    script_name() : CreatureScript("script_name") { }
-
-
-};
-
-class script_name : public CreatureScript
-{
-public:
-    script_name() : CreatureScript("script_name") { }
-
-
-};
-
-class script_name : public CreatureScript
-{
-public:
-    script_name() : CreatureScript("script_name") { }
-
-
-};
 /*######
 ## AddSC
 ######*/

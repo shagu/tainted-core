@@ -869,13 +869,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_mature_netherwing_drake(Creature* pCreature)
     {
         return new mob_mature_netherwing_drakeAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1000,13 +1004,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_enslaved_netherwing_drake(Creature* pCreature)
     {
         return new mob_enslaved_netherwing_drakeAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1100,13 +1108,17 @@ public:
     			else sunder_timer -= diff;
     		}
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_dragonmaw_peon(Creature* pCreature)
     {
         return new mob_dragonmaw_peonAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1114,8 +1126,10 @@ class npc_drake_dealer_hurlunk : public CreatureScript
 {
 public: 
     npc_drake_dealer_hurlunk() : CreatureScript("npc_drake_dealer_hurlunk") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsVendor() && player->GetReputationRank(1015) == REP_EXALTED)
@@ -1133,8 +1147,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1142,8 +1158,10 @@ class npcs_flanis_swiftwing_and_kagrosh : public CreatureScript
 {
 public: 
     npcs_flanis_swiftwing_and_kagrosh() : CreatureScript("npcs_flanis_swiftwing_and_kagrosh") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (player->GetQuestStatus(10583) == QUEST_STATUS_INCOMPLETE && !player->HasItemCount(30658, 1, true))
@@ -1155,7 +1173,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* /*pCreature*/, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1180,8 +1200,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1189,8 +1211,10 @@ class npc_murkblood_overseer : public CreatureScript
 {
 public: 
     npc_murkblood_overseer() : CreatureScript("npc_murkblood_overseer") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (player->GetQuestStatus(QUEST_11082) == QUEST_STATUS_INCOMPLETE)
@@ -1199,7 +1223,8 @@ public:
         player->SEND_GOSSIP_MENU(10940, pCreature->GetGUID());
         return true;
     }
-        
+    
+    
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -1238,8 +1263,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1247,8 +1274,10 @@ class npc_neltharaku : public CreatureScript
 {
 public: 
     npc_neltharaku() : CreatureScript("npc_neltharaku") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -1261,7 +1290,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -1285,8 +1315,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1319,12 +1351,15 @@ public:
     			ZuluStart = false;
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_karynaku(Creature* pCreature)
     {
     	return new npc_karynakuAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest) override
     {
     	if (quest->GetQuestId() == 10866)
@@ -1356,8 +1391,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1393,12 +1430,15 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_oronok_tornheart(Creature* pCreature)
     {
     	return new npc_oronok_tornheartAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -1416,7 +1456,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipHello_npc_oronok_tornheart(Player* player, Creature* pCreature)
     {
         if (pCreature->IsQuestGiver())
@@ -1434,7 +1475,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_oronok_tornheart(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
     {
         switch (action)
@@ -1473,7 +1515,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -1512,8 +1555,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1767,13 +1812,16 @@ public:
             }
             else ConversationTimer -= diff;
         }
-    };
-    
+    };
+
+    
+
 
     CreatureAI* GetAI_npc_overlord_morghorAI(Creature* pCreature)
     {
         return new npc_overlord_morghorAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* player, Creature* pCreature, const Quest* _Quest) override
     {
         if (_Quest->GetQuestId() == QUEST_LORD_ILLIDAN_STORMRAGE)
@@ -1785,8 +1833,10 @@ public:
         }
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1968,13 +2018,15 @@ public:
         {
             npc_escortAI::UpdateAI(diff);
         }
-    };
+    };
+
     
     CreatureAI* GetAI_npc_earthmender_wildaAI(Creature* pCreature)
     {
         return new npc_earthmender_wildaAI(pCreature);
     }
-    
+    
+
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_ESCAPE_FROM_COILSKAR_CISTERN)
@@ -1985,9 +2037,170 @@ public:
         }
         return true;
     }
-    
-    
     
+
+    
+
+    
+};
+
+class mob_torloth : public CreatureScript
+{
+public:
+	mob_torloth() : CreatureScript("mob_torloth") { }
+	struct mob_torlothAI : public ScriptedAI
+	{
+		mob_torlothAI(Creature* pCreature) : ScriptedAI(pCreature)
+		{
+			Reset();
+		}
+
+		uint64 m_uiLordIllidanGUID;
+		uint64 m_uiPlayerGUID;
+
+		uint32 m_uiCleaveTimer;
+		uint32 m_uiShadowfuryTimer;
+		uint32 m_uiSpellReflectionTimer;
+		uint8  m_uiAnimationCount;
+		uint32 m_uiAnimationTimer;
+
+		void Reset()
+		{
+			m_uiLordIllidanGUID = 0;
+			m_uiPlayerGUID = 0;
+
+			m_uiAnimationCount = 0;
+			m_uiAnimationTimer = 4000;
+			m_uiCleaveTimer = 10000;
+			m_uiShadowfuryTimer = 18000;
+			m_uiSpellReflectionTimer = 25000;
+
+			// make him not attackable for the time of animation
+			me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+			me->SetReactState(REACT_PASSIVE);
+			SetCombatMovement(false);
+		}
+
+		void EnterEvadeMode()
+		{
+			me->ForcedDespawn();
+		}
+
+		void HandleAnimation()
+		{
+			Creature* pCreature = me;
+
+			if (TorlothAnim[m_uiAnimationCount].uiCreature == LORD_ILLIDAN)
+			{
+				pCreature = me->GetMap()->GetCreature(m_uiLordIllidanGUID);
+
+				if (!pCreature)
+				{
+					me->ForcedDespawn();
+					return;
+				}
+			}
+
+			if (TorlothAnim[m_uiAnimationCount].iTextId)
+				DoScriptText(TorlothAnim[m_uiAnimationCount].iTextId, pCreature);
+
+			m_uiAnimationTimer = TorlothAnim[m_uiAnimationCount].uiTimer;
+
+			switch (m_uiAnimationCount)
+			{
+			case 0:
+				me->SetStandState(UNIT_STAND_STATE_KNEEL);
+				break;
+			case 3:
+				me->SetStandState(UNIT_STAND_STATE_STAND);
+				break;
+			case 5:
+				if (Player* pTarget = Unit::GetPlayer(*me, m_uiPlayerGUID))
+				{
+					me->SetReactState(REACT_AGGRESSIVE);
+					me->SetUInt64Value(UNIT_FIELD_TARGET, pTarget->GetGUID());
+					me->AddThreat(pTarget, 1);
+					me->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
+				}
+				break;
+			case 6:
+			{
+				if (Player* pTarget = Unit::GetPlayer(*me, m_uiPlayerGUID))
+				{
+					SetCombatMovement(true);
+					me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+					float fLocX, fLocY, fLocZ;
+					pTarget->GetPosition(fLocX, fLocY, fLocZ);
+					me->GetMotionMaster()->MovePoint(0, fLocX, fLocY, fLocZ);
+				}
+				break;
+			}
+			}
+
+			++m_uiAnimationCount;
+		}
+
+		void JustDied(Unit* pKiller)
+		{
+			if (Player* pPlayer = pKiller->GetCharmerOrOwnerPlayerOrPlayerItself())
+			{
+				pPlayer->GroupEventHappens(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, me);
+
+				if (Creature* pLordIllidan = me->GetMap()->GetCreature(m_uiLordIllidanGUID))
+				{
+					pLordIllidan->MonsterYellToZone(SAY_EVENT_COMPLETED, LANG_UNIVERSAL, m_uiPlayerGUID);
+					pLordIllidan->AI()->EnterEvadeMode();
+				}
+			}
+		}
+
+		void UpdateAI(const uint32 uiDiff)
+		{
+			if (m_uiAnimationCount < 7)
+			{
+				if (m_uiAnimationTimer < uiDiff)
+					HandleAnimation();
+				else
+					m_uiAnimationTimer -= uiDiff;
+			}
+			else
+			{
+				if (!UpdateVictim())
+					return;
+
+				if (m_uiCleaveTimer < uiDiff)
+				{
+					DoCastVictim(SPELL_CLEAVE);
+					m_uiCleaveTimer = 15000;
+				}
+				else
+					m_uiCleaveTimer -= uiDiff;
+
+				if (m_uiShadowfuryTimer < uiDiff)
+				{
+					DoCastVictim(SPELL_SHADOWFURY);
+					m_uiShadowfuryTimer = 20000;
+				}
+				else
+					m_uiShadowfuryTimer -= uiDiff;
+
+				if (m_uiSpellReflectionTimer < uiDiff)
+				{
+					DoCast(me, SPELL_SPELL_REFLECTION);
+					m_uiSpellReflectionTimer = 30000;
+				}
+				else
+					m_uiSpellReflectionTimer -= uiDiff;
+
+				DoMeleeAttackIfReady();
+			}
+		}
+	};
+
+	CreatureAI* GetAI_mob_torloth(Creature* pCreature)
+	{
+		return new mob_torlothAI(pCreature);
+	}
 };
 
 class npc_lord_illidan_stormrage : public CreatureScript
@@ -2211,183 +2424,23 @@ public:
             if (m_bEventFailed)
                 Reset();
         }
-    };
-    
+    };
+
     CreatureAI* GetAI_npc_lord_illidan_stormrage(Creature * (pCreature))
     {
         return new npc_lord_illidan_stormrageAI(pCreature);
-    }
-    
-    
-};
+    }
 
-class mob_torloth : public CreatureScript
-{
-public: 
-    mob_torloth() : CreatureScript("mob_torloth") { }
-    struct mob_torlothAI : public ScriptedAI
-    {
-        mob_torlothAI(Creature* pCreature) : ScriptedAI(pCreature)
-        {
-            Reset();
-        }
-    
-        uint64 m_uiLordIllidanGUID;
-        uint64 m_uiPlayerGUID;
-    
-        uint32 m_uiCleaveTimer;
-        uint32 m_uiShadowfuryTimer;
-        uint32 m_uiSpellReflectionTimer;
-        uint8  m_uiAnimationCount;
-        uint32 m_uiAnimationTimer;
-    
-        void Reset()
-        {
-            m_uiLordIllidanGUID = 0;
-            m_uiPlayerGUID = 0;
-    
-            m_uiAnimationCount = 0;
-            m_uiAnimationTimer = 4000;
-            m_uiCleaveTimer = 10000;
-            m_uiShadowfuryTimer = 18000;
-            m_uiSpellReflectionTimer = 25000;
-    
-            // make him not attackable for the time of animation
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            me->SetReactState(REACT_PASSIVE);
-            SetCombatMovement(false);
-        }
-    
-        void EnterEvadeMode()
-        {
-            me->ForcedDespawn();
-        }
-    
-        void HandleAnimation()
-        {
-            Creature* pCreature = me;
-    
-            if (TorlothAnim[m_uiAnimationCount].uiCreature == LORD_ILLIDAN)
-            {
-                pCreature = me->GetMap()->GetCreature(m_uiLordIllidanGUID);
-    
-                if (!pCreature)
-                {
-                    me->ForcedDespawn();
-                    return;
-                }
-            }
-    
-            if (TorlothAnim[m_uiAnimationCount].iTextId)
-                DoScriptText(TorlothAnim[m_uiAnimationCount].iTextId, pCreature);
-    
-            m_uiAnimationTimer = TorlothAnim[m_uiAnimationCount].uiTimer;
-    
-            switch (m_uiAnimationCount)
-            {
-            case 0:
-                me->SetStandState(UNIT_STAND_STATE_KNEEL);
-                break;
-            case 3:
-                me->SetStandState(UNIT_STAND_STATE_STAND);
-                break;
-            case 5:
-                if (Player* pTarget = Unit::GetPlayer(*me, m_uiPlayerGUID))
-                {
-                    me->SetReactState(REACT_AGGRESSIVE);
-                    me->SetUInt64Value(UNIT_FIELD_TARGET, pTarget->GetGUID());
-                    me->AddThreat(pTarget, 1);
-                    me->HandleEmoteCommand(EMOTE_ONESHOT_POINT);
-                }
-                break;
-            case 6:
-                {
-                    if (Player* pTarget = Unit::GetPlayer(*me, m_uiPlayerGUID))
-                    {
-                        SetCombatMovement(true);
-                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                        float fLocX, fLocY, fLocZ;
-                        pTarget->GetPosition(fLocX, fLocY, fLocZ);
-                        me->GetMotionMaster()->MovePoint(0, fLocX, fLocY, fLocZ);
-                    }
-                    break;
-                }
-            }
-    
-            ++m_uiAnimationCount;
-        }
-    
-        void JustDied(Unit* pKiller)
-        {
-            if (Player* pPlayer = pKiller->GetCharmerOrOwnerPlayerOrPlayerItself())
-            {
-                pPlayer->GroupEventHappens(QUEST_BATTLE_OF_THE_CRIMSON_WATCH, me);
-    
-                if (Creature* pLordIllidan = me->GetMap()->GetCreature(m_uiLordIllidanGUID))
-                {
-    				pLordIllidan->MonsterYellToZone(SAY_EVENT_COMPLETED, LANG_UNIVERSAL, m_uiPlayerGUID);
-                    pLordIllidan->AI()->EnterEvadeMode();
-                }
-            }
-        }
-    
-        void UpdateAI(const uint32 uiDiff)
-        {
-            if (m_uiAnimationCount < 7)
-            {
-                if (m_uiAnimationTimer < uiDiff)
-                    HandleAnimation();
-                else
-                    m_uiAnimationTimer -= uiDiff;
-            }
-            else
-            {
-                if (!UpdateVictim())
-                    return;
-    
-                if (m_uiCleaveTimer < uiDiff)
-                {
-                    DoCastVictim( SPELL_CLEAVE);
-                    m_uiCleaveTimer = 15000;
-                }
-                else
-                    m_uiCleaveTimer -= uiDiff;
-    
-                if (m_uiShadowfuryTimer < uiDiff)
-                {
-                    DoCastVictim( SPELL_SHADOWFURY);
-                    m_uiShadowfuryTimer = 20000;
-                }
-                else
-                    m_uiShadowfuryTimer -= uiDiff;
-    
-                if (m_uiSpellReflectionTimer < uiDiff)
-                {
-                    DoCast(me, SPELL_SPELL_REFLECTION);
-                    m_uiSpellReflectionTimer = 30000;
-                }
-                else
-                    m_uiSpellReflectionTimer -= uiDiff;
-    
-                DoMeleeAttackIfReady();
-            }
-        }
-    };
-    
-    CreatureAI* GetAI_mob_torloth(Creature* pCreature)
-    {
-        return new mob_torlothAI(pCreature);
-    }
-    
-    
 };
 
 class go_crystal_prison : public GameObjectScript
 {
 public: 
     go_crystal_prison() : GameObjectScript("go_crystal_prison") { }
-    
-    
+    
+
+    
+
     bool OnQuestAccept(Player* pPlayer, GameObject* /*pGo*/, Quest const* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_BATTLE_OF_THE_CRIMSON_WATCH )
@@ -2400,8 +2453,10 @@ public:
     				}
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -2473,13 +2528,17 @@ public:
                 }
             }
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_enraged_spirit(Creature* pCreature)
     {
         return new npc_enraged_spiritAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2487,8 +2546,10 @@ class npc_grand_commander_ruusk : public CreatureScript
 {
 public: 
     npc_grand_commander_ruusk() : CreatureScript("npc_grand_commander_ruusk") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* _Creature) override
     {
         if (player->GetQuestStatus(QUEST_10577) == QUEST_STATUS_INCOMPLETE)
@@ -2497,7 +2558,9 @@ public:
         player->SEND_GOSSIP_MENU(10401, _Creature->GetGUID());
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* _Creature, uint32 sender, uint32 action) override
     {
         switch (action)
@@ -2529,8 +2592,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -2638,13 +2703,17 @@ public:
     			DoMeleeAttackIfReady();
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_azaloth(Creature* creature)
     {
         return new npc_azalothAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2692,13 +2761,17 @@ public:
     				AttackStart(pCombat);
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_sunfurywarlock(Creature* pCreature)
     {
     	return new npc_sunfurywarlockAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2734,13 +2807,17 @@ public:
     			}
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_legion_infernal_summon_trigger(Creature* pCreature)
     {
     	return new legion_infernal_summon_triggerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2769,13 +2846,17 @@ public:
     			spellHit = true;		
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_legion_infernal_summoner_trigger(Creature* pCreature)
     {
     	return new legion_infernal_summoner_triggerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2820,13 +2901,17 @@ public:
     			}
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_legion_hold_device_trigger(Creature* pCreature)
     {
     	return new legion_hold_device_triggerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -2941,13 +3026,17 @@ public:
     		}
     		else uiStepsTimer -= uiDiff;
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_deathbringer_jovaan(Creature* pCreature)
     {
     	return new npc_deathbringer_jovaanAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3000,13 +3089,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_shadowcouncil_warlock(Creature* pCreature)
     {
     	return new npc_shadowcouncil_warlockAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3014,8 +3107,10 @@ class npc_plexi : public CreatureScript
 {
 public: 
     npc_plexi() : CreatureScript("npc_plexi") { }
-    
-    
+    
+
+    
+
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest) override
     {
     	if (quest->GetQuestId() == QUEST_FEL_AND_FURIOUS_ALLY)
@@ -3025,8 +3120,10 @@ public:
     	}
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3034,8 +3131,10 @@ class npc_nakansi : public CreatureScript
 {
 public: 
     npc_nakansi() : CreatureScript("npc_nakansi") { }
-    
-    
+    
+
+    
+
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest) override
     {
     	if (quest->GetQuestId() == QUEST_FEL_AND_FURIOUS_HORDE)
@@ -3044,8 +3143,10 @@ public:
     	}
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3193,13 +3294,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_zuluhed_the_whacked(Creature* pCreature)
     {
     	return new npc_zuluhed_the_whackedAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3311,13 +3416,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_dragonmaw_archer(Creature* pCreature)
     {
     	return new npc_dragonmaw_archerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3325,8 +3434,10 @@ class npc_shadowmoon_ancient_spirit : public CreatureScript
 {
 public: 
     npc_shadowmoon_ancient_spirit() : CreatureScript("npc_shadowmoon_ancient_spirit") { }
-    
-    
+    
+
+    
+
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest) override
     {
     	if (quest->GetQuestId() == QUEST_TERON_GOREFIEND_I_AM_ALLIANCE)
@@ -3341,8 +3452,10 @@ public:
     
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3427,13 +3540,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_karsius_the_ancient_watcher(Creature* pCreature)
     {
     	return new npc_karsius_the_ancient_watcherAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3478,13 +3595,17 @@ public:
     			}
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_teron_trigger(Creature* pCreature)
     {
     	return new teron_triggerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3547,13 +3668,17 @@ public:
     			}
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_teron_gorefiend_event(Creature* pCreature)
     {
     	return new teron_gorefiend_eventAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3561,15 +3686,19 @@ class go_forged_illidari_bane_sword : public GameObjectScript
 {
 public: 
     go_forged_illidari_bane_sword() : GameObjectScript("go_forged_illidari_bane_sword") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, GameObject* go) override
     {
     	player->AddItem(30876, 1);
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3627,12 +3756,15 @@ public:
     		if (!UpdateVictim())
     			return;
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_artor(Creature* pCreature)
     {
     	return new npc_artorAI(pCreature);
-    }
+    }
+
     bool OnQuestReward(Player* pPlayer, Creature* pCreature, const Quest* quest, uint32 /*item*/) override
     {
     	if (quest->GetQuestId() == QUEST_DEMONIC_CRYSTAL_PRISON)
@@ -3644,8 +3776,10 @@ public:
     	
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3653,8 +3787,10 @@ class npc_artor_spirit : public CreatureScript
 {
 public: 
     npc_artor_spirit() : CreatureScript("npc_artor_spirit") { }
-    
-    
+    
+
+    
+
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest) override
     {
     	if (quest->GetQuestId() == QUEST_CIPHER_OF_DAMNATION_ARTORS_CHARGE)
@@ -3663,8 +3799,10 @@ public:
     	}
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3698,13 +3836,17 @@ public:
     			else visual_timer -= diff;
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_tiny_trigger(Creature* pCreature)
     {
     	return new npc_tiny_triggerAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3752,13 +3894,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_painmistress_gabrisa(Creature* pCreature)
     {
     	return new npc_painmistress_gabrisaAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3852,13 +3998,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_illidari_shocktrooper(Creature* pCreature)
     {
     	return new npc_illidari_shocktrooperAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -3899,14 +4049,100 @@ public:
     		
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_veneratus(Creature* pCreature)
     {
     	return new npc_veneratusAI(pCreature);
-    }
-    
+    }
+
     
+
+    
+};
+
+class npc_icarus_trigger : public CreatureScript
+{
+public:
+	npc_icarus_trigger() : CreatureScript("npc_icarus_trigger") { }
+	struct npc_icarus_triggerAI : public ScriptedAI
+	{
+		npc_icarus_triggerAI(Creature* pCreature) : ScriptedAI(pCreature) {}
+
+		void Reset()
+		{
+			me->SetReactState(REACT_AGGRESSIVE);
+
+			PlayerGUID = 0;
+
+			WhisperAllow = false;
+			Whisper1 = false;
+			Whisper2 = false;
+		}
+
+		bool WhisperAllow;
+		bool Whisper1;
+		bool Whisper2;
+
+		uint64 PlayerGUID;
+
+		uint32 Combat_timer;
+
+		void MoveInLineOfSight(Unit *pWho)
+		{
+			if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
+			{
+				if (plWho->GetQuestStatus(QUEST_TO_CATCH_A_THISTLEHEAD) == QUEST_STATUS_INCOMPLETE && plWho->GetDistance(me) < 30.0f)
+				{
+					switch (me->GetEntry())
+					{
+					case 61035:
+						PlayerGUID = plWho->GetGUID();
+						break;
+					}
+				}
+			}
+		}
+
+		void UpdateAI(const uint32 diff)
+		{
+			if (!UpdateVictim())
+			{
+				if (WhisperAllow)
+				{
+					if (!Whisper1)
+					{
+						if (Creature* borak = me->FindNearestCreature(21293, 120.0f, true))
+						{
+							borak->Whisper(BOKAR_TEXT, PlayerGUID, false);
+							Combat_timer = 34000;
+							Whisper1 = true;
+						}
+					}
+
+					if (Whisper1 && !Whisper2 && Combat_timer <= diff)
+					{
+						if (Creature* borak = me->FindNearestCreature(21293, 120.0f, true))
+						{
+							borak->Whisper(BOKAR_TEXT_1, PlayerGUID, false);
+							Whisper2 = true;
+							me->DisappearAndDie(false);
+						}
+					}
+					else Combat_timer -= diff;
+				}
+			}
+		}
+	};
+
+
+
+	CreatureAI* GetAI_npc_icarus_trigger(Creature* pCreature)
+	{
+		return new npc_icarus_triggerAI(pCreature);
+	}
 };
 
 class npc_envoy_icarius : public CreatureScript
@@ -4023,96 +4259,14 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_envoy_icarius(Creature* pCreature)
     {
     	return new npc_envoy_icariusAI(pCreature);
-    }
-    
-    
-};
-
-class npc_icarus_trigger : public CreatureScript
-{
-public: 
-    npc_icarus_trigger() : CreatureScript("npc_icarus_trigger") { }
-    struct npc_icarus_triggerAI : public ScriptedAI
-    {
-    	npc_icarus_triggerAI(Creature* pCreature) : ScriptedAI(pCreature) {}
-    
-    	void Reset()
-    	{
-    		me->SetReactState(REACT_AGGRESSIVE);
-    
-    		PlayerGUID = 0;
-    
-    		WhisperAllow = false;
-    		Whisper1 = false;
-    		Whisper2 = false;
-    	}
-    
-    	bool WhisperAllow;
-    	bool Whisper1;
-    	bool Whisper2;
-    
-    	uint64 PlayerGUID;
-    
-    	uint32 Combat_timer;
-    
-    	void MoveInLineOfSight(Unit *pWho)
-    	{
-    		if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
-    		{
-    			if (plWho->GetQuestStatus(QUEST_TO_CATCH_A_THISTLEHEAD) == QUEST_STATUS_INCOMPLETE && plWho->GetDistance(me) < 30.0f)
-    			{
-    				switch (me->GetEntry())
-    				{
-    				case 61035:
-    					PlayerGUID = plWho->GetGUID();
-    					break;
-    				}
-    			}
-    		}
-    	}
-    
-    	void UpdateAI(const uint32 diff)
-    	{
-    		if (!UpdateVictim())
-    		{
-    			if (WhisperAllow)
-    			{
-    				if (!Whisper1)
-    				{
-    					if (Creature* borak = me->FindNearestCreature(21293, 120.0f, true))
-    					{
-    						borak->Whisper(BOKAR_TEXT, PlayerGUID, false);
-    						Combat_timer = 34000;
-    						Whisper1 = true;
-    					}
-    				}
-    
-    				if (Whisper1 && !Whisper2 && Combat_timer <= diff)
-    				{
-    					if (Creature* borak = me->FindNearestCreature(21293, 120.0f, true))
-    					{
-    						borak->Whisper(BOKAR_TEXT_1, PlayerGUID, false);
-    						Whisper2 = true;
-    						me->DisappearAndDie(false);
-    					}
-    				}
-    				else Combat_timer -= diff;
-    			}
-    		}
-    	}
-    };
-    
-    CreatureAI* GetAI_npc_icarus_trigger(Creature* pCreature)
-    {
-    	return new npc_icarus_triggerAI(pCreature);
-    }
-    
-    
+    } 
 };
 
 class npc_guldan : public CreatureScript
@@ -4255,13 +4409,17 @@ public:
     		}
     		else uiStepsTimer -= uiDiff;
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_guldan(Creature* pCreature)
     {
     	return new npc_guldanAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -4449,12 +4607,15 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_oronok(Creature* pCreature)
     {
     	return new npc_oronokAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* _Creature) override
     {
     	if (_Creature->FindNearestCreature(NPC_GULDAN, 9.0f, true))
@@ -4466,7 +4627,8 @@ public:
     	}
     	return true;
     }
-    
+    
+
     bool GossipHello_npc_oronok(Player* player, Creature* _Creature)
     {
     	if (_Creature->FindNearestCreature(NPC_GULDAN, 9.0f, true))
@@ -4478,7 +4640,8 @@ public:
     	}
     	return true;
     }
-    
+    
+
     bool GossipSelect_npc_oronok(Player* player, Creature* _Creature, uint32 sender, uint32 action)
     {
     	switch (action)
@@ -4491,7 +4654,8 @@ public:
     	}
     	return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* _Creature, uint32 sender, uint32 action) override
     {
     	switch (action)
@@ -4504,8 +4668,10 @@ public:
     	}
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -4552,13 +4718,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_cyrukh_the_firelord(Creature* pCreature)
     {
     	return new npc_cyrukh_the_firelordAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 

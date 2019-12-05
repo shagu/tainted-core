@@ -436,13 +436,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mobs_risen_husk_spirit(Creature* pCreature)
     {
         return new mobs_risen_husk_spiritAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -450,8 +454,10 @@ class npc_restless_apparition : public CreatureScript
 {
 public: 
     npc_restless_apparition() : CreatureScript("npc_restless_apparition") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->SEND_GOSSIP_MENU(player->GetGossipTextId(pCreature), pCreature->GetGUID());
@@ -461,8 +467,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -490,12 +498,15 @@ public:
             if (uiId == 1)
                 me->DisappearAndDie();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_deserter_agitator(Creature* pCreature)
     {
         return new npc_deserter_agitatorAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->GetQuestStatus(QUEST_TRAITORS_AMONG_US) == QUEST_STATUS_INCOMPLETE)
@@ -505,7 +516,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipHello_npc_deserter_agitator(Player* pPlayer, Creature* pCreature)
     {
         if (pPlayer->GetQuestStatus(QUEST_TRAITORS_AMONG_US) == QUEST_STATUS_INCOMPLETE)
@@ -515,7 +527,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_deserter_agitator(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
     {
         pPlayer->PlayerTalkClass->ClearMenus();
@@ -545,7 +558,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         pPlayer->PlayerTalkClass->ClearMenus();
@@ -575,8 +589,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -659,13 +675,17 @@ public:
     				}
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_gavis_greyshield(Creature* pCreature)
     {
     	return new npc_gavis_greyshieldAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -712,12 +732,15 @@ public:
             else
                 uiYellTimer -= uiDiff;
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_theramore_guard(Creature* pCreature)
     {
         return new npc_theramore_guardAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->GetQuestStatus(QUEST_DISCREDITING_THE_DESERTERS) == QUEST_STATUS_INCOMPLETE)
@@ -726,7 +749,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipHello_npc_theramore_guard(Player* pPlayer, Creature* pCreature)
     {
         if (pPlayer->GetQuestStatus(QUEST_DISCREDITING_THE_DESERTERS) == QUEST_STATUS_INCOMPLETE)
@@ -735,7 +759,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_theramore_guard(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
     {
         pPlayer->PlayerTalkClass->ClearMenus();
@@ -753,7 +778,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         pPlayer->PlayerTalkClass->ClearMenus();
@@ -771,8 +797,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -834,7 +862,8 @@ public:
     {
         return new npc_jaina_proudmooreAI(pCreature);
     }
-    
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -847,7 +876,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_SENDER_INFO)
@@ -857,7 +887,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_lady_jaina_proudmoore(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
     {
         if (action == GOSSIP_SENDER_INFO)
@@ -867,7 +898,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnQuestComplete(Player *player, Creature *pCreature, const Quest *_Quest) override
     {
         if (_Quest->GetQuestId() == 11142)
@@ -877,8 +909,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -886,8 +920,10 @@ class npc_nat_pagle : public CreatureScript
 {
 public: 
     npc_nat_pagle() : CreatureScript("npc_nat_pagle") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -903,7 +939,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_TRADE)
@@ -911,8 +948,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1004,12 +1043,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_morokk(Creature* pCreature)
     {
         return new npc_morokkAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_CHALLENGE_MOROKK)
@@ -1022,8 +1064,10 @@ public:
     
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1254,12 +1298,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_ogron(Creature* pCreature)
     {
         return new npc_ogronAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_QUESTIONING)
@@ -1273,8 +1320,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1452,12 +1501,15 @@ public:
                 me->SummonCreature(NPC_PAINED, -2877.67f, -3338.63f, 35.2548f, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000);
             }
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_private_hendel(Creature* pCreature)
     {
         return new npc_private_hendelAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_MISSING_DIPLO_PT16)
@@ -1468,8 +1520,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1528,13 +1582,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_zelfrax(Creature* pCreature)
     {
         return new npc_zelfraxAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1542,8 +1600,10 @@ class at_nats_landing : public AreaTriggerScript
 {
 public: 
     at_nats_landing() : AreaTriggerScript("at_nats_landing") { }
-    
-    
+    
+
+    
+
     bool OnTrigger(Player* pPlayer, const AreaTriggerEntry* /*pAt*/) override
     {
         if (pPlayer->GetQuestStatus(QUEST_NATS_BARGAIN) == QUEST_STATUS_INCOMPLETE && pPlayer->HasAura(SPELL_FISH_PASTE, 0))
@@ -1558,8 +1618,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1644,12 +1706,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_stinky(Creature* pCreature)
     {
         return new npc_stinkyAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_STINKYS_ESCAPE_H || QUEST_STINKYS_ESCAPE_A)
@@ -1664,8 +1729,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1702,13 +1769,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_npc_mottled_drywallow_crocolisk(Creature* creature)
     {
         return new npc_mottled_drywallow_crocoliskAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1716,8 +1787,10 @@ class npc_cassa_crimsonwing : public CreatureScript
 {
 public: 
     npc_cassa_crimsonwing() : CreatureScript("npc_cassa_crimsonwing") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (player->GetQuestStatus(QUEST_ALCAZ_ISLAND) == QUEST_STATUS_INCOMPLETE)
@@ -1736,8 +1809,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

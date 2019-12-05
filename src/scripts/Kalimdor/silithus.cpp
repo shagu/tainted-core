@@ -379,22 +379,11 @@ static SpawnSpells SpawnCast[] = //
 # go_crystalline_tear
 ######*/
 
-
-
-
-
-
-
-
-
-
-
 class npc_highlord_demitrian : public CreatureScript
 {
 public: 
     npc_highlord_demitrian() : CreatureScript("npc_highlord_demitrian") { }
-    
-    
+   
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -407,7 +396,7 @@ public:
         pPlayer->SEND_GOSSIP_MENU(6812, pCreature->GetGUID());
         return true;
     }
-    
+    
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -447,17 +436,13 @@ public:
         }
         return true;
     }
-    
-    
-    
 };
 
 class npc_scout_landion : public CreatureScript
 {
 public: 
     npc_scout_landion() : CreatureScript("npc_scout_landion") { }
-    
-    
+
     bool OnGossipHello(Player* player, Creature* _Creature) override
     {
     	if (player->GetQuestStatus(8738) == QUEST_STATUS_INCOMPLETE)
@@ -470,7 +455,7 @@ public:
     
     	return true;
     }
-    
+    
     bool OnGossipSelect(Player* player, Creature* _Creature, uint32 sender, uint32 action) override
     {
     	switch (action)
@@ -482,17 +467,15 @@ public:
     	}
     	return true;
     }
-    
-    
-    
+ 
 };
 
 class npcs_rutgar_and_frankal : public CreatureScript
 {
 public: 
     npcs_rutgar_and_frankal() : CreatureScript("npcs_rutgar_and_frankal") { }
-    
-    
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -512,7 +495,7 @@ public:
     
         return true;
     }
-    
+    
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -575,17 +558,292 @@ public:
         }
         return true;
     }
-    
-    
     
+    
+};
+
+class mob_qiraj_war_spawn : public CreatureScript
+{
+public:
+	mob_qiraj_war_spawn() : CreatureScript("mob_qiraj_war_spawn") { }
+
+	struct mob_qiraj_war_spawnAI : public ScriptedAI
+	{
+		mob_qiraj_war_spawnAI(Creature* c) : ScriptedAI(c) {}
+
+		uint64 MobGUID;
+		uint64 PlayerGUID;
+		uint32 SpellTimer1, SpellTimer2, SpellTimer3, SpellTimer4;
+		bool Timers;
+		bool hasTarget;
+
+		void Reset()
+		{
+			MobGUID = 0;
+			PlayerGUID = 0;
+			Timers = false;
+			hasTarget = false;
+		}
+
+		void EnterCombat(Unit* /*who*/) {}
+		void JustDied(Unit* /*slayer*/)
+		{
+			me->RemoveCorpse();
+			if (Creature* Mob = (Unit::GetCreature(*me, MobGUID)))
+				CAST_AI(npc_anachronos_quest_trigger::npc_anachronos_quest_triggerAI, Mob->AI())->LiveCounter();
+
+		}
+
+
+		void UpdateAI(const uint32 diff)
+		{
+			Unit* pTarget = NULL;
+			//Player* plr = me->GetPlayer(PlayerGUID);
+
+			if (!Timers)
+			{
+				if (me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414) //all but Kaldorei Soldiers
+				{
+					SpellTimer1 = SpawnCast[1].Timer1;
+					SpellTimer2 = SpawnCast[2].Timer1;
+					SpellTimer3 = SpawnCast[3].Timer1;
+				}
+				if (me->GetEntry() == 15423 || me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414)
+					SpellTimer4 = SpawnCast[0].Timer1;
+				Timers = true;
+			}
+			if (me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414)
+			{
+				if (SpellTimer1 <= diff)
+				{
+					DoCast(me, SpawnCast[1].SpellId);
+					DoCast(me, 24319);
+					SpellTimer1 = SpawnCast[1].Timer2;
+				}
+				else SpellTimer1 -= diff;
+				if (SpellTimer2 <= diff)
+				{
+					DoCast(me, SpawnCast[2].SpellId);
+					SpellTimer2 = SpawnCast[2].Timer2;
+				}
+				else SpellTimer2 -= diff;
+				if (SpellTimer3 <= diff)
+				{
+					DoCast(me, SpawnCast[3].SpellId);
+					SpellTimer3 = SpawnCast[3].Timer2;
+				}
+				else SpellTimer3 -= diff;
+			}
+			if (me->GetEntry() == 15423 || me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414)
+			{
+				if (SpellTimer4 <= diff)
+				{
+					me->RemoveAllAttackers();
+					me->AttackStop();
+					DoCast(me, 15533);
+					SpellTimer4 = SpawnCast[0].Timer2;
+				}
+				else SpellTimer4 -= diff;
+			}
+			if (!hasTarget)
+			{
+				if (me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414)
+					pTarget = me->FindNearestCreature(15423, 20, true);
+				if (me->GetEntry() == 15423)
+				{
+					uint8 tar = urand(0, 2);
+
+					if (tar == 0)
+						pTarget = me->FindNearestCreature(15422, 20, true);
+					else if (tar == 1)
+						pTarget = me->FindNearestCreature(15424, 20, true);
+					else if (tar == 2)
+						pTarget = me->FindNearestCreature(15414, 20, true);
+				}
+				hasTarget = true;
+				if (pTarget)
+					me->AI()->AttackStart(pTarget);
+			}
+			if (!(me->FindNearestCreature(15379, 60)))
+				DoCast(me, 33652);
+
+			if (!UpdateVictim())
+			{
+				hasTarget = false;
+				return;
+			}
+
+			DoMeleeAttackIfReady();
+		}
+	};
+
+
+	CreatureAI* Getmob_qiraj_war_spawnAI(Creature* pCreature)
+	{
+		return new mob_qiraj_war_spawnAI(pCreature);
+	}
+
+};
+
+class npc_anachronos_quest_trigger : public CreatureScript
+{
+public:
+	npc_anachronos_quest_trigger() : CreatureScript("npc_anachronos_quest_trigger") { }
+	struct npc_anachronos_quest_triggerAI : public ScriptedAI
+	{
+		npc_anachronos_quest_triggerAI(Creature* c) : ScriptedAI(c) {}
+
+		uint64 PlayerGUID;
+
+		uint32 WaveTimer;
+		uint32 AnnounceTimer;
+
+		int8 LiveCount;
+		uint8 WaveCount;
+
+		bool EventStarted;
+		bool Announced;
+		bool Failed;
+
+		void Reset()
+		{
+			PlayerGUID = 0;
+
+			WaveTimer = 2000;
+			AnnounceTimer = 1000;
+			LiveCount = 0;
+			WaveCount = 0;
+
+			EventStarted = false;
+			Announced = false;
+			Failed = false;
+
+			me->SetVisible(false);
+		}
+
+		void SummonNextWave()
+		{
+			//uint8 count = WavesInfo[WaveCount].SpawnCount;
+			uint8 locIndex = WavesInfo[WaveCount].UsedSpawnPoint;
+			//uint8 KaldoreiSoldierCount = 0;
+			//uint8 AnubisathConquerorCount = 0;
+			//uint8 QirajiWaspCount = 0;
+			for (uint8 i = 0; i < (sizeof(SpawnLocation) / sizeof(*SpawnLocation)); ++i)
+			{
+				Creature* Spawn = NULL;
+				float X = SpawnLocation[locIndex + i].x;
+				float Y = SpawnLocation[locIndex + i].y;
+				float Z = SpawnLocation[locIndex + i].z;
+				float O = SpawnLocation[locIndex + i].o;
+				uint32 desptimer = WavesInfo[WaveCount].DespTimer;
+				Spawn = me->SummonCreature(WavesInfo[WaveCount].CreatureId, X, Y, Z, O, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, desptimer);
+
+				if (Spawn)
+				{
+					Spawn->LoadCreaturesAddon();
+					if (Spawn->GetGUID() == 15423)
+						Spawn->SetDisplayId(15427 + rand() % 4);
+					if (i >= 30) WaveCount = 1;
+					if (i >= 33) WaveCount = 2;
+					if (i >= 45) WaveCount = 3;
+					if (i >= 51) WaveCount = 4;
+
+					if (WaveCount < 5) //1-4 Wave
+					{
+						CAST_AI(mob_qiraj_war_spawn::mob_qiraj_war_spawnAI, Spawn->AI())->MobGUID = me->GetGUID();
+						CAST_AI(mob_qiraj_war_spawn::mob_qiraj_war_spawnAI, Spawn->AI())->PlayerGUID = PlayerGUID;
+					}
+				}
+			}
+			WaveTimer = WavesInfo[WaveCount].SpawnTimer;
+			AnnounceTimer = WavesInfo[WaveCount].YellTimer;
+		}
+
+		void CheckEventFail()
+		{
+			Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
+
+			if (!pPlayer)
+				return;
+
+			if (Group* EventGroup = pPlayer->GetGroup())
+			{
+				Player* GroupMember;
+
+				uint8 GroupMemberCount = 0;
+				uint8 DeadMemberCount = 0;
+				uint8 FailedMemberCount = 0;
+
+				const Group::MemberSlotList members = EventGroup->GetMemberSlots();
+
+				for (Group::member_citerator itr = members.begin(); itr != members.end(); ++itr)
+				{
+					GroupMember = (Unit::GetPlayer(*me, itr->guid));
+
+					if (!GroupMember)
+						continue;
+
+					if (!GroupMember->IsWithinDistInMap(me, EVENT_AREA_RADIUS) && GroupMember->GetQuestStatus(QUEST_A_PAWN_ON_THE_ETERNAL_BOARD) == QUEST_STATUS_INCOMPLETE)
+					{
+						GroupMember->FailQuest(QUEST_A_PAWN_ON_THE_ETERNAL_BOARD);
+						GroupMember->SetQuestStatus(QUEST_A_PAWN_ON_THE_ETERNAL_BOARD, QUEST_STATUS_NONE);
+						++FailedMemberCount;
+					}
+					++GroupMemberCount;
+
+					if (GroupMember->isDead())
+						++DeadMemberCount;
+				}
+
+				if (GroupMemberCount == FailedMemberCount || !pPlayer->IsWithinDistInMap(me, EVENT_AREA_RADIUS))
+					Failed = true; //only so event can restart
+			}
+		}
+		void LiveCounter()
+		{
+			--LiveCount;
+			if (!LiveCount)
+				Announced = false;
+		}
+
+		void UpdateAI(const uint32 diff)
+		{
+			if (!PlayerGUID || !EventStarted)
+				return;
+
+			if (WaveCount < 4)
+			{
+				if (!Announced && AnnounceTimer <= diff)
+				{
+					DoScriptText(WavesInfo[WaveCount].WaveTextId, me);
+					Announced = true;
+				}
+				else AnnounceTimer -= diff;
+
+				if (WaveTimer <= diff)
+					SummonNextWave();
+				else WaveTimer -= diff;
+			}
+			CheckEventFail();
+			if (WaveCount == 4 || Failed)
+				EnterEvadeMode();
+		};
+
+
+
+	};
+	CreatureAI* Getnpc_anachronos_quest_triggerAI(Creature* pCreature)
+	{
+		return new npc_anachronos_quest_triggerAI(pCreature);
+	}
+
 };
 
 class go_crystalline_tear : public GameObjectScript
 {
 public: 
     go_crystalline_tear() : GameObjectScript("go_crystalline_tear") { }
-    
-    
+    
     bool OnGossipHello(Player* pPlayer, GameObject* pGO) override
     {
         if (pGO->GetGoType() == 2)
@@ -598,7 +856,8 @@ public:
             pPlayer->AreaExploredOrEventHappens(LONG_FORGOTTEN_MEMORIES);
         return true;
     }
-    
+    
+
     bool OnQuestAccept(Player* plr, GameObject* go, Quest const* quest)
     {
         if (quest->GetQuestId() == QUEST_A_PAWN_ON_THE_ETERNAL_BOARD)
@@ -651,282 +910,6 @@ public:
     }
   
     
-};
-
-class mob_qiraj_war_spawn : public CreatureScript
-{
-public: 
-    mob_qiraj_war_spawn() : CreatureScript("mob_qiraj_war_spawn") { }
-    struct mob_qiraj_war_spawnAI : public ScriptedAI
-    {
-        mob_qiraj_war_spawnAI(Creature* c) : ScriptedAI(c) {}
-    
-        uint64 MobGUID;
-        uint64 PlayerGUID;
-        uint32 SpellTimer1, SpellTimer2, SpellTimer3, SpellTimer4;
-        bool Timers;
-        bool hasTarget;
-    
-        void Reset()
-        {
-            MobGUID = 0;
-            PlayerGUID = 0;
-            Timers = false;
-            hasTarget = false;
-        }
-    
-        void EnterCombat(Unit* /*who*/) {}
-        void JustDied(Unit* /*slayer*/)
-        {
-            me->RemoveCorpse();
-            if (Creature* Mob = (Unit::GetCreature(*me, MobGUID)))
-                CAST_AI(npc_anachronos_quest_trigger::npc_anachronos_quest_triggerAI, Mob->AI())->LiveCounter();
-
-        }
-
-    
-        void UpdateAI(const uint32 diff)
-        {
-            Unit* pTarget = NULL;
-            //Player* plr = me->GetPlayer(PlayerGUID);
-    
-            if (!Timers)
-            {
-                if (me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414) //all but Kaldorei Soldiers
-                {
-                    SpellTimer1 = SpawnCast[1].Timer1;
-                    SpellTimer2 = SpawnCast[2].Timer1;
-                    SpellTimer3 = SpawnCast[3].Timer1;
-                }
-                if (me->GetEntry() == 15423 || me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414)
-                    SpellTimer4 = SpawnCast[0].Timer1;
-                Timers = true;
-            }
-            if (me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414)
-            {
-                if (SpellTimer1 <= diff)
-                {
-                    DoCast(me, SpawnCast[1].SpellId);
-                    DoCast(me, 24319);
-                    SpellTimer1 = SpawnCast[1].Timer2;
-                }
-                else SpellTimer1 -= diff;
-                if (SpellTimer2 <= diff)
-                {
-                    DoCast(me, SpawnCast[2].SpellId);
-                    SpellTimer2 = SpawnCast[2].Timer2;
-                }
-                else SpellTimer2 -= diff;
-                if (SpellTimer3 <= diff)
-                {
-                    DoCast(me, SpawnCast[3].SpellId);
-                    SpellTimer3 = SpawnCast[3].Timer2;
-                }
-                else SpellTimer3 -= diff;
-            }
-            if (me->GetEntry() == 15423 || me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414)
-            {
-                if (SpellTimer4 <= diff)
-                {
-                    me->RemoveAllAttackers();
-                    me->AttackStop();
-                    DoCast(me, 15533);
-                    SpellTimer4 = SpawnCast[0].Timer2;
-                }
-                else SpellTimer4 -= diff;
-            }
-            if (!hasTarget)
-            {
-                if (me->GetEntry() == 15424 || me->GetEntry() == 15422 || me->GetEntry() == 15414)
-                    pTarget = me->FindNearestCreature(15423, 20, true);
-                if (me->GetEntry() == 15423)
-                {
-                    uint8 tar = urand(0, 2);
-    
-                    if (tar == 0)
-                        pTarget = me->FindNearestCreature(15422, 20, true);
-                    else if (tar == 1)
-                        pTarget = me->FindNearestCreature(15424, 20, true);
-                    else if (tar == 2)
-                        pTarget = me->FindNearestCreature(15414, 20, true);
-                }
-                hasTarget = true;
-                if (pTarget)
-                    me->AI()->AttackStart(pTarget);
-            }
-            if (!(me->FindNearestCreature(15379, 60)))
-                DoCast(me, 33652);
-    
-            if (!UpdateVictim())
-            {
-                hasTarget = false;
-                return;
-            }
-    
-            DoMeleeAttackIfReady();
-        }
-    };
-    
-
-    CreatureAI* Getmob_qiraj_war_spawnAI(Creature* pCreature)
-    {
-        return new mob_qiraj_war_spawnAI(pCreature);
-    }
-    
-    
-};
-
-class npc_anachronos_quest_trigger : public CreatureScript
-{
-public: 
-    npc_anachronos_quest_trigger() : CreatureScript("npc_anachronos_quest_trigger") { }
-    struct npc_anachronos_quest_triggerAI : public ScriptedAI
-    {
-        npc_anachronos_quest_triggerAI(Creature* c) : ScriptedAI(c) {}
-
-        uint64 PlayerGUID;
-
-        uint32 WaveTimer;
-        uint32 AnnounceTimer;
-
-        int8 LiveCount;
-        uint8 WaveCount;
-
-        bool EventStarted;
-        bool Announced;
-        bool Failed;
-
-        void Reset()
-        {
-            PlayerGUID = 0;
-
-            WaveTimer = 2000;
-            AnnounceTimer = 1000;
-            LiveCount = 0;
-            WaveCount = 0;
-
-            EventStarted = false;
-            Announced = false;
-            Failed = false;
-
-            me->SetVisible(false);
-        }
-
-        void SummonNextWave()
-        {
-            //uint8 count = WavesInfo[WaveCount].SpawnCount;
-            uint8 locIndex = WavesInfo[WaveCount].UsedSpawnPoint;
-            //uint8 KaldoreiSoldierCount = 0;
-            //uint8 AnubisathConquerorCount = 0;
-            //uint8 QirajiWaspCount = 0;
-            for (uint8 i = 0; i < (sizeof(SpawnLocation) / sizeof(*SpawnLocation)); ++i)
-            {
-                Creature* Spawn = NULL;
-                float X = SpawnLocation[locIndex + i].x;
-                float Y = SpawnLocation[locIndex + i].y;
-                float Z = SpawnLocation[locIndex + i].z;
-                float O = SpawnLocation[locIndex + i].o;
-                uint32 desptimer = WavesInfo[WaveCount].DespTimer;
-                Spawn = me->SummonCreature(WavesInfo[WaveCount].CreatureId, X, Y, Z, O, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, desptimer);
-
-                if (Spawn)
-                {
-                    Spawn->LoadCreaturesAddon();
-                    if (Spawn->GetGUID() == 15423)
-                        Spawn->SetDisplayId(15427 + rand() % 4);
-                    if (i >= 30) WaveCount = 1;
-                    if (i >= 33) WaveCount = 2;
-                    if (i >= 45) WaveCount = 3;
-                    if (i >= 51) WaveCount = 4;
-
-                    if (WaveCount < 5) //1-4 Wave
-                    {
-                        CAST_AI(mob_qiraj_war_spawn::mob_qiraj_war_spawnAI, Spawn->AI())->MobGUID = me->GetGUID();
-                        CAST_AI(mob_qiraj_war_spawn::mob_qiraj_war_spawnAI, Spawn->AI())->PlayerGUID = PlayerGUID;
-                    }
-                }
-            }
-            WaveTimer = WavesInfo[WaveCount].SpawnTimer;
-            AnnounceTimer = WavesInfo[WaveCount].YellTimer;
-        }
-
-        void CheckEventFail()
-        {
-            Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
-
-            if (!pPlayer)
-                return;
-
-            if (Group* EventGroup = pPlayer->GetGroup())
-            {
-                Player* GroupMember;
-
-                uint8 GroupMemberCount = 0;
-                uint8 DeadMemberCount = 0;
-                uint8 FailedMemberCount = 0;
-
-                const Group::MemberSlotList members = EventGroup->GetMemberSlots();
-
-                for (Group::member_citerator itr = members.begin(); itr != members.end(); ++itr)
-                {
-                    GroupMember = (Unit::GetPlayer(*me, itr->guid));
-
-                    if (!GroupMember)
-                        continue;
-
-                    if (!GroupMember->IsWithinDistInMap(me, EVENT_AREA_RADIUS) && GroupMember->GetQuestStatus(QUEST_A_PAWN_ON_THE_ETERNAL_BOARD) == QUEST_STATUS_INCOMPLETE)
-                    {
-                        GroupMember->FailQuest(QUEST_A_PAWN_ON_THE_ETERNAL_BOARD);
-                        GroupMember->SetQuestStatus(QUEST_A_PAWN_ON_THE_ETERNAL_BOARD, QUEST_STATUS_NONE);
-                        ++FailedMemberCount;
-                    }
-                    ++GroupMemberCount;
-
-                    if (GroupMember->isDead())
-                        ++DeadMemberCount;
-                }
-
-                if (GroupMemberCount == FailedMemberCount || !pPlayer->IsWithinDistInMap(me, EVENT_AREA_RADIUS))
-                    Failed = true; //only so event can restart
-            }
-        }
-        void LiveCounter()
-        {
-            --LiveCount;
-            if (!LiveCount)
-                Announced = false;
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            if (!PlayerGUID || !EventStarted)
-                return;
-
-            if (WaveCount < 4)
-            {
-                if (!Announced && AnnounceTimer <= diff)
-                {
-                    DoScriptText(WavesInfo[WaveCount].WaveTextId, me);
-                    Announced = true;
-                }
-                else AnnounceTimer -= diff;
-
-                if (WaveTimer <= diff)
-                    SummonNextWave();
-                else WaveTimer -= diff;
-            }
-            CheckEventFail();
-            if (WaveCount == 4 || Failed)
-                EnterEvadeMode();
-        };
-
-    };    CreatureAI* Getnpc_anachronos_quest_triggerAI(Creature* pCreature)
-    {
-        return new npc_anachronos_quest_triggerAI(pCreature);
-    }
-
-
-   
 };
 
 class npc_anachronos_the_ancient : public CreatureScript
@@ -1160,7 +1143,8 @@ public:
                 case 51:
                     {
                         uint32 loopbreaker = 0;
-                        uint32 entries[4] = { 15423, 15424, 15414, 15422 };                            for (uint8 i = 0; i < 4; i++)
+                        uint32 entries[4] = { 15423, 15424, 15414, 15422 };
+                            for (uint8 i = 0; i < 4; i++)
                             {
                                 mob = plr->FindNearestCreature(entries[i], 300, true);
                                 loopbreaker = 0;
@@ -1255,14 +1239,16 @@ public:
                 me->AI()->EnterEvadeMode();
         }
     };
-    
+    
+
     
     CreatureAI* Getnpc_anachronos_the_ancientAI(Creature* pCreature)
     {
         return new npc_anachronos_the_ancientAI(pCreature);
     }
 
-    
+    
+
     
 };
 

@@ -58,7 +58,10 @@ EndScriptData */
 #define CREATURE_PORTAL         17265
 #define CREATURE_KILREK         17229
 
+#define SPELL_FIREBOLT  30050   // Blasts a target for 181-209 Fire damage.
+
 #define PORTAL_Z        179.434
+
 
 float PortalLocations[2][2] =
 {
@@ -66,20 +69,48 @@ float PortalLocations[2][2] =
 	{ -11242.1160f, -1713.33325f },
 };
 
+class mob_fiendish_portal : public CreatureScript
+{
+public:
+	mob_fiendish_portal() : CreatureScript("mob_fiendish_portal") { }
+	struct mob_fiendish_portalAI : public PassiveAI
+	{
+		mob_fiendish_portalAI(Creature* c) : PassiveAI(c), summons(me) {}
+
+		SummonList summons;
+
+		void Reset()
+		{
+			summons.DespawnAll();
+		}
+
+		void JustSummoned(Creature* summon)
+		{
+			summons.Summon(summon);
+			DoZoneInCombat(summon);
+		}
+
+		void DespawnAllImp()
+		{
+			summons.DespawnAll();
+		}
+	};
 
 
 
-
-
-#define SPELL_FIREBOLT  30050   // Blasts a target for 181-209 Fire damage.
-
+	CreatureAI* GetAI_mob_fiendish_portal(Creature* pCreature)
+	{
+		return new mob_fiendish_portalAI(pCreature);
+	}
+};
 
 
 class boss_terestian_illhoof : public CreatureScript
 {
 public: 
     boss_terestian_illhoof() : CreatureScript("boss_terestian_illhoof") { }
-        struct boss_terestian_illhoofAI : public ScriptedAI
+    
+    struct boss_terestian_illhoofAI : public ScriptedAI
     {
         boss_terestian_illhoofAI(Creature* c) : ScriptedAI(c)
         {
@@ -285,8 +316,10 @@ public:
     CreatureAI* GetAI_boss_terestian_illhoof(Creature* pCreature)
     {
     	return new boss_terestian_illhoofAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -324,50 +357,16 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_fiendish_imp(Creature* pCreature)
     {
     	return new mob_fiendish_impAI(pCreature);
-    }
-    
-    
+    }
 };
 
-class mob_fiendish_portal : public CreatureScript
-{
-public: 
-    mob_fiendish_portal() : CreatureScript("mob_fiendish_portal") { }
-    struct mob_fiendish_portalAI : public PassiveAI
-    {
-    	mob_fiendish_portalAI(Creature* c) : PassiveAI(c), summons(me) {}
-    
-    	SummonList summons;
-    
-    	void Reset()
-    	{
-    		summons.DespawnAll();
-    	}
-    
-    	void JustSummoned(Creature* summon)
-    	{
-    		summons.Summon(summon);
-    		DoZoneInCombat(summon);
-    	}
-    
-    	void DespawnAllImp()
-    	{
-    		summons.DespawnAll();
-    	}
-    };
-    
-    CreatureAI* GetAI_mob_fiendish_portal(Creature* pCreature)
-    {
-    	return new mob_fiendish_portalAI(pCreature);
-    }
-    
-    
-};
 
 class mob_kilrek : public CreatureScript
 {
@@ -442,13 +441,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_kilrek(Creature* pCreature)
     {
     	return new mob_kilrekAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -480,13 +483,17 @@ public:
     				Sacrifice->RemoveAurasDueToSpell(SPELL_SACRIFICE);
     		}
     	}
-    };
-    
+    };
+
+    
+
     CreatureAI* GetAI_mob_demon_chain(Creature* pCreature)
     {
     	return new mob_demon_chainAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
