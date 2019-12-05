@@ -359,7 +359,7 @@ public:
         void JustDied(Unit* Killer)
         {
             if (Creature* Kelidan = me->FindNearestCreature(ENTRY_KELIDAN, 100))
-                CAST_AI(boss_kelidan_the_breakerAI, Kelidan->AI())->DoAction(ACTION_CHANNELER_DIED);
+                CAST_AI(boss_kelidan_the_breaker::boss_kelidan_the_breakerAI, Kelidan->AI())->DoAction(ACTION_CHANNELER_DIED);
         }
     
         void UpdateAI(const uint32 diff)

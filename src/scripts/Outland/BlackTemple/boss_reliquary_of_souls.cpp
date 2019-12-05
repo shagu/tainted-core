@@ -101,9 +101,52 @@ static Position2d Coords[] =
     {450.4f, 168.3f}
 };
 
+class npc_enslaved_soul : public CreatureScript
+{
+public:
+    npc_enslaved_soul() : CreatureScript("npc_enslaved_soul") { }
+    struct npc_enslaved_soulAI : public ScriptedAI
+    {
+        npc_enslaved_soulAI(Creature* c) : ScriptedAI(c) {}
+
+        uint64 ReliquaryGUID;
+
+        void Reset()
+        {
+            ReliquaryGUID = 0;
+        }
+
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoCast(me, ENSLAVED_SOUL_PASSIVE, true);
+            DoZoneInCombat();
+        }
+
+        void JustDied(Unit* killer)
+        {
+            if (ReliquaryGUID)
+                if (Creature* Reliquary = (Unit::GetCreature((*me), ReliquaryGUID)))
+                    ++(CAST_AI(boss_reliquary_of_souls::boss_reliquary_of_soulsAI, Reliquary->AI())->SoulDeathCount);
+
+            DoCast(me, SPELL_SOUL_RELEASE, true);
+        }
+    };
+
+    CreatureAI* GetAI_npc_enslaved_soul(Creature* pCreature)
+    {
+        return new npc_enslaved_soulAI(pCreature);
+    }
+
+
+
+
+
+
+};
+
 class boss_reliquary_of_souls : public CreatureScript
 {
-public: 
+public:
     boss_reliquary_of_souls() : CreatureScript("boss_reliquary_of_souls") { }
     struct boss_reliquary_of_soulsAI : public ScriptedAI
     {
@@ -112,49 +155,49 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             EssenceGUID = 0;
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint64 EssenceGUID;
-    
+
         uint32 Phase;
         uint32 Counter;
         uint32 Timer;
-    
+
         uint32 SoulCount;
         uint32 SoulDeathCount;
-    
+
         void Reset()
         {
             if (pInstance)
                 pInstance->SetData(DATA_RELIQUARYOFSOULSEVENT, NOT_STARTED);
-    
+
             if (EssenceGUID)
             {
                 if (Creature* Essence = Unit::GetCreature(*me, EssenceGUID))
                     Essence->ForcedDespawn();
                 EssenceGUID = 0;
             }
-    
+
             Phase = 0;
-    
+
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_NONE);
             me->RemoveAurasDueToSpell(SPELL_SUBMERGE);
         }
-    
+
         void EnterCombat(Unit* who)
         {
             me->AddThreat(who, 10000.0f);
             DoZoneInCombat();
             if (pInstance)
                 pInstance->SetData(DATA_RELIQUARYOFSOULSEVENT, IN_PROGRESS);
-    
+
             Phase = 1;
             Counter = 0;
             Timer = 0;
         }
-    
+
         bool SummonSoul()
         {
             uint32 random = rand() % 6;
@@ -164,30 +207,30 @@ public:
             if (!Soul) return false;
             if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
             {
-                CAST_AI(npc_enslaved_soulAI, Soul->AI())->ReliquaryGUID = me->GetGUID();
+                CAST_AI(npc_enslaved_soul::npc_enslaved_soulAI, Soul->AI())->ReliquaryGUID = me->GetGUID();
                 Soul->AI()->AttackStart(pTarget);
             }
             else EnterEvadeMode();
             return true;
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             if (pInstance)
                 pInstance->SetData(DATA_RELIQUARYOFSOULSEVENT, DONE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!Phase)
                 return;
-    
+
             if (me->getThreatManager().getThreatList().empty()) // Reset if event is begun and we don't have a threatlist
             {
                 EnterEvadeMode();
                 return;
             }
-    
+
             Creature* Essence = NULL;
             if (EssenceGUID)
             {
@@ -198,7 +241,7 @@ public:
                     return;
                 }
             }
-    
+
             if (Timer <= diff)
             {
                 switch (Counter)
@@ -295,12 +338,16 @@ public:
         return GetInstanceAI<boss_reliquary_of_soulsAI>(pCreature);
     }
 
-    
 
-    
 
-    
+
+
+
 };
+
+
+
+
 
 class boss_essence_of_suffering : public CreatureScript
 {
@@ -642,50 +689,6 @@ public:
     
 };
 
-class npc_enslaved_soul : public CreatureScript
-{
-public: 
-    npc_enslaved_soul() : CreatureScript("npc_enslaved_soul") { }
-    struct npc_enslaved_soulAI : public ScriptedAI
-    {
-        npc_enslaved_soulAI(Creature* c) : ScriptedAI(c) {}
-    
-        uint64 ReliquaryGUID;
-    
-        void Reset()
-        {
-            ReliquaryGUID = 0;
-        }
-    
-        void EnterCombat(Unit* /*who*/)
-        {
-            DoCast(me, ENSLAVED_SOUL_PASSIVE, true);
-            DoZoneInCombat();
-        }
-    
-        void JustDied(Unit* killer);
-
-        void npc_enslaved_soulAI::JustDied(Unit* /*killer*/)
-        {
-            if (ReliquaryGUID)
-                if (Creature* Reliquary = (Unit::GetCreature((*me), ReliquaryGUID)))
-                    ++(CAST_AI(boss_reliquary_of_soulsAI, Reliquary->AI())->SoulDeathCount);
-
-            DoCast(me, SPELL_SOUL_RELEASE, true);
-        }
-    };
-
-    CreatureAI* GetAI_npc_enslaved_soul(Creature* pCreature)
-    {
-        return new npc_enslaved_soulAI (pCreature);
-    }
-
-    
-
-    
-
-    
-};
 
 
 void AddSC_boss_reliquary_of_souls()

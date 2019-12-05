@@ -51,7 +51,7 @@ Map::~Map()
         //ASSERT(obj->GetTypeId() == TYPEID_CORPSE);
         obj->RemoveFromWorld();
         obj->ResetMap();
-        sScriptMgr.OnUnloadGridMap(this, gx, gy);
+        //sScriptMgr.OnUnloadGridMap(this, gx, gy);
     }
 
     if (!m_scriptSchedule.empty())
@@ -137,6 +137,7 @@ void Map::LoadVMap(int gx, int gy)
         DEBUG_LOG("Ignored VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", GetMapName(), GetId(), gx, gy, gx, gy);
         break;
     }
+
 }
 
 void Map::LoadMap(int gx, int gy, bool reload)
@@ -162,6 +163,8 @@ void Map::LoadMap(int gx, int gy, bool reload)
     if (GridMaps[gx][gy])
     {
         sLog.outDetail("Unloading previously loaded map %u before reloading.", GetId());
+
+        sScriptMgr.OnUnloadGridMap(this, gx, gy);
         delete (GridMaps[gx][gy]);
         GridMaps[gx][gy] = nullptr;
     }

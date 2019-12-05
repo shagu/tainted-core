@@ -51,135 +51,152 @@ enum HydromancerThespia
 
 };
 
-struct boss_thespiaAI : public ScriptedAI
-{
-    boss_thespiaAI(Creature* c) : ScriptedAI(c)
-    {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
-    }
 
-    ScriptedInstance* pInstance;
-    EventMap events;
-
-    void Reset()
-    {
-        events.Reset();
-        if (pInstance && me->IsAlive())
-            pInstance->SetData(TYPE_HYDROMANCER_THESPIA, NOT_STARTED);
-    }
-
-    void JustDied(Unit* /*Killer*/)
-    {
-        DoScriptText(SAY_DEAD, me);
-
-        if (pInstance)
-            pInstance->SetData(TYPE_HYDROMANCER_THESPIA, DONE);
-    }
-
-    void KilledUnit(Unit* /*victim*/)
-    {
-        DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-
-        DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
-        events.ScheduleEvent(EVENT_SPELL_LIGHTNING, 15000);
-        events.ScheduleEvent(EVENT_SPELL_LUNG, 7000);
-        events.ScheduleEvent(EVENT_SPELL_ENVELOPING, 9000);
-
-        if (pInstance)
-            pInstance->SetData(TYPE_HYDROMANCER_THESPIA, IN_PROGRESS);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        events.Update(diff);
-
-        switch (events.ExecuteEvent())
-        {
-        case EVENT_SPELL_LIGHTNING:
-            for (uint8 i = 0; i < (HeroicMode ? 2 : 1); ++i)
-                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
-                    me->CastSpell(target, SPELL_LIGHTNING_CLOUD, false);
-            events.Repeat(urand(15000, 25000));
-            break;
-        case EVENT_SPELL_LUNG:
-            if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
-                DoCast(target, SPELL_LUNG_BURST);
-            events.Repeat(urand(7000, 12000));
-            break;
-        case EVENT_SPELL_ENVELOPING:
-            for (uint8 i = 0; i < (HeroicMode ? 2 : 1); ++i)
-                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
-                    me->CastSpell(target, SPELL_ENVELOPING_WINDS, false);
-            events.Repeat(urand(10000, 15000));
-            break;
-        }
-        DoMeleeAttackIfReady();
-    }
-};
 
 #define SPELL_WATER_BOLT_VOLLEY     34449
 #define H_SPELL_WATER_BOLT_VOLLEY   37924
 
-struct mob_coilfang_waterelementalAI : public ScriptedAI
+
+
+
+
+
+
+
+class boss_hydromancer_thespia : public CreatureScript
 {
-    mob_coilfang_waterelementalAI(Creature* c) : ScriptedAI(c) {}
-
-    bool HeroicMode;
-    uint32 WaterBoltVolley_Timer;
-
-    void Reset()
+public: 
+    boss_hydromancer_thespia() : CreatureScript("boss_hydromancer_thespia") { }
+        struct boss_thespiaAI : public ScriptedAI
     {
-        HeroicMode = me->GetMap()->IsHeroic();
-        WaterBoltVolley_Timer = 3000 + rand() % 3000;
-    }
-
-    void EnterCombat(Unit* /*who*/) { }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (WaterBoltVolley_Timer <= diff)
+        boss_thespiaAI(Creature* c) : ScriptedAI(c)
         {
-            DoCast(me, HeroicMode ? H_SPELL_WATER_BOLT_VOLLEY : SPELL_WATER_BOLT_VOLLEY);
-            WaterBoltVolley_Timer = 7000 + rand() % 5000;
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-        else WaterBoltVolley_Timer -= diff;
 
-        DoMeleeAttackIfReady();
-    }
+        ScriptedInstance* pInstance;
+        EventMap events;
+
+        void Reset()
+        {
+            events.Reset();
+            if (pInstance && me->IsAlive())
+                pInstance->SetData(TYPE_HYDROMANCER_THESPIA, NOT_STARTED);
+        }
+
+        void JustDied(Unit* /*Killer*/)
+        {
+            DoScriptText(SAY_DEAD, me);
+
+            if (pInstance)
+                pInstance->SetData(TYPE_HYDROMANCER_THESPIA, DONE);
+        }
+
+        void KilledUnit(Unit* /*victim*/)
+        {
+            DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
+        }
+
+        void EnterCombat(Unit* /*who*/)
+        {
+
+            DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
+            events.ScheduleEvent(EVENT_SPELL_LIGHTNING, 15000);
+            events.ScheduleEvent(EVENT_SPELL_LUNG, 7000);
+            events.ScheduleEvent(EVENT_SPELL_ENVELOPING, 9000);
+
+            if (pInstance)
+                pInstance->SetData(TYPE_HYDROMANCER_THESPIA, IN_PROGRESS);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            events.Update(diff);
+
+            switch (events.ExecuteEvent())
+            {
+            case EVENT_SPELL_LIGHTNING:
+                for (uint8 i = 0; i < (HeroicMode ? 2 : 1); ++i)
+                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
+                        me->CastSpell(target, SPELL_LIGHTNING_CLOUD, false);
+                events.Repeat(urand(15000, 25000));
+                break;
+            case EVENT_SPELL_LUNG:
+                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
+                    DoCast(target, SPELL_LUNG_BURST);
+                events.Repeat(urand(7000, 12000));
+                break;
+            case EVENT_SPELL_ENVELOPING:
+                for (uint8 i = 0; i < (HeroicMode ? 2 : 1); ++i)
+                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
+                        me->CastSpell(target, SPELL_ENVELOPING_WINDS, false);
+                events.Repeat(urand(10000, 15000));
+                break;
+            }
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI_boss_thespiaAI(Creature* pCreature)
+    {
+        return GetInstanceAI<boss_thespiaAI>(pCreature);
+    }
+    
+    
 };
 
-CreatureAI* GetAI_boss_thespiaAI(Creature* pCreature)
+class mob_coilfang_waterelemental : public CreatureScript
 {
-    return GetInstanceAI<boss_thespiaAI>(pCreature);
-}
+public: 
+    mob_coilfang_waterelemental() : CreatureScript("mob_coilfang_waterelemental") { }
+    struct mob_coilfang_waterelementalAI : public ScriptedAI
+    {
+        mob_coilfang_waterelementalAI(Creature* c) : ScriptedAI(c) {}
+    
+        bool HeroicMode;
+        uint32 WaterBoltVolley_Timer;
+    
+        void Reset()
+        {
+            HeroicMode = me->GetMap()->IsHeroic();
+            WaterBoltVolley_Timer = 3000 + rand() % 3000;
+        }
+    
+        void EnterCombat(Unit* /*who*/) { }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (WaterBoltVolley_Timer <= diff)
+            {
+                DoCast(me, HeroicMode ? H_SPELL_WATER_BOLT_VOLLEY : SPELL_WATER_BOLT_VOLLEY);
+                WaterBoltVolley_Timer = 7000 + rand() % 5000;
+            }
+            else WaterBoltVolley_Timer -= diff;
+    
+            DoMeleeAttackIfReady();
+        }
+    };
+    
+    
+    CreatureAI* GetAI_mob_coilfang_waterelementalAI(Creature* pCreature)
+    {
+        return new mob_coilfang_waterelementalAI(pCreature);
+    }
+
+    
+};
 
-CreatureAI* GetAI_mob_coilfang_waterelementalAI(Creature* pCreature)
-{
-    return new mob_coilfang_waterelementalAI (pCreature);
-}
 
 void AddSC_boss_hydromancer_thespia()
 {
-    Script* newscript;
+    new boss_hydromancer_thespia();
+    new mob_coilfang_waterelemental();
 
-    newscript = new Script;
-    newscript->Name = "boss_hydromancer_thespia";
-    newscript->GetAI = &GetAI_boss_thespiaAI;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "mob_coilfang_waterelemental";
-    newscript->GetAI = &GetAI_mob_coilfang_waterelementalAI;
-    newscript->RegisterSelf();
 }
 

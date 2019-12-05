@@ -93,8 +93,290 @@ EndScriptData */
    For Doomfire, we summon a mob (Doomfire Targetting) that summons another mob (Doomfire every second)
    Doomfire Targetting 'stalks' players whilst Doomfire damages player that are within range. */
 
+class mob_doomfire : public CreatureScript
+{
+public:
+    mob_doomfire() : CreatureScript("mob_doomfire") { }
+    struct mob_doomfireAI : public ScriptedAI
+    {
+        mob_doomfireAI(Creature* c) : ScriptedAI(c) {}
+
+        uint32 CheckTimer;
+        uint32 RefreshTimer;
+
+        bool TargetSelected;
+
+        uint64 ArchimondeGUID;
+        uint64 TargetGUID;
+
+        void Reset()
+        {
+            CheckTimer = 5000;
+            RefreshTimer = 0;
+
+            TargetSelected = false;
+
+            ArchimondeGUID = 0;
+            TargetGUID = 0;
+        }
+
+        void DamageTaken(Unit* /*done_by*/, uint32& damage)
+        {
+            damage = 0;
+        }
+
+        void EnterCombat(Unit* /*who*/) { }
+
+        void MoveInLineOfSight(Unit* who)
+        {
+            // Do not do anything if who does not exist, or we are refreshing our timer, or who is Doomfire, Archimonde or Doomfire targetting
+            if (!who || who == me || RefreshTimer || who->GetEntry() == CREATURE_ANCIENT_WISP ||
+                who->GetEntry() == CREATURE_ARCHIMONDE || who->GetEntry() == CREATURE_DOOMFIRE ||
+                who->GetEntry() == CREATURE_DOOMFIRE_TARGETING || !who->isTargetableForAttack())
+                return;
+
+            if (me->IsWithinDistInMap(who, 3))
+            {
+                TargetSelected = true;
+                TargetGUID = who->GetGUID();
+                RefreshTimer = 2000;
+            }
+        }
+
+        void KilledUnit(Unit* victim)
+        {
+            bool suicide = true;
+            if (ArchimondeGUID)
+            {
+                Creature* Archimonde = (Unit::GetCreature((*me), ArchimondeGUID));
+                if (Archimonde && Archimonde->IsAlive())
+                {
+                    suicide = false;
+                    Archimonde->AI()->KilledUnit(victim);
+                }
+            }
+
+            if (suicide)
+                me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (RefreshTimer <= diff)
+                RefreshTimer = 0;
+            else RefreshTimer -= diff;
+
+            if (TargetSelected && TargetGUID)
+            {
+                Unit* pTarget = Unit::GetUnit((*me), TargetGUID);
+                if (pTarget && pTarget->IsAlive())
+                {
+                    pTarget->CastSpell(pTarget, SPELL_DOOMFIRE_DAMAGE, true);
+                    TargetGUID = 0;
+                    TargetSelected = false;
+                }
+            }
+
+            if (CheckTimer <= diff)
+            {
+                if (ArchimondeGUID)
+                {
+                    Unit* Archimonde = Unit::GetUnit((*me), ArchimondeGUID);
+                    if (!Archimonde || !Archimonde->IsAlive())
+                        me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    CheckTimer = 5000;
+                }
+                else me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+            }
+            else CheckTimer -= diff;
+        }
+    };
+
+    CreatureAI* GetAI_mob_doomfire(Creature* pCreature)
+    {
+        return new mob_doomfireAI(pCreature);
+    }
 
 
+
+
+
+
+};
+
+class mob_doomfire_targetting : public CreatureScript
+{
+public:
+    mob_doomfire_targetting() : CreatureScript("mob_doomfire_targetting") { }
+    struct mob_doomfire_targettingAI : public ScriptedAI
+    {
+        mob_doomfire_targettingAI(Creature* c) : ScriptedAI(c) {}
+
+        uint32 ChangeTargetTimer;
+        uint32 SummonTimer;                                     // This timer will serve as both a summon timer for the doomfire that does damage as well as to check on Archionde
+
+        uint64 ArchimondeGUID;
+
+        void Reset()
+        {
+            ChangeTargetTimer = 5000;
+            SummonTimer = 1000;
+
+            ArchimondeGUID = 0;
+        }
+
+        void MoveInLineOfSight(Unit* who)
+        {
+            // Do not do anything if who does not exist, or who is Doomfire, Archimonde or Doomfire targetting
+            if (!who || who == me || who->GetEntry() == CREATURE_ARCHIMONDE
+                || who->GetEntry() == CREATURE_DOOMFIRE || who->GetEntry() == CREATURE_DOOMFIRE_TARGETING || !who->isTargetableForAttack())
+                return;
+
+            me->AddThreat(who, 0.0f);
+        }
+
+        void EnterCombat(Unit* /*who*/) {}
+
+        void DamageTaken(Unit* /*done_by*/, uint32& damage)
+        {
+            damage = 0;
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            if (SummonTimer <= diff)
+            {
+                if (ArchimondeGUID)
+                {
+                    Unit* Archimonde = Unit::GetUnit((*me), ArchimondeGUID);
+                    if (Archimonde && Archimonde->IsAlive())
+                    {
+                        Creature* Doomfire = DoSpawnCreature(CREATURE_DOOMFIRE, 0, 0, 2, 0, TEMPSUMMON_TIMED_DESPAWN, 30000);
+                        if (Doomfire)
+                        {
+                            Doomfire->CastSpell(Doomfire, SPELL_DOOMFIRE_VISUAL, true);
+                            ((mob_doomfire::mob_doomfireAI*)Doomfire->AI())->ArchimondeGUID = ArchimondeGUID;
+                            Doomfire->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                        }
+                        SummonTimer = 500;
+                    }
+                    else
+                        me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                }
+                else
+                    me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+            }
+            else SummonTimer -= diff;
+
+            if (ChangeTargetTimer <= diff)
+            {
+                Unit* pTarget = NULL;
+                switch (rand() % 2)
+                {
+                case 0:                                     // stalk player
+                    pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
+                    if (pTarget && pTarget->IsAlive())
+                    {
+                        me->AddThreat(pTarget, DoGetThreat(me->GetVictim()));
+                        me->GetMotionMaster()->MoveChase(pTarget);
+                    }
+                    break;
+
+                case 1:                                     // random location
+                    Position pos = me->GetRandomNearPosition(40.0f);
+                    me->GetMotionMaster()->MovePoint(0, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
+                    break;
+                }
+
+                ChangeTargetTimer = 5000;
+            }
+            else ChangeTargetTimer -= diff;
+        }
+    };
+
+    CreatureAI* GetAI_mob_doomfire_targetting(Creature* pCreature)
+    {
+        return new mob_doomfire_targettingAI(pCreature);
+    }
+
+
+
+
+
+
+};
+
+class mob_ancient_wisp : public CreatureScript
+{
+public:
+    mob_ancient_wisp() : CreatureScript("mob_ancient_wisp") { }
+    struct mob_ancient_wispAI : public ScriptedAI
+    {
+        mob_ancient_wispAI(Creature* c) : ScriptedAI(c)
+        {
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+        }
+
+        ScriptedInstance* pInstance;
+        uint64 ArchimondeGUID;
+        uint32 CheckTimer;
+
+        void Reset()
+        {
+            ArchimondeGUID = 0;
+            CheckTimer = 1000;
+
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        }
+
+        void EnterCombat(Unit* /*who*/) {}
+
+        void DamageTaken(Unit* /*done_by*/, uint32& damage)
+        {
+            damage = 0;
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!ArchimondeGUID)
+            {
+                if (pInstance)
+                    ArchimondeGUID = pInstance->GetData64(DATA_ARCHIMONDE);
+            }
+
+            if (CheckTimer <= diff)
+            {
+                if (ArchimondeGUID)
+                {
+                    Unit* Archimonde = Unit::GetUnit((*me), ArchimondeGUID);
+                    if (Archimonde)
+                    {
+                        if ((((Archimonde->GetHealth() * 100) / Archimonde->GetMaxHealth()) < 2) || !Archimonde->IsAlive())
+                            DoCast(me, SPELL_DENOUEMENT_WISP);
+                        else
+                            DoCast(Archimonde, SPELL_ANCIENT_SPARK);
+                    }
+                }
+                CheckTimer = 1000;
+            }
+            else CheckTimer -= diff;
+        }
+    };
+
+    CreatureAI* GetAI_mob_ancient_wisp(Creature* pCreature)
+    {
+        return new mob_ancient_wispAI(pCreature);
+    }
+
+
+
+
+
+
+};
 
 class boss_archimonde : public CreatureScript
 {
@@ -247,7 +529,7 @@ public:
             Creature* Doomfire = DoSpawnCreature(CREATURE_DOOMFIRE_TARGETING, float(rand() % 30), float(rand() % 30), 0, 0, TEMPSUMMON_TIMED_DESPAWN, 30000);
             if (Doomfire)
             {
-                ((mob_doomfire_targettingAI*)Doomfire->AI())->ArchimondeGUID = me->GetGUID();
+                ((mob_doomfire_targetting::mob_doomfire_targettingAI*)Doomfire->AI())->ArchimondeGUID = me->GetGUID();
                 Doomfire->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                 // Give Doomfire a taste of everyone in the threatlist = more targets to chase.
                 ThreatContainer::StorageType::const_iterator itr;
@@ -406,7 +688,7 @@ public:
                     if (Wisp)
                     {
                         Wisp->AI()->AttackStart(me);
-                        ((mob_ancient_wispAI*)Wisp->AI())->ArchimondeGUID = me->GetGUID();
+                        ((mob_ancient_wisp::mob_ancient_wispAI*)Wisp->AI())->ArchimondeGUID = me->GetGUID();
                     }
                     SummonWispTimer = 1500;
                     ++WispCount;
@@ -497,290 +779,11 @@ public:
     
 };
 
-class mob_doomfire : public CreatureScript
-{
-public: 
-    mob_doomfire() : CreatureScript("mob_doomfire") { }
-    struct mob_doomfireAI : public ScriptedAI
-    {
-        mob_doomfireAI(Creature* c) : ScriptedAI(c) {}
-    
-        uint32 CheckTimer;
-        uint32 RefreshTimer;
-    
-        bool TargetSelected;
-    
-        uint64 ArchimondeGUID;
-        uint64 TargetGUID;
-    
-        void Reset()
-        {
-            CheckTimer = 5000;
-            RefreshTimer = 0;
-    
-            TargetSelected = false;
-    
-            ArchimondeGUID = 0;
-            TargetGUID = 0;
-        }
-    
-        void DamageTaken(Unit* /*done_by*/, uint32& damage)
-        {
-            damage = 0;
-        }
-    
-        void EnterCombat(Unit* /*who*/) { }
-    
-        void MoveInLineOfSight(Unit* who)
-        {
-            // Do not do anything if who does not exist, or we are refreshing our timer, or who is Doomfire, Archimonde or Doomfire targetting
-            if (!who || who == me || RefreshTimer || who->GetEntry() == CREATURE_ANCIENT_WISP ||
-                who->GetEntry() == CREATURE_ARCHIMONDE || who->GetEntry() == CREATURE_DOOMFIRE ||
-                who->GetEntry() == CREATURE_DOOMFIRE_TARGETING || !who->isTargetableForAttack())
-                return;
-    
-            if (me->IsWithinDistInMap(who, 3))
-            {
-                TargetSelected = true;
-                TargetGUID = who->GetGUID();
-                RefreshTimer = 2000;
-            }
-        }
-    
-        void KilledUnit(Unit* victim)
-        {
-            bool suicide = true;
-            if (ArchimondeGUID)
-            {
-                Creature* Archimonde = (Unit::GetCreature((*me), ArchimondeGUID));
-                if (Archimonde && Archimonde->IsAlive())
-                {
-                    suicide = false;
-                    Archimonde->AI()->KilledUnit(victim);
-                }
-            }
-    
-            if (suicide)
-                me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (RefreshTimer <= diff)
-                RefreshTimer = 0;
-            else RefreshTimer -= diff;
-    
-            if (TargetSelected && TargetGUID)
-            {
-                Unit* pTarget = Unit::GetUnit((*me), TargetGUID);
-                if (pTarget && pTarget->IsAlive())
-                {
-                    pTarget->CastSpell(pTarget, SPELL_DOOMFIRE_DAMAGE, true);
-                    TargetGUID = 0;
-                    TargetSelected = false;
-                }
-            }
-    
-            if (CheckTimer <= diff)
-            {
-                if (ArchimondeGUID)
-                {
-                    Unit* Archimonde = Unit::GetUnit((*me), ArchimondeGUID);
-                    if (!Archimonde || !Archimonde->IsAlive())
-                        me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    CheckTimer = 5000;
-                }
-                else me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-            }
-            else CheckTimer -= diff;
-        }
-    };
 
-    CreatureAI* GetAI_mob_doomfire(Creature* pCreature)
-    {
-        return new mob_doomfireAI(pCreature);
-    }
 
-    
 
-    
 
-    
-};
 
-class mob_doomfire_targetting : public CreatureScript
-{
-public: 
-    mob_doomfire_targetting() : CreatureScript("mob_doomfire_targetting") { }
-    struct mob_doomfire_targettingAI : public ScriptedAI
-    {
-        mob_doomfire_targettingAI(Creature* c) : ScriptedAI(c) {}
-    
-        uint32 ChangeTargetTimer;
-        uint32 SummonTimer;                                     // This timer will serve as both a summon timer for the doomfire that does damage as well as to check on Archionde
-    
-        uint64 ArchimondeGUID;
-    
-        void Reset()
-        {
-            ChangeTargetTimer = 5000;
-            SummonTimer = 1000;
-    
-            ArchimondeGUID = 0;
-        }
-    
-        void MoveInLineOfSight(Unit* who)
-        {
-            // Do not do anything if who does not exist, or who is Doomfire, Archimonde or Doomfire targetting
-            if (!who || who == me || who->GetEntry() == CREATURE_ARCHIMONDE
-                || who->GetEntry() == CREATURE_DOOMFIRE || who->GetEntry() == CREATURE_DOOMFIRE_TARGETING || !who->isTargetableForAttack())
-                return;
-    
-            me->AddThreat(who, 0.0f);
-        }
-    
-        void EnterCombat(Unit* /*who*/) {}
-    
-        void DamageTaken(Unit* /*done_by*/, uint32& damage)
-        {
-            damage = 0;
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (!UpdateVictim())
-                return;
-    
-            if (SummonTimer <= diff)
-            {
-                if (ArchimondeGUID)
-                {
-                    Unit* Archimonde = Unit::GetUnit((*me), ArchimondeGUID);
-                    if (Archimonde && Archimonde->IsAlive())
-                    {
-                        Creature* Doomfire = DoSpawnCreature(CREATURE_DOOMFIRE, 0, 0, 2, 0, TEMPSUMMON_TIMED_DESPAWN, 30000);
-                        if (Doomfire)
-                        {
-                            Doomfire->CastSpell(Doomfire, SPELL_DOOMFIRE_VISUAL, true);
-                            ((mob_doomfireAI*)Doomfire->AI())->ArchimondeGUID = ArchimondeGUID;
-                            Doomfire->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                        }
-                        SummonTimer = 500;
-                    }
-                    else
-                        me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                }
-                else
-                    me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-            }
-            else SummonTimer -= diff;
-    
-            if (ChangeTargetTimer <= diff)
-            {
-                Unit* pTarget = NULL;
-                switch (rand() % 2)
-                {
-                case 0:                                     // stalk player
-                    pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
-                    if (pTarget && pTarget->IsAlive())
-                    {
-                        me->AddThreat(pTarget, DoGetThreat(me->GetVictim()));
-                        me->GetMotionMaster()->MoveChase(pTarget);
-                    }
-                    break;
-    
-                case 1:                                     // random location
-                    Position pos = me->GetRandomNearPosition(40.0f);
-                    me->GetMotionMaster()->MovePoint(0, pos.m_positionX, pos.m_positionY, pos.m_positionZ);
-                    break;
-                }
-    
-                ChangeTargetTimer = 5000;
-            }
-            else ChangeTargetTimer -= diff;
-        }
-    };
-
-    CreatureAI* GetAI_mob_doomfire_targetting(Creature* pCreature)
-    {
-        return new mob_doomfire_targettingAI(pCreature);
-    }
-
-    
-
-    
-
-    
-};
-
-class mob_ancient_wisp : public CreatureScript
-{
-public: 
-    mob_ancient_wisp() : CreatureScript("mob_ancient_wisp") { }
-    struct mob_ancient_wispAI : public ScriptedAI
-    {
-        mob_ancient_wispAI(Creature* c) : ScriptedAI(c)
-        {
-            pInstance = (ScriptedInstance*)c->GetInstanceData();
-        }
-    
-        ScriptedInstance* pInstance;
-        uint64 ArchimondeGUID;
-        uint32 CheckTimer;
-    
-        void Reset()
-        {
-            ArchimondeGUID = 0;
-            CheckTimer = 1000;
-    
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        }
-    
-        void EnterCombat(Unit* /*who*/) {}
-    
-        void DamageTaken(Unit* /*done_by*/, uint32& damage)
-        {
-            damage = 0;
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (!ArchimondeGUID)
-            {
-                if (pInstance)
-                    ArchimondeGUID = pInstance->GetData64(DATA_ARCHIMONDE);
-            }
-    
-            if (CheckTimer <= diff)
-            {
-                if (ArchimondeGUID)
-                {
-                    Unit* Archimonde = Unit::GetUnit((*me), ArchimondeGUID);
-                    if (Archimonde)
-                    {
-                        if ((((Archimonde->GetHealth() * 100) / Archimonde->GetMaxHealth()) < 2) || !Archimonde->IsAlive())
-                            DoCast(me, SPELL_DENOUEMENT_WISP);
-                        else
-                            DoCast(Archimonde, SPELL_ANCIENT_SPARK);
-                    }
-                }
-                CheckTimer = 1000;
-            }
-            else CheckTimer -= diff;
-        }
-    };
-
-    CreatureAI* GetAI_mob_ancient_wisp(Creature* pCreature)
-    {
-        return new mob_ancient_wispAI(pCreature);
-    }
-
-    
-
-    
-
-    
-};
 
 
 void AddSC_boss_archimonde()

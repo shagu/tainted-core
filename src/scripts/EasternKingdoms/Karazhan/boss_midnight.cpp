@@ -48,6 +48,138 @@ EndScriptData */
 //Attumen (@todo Use the summoning spell instead of creature id. It works , but is not convenient for us)
 #define SUMMON_ATTUMEN 15550
 
+class boss_midnight : public CreatureScript
+{
+public:
+    boss_midnight() : CreatureScript("boss_midnight") { }
+    struct boss_midnightAI : public ScriptedAI
+    {
+        boss_midnightAI(Creature* c) : ScriptedAI(c) {}
+
+        uint64 Attumen;
+        uint8 Phase;
+        uint32 Mount_Timer;
+        uint32 Knockdown_Timer;
+
+        void Reset()
+        {
+            Phase = 1;
+            Attumen = 0;
+            Mount_Timer = 0;
+            Knockdown_Timer = urand(6000, 9000);
+
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->SetVisible(true);
+        }
+
+        void KilledUnit(Unit* /*victim*/)
+        {
+            if (Phase == 2)
+            {
+                if (Unit* pUnit = Unit::GetUnit(*me, Attumen))
+                    DoScriptText(SAY_MIDNIGHT_KILL, pUnit);
+            }
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            if (Knockdown_Timer < diff)
+            {
+                DoCastVictim(SPELL_KNOCKDOWN);
+                Knockdown_Timer = urand(6000, 9000);
+            }
+            else
+                Knockdown_Timer -= diff;
+
+            if (Phase == 1 && (me->GetHealth() * 100) / me->GetMaxHealth() < 95)
+            {
+                Phase = 2;
+                if (Creature* pAttumen = me->SummonCreature(SUMMON_ATTUMEN, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 30000))
+                {
+                    Attumen = pAttumen->GetGUID();
+                    pAttumen->AI()->AttackStart(me->GetVictim());
+                    SetMidnight(pAttumen, me->GetGUID());
+                    DoScriptText(RAND(SAY_APPEAR1, SAY_APPEAR2, SAY_APPEAR3), pAttumen);
+                }
+            }
+            else if (Phase == 2 && (me->GetHealth() * 100) / me->GetMaxHealth() < 25)
+            {
+                if (Unit* pAttumen = Unit::GetUnit(*me, Attumen))
+                    Mount(pAttumen);
+            }
+            else if (Phase == 3)
+            {
+                if (Mount_Timer)
+                {
+                    if (Mount_Timer <= diff)
+                    {
+                        Mount_Timer = 0;
+                        me->SetVisible(false);
+                        me->GetMotionMaster()->MoveIdle();
+                        if (Unit* pAttumen = Unit::GetUnit(*me, Attumen))
+                        {
+                            pAttumen->SetDisplayId(MOUNTED_DISPLAYID);
+                            pAttumen->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            if (pAttumen->GetVictim())
+                            {
+                                pAttumen->GetMotionMaster()->MoveChase(pAttumen->GetVictim());
+                                pAttumen->SetUInt64Value(UNIT_FIELD_TARGET, pAttumen->GetVictim()->GetGUID());
+                            }
+                            pAttumen->SetObjectScale(1);
+                            pAttumen->SetHealth(pAttumen->GetMaxHealth());
+                        }
+                    }
+                    else Mount_Timer -= diff;
+                }
+            }
+
+            if (Phase != 3)
+                DoMeleeAttackIfReady();
+        }
+
+        void Mount(Unit* pAttumen)
+        {
+            DoScriptText(SAY_MOUNT, pAttumen);
+            Phase = 3;
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            pAttumen->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            float angle = me->GetAngle(pAttumen);
+            float distance = me->GetDistance2d(pAttumen);
+            float newX = me->GetPositionX() + cos(angle) * (distance / 2);
+            float newY = me->GetPositionY() + sin(angle) * (distance / 2);
+            float newZ = 50;
+            //me->Relocate(newX,newY,newZ,angle);
+            //me->SendMonsterMove(newX, newY, newZ, 0, true, 1000);
+            me->GetMotionMaster()->Clear();
+            me->GetMotionMaster()->MovePoint(0, newX, newY, newZ);
+            distance += 10;
+            newX = me->GetPositionX() + cos(angle) * (distance / 2);
+            newY = me->GetPositionY() + sin(angle) * (distance / 2);
+            pAttumen->GetMotionMaster()->Clear();
+            pAttumen->GetMotionMaster()->MovePoint(0, newX, newY, newZ);
+            //pAttumen->Relocate(newX,newY,newZ,-angle);
+            //pAttumen->SendMonsterMove(newX, newY, newZ, 0, true, 1000);
+            Mount_Timer = 1000;
+        }
+
+        void SetMidnight(Creature* pAttumen, uint64 value)
+        {
+            CAST_AI(boss_attumen::boss_attumenAI, pAttumen->AI())->Midnight = value;
+        }
+
+
+    };
+
+    CreatureAI* GetAI_boss_midnight(Creature* pCreature)
+    {
+        return new boss_midnightAI(pCreature);
+    }
+
+};
+
 class boss_attumen : public CreatureScript
 {
 public: 
@@ -191,7 +323,7 @@ public:
                     Creature* pMidnight = Unit::GetCreature(*me, Midnight);
                     if (pMidnight && pMidnight->GetTypeId() == TYPEID_UNIT)
                     {
-                        CAST_AI(boss_midnightAI, (pMidnight->AI()))->Mount(me);
+                        CAST_AI(boss_midnight::boss_midnightAI, (pMidnight->AI()))->Mount(me);
                         me->SetHealth(pMidnight->GetHealth());
                     }
                 }
@@ -214,139 +346,7 @@ public:
 
 };
 
-class boss_midnight : public CreatureScript
-{
-public: 
-    boss_midnight() : CreatureScript("boss_midnight") { }
-    struct boss_midnightAI : public ScriptedAI
-    {
-        boss_midnightAI(Creature* c) : ScriptedAI(c) {}
-    
-        uint64 Attumen;
-        uint8 Phase;
-        uint32 Mount_Timer;
-        uint32 Knockdown_Timer;
-    
-        void Reset()
-        {
-            Phase = 1;
-            Attumen = 0;
-            Mount_Timer = 0;
-            Knockdown_Timer = urand(6000, 9000);
-    
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            me->SetVisible(true);
-        }
-    
-        void KilledUnit(Unit* /*victim*/)
-        {
-            if (Phase == 2)
-            {
-                if (Unit* pUnit = Unit::GetUnit(*me, Attumen))
-                    DoScriptText(SAY_MIDNIGHT_KILL, pUnit);
-            }
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (!UpdateVictim())
-                return;
-    
-            if (Knockdown_Timer < diff)
-            {
-                DoCastVictim(SPELL_KNOCKDOWN);
-                Knockdown_Timer = urand(6000, 9000);
-            }
-            else
-                Knockdown_Timer -= diff;
-    
-            if (Phase == 1 && (me->GetHealth() * 100) / me->GetMaxHealth() < 95)
-            {
-                Phase = 2;
-                if (Creature* pAttumen = me->SummonCreature(SUMMON_ATTUMEN, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 30000))
-                {
-                    Attumen = pAttumen->GetGUID();
-                    pAttumen->AI()->AttackStart(me->GetVictim());
-                    SetMidnight(pAttumen, me->GetGUID());
-                    DoScriptText(RAND(SAY_APPEAR1, SAY_APPEAR2, SAY_APPEAR3), pAttumen);
-                }
-            }
-            else if (Phase == 2 && (me->GetHealth() * 100) / me->GetMaxHealth() < 25)
-            {
-                if (Unit* pAttumen = Unit::GetUnit(*me, Attumen))
-                    Mount(pAttumen);
-            }
-            else if (Phase == 3)
-            {
-                if (Mount_Timer)
-                {
-                    if (Mount_Timer <= diff)
-                    {
-                        Mount_Timer = 0;
-                        me->SetVisible(false);
-                        me->GetMotionMaster()->MoveIdle();
-                        if (Unit* pAttumen = Unit::GetUnit(*me, Attumen))
-                        {
-                            pAttumen->SetDisplayId(MOUNTED_DISPLAYID);
-                            pAttumen->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            if (pAttumen->GetVictim())
-                            {
-                                pAttumen->GetMotionMaster()->MoveChase(pAttumen->GetVictim());
-                                pAttumen->SetUInt64Value(UNIT_FIELD_TARGET, pAttumen->GetVictim()->GetGUID());
-                            }
-                            pAttumen->SetObjectScale(1);
-                            pAttumen->SetHealth(pAttumen->GetMaxHealth());
-                        }
-                    }
-                    else Mount_Timer -= diff;
-                }
-            }
-    
-            if (Phase != 3)
-                DoMeleeAttackIfReady();
-        }
-    
-        void Mount(Unit* pAttumen)
-        {
-            DoScriptText(SAY_MOUNT, pAttumen);
-            Phase = 3;
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            pAttumen->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            float angle = me->GetAngle(pAttumen);
-            float distance = me->GetDistance2d(pAttumen);
-            float newX = me->GetPositionX() + cos(angle) * (distance / 2) ;
-            float newY = me->GetPositionY() + sin(angle) * (distance / 2) ;
-            float newZ = 50;
-            //me->Relocate(newX,newY,newZ,angle);
-            //me->SendMonsterMove(newX, newY, newZ, 0, true, 1000);
-            me->GetMotionMaster()->Clear();
-            me->GetMotionMaster()->MovePoint(0, newX, newY, newZ);
-            distance += 10;
-            newX = me->GetPositionX() + cos(angle) * (distance / 2) ;
-            newY = me->GetPositionY() + sin(angle) * (distance / 2) ;
-            pAttumen->GetMotionMaster()->Clear();
-            pAttumen->GetMotionMaster()->MovePoint(0, newX, newY, newZ);
-            //pAttumen->Relocate(newX,newY,newZ,-angle);
-            //pAttumen->SendMonsterMove(newX, newY, newZ, 0, true, 1000);
-            Mount_Timer = 1000;
-        }
-    
-        void SetMidnight(Creature*, uint64);                    //Below ..
 
-        void boss_midnightAI::SetMidnight(Creature* pAttumen, uint64 value)
-        {
-            CAST_AI(boss_attumenAI, pAttumen->AI())->Midnight = value;
-        }
-
-
-    };
-
-    CreatureAI* GetAI_boss_midnight(Creature* pCreature)
-    {
-        return new boss_midnightAI(pCreature);
-    }
-
-};
 
 
 void AddSC_boss_attumen()

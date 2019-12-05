@@ -28,7 +28,6 @@
 #include "CreatureAIImpl.h"
 #include "ScriptLoader.h"
 #include "ScriptSystem.h"
-#include "Player.h"
 
 INSTANTIATE_SINGLETON_1(ScriptMgr);
 
@@ -199,7 +198,7 @@ void ScriptMgr::ScriptsInit()
 
     AddScripts();
 
-    outstring_log(">> Loaded %i C++ Scripts.", GetScriptCount);
+    outstring_log(">> Loaded %i C++ Scripts.", sScriptMgr.GetScriptCount());
 
     sLog.outString(">> Load Overriden SQL Data.");
     LoadOverridenSQLData();
@@ -542,7 +541,7 @@ InstanceData* ScriptMgr::CreateInstanceData(InstanceMap* map)
     return tmpscript->OnGetInstanceData(map);
 }
 
-bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Item* target)
+bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, uint32 effIndex, Item* target)
 {
     ASSERT(caster);
     ASSERT(target);
@@ -571,7 +570,7 @@ bool ScriptMgr::OnItemUse(Player* player, Item* item, SpellCastTargets const& ta
     return tmpscript->OnUse(player, item, targets);
 }
 
-bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Creature* target)
+bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, uint32 effIndex, Creature* target)
 {
     ASSERT(caster);
     ASSERT(target);
@@ -790,6 +789,47 @@ std::vector<ChatCommand*> ScriptMgr::GetChatCommands()
         table.push_back(itr->second->OnGetCommands());
 
     return table;
+}
+
+void ScriptMgr::OnAddPassenger(Transport* transport, Player* player)
+{
+    ASSERT(transport);
+    ASSERT(player);
+
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnAddPassenger(transport, player);
+}
+
+void ScriptMgr::OnAddCreaturePassenger(Transport* transport, Creature* creature)
+{
+    ASSERT(transport);
+    ASSERT(creature);
+
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnAddCreaturePassenger(transport, creature);
+}
+
+void ScriptMgr::OnRemovePassenger(Transport* transport, Player* player)
+{
+    ASSERT(transport);
+    ASSERT(player);
+
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnRemovePassenger(transport, player);
+}
+
+void ScriptMgr::OnTransportUpdate(Transport* transport, uint32 diff)
+{
+    ASSERT(transport);
+
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnUpdate(transport, diff);
+}
+
+void ScriptMgr::OnRelocate(Transport* transport, uint32 waypointId, uint32 mapId, float x, float y, float z)
+{
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnRelocate(transport, waypointId, mapId, x, y, z);
 }
 
 void ScriptMgr::OnAuctionAdd(AuctionHouseObject* ah, AuctionEntry* entry)

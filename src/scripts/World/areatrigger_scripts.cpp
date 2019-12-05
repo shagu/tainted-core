@@ -46,7 +46,7 @@ class AreaTrigger_at_coilfang_waterfall : public AreaTriggerScript
 public:
     AreaTrigger_at_coilfang_waterfall() : AreaTriggerScript("at_coilfang_waterfall") {}
 
-    bool OnTrigger(Player* player, AreaTriggerEntry const* /*trigger*/)
+    bool OnTrigger(Player* player, AreaTriggerEntry const* /*trigger*/) override
     {
         if (GameObject* pGo = GetClosestGameObjectWithEntry(player, GO_COILFANG_WATERFALL, 35.0f))
             if (pGo->getLootState() == GO_READY)

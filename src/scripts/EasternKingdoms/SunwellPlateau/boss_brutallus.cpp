@@ -72,7 +72,71 @@ enum Spells
     SPELL_SUMMON_DEATH_CLOUD           =   45884
 };
 
+class npc_madrigosa : public CreatureScript
+{
+public:
+    npc_madrigosa() : CreatureScript("npc_madrigosa") { }
+    struct npc_madrigosaAI : public ScriptedAI
+    {
+        npc_madrigosaAI(Creature* c) : ScriptedAI(c)
+        {
+            pInstance = ((ScriptedInstance*)c->GetInstanceData());
+        }
 
+        ScriptedInstance* pInstance;
+
+        uint32 IntroPhase;
+
+        void Reset()
+        {
+            IntroPhase = 0;
+        }
+
+        void DamageTaken(Unit* done_by, uint32& damage)
+        {
+            if (done_by->GetEntry() == BOSS_BRUTALLUS)
+                damage = 0;
+        }
+
+        void MoveInLineOfSight(Unit* unit)
+        {
+            if (unit->GetEntry() == BOSS_BRUTALLUS)
+                return;
+
+            CreatureAI::MoveInLineOfSight(unit);
+        }
+
+        void AttackStart(Unit* unit)
+        {
+            if (IntroPhase >= 5 && IntroPhase < 13)
+                return;
+
+            UnitAI::AttackStart(unit);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (IntroPhase >= 5 && IntroPhase < 13)
+                return;
+
+            if (!UpdateVictim())
+                return;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI_npc_madrigosa(Creature* creature)
+    {
+        return new npc_madrigosaAI(creature);
+    }
+
+
+
+
+
+
+};
 
 class boss_brutallus : public CreatureScript
 {
@@ -350,7 +414,7 @@ public:
                 {
                     ++IntroPhase;
                     if (Creature* Madrigosa = Unit::GetCreature(*me, pInstance ? pInstance->GetData64(DATA_MADRIGOSA) : 0))
-                        CAST_AI(npc_madrigosaAI, Madrigosa->AI())->IntroPhase = IntroPhase;
+                        CAST_AI(npc_madrigosa::npc_madrigosaAI, Madrigosa->AI())->IntroPhase = IntroPhase;
     
                     DoIntro();
                 }
@@ -460,71 +524,7 @@ public:
     
 };
 
-class npc_madrigosa : public CreatureScript
-{
-public: 
-    npc_madrigosa() : CreatureScript("npc_madrigosa") { }
-    struct npc_madrigosaAI : public ScriptedAI
-    {
-        npc_madrigosaAI(Creature* c) : ScriptedAI(c)
-        {
-            pInstance = ((ScriptedInstance*)c->GetInstanceData());
-        }
-    
-        ScriptedInstance* pInstance;
-    
-        uint32 IntroPhase;
-    
-        void Reset()
-        {
-            IntroPhase = 0;
-        }
-    
-        void DamageTaken(Unit* done_by, uint32& damage)
-        {
-            if (done_by->GetEntry() == BOSS_BRUTALLUS)
-                damage = 0;
-        }
-    
-        void MoveInLineOfSight(Unit* unit)
-        {
-            if (unit->GetEntry() == BOSS_BRUTALLUS)
-                return;
-    
-            CreatureAI::MoveInLineOfSight(unit);
-        }
-    
-        void AttackStart(Unit* unit)
-        {
-            if (IntroPhase >= 5 && IntroPhase < 13)
-                return;
-    
-            UnitAI::AttackStart(unit);
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (IntroPhase >= 5 && IntroPhase < 13)
-                return;
-    
-            if (!UpdateVictim())
-                return;
-    
-            DoMeleeAttackIfReady();
-        }
-    };
 
-    CreatureAI* GetAI_npc_madrigosa(Creature* creature)
-    {
-        return new npc_madrigosaAI(creature);
-    }
-
-    
-
-    
-
-    
-};
 
 class trigger_death_cloud : public CreatureScript
 {

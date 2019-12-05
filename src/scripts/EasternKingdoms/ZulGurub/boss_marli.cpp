@@ -266,13 +266,17 @@ public:
                 DoMeleeAttackIfReady();
             }
         }
-    };
+    };
+
     CreatureAI* GetAI_boss_marli(Creature* pCreature)
     {
         return new boss_marliAI (pCreature);
-    }
-    
-    
+    }
+
+    
+
+    
+
     
 };
 
@@ -330,13 +334,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
+    };
+
     CreatureAI* GetAI_mob_spawn_of_marli(Creature* pCreature)
     {
         return new mob_spawn_of_marliAI (pCreature);
-    }
-    
-    
+    }
+
+    
+
+    
+
     
 };
 

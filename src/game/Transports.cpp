@@ -16,6 +16,7 @@
  */
 
 #include "Common.h"
+#include "ScriptMgr.h"
 #include "Transports.h"
 #include "MapManager.h"
 #include "ObjectMgr.h"

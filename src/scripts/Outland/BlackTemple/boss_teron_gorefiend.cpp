@@ -396,7 +396,7 @@ public:
                     {
                         Construct->CastSpell(Construct, SPELL_PASSIVE_SHADOWFORM, true);
                         SetThreatList(Construct);               // Use same function as Doom Blossom to set Threat List.
-                        CAST_AI(mob_shadowy_constructAI, Construct->AI())->GhostGUID = GhostGUID;
+                        CAST_AI(mob_shadowy_construct::mob_shadowy_constructAI, Construct->AI())->GhostGUID = GhostGUID;
                         Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
                         if (!pTarget)                             // someone's trying to solo.
                             pTarget = me->GetVictim();
@@ -476,7 +476,7 @@ public:
                         DoomBlossom->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                         DoomBlossom->SetFaction(me->GetFaction());
                         DoomBlossom->AddThreat(pTarget, 1.0f);
-                        CAST_AI(mob_doom_blossomAI, DoomBlossom->AI())->SetTeronGUID(me->GetGUID());
+                        CAST_AI(mob_doom_blossom::mob_doom_blossomAI, DoomBlossom->AI())->SetTeronGUID(me->GetGUID());
                         pTarget->CombatStart(DoomBlossom);
                         SetThreatList(DoomBlossom);
                         SummonDoomBlossomTimer = 35000;

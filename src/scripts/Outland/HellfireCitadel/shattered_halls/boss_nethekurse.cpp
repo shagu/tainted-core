@@ -465,7 +465,7 @@ public:
                 {
                     Creature* pKurse = Unit::GetCreature(*me, pInstance->GetData64(DATA_NETHEKURSE));
                     if (pKurse)
-                        ((boss_grand_warlock_nethekurseAI*)pKurse->AI())->DoYellForPeonEnterCombat();
+                        ((boss_grand_warlock_nethekurse::boss_grand_warlock_nethekurseAI*)pKurse->AI())->DoYellForPeonEnterCombat();
                 }
     
                 if (pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
@@ -482,7 +482,7 @@ public:
                 {
                     Creature* pKurse = Unit::GetCreature(*me, pInstance->GetData64(DATA_NETHEKURSE));
                     if (pKurse)
-                        ((boss_grand_warlock_nethekurseAI*)pKurse->AI())->DoYellForPeonDeath();
+                        ((boss_grand_warlock_nethekurse::boss_grand_warlock_nethekurseAI*)pKurse->AI())->DoYellForPeonDeath();
                 }
             }
         }

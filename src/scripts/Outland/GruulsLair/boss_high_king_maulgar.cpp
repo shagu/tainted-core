@@ -414,7 +414,7 @@ public:
                 Maulgar = (Creature*)(Unit::GetUnit((*me), pInstance->GetData64(DATA_MAULGAR)));
     
                 if (Maulgar)
-                    ((boss_high_king_maulgarAI*)Maulgar->AI())->AddDeath();
+                    ((boss_high_king_maulgar::boss_high_king_maulgarAI*)Maulgar->AI())->AddDeath();
     
                 if (CheckAllBossDied(pInstance, me))
                     pInstance->SetData(DATA_MAULGAREVENT, DONE);
@@ -555,7 +555,7 @@ public:
                 Maulgar = (Creature*)(Unit::GetUnit((*me), pInstance->GetData64(DATA_MAULGAR)));
     
                 if (Maulgar)
-                    ((boss_high_king_maulgarAI*)Maulgar->AI())->AddDeath();
+                    ((boss_high_king_maulgar::boss_high_king_maulgarAI*)Maulgar->AI())->AddDeath();
     
                 if (CheckAllBossDied(pInstance, me))
                     pInstance->SetData(DATA_MAULGAREVENT, DONE);
@@ -670,7 +670,7 @@ public:
                 Maulgar = (Creature*)(Unit::GetUnit((*me), pInstance->GetData64(DATA_MAULGAR)));
     
                 if (Maulgar)
-                    ((boss_high_king_maulgarAI*)Maulgar->AI())->AddDeath();
+                    ((boss_high_king_maulgar::boss_high_king_maulgarAI*)Maulgar->AI())->AddDeath();
     
                 if (CheckAllBossDied(pInstance, me))
                     pInstance->SetData(DATA_MAULGAREVENT, DONE);
@@ -792,7 +792,7 @@ public:
                 Maulgar = (Creature*)(Unit::GetUnit((*me), pInstance->GetData64(DATA_MAULGAR)));
     
                 if (Maulgar)
-                    ((boss_high_king_maulgarAI*)Maulgar->AI())->AddDeath();
+                    ((boss_high_king_maulgar::boss_high_king_maulgarAI*)Maulgar->AI())->AddDeath();
     
                 if (CheckAllBossDied(pInstance, me))
                     pInstance->SetData(DATA_MAULGAREVENT, DONE);

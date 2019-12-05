@@ -75,6 +75,88 @@ class InsidiousAura : public Aura
         {}
 };
 
+class mob_inner_demon : public CreatureScript
+{
+public:
+    mob_inner_demon() : CreatureScript("mob_inner_demon") { }
+    struct mob_inner_demonAI : public ScriptedAI
+    {
+        mob_inner_demonAI(Creature* c) : ScriptedAI(c)
+        {
+            victimGUID = 0;
+        }
+
+        uint32 ShadowBolt_Timer;
+
+        uint32 Link_Timer;
+        uint64 victimGUID;
+
+        void Reset()
+        {
+            ShadowBolt_Timer = 10000;
+            Link_Timer = 1000;
+        }
+        void JustDied(Unit* /*victim*/)
+        {
+            Unit* pUnit = Unit::GetUnit((*me), victimGUID);
+            if (pUnit && pUnit->HasAura(SPELL_INSIDIOUS_WHISPER, 0))
+                pUnit->RemoveAurasDueToSpell(SPELL_INSIDIOUS_WHISPER);
+        }
+
+        void DamageTaken(Unit* done_by, uint32& damage)
+        {
+            if (done_by->GetGUID() != victimGUID && done_by->GetGUID() != me->GetGUID())
+            {
+                damage = 0;
+                DoModifyThreatPercent(done_by, -100);
+            }
+        }
+
+        void EnterCombat(Unit* /*who*/)
+        {
+            if (!victimGUID) return;
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+
+            if (me->GetVictim()->GetGUID() != victimGUID)
+            {
+                Unit* owner = Unit::GetUnit((*me), victimGUID);
+                if (owner)
+                    AttackStart(owner);
+            }
+
+            if (Link_Timer <= diff)
+            {
+                DoCastVictim(SPELL_SOUL_LINK, true);
+                Link_Timer = 1000;
+            }
+            else Link_Timer -= diff;
+
+            if (!me->HasAura(AURA_DEMONIC_ALIGNMENT, 0))
+                DoCast(me, AURA_DEMONIC_ALIGNMENT, true);
+
+            if (ShadowBolt_Timer <= diff)
+            {
+                DoCastVictim(SPELL_SHADOWBOLT, false);
+                ShadowBolt_Timer = 10000;
+            }
+            else ShadowBolt_Timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI_mob_inner_demon(Creature* pCreature)
+    {
+        return new mob_inner_demonAI(pCreature);
+    }
+};
+
 
 //Original Leotheras the Blind AI
 
@@ -285,7 +367,7 @@ public:
                     Creature* pUnit = Unit::GetCreature((*me), InnderDemon[i]);
                     if (pUnit && pUnit->IsAlive())
                     {
-                        Unit* pUnit_pTarget = Unit::GetUnit(*pUnit, CAST_AI(mob_inner_demonAI, pUnit->AI())->victimGUID);
+                        Unit* pUnit_pTarget = Unit::GetUnit(*pUnit, CAST_AI(mob_inner_demon::mob_inner_demonAI, pUnit->AI())->victimGUID);
                         if (pUnit_pTarget && pUnit_pTarget->IsAlive())
                         {
                             pUnit->CastSpell(pUnit_pTarget, SPELL_CONSUMING_MADNESS, true);
@@ -481,7 +563,7 @@ public:
                             if (demon)
                             {
                                 demon->AI()->AttackStart((*itr));
-                                CAST_AI(mob_inner_demonAI, demon->AI())->victimGUID = (*itr)->GetGUID();
+                                CAST_AI(mob_inner_demon::mob_inner_demonAI, demon->AI())->victimGUID = (*itr)->GetGUID();
     
                                 for (int i = 0; i < 3; i++)
                                 {
@@ -683,7 +765,7 @@ public:
                 pInstance->SetData64(DATA_LEOTHERAS_EVENT_STARTER, 0);
                 Creature* leotheras = Unit::GetCreature(*me, leotherasGUID);
                 if (leotheras && leotheras->IsAlive())
-                    CAST_AI(boss_leotheras_the_blindAI, leotheras->AI())->CheckChannelers(/*false*/);
+                    CAST_AI(boss_leotheras_the_blind::boss_leotheras_the_blindAI, leotheras->AI())->CheckChannelers(/*false*/);
             }
         }
     
@@ -793,93 +875,6 @@ public:
     
 };
 
-class mob_inner_demon : public CreatureScript
-{
-public: 
-    mob_inner_demon() : CreatureScript("mob_inner_demon") { }
-    struct mob_inner_demonAI : public ScriptedAI
-    {
-        mob_inner_demonAI(Creature* c) : ScriptedAI(c)
-        {
-            victimGUID = 0;
-        }
-    
-        uint32 ShadowBolt_Timer;
-    
-        uint32 Link_Timer;
-        uint64 victimGUID;
-    
-        void Reset()
-        {
-            ShadowBolt_Timer = 10000;
-            Link_Timer = 1000;
-        }
-        void JustDied(Unit* /*victim*/)
-        {
-            Unit* pUnit = Unit::GetUnit((*me), victimGUID);
-            if (pUnit && pUnit->HasAura(SPELL_INSIDIOUS_WHISPER, 0))
-                pUnit->RemoveAurasDueToSpell(SPELL_INSIDIOUS_WHISPER);
-        }
-    
-        void DamageTaken(Unit* done_by, uint32& damage)
-        {
-            if (done_by->GetGUID() != victimGUID && done_by->GetGUID() != me->GetGUID())
-            {
-                damage = 0;
-                DoModifyThreatPercent(done_by, -100);
-            }
-        }
-    
-        void EnterCombat(Unit* /*who*/)
-        {
-            if (!victimGUID) return;
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            //Return since we have no target
-            if (!UpdateVictim())
-                return;
-    
-            if (me->GetVictim()->GetGUID() != victimGUID)
-            {
-                Unit* owner = Unit::GetUnit((*me), victimGUID);
-                if (owner)
-                    AttackStart(owner);
-            }
-    
-            if (Link_Timer <= diff)
-            {
-                DoCastVictim( SPELL_SOUL_LINK, true);
-                Link_Timer = 1000;
-            }
-            else Link_Timer -= diff;
-    
-            if (!me->HasAura(AURA_DEMONIC_ALIGNMENT, 0))
-                DoCast(me, AURA_DEMONIC_ALIGNMENT, true);
-    
-            if (ShadowBolt_Timer <= diff)
-            {
-                DoCastVictim( SPELL_SHADOWBOLT, false);
-                ShadowBolt_Timer = 10000;
-            }
-            else ShadowBolt_Timer -= diff;
-    
-            DoMeleeAttackIfReady();
-        }
-    };
-
-    CreatureAI* GetAI_mob_inner_demon(Creature* pCreature)
-    {
-        return new mob_inner_demonAI (pCreature);
-    }
-
-    
-
-    
-
-    
-};
 
 
 void AddSC_boss_leotheras_the_blind()

@@ -44,75 +44,17 @@ EndContentData */
 #define GOSSIP_SL4 "Then what happened?"
 #define GOSSIP_SL5 "He is not safe, i'll make sure of that."
 
-bool GossipHello_npc_lorax(Player* pPlayer, Creature* pCreature)
-{
-    if (pCreature->IsQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
 
-    if (pPlayer->GetQuestStatus(5126) == QUEST_STATUS_INCOMPLETE)
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
 
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
-    return true;
-}
-
-bool GossipSelect_npc_lorax(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    switch (uiAction)
-    {
-    case GOSSIP_ACTION_INFO_DEF:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        pPlayer->SEND_GOSSIP_MENU(3759, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+1:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-        pPlayer->SEND_GOSSIP_MENU(3760, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+2:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-        pPlayer->SEND_GOSSIP_MENU(3761, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+3:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-        pPlayer->SEND_GOSSIP_MENU(3762, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+4:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
-        pPlayer->SEND_GOSSIP_MENU(3763, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+5:
-        pPlayer->CLOSE_GOSSIP_MENU();
-        pPlayer->AreaExploredOrEventHappens(5126);
-        break;
-    }
-    return true;
-}
 
 /*######
 ## npc_rivern_frostwind
 ######*/
 
-bool GossipHello_npc_rivern_frostwind(Player* pPlayer, Creature* pCreature)
-{
-    if (pCreature->IsQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
 
-    if (pCreature->IsVendor() && pPlayer->GetReputationRank(589) == REP_EXALTED)
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
 
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
-    return true;
-}
-
-bool GossipSelect_npc_rivern_frostwind(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    if (uiAction == GOSSIP_ACTION_TRADE)
-        pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
-
-    return true;
-}
 
 /*######
 ## npc_witch_doctor_mauari
@@ -120,53 +62,142 @@ bool GossipSelect_npc_rivern_frostwind(Player* pPlayer, Creature* pCreature, uin
 
 #define GOSSIP_HWDM "I'd like you to make me a new Cache of Mau'ari please."
 
-bool GossipHello_npc_witch_doctor_mauari(Player* pPlayer, Creature* pCreature)
+
+
+
+
+
+
+
+class npc_lorax : public CreatureScript
 {
-    if (pCreature->IsQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
-
-    if (pPlayer->GetQuestRewardStatus(975))
+public: 
+    npc_lorax() : CreatureScript("npc_lorax") { }
+    
+    
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HWDM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        pPlayer->SEND_GOSSIP_MENU(3377, pCreature->GetGUID());
+        if (pCreature->IsQuestGiver())
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+    
+        if (pPlayer->GetQuestStatus(5126) == QUEST_STATUS_INCOMPLETE)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+    
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    
+        return true;
     }
-    else
-        pPlayer->SEND_GOSSIP_MENU(3375, pCreature->GetGUID());
+    
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        switch (uiAction)
+        {
+        case GOSSIP_ACTION_INFO_DEF:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            pPlayer->SEND_GOSSIP_MENU(3759, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            pPlayer->SEND_GOSSIP_MENU(3760, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+            pPlayer->SEND_GOSSIP_MENU(3761, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+3:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+            pPlayer->SEND_GOSSIP_MENU(3762, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+4:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SL5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+            pPlayer->SEND_GOSSIP_MENU(3763, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+5:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->AreaExploredOrEventHappens(5126);
+            break;
+        }
+        return true;
+    }
+    
+    
+    
+};
 
-    return true;
-}
-
-bool GossipSelect_npc_witch_doctor_mauari(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+class npc_rivern_frostwind : public CreatureScript
 {
-    if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+public: 
+    npc_rivern_frostwind() : CreatureScript("npc_rivern_frostwind") { }
+    
+    
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
-        pPlayer->CLOSE_GOSSIP_MENU();
-        pCreature->CastSpell(pPlayer, 16351, false);
+        if (pCreature->IsQuestGiver())
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+    
+        if (pCreature->IsVendor() && pPlayer->GetReputationRank(589) == REP_EXALTED)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
+    
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    
+        return true;
     }
+    
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        if (uiAction == GOSSIP_ACTION_TRADE)
+            pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
+    
+        return true;
+    }
+    
+    
+    
+};
 
-    return true;
-}
+class npc_witch_doctor_mauari : public CreatureScript
+{
+public: 
+    npc_witch_doctor_mauari() : CreatureScript("npc_witch_doctor_mauari") { }
+    
+    
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        if (pCreature->IsQuestGiver())
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+    
+        if (pPlayer->GetQuestRewardStatus(975))
+        {
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HWDM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            pPlayer->SEND_GOSSIP_MENU(3377, pCreature->GetGUID());
+        }
+        else
+            pPlayer->SEND_GOSSIP_MENU(3375, pCreature->GetGUID());
+    
+        return true;
+    }
+    
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+        {
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pCreature->CastSpell(pPlayer, 16351, false);
+        }
+    
+        return true;
+    }
+    
+    
+    
+};
+
 
 void AddSC_winterspring()
 {
-    Script* newscript;
+    new npc_lorax();
+    new npc_rivern_frostwind();
+    new npc_witch_doctor_mauari();
 
-    newscript = new Script;
-    newscript->Name = "npc_lorax";
-    newscript->pGossipHello =  &GossipHello_npc_lorax;
-    newscript->pGossipSelect = &GossipSelect_npc_lorax;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_rivern_frostwind";
-    newscript->pGossipHello =  &GossipHello_npc_rivern_frostwind;
-    newscript->pGossipSelect = &GossipSelect_npc_rivern_frostwind;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_witch_doctor_mauari";
-    newscript->pGossipHello =  &GossipHello_npc_witch_doctor_mauari;
-    newscript->pGossipSelect = &GossipSelect_npc_witch_doctor_mauari;
-    newscript->RegisterSelf();
 }
 

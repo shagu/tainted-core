@@ -97,16 +97,47 @@ static Yell KillingDelay[] =
 #define SPELL_BURNING_MAUL          30598
 #define H_SPELL_BURNING_MAUL        36056
 
+class mob_omrogg_heads : public CreatureScript
+{
+public:
+    mob_omrogg_heads() : CreatureScript("mob_omrogg_heads") { }
+    struct mob_omrogg_headsAI : public ScriptedAI
+    {
+        mob_omrogg_headsAI(Creature* c) : ScriptedAI(c) {}
+
+        bool DeathYell;
+        uint32 Death_Timer;
+
+        void Reset() {}
+        void EnterCombat(Unit* /*who*/) { }
+
+        void DoDeathYell()
+        {
+            Death_Timer = 4000;
+            DeathYell = true;
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!DeathYell)
+                return;
+
+            if (Death_Timer <= diff)
+            {
+                DoScriptText(YELL_DIE_R, me);
+                DeathYell = false;
+            }
+            else Death_Timer -= diff;
+        }
+    };
+
+    CreatureAI* GetAI_mob_omrogg_heads(Creature* pCreature)
+    {
+        return new mob_omrogg_headsAI(pCreature);
+    }
 
 
-
-
-
-
-
-
-
-
+};
 
 class boss_warbringer_omrogg : public CreatureScript
 {
@@ -258,7 +289,7 @@ public:
     
                 DoScriptText(YELL_DIE_L, Left);
     
-                ((mob_omrogg_headsAI*)CAST_CRE(Right)->AI())->DoDeathYell();
+                ((mob_omrogg_heads::mob_omrogg_headsAI*)CAST_CRE(Right)->AI())->DoDeathYell();
             }
     
             if (pInstance)
@@ -379,51 +410,7 @@ public:
     
 };
 
-class mob_omrogg_heads : public CreatureScript
-{
-public: 
-    mob_omrogg_heads() : CreatureScript("mob_omrogg_heads") { }
-    struct mob_omrogg_headsAI : public ScriptedAI
-    {
-        mob_omrogg_headsAI(Creature* c) : ScriptedAI(c) {}
-    
-        bool DeathYell;
-        uint32 Death_Timer;
-    
-        void Reset() {}
-        void EnterCombat(Unit* /*who*/) { }
-    
-        void DoDeathYell()
-        {
-            Death_Timer = 4000;
-            DeathYell = true;
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (!DeathYell)
-                return;
-    
-            if (Death_Timer <= diff)
-            {
-                DoScriptText(YELL_DIE_R, me);
-                DeathYell = false;
-            }
-            else Death_Timer -= diff;
-        }
-    };
 
-    CreatureAI* GetAI_mob_omrogg_heads(Creature* pCreature)
-    {
-        return new mob_omrogg_headsAI (pCreature);
-    }
-
-    
-
-    
-
-    
-};
 
 
 void AddSC_boss_warbringer_omrogg()

@@ -81,6 +81,7 @@ public:
             creature->Attack(player, true);
             player->PlayerTalkClass->CloseGossip();
         }
+        return true;
     }
 
     struct custom_exampleAI : public ScriptedAI

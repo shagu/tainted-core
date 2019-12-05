@@ -49,6 +49,64 @@ EndScriptData */
 #define LOC_Y3    -3843.384f
 #define LOC_Z3    302.384f
 
+class mob_webwrap : public CreatureScript
+{
+public:
+    mob_webwrap() : CreatureScript("mob_webwrap") { }
+    struct mob_webwrapAI : public ScriptedAI
+    {
+        mob_webwrapAI(Creature* c) : ScriptedAI(c) {}
+
+        uint64 victimGUID;
+
+        void Reset()
+        {
+            victimGUID = 0;
+        }
+
+        void SetVictim(Unit* victim)
+        {
+            if (victim)
+            {
+                victimGUID = victim->GetGUID();
+                victim->CastSpell(victim, SPELL_WEBTRAP, true);
+            }
+        }
+
+        void DamageTaken(Unit* /*done_by*/, uint32& damage)
+        {
+            if (damage > me->GetHealth())
+            {
+                if (victimGUID)
+                {
+                    Unit* victim = NULL;
+                    victim = Unit::GetUnit((*me), victimGUID);
+                    if (victim)
+                        victim->RemoveAurasDueToSpell(SPELL_WEBTRAP);
+                }
+            }
+        }
+
+        void EnterCombat(Unit* /*who*/)
+        {
+        }
+
+        void MoveInLineOfSight(Unit* /*who*/)
+        {
+        }
+
+        void UpdateAI(const uint32 /*diff*/)
+        {
+        }
+    };
+
+    CreatureAI* GetAI_mob_webwrap(Creature* pCreature)
+    {
+        return new mob_webwrapAI(pCreature);
+    }
+
+};
+
 class boss_maexxna : public CreatureScript
 {
 public: 
@@ -128,7 +186,7 @@ public:
                     if (Wrap)
                     {
                         Wrap->SetFaction(me->GetFaction());
-                        ((mob_webwrapAI*)Wrap->AI())->SetVictim(pTarget);
+                        ((mob_webwrap::mob_webwrapAI*)Wrap->AI())->SetVictim(pTarget);
                     }
                 }
             }
@@ -197,63 +255,7 @@ public:
   
 };
 
-class mob_webwrap : public CreatureScript
-{
-public: 
-    mob_webwrap() : CreatureScript("mob_webwrap") { }
-    struct mob_webwrapAI : public ScriptedAI
-    {
-        mob_webwrapAI(Creature* c) : ScriptedAI(c) {}
-    
-        uint64 victimGUID;
-    
-        void Reset()
-        {
-            victimGUID = 0;
-        }
-    
-        void SetVictim(Unit* victim)
-        {
-            if (victim)
-            {
-                victimGUID = victim->GetGUID();
-                victim->CastSpell(victim, SPELL_WEBTRAP, true);
-            }
-        }
-    
-        void DamageTaken(Unit* /*done_by*/, uint32& damage)
-        {
-            if (damage > me->GetHealth())
-            {
-                if (victimGUID)
-                {
-                    Unit* victim = NULL;
-                    victim = Unit::GetUnit((*me), victimGUID);
-                    if (victim)
-                        victim->RemoveAurasDueToSpell(SPELL_WEBTRAP);
-                }
-            }
-        }
-    
-        void EnterCombat(Unit* /*who*/)
-        {
-        }
-    
-        void MoveInLineOfSight(Unit* /*who*/)
-        {
-        }
-    
-        void UpdateAI(const uint32 /*diff*/)
-        {
-        }
-    };
 
-    CreatureAI* GetAI_mob_webwrap(Creature* pCreature)
-    {
-        return new mob_webwrapAI (pCreature);
-    }
-
-};
 
 
 void AddSC_boss_maexxna()

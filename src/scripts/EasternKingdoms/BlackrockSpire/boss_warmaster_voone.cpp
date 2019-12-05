@@ -121,7 +121,7 @@ public:
     };
     CreatureAI* GetAI_boss_warmaster_voone(Creature* pCreature)
     {
-        return new boss_boss_warmaster_vooneAI (pCreature);
+        return new boss_warmaster_vooneAI (pCreature);
     }
     
     

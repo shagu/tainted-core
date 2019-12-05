@@ -38,26 +38,8 @@ EndContentData */
 ## mobs_mana_tapped
 ######*/
 
-struct mobs_mana_tappedAI : public ScriptedAI
-{
-    mobs_mana_tappedAI(Creature* c) : ScriptedAI(c) {}
 
-    void Reset() { }
 
-    void EnterCombat(Unit*) { }
-
-    void SpellHit(Unit* caster, const SpellEntry* spell)
-    {
-        if (caster->GetTypeId() == TYPEID_PLAYER)
-            if (CAST_PLR(caster)->GetQuestStatus(8346) == QUEST_STATUS_INCOMPLETE && !CAST_PLR(caster)->GetReqKillOrCastCurrentCount(8346, me->GetEntry()) && spell->Id == 28734)
-                CAST_PLR(caster)->CastedCreatureOrGO(15468, me->GetGUID(), spell->Id);
-        return;
-    }
-};
-CreatureAI* GetAI_mobs_mana_tapped(Creature* pCreature)
-{
-    return new mobs_mana_tappedAI (pCreature);
-}
 
 /*######
 ## npc_prospector_anvilward
@@ -73,74 +55,13 @@ enum eProspectorAnvilward
     QUEST_THE_DWARVEN_SPY                       = 8483,
 };
 
-struct npc_prospector_anvilwardAI : public npc_escortAI
-{
-    // CreatureAI functions
-    npc_prospector_anvilwardAI(Creature* c) : npc_escortAI(c) {}
 
-    // Pure Virtual Functions
-    void WaypointReached(uint32 i)
-    {
-        Player* pPlayer = GetPlayerForEscort();
 
-        if (!pPlayer)
-            return;
 
-        switch (i)
-        {
-        case 0:
-            DoScriptText(SAY_ANVIL1, me, pPlayer);
-            break;
-        case 5:
-            DoScriptText(SAY_ANVIL2, me, pPlayer);
-            break;
-        case 6:
-            me->SetFaction(24);
-            break;
-        }
-    }
 
-    void Reset()
-    {
-        me->RestoreFaction();
-    }
 
-    void JustDied(Unit* /*killer*/)
-    {
-        me->RestoreFaction();
-    }
-};
 
-CreatureAI* GetAI_npc_prospector_anvilward(Creature* pCreature)
-{
-    return new npc_prospector_anvilwardAI(pCreature);
-}
 
-bool GossipHello_npc_prospector_anvilward(Player* pPlayer, Creature* pCreature)
-{
-    if (pPlayer->GetQuestStatus(QUEST_THE_DWARVEN_SPY) == QUEST_STATUS_INCOMPLETE)
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-
-    pPlayer->SEND_GOSSIP_MENU(8239, pCreature->GetGUID());
-    return true;
-}
-
-bool GossipSelect_npc_prospector_anvilward(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    switch (uiAction)
-    {
-    case GOSSIP_ACTION_INFO_DEF+1:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-        pPlayer->SEND_GOSSIP_MENU(8240, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+2:
-        pPlayer->CLOSE_GOSSIP_MENU();
-        if (npc_escortAI* pEscortAI = CAST_AI(npc_prospector_anvilwardAI, pCreature->AI()))
-            pEscortAI->Start(true, false, pPlayer->GetGUID());
-        break;
-    }
-    return true;
-}
 
 /*######
 ## Quest 9686 Second Trial
@@ -452,33 +373,9 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
     void SummonedCreatureDespawn(Creature* /*c*/) {}
 };
 
-bool GossipHello_master_kelerun_bloodmourn(Player* pPlayer, Creature* pCreature)
-{
-    // quest only available if not already started
-    // Quest_template flag is set to : QUEST_FLAGS_EVENT
-    // Escort quests or any other event-driven quests. If player in party, all players that can accept this quest will receive confirmation box to accept quest.
-    // !not sure if this really works!
 
-    if (CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase == 0)
-    {
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
-        pPlayer->SendPreparedQuest(pCreature->GetGUID());
-    }
 
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetEntry(), pCreature->GetGUID());
-    return true;
-}
 
-bool QuestAccept_master_kelerun_bloodmourn(Player* pPlayer, Creature* pCreature, Quest const* quest)
-{
-    // One Player exclusive quest, wait for user go activation
-	if (quest->GetQuestId() == QUEST_SECOND_TRIAL)
-	{
-		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase = 1;
-		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->PlayerGUID = pPlayer->GetGUID();
-	}
-    return true;
-}
 
 void master_kelerun_bloodmournAI::SecondTrialKill()
 {
@@ -547,14 +444,7 @@ CreatureAI* GetAI_npc_secondTrial(Creature* pCreature)
 ## go_second_trial
 ######*/
 
-bool GOHello_go_second_trial(Player* /*pPlayer*/, GameObject* pGO)
-{
-    // find spawn :: master_kelerun_bloodmourn
-    if (Creature* pCreature = pGO->FindNearestCreature(MASTER_KELERUN_BLOODMOURN, 30.0f))
-        CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->StartEvent();
 
-    return true;
-}
 
 /*######
 ## npc_apprentice_mirveda
@@ -567,82 +457,6 @@ enum eMirveda
     MOB_ANGERSHADE          = 15656
 };
 
-struct npc_apprentice_mirvedaAI : public ScriptedAI
-{
-    npc_apprentice_mirvedaAI(Creature* c) : ScriptedAI(c), Summons(me) {}
-
-    uint32 KillCount;
-    uint64 PlayerGUID;
-    bool Summon;
-    SummonList Summons;
-
-    void Reset()
-    {
-        KillCount = 0;
-        PlayerGUID = 0;
-        Summons.DespawnAll();
-        Summon = false;
-    }
-
-    void EnterCombat(Unit* /*who*/) {}
-
-    void JustSummoned(Creature* summoned)
-    {
-        summoned->AI()->AttackStart(me);
-        Summons.Summon(summoned);
-    }
-
-    void SummonedCreatureDespawn(Creature* summoned)
-    {
-        Summons.Despawn(summoned);
-        ++KillCount;
-    }
-
-    void JustDied(Unit* /*killer*/)
-    {
-        if (PlayerGUID)
-            if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
-                CAST_PLR(pPlayer)->FailQuest(QUEST_UNEXPECTED_RESULT);
-    }
-
-    void UpdateAI(const uint32 /*diff*/)
-    {
-        if (KillCount >= 3 && PlayerGUID)
-        {
-            if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
-            {
-                me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
-                CAST_PLR(pPlayer)->CompleteQuest(QUEST_UNEXPECTED_RESULT);
-                KillCount = 0;
-            }
-        }
-        
-
-        if (Summon)
-        {
-            me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
-            me->SummonCreature(MOB_GHARZUL, 8726, -7148.23f, 35.22f, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
-            me->SummonCreature(MOB_ANGERSHADE, 8726, -7148.23f, 35.22f, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
-            me->SummonCreature(MOB_ANGERSHADE, 8726, -7148.23f, 35.22f, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
-            Summon = false;
-        }
-    }
-};
-
-bool QuestAccept_npc_apprentice_mirveda(Player* pPlayer, Creature* pCreature, Quest const* quest)
-{
-    if (quest->GetQuestId() == QUEST_UNEXPECTED_RESULT)
-    {
-        CAST_AI(npc_apprentice_mirvedaAI, pCreature->AI())->Summon = true;
-        CAST_AI(npc_apprentice_mirvedaAI, pCreature->AI())->PlayerGUID = pPlayer->GetGUID();
-    }
-    return true;
-}
-
-CreatureAI* GetAI_npc_apprentice_mirvedaAI(Creature* pCreature)
-{
-    return new npc_apprentice_mirvedaAI (pCreature);
-}
 
 /*######
 ## npc_infused_crystal
@@ -672,150 +486,418 @@ static Location SpawnLocations[] =
     {8267.97f, -7239.17f, 139.517f}
 };
 
-struct npc_infused_crystalAI : public Scripted_NoMovementAI
+
+class mobs_mana_tapped : public CreatureScript
 {
-    npc_infused_crystalAI(Creature* c) : Scripted_NoMovementAI(c) {}
-
-    uint32 EndTimer;
-    uint32 WaveTimer;
-    bool Completed;
-    bool Progress;
-    uint64 PlayerGUID;
-
-    void Reset()
+public: 
+    mobs_mana_tapped() : CreatureScript("mobs_mana_tapped") { }
+    struct mobs_mana_tappedAI : public ScriptedAI
     {
-        EndTimer = 0;
-        Completed = false;
-        Progress = false;
-        PlayerGUID = 0;
-        WaveTimer = 0;
-    }
-
-    void MoveInLineOfSight(Unit* who)
-    {
-        if (!Progress && who->GetTypeId() == TYPEID_PLAYER && me->IsWithinDistInMap(who, 10.0f))
+        mobs_mana_tappedAI(Creature* c) : ScriptedAI(c) {}
+    
+        void Reset() { }
+    
+        void EnterCombat(Unit*) { }
+    
+        void SpellHit(Unit* caster, const SpellEntry* spell)
         {
-            if (CAST_PLR(who)->GetQuestStatus(QUEST_POWERING_OUR_DEFENSES) == QUEST_STATUS_INCOMPLETE)
-            {
-                PlayerGUID = who->GetGUID();
-                WaveTimer = 1000;
-                EndTimer = 60000;
-                Progress = true;
-            }
+            if (caster->GetTypeId() == TYPEID_PLAYER)
+                if (CAST_PLR(caster)->GetQuestStatus(8346) == QUEST_STATUS_INCOMPLETE && !CAST_PLR(caster)->GetReqKillOrCastCurrentCount(8346, me->GetEntry()) && spell->Id == 28734)
+                    CAST_PLR(caster)->CastedCreatureOrGO(15468, me->GetGUID(), spell->Id);
+            return;
         }
-    }
-
-    void JustSummoned(Creature* summoned)
+    };
+    
+    CreatureAI* GetAI_mobs_mana_tapped(Creature* pCreature)
     {
-        summoned->AI()->AttackStart(me);
-    }
-
-    void JustDied(Unit* /*killer*/)
-    {
-        if (PlayerGUID && !Completed)
-            if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
-                CAST_PLR(pPlayer)->FailQuest(QUEST_POWERING_OUR_DEFENSES);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (EndTimer < diff && Progress)
-        {
-            Player* player = ObjectAccessor::GetPlayer(*me, PlayerGUID);
-
-            DoScriptText(EMOTE, me, player );
-            Completed = true;
-            CAST_PLR(player)->KilledMonsterCredit(16364, 0);
-
-            me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-            me->RemoveCorpse();
-        }
-        else EndTimer -= diff;
-
-        if (WaveTimer < diff && !Completed && Progress)
-        {
-            uint32 ran1 = rand() % 8;
-            uint32 ran2 = rand() % 8;
-            uint32 ran3 = rand() % 8;
-            me->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran1].x, SpawnLocations[ran1].y, SpawnLocations[ran1].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
-            me->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran2].x, SpawnLocations[ran2].y, SpawnLocations[ran2].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
-            me->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran3].x, SpawnLocations[ran3].y, SpawnLocations[ran3].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
-            WaveTimer = 30000;
-        }
-        else WaveTimer -= diff;
-    }
+        return new mobs_mana_tappedAI (pCreature);
+    }
+    
+    
 };
 
-CreatureAI* GetAI_npc_infused_crystalAI(Creature* pCreature)
+class npc_prospector_anvilward : public CreatureScript
 {
-    return new npc_infused_crystalAI (pCreature);
-}
-
-struct npc_eversong_rangerAI : public ScriptedAI
-{
-    npc_eversong_rangerAI(Creature* c) : ScriptedAI(c) {}
-
-    void Reset() { }
-
-    void SpellHit(Unit* pHitter, const SpellEntry* pSpell)
+public: 
+    npc_prospector_anvilward() : CreatureScript("npc_prospector_anvilward") { }
+    struct npc_prospector_anvilwardAI : public npc_escortAI
     {
-        if (pSpell->Id == 1243 || pSpell->Id == 1244 || pSpell->Id == 1245)
+        // CreatureAI functions
+        npc_prospector_anvilwardAI(Creature* c) : npc_escortAI(c) {}
+    
+        // Pure Virtual Functions
+        void WaypointReached(uint32 i)
         {
-            if (pHitter->GetTypeId() == TYPEID_PLAYER)
+            Player* pPlayer = GetPlayerForEscort();
+    
+            if (!pPlayer)
+                return;
+    
+            switch (i)
             {
-                Player* pPlayer = pHitter->ToPlayer();
-                if (pPlayer && pPlayer->GetQuestStatus(9489) == QUEST_STATUS_INCOMPLETE)
-                    pPlayer->KilledMonsterCredit(15938, 0);
+            case 0:
+                DoScriptText(SAY_ANVIL1, me, pPlayer);
+                break;
+            case 5:
+                DoScriptText(SAY_ANVIL2, me, pPlayer);
+                break;
+            case 6:
+                me->SetFaction(24);
+                break;
             }
         }
+    
+        void Reset()
+        {
+            me->RestoreFaction();
+        }
+    
+        void JustDied(Unit* /*killer*/)
+        {
+            me->RestoreFaction();
+        }
+    };
+    
+    CreatureAI* GetAI_npc_prospector_anvilward(Creature* pCreature)
+    {
+        return new npc_prospector_anvilwardAI(pCreature);
+    }
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        if (pPlayer->GetQuestStatus(QUEST_THE_DWARVEN_SPY) == QUEST_STATUS_INCOMPLETE)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    
+        pPlayer->SEND_GOSSIP_MENU(8239, pCreature->GetGUID());
+        return true;
     }
+
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        switch (uiAction)
+        {
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            pPlayer->SEND_GOSSIP_MENU(8240, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            if (npc_escortAI* pEscortAI = CAST_AI(npc_prospector_anvilwardAI, pCreature->AI()))
+                pEscortAI->Start(true, false, pPlayer->GetGUID());
+            break;
+        }
+        return true;
+    }
+    
+    
 };
+
+class npc_second_trial_controller : public CreatureScript
+{
+public: 
+    npc_second_trial_controller() : CreatureScript("npc_second_trial_controller") { }
+    
+    
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        // quest only available if not already started
+        // Quest_template flag is set to : QUEST_FLAGS_EVENT
+        // Escort quests or any other event-driven quests. If player in party, all players that can accept this quest will receive confirmation box to accept quest.
+        // !not sure if this really works!
+    
+        if (CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase == 0)
+        {
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+            pPlayer->SendPreparedQuest(pCreature->GetGUID());
+        }
+    
+        pPlayer->SEND_GOSSIP_MENU(pCreature->GetEntry(), pCreature->GetGUID());
+        return true;
+    }
+    
+    bool GossipHello_master_kelerun_bloodmourn(Player* pPlayer, Creature* pCreature)
+    {
+        // quest only available if not already started
+        // Quest_template flag is set to : QUEST_FLAGS_EVENT
+        // Escort quests or any other event-driven quests. If player in party, all players that can accept this quest will receive confirmation box to accept quest.
+        // !not sure if this really works!
+    
+        if (CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase == 0)
+        {
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+            pPlayer->SendPreparedQuest(pCreature->GetGUID());
+        }
+    
+        pPlayer->SEND_GOSSIP_MENU(pCreature->GetEntry(), pCreature->GetGUID());
+        return true;
+    }
+    
+    bool QuestAccept_master_kelerun_bloodmourn(Player* pPlayer, Creature* pCreature, Quest const* quest)
+    {
+        // One Player exclusive quest, wait for user go activation
+    	if (quest->GetQuestId() == QUEST_SECOND_TRIAL)
+    	{
+    		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase = 1;
+    		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->PlayerGUID = pPlayer->GetGUID();
+    	}
+        return true;
+    }
+    
+    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
+    {
+        // One Player exclusive quest, wait for user go activation
+    	if (quest->GetQuestId() == QUEST_SECOND_TRIAL)
+    	{
+    		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase = 1;
+    		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->PlayerGUID = pPlayer->GetGUID();
+    	}
+        return true;
+    }
+    
+    
+    
+};
+
+class npc_second_trial_paladin : public CreatureScript
+{
+public: 
+    npc_second_trial_paladin() : CreatureScript("npc_second_trial_paladin") { }
+    
+    
+    
+    
+};
+
+class go_second_trial : public GameObjectScript
+{
+public: 
+    go_second_trial() : GameObjectScript("go_second_trial") { }
+    
+    
+    bool OnGossipHello(Player* /*pPlayer*/, GameObject* pGO) override
+    {
+        // find spawn :: master_kelerun_bloodmourn
+        if (Creature* pCreature = pGO->FindNearestCreature(MASTER_KELERUN_BLOODMOURN, 30.0f))
+            CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->StartEvent();
+    
+        return true;
+    }
+    
+    
+    
+};
+
+class npc_apprentice_mirveda : public CreatureScript
+{
+public: 
+    npc_apprentice_mirveda() : CreatureScript("npc_apprentice_mirveda") { }
+    struct npc_apprentice_mirvedaAI : public ScriptedAI
+    {
+        npc_apprentice_mirvedaAI(Creature* c) : ScriptedAI(c), Summons(me) {}
+    
+        uint32 KillCount;
+        uint64 PlayerGUID;
+        bool Summon;
+        SummonList Summons;
+    
+        void Reset()
+        {
+            KillCount = 0;
+            PlayerGUID = 0;
+            Summons.DespawnAll();
+            Summon = false;
+        }
+    
+        void EnterCombat(Unit* /*who*/) {}
+    
+        void JustSummoned(Creature* summoned)
+        {
+            summoned->AI()->AttackStart(me);
+            Summons.Summon(summoned);
+        }
+    
+        void SummonedCreatureDespawn(Creature* summoned)
+        {
+            Summons.Despawn(summoned);
+            ++KillCount;
+        }
+    
+        void JustDied(Unit* /*killer*/)
+        {
+            if (PlayerGUID)
+                if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
+                    CAST_PLR(pPlayer)->FailQuest(QUEST_UNEXPECTED_RESULT);
+        }
+    
+        void UpdateAI(const uint32 /*diff*/)
+        {
+            if (KillCount >= 3 && PlayerGUID)
+            {
+                if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
+                {
+                    me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+                    CAST_PLR(pPlayer)->CompleteQuest(QUEST_UNEXPECTED_RESULT);
+                    KillCount = 0;
+                }
+            }
+            
+    
+            if (Summon)
+            {
+                me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+                me->SummonCreature(MOB_GHARZUL, 8726, -7148.23f, 35.22f, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
+                me->SummonCreature(MOB_ANGERSHADE, 8726, -7148.23f, 35.22f, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
+                me->SummonCreature(MOB_ANGERSHADE, 8726, -7148.23f, 35.22f, 0, TEMPSUMMON_CORPSE_DESPAWN, 4000);
+                Summon = false;
+            }
+        }
+    };
+    
+
+
+
+    CreatureAI* GetAI_npc_apprentice_mirvedaAI(Creature* pCreature)
+    {
+        return new npc_apprentice_mirvedaAI(pCreature);
+    }
+
+    
+    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
+    {
+        if (quest->GetQuestId() == QUEST_UNEXPECTED_RESULT)
+        {
+            CAST_AI(npc_apprentice_mirvedaAI, pCreature->AI())->Summon = true;
+            CAST_AI(npc_apprentice_mirvedaAI, pCreature->AI())->PlayerGUID = pPlayer->GetGUID();
+        }
+        return true;
+    }
+    
+    
+    
+};
+
+class npc_infused_crystal : public CreatureScript
+{
+public: 
+    npc_infused_crystal() : CreatureScript("npc_infused_crystal") { }
+    struct npc_infused_crystalAI : public Scripted_NoMovementAI
+    {
+        npc_infused_crystalAI(Creature* c) : Scripted_NoMovementAI(c) {}
+    
+        uint32 EndTimer;
+        uint32 WaveTimer;
+        bool Completed;
+        bool Progress;
+        uint64 PlayerGUID;
+    
+        void Reset()
+        {
+            EndTimer = 0;
+            Completed = false;
+            Progress = false;
+            PlayerGUID = 0;
+            WaveTimer = 0;
+        }
+    
+        void MoveInLineOfSight(Unit* who)
+        {
+            if (!Progress && who->GetTypeId() == TYPEID_PLAYER && me->IsWithinDistInMap(who, 10.0f))
+            {
+                if (CAST_PLR(who)->GetQuestStatus(QUEST_POWERING_OUR_DEFENSES) == QUEST_STATUS_INCOMPLETE)
+                {
+                    PlayerGUID = who->GetGUID();
+                    WaveTimer = 1000;
+                    EndTimer = 60000;
+                    Progress = true;
+                }
+            }
+        }
+    
+        void JustSummoned(Creature* summoned)
+        {
+            summoned->AI()->AttackStart(me);
+        }
+    
+        void JustDied(Unit* /*killer*/)
+        {
+            if (PlayerGUID && !Completed)
+                if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
+                    CAST_PLR(pPlayer)->FailQuest(QUEST_POWERING_OUR_DEFENSES);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (EndTimer < diff && Progress)
+            {
+                Player* player = ObjectAccessor::GetPlayer(*me, PlayerGUID);
+    
+                DoScriptText(EMOTE, me, player );
+                Completed = true;
+                CAST_PLR(player)->KilledMonsterCredit(16364, 0);
+    
+                me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                me->RemoveCorpse();
+            }
+            else EndTimer -= diff;
+    
+            if (WaveTimer < diff && !Completed && Progress)
+            {
+                uint32 ran1 = rand() % 8;
+                uint32 ran2 = rand() % 8;
+                uint32 ran3 = rand() % 8;
+                me->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran1].x, SpawnLocations[ran1].y, SpawnLocations[ran1].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
+                me->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran2].x, SpawnLocations[ran2].y, SpawnLocations[ran2].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
+                me->SummonCreature(MOB_ENRAGED_WRAITH, SpawnLocations[ran3].x, SpawnLocations[ran3].y, SpawnLocations[ran3].z, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 10000);
+                WaveTimer = 30000;
+            }
+            else WaveTimer -= diff;
+        }
+    };
+        CreatureAI* GetAI_npc_infused_crystalAI(Creature* pCreature)
+    {
+        return new npc_infused_crystalAI(pCreature);
+    }
+};
+
+class npc_eversong_ranger : public CreatureScript
+{
+public: 
+    npc_eversong_ranger() : CreatureScript("npc_eversong_ranger") { }
+    struct npc_eversong_rangerAI : public ScriptedAI
+    {
+        npc_eversong_rangerAI(Creature* c) : ScriptedAI(c) {}
+    
+        void Reset() { }
+    
+        void SpellHit(Unit* pHitter, const SpellEntry* pSpell)
+        {
+            if (pSpell->Id == 1243 || pSpell->Id == 1244 || pSpell->Id == 1245)
+            {
+                if (pHitter->GetTypeId() == TYPEID_PLAYER)
+                {
+                    Player* pPlayer = pHitter->ToPlayer();
+                    if (pPlayer && pPlayer->GetQuestStatus(9489) == QUEST_STATUS_INCOMPLETE)
+                        pPlayer->KilledMonsterCredit(15938, 0);
+                }
+            }
+        }
+    };
+    
+    
+    
+    
+};
+
+
 void AddSC_eversong_woods()
 {
-    Script* newscript;
+    new mobs_mana_tapped();
+    new npc_prospector_anvilward();
+    new npc_second_trial_controller();
+    new npc_second_trial_paladin();
+    new go_second_trial();
+    new npc_apprentice_mirveda();
+    new npc_infused_crystal();
+    new npc_eversong_ranger();
 
-    newscript = new Script;
-    newscript->Name = "mobs_mana_tapped";
-    newscript->GetAI = &GetAI_mobs_mana_tapped;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_prospector_anvilward";
-    newscript->GetAI = &GetAI_npc_prospector_anvilward;
-    newscript->pGossipHello =  &GossipHello_npc_prospector_anvilward;
-    newscript->pGossipSelect = &GossipSelect_npc_prospector_anvilward;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_second_trial_controller";
-    newscript->GetAI = &GetAI_master_kelerun_bloodmourn;
-    newscript->pGossipHello = &GossipHello_master_kelerun_bloodmourn;
-    newscript->pQuestAccept = &QuestAccept_master_kelerun_bloodmourn;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_second_trial_paladin";
-    newscript->GetAI = &GetAI_npc_secondTrial;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "go_second_trial";
-    newscript->pGOHello =  &GOHello_go_second_trial;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_apprentice_mirveda";
-    newscript->GetAI = &GetAI_npc_apprentice_mirvedaAI;
-    newscript->pQuestAccept = &QuestAccept_npc_apprentice_mirveda;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_infused_crystal";
-    newscript->GetAI = &GetAI_npc_infused_crystalAI;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_eversong_ranger";
-    newscript->GetAI = &GetAI_npc_infused_crystalAI;
-    newscript->RegisterSelf();
 }
+

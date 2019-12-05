@@ -361,12 +361,12 @@ public:
                 Creature* Selin = (Unit::GetCreature(*me, instance->GetData64(DATA_SELIN)));
                 if (Selin && Selin->IsAlive())
                 {
-                    if (CAST_AI(boss_selin_fireheartAI, Selin->AI())->CrystalGUID == me->GetGUID())
+                    if (CAST_AI(boss_selin_fireheart::boss_selin_fireheartAI, Selin->AI())->CrystalGUID == me->GetGUID())
                     {
                         // Set this to false if we are the Creature that Selin is draining so his AI flows properly
-                        CAST_AI(boss_selin_fireheartAI, Selin->AI())->DrainingCrystal = false;
-                        CAST_AI(boss_selin_fireheartAI, Selin->AI())->IsDraining = false;
-                        CAST_AI(boss_selin_fireheartAI, Selin->AI())->EmpowerTimer = 10000;
+                        CAST_AI(boss_selin_fireheart::boss_selin_fireheartAI, Selin->AI())->DrainingCrystal = false;
+                        CAST_AI(boss_selin_fireheart::boss_selin_fireheartAI, Selin->AI())->IsDraining = false;
+                        CAST_AI(boss_selin_fireheart::boss_selin_fireheartAI, Selin->AI())->EmpowerTimer = 10000;
                         if (Selin->GetVictim())
                         {
                             Selin->AI()->AttackStart(Selin->GetVictim());

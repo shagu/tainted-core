@@ -20,6 +20,8 @@
 #include "Weather.h"
 #include "AuctionHouseMgr.h"
 #include "ConditionMgr.h"
+#include "Player.h"
+#include "Transports.h"
 
 class Player;
 class Creature;
@@ -28,6 +30,7 @@ class InstanceData;
 class SpellScript;
 class Quest;
 class Item;
+class Transport;
 class GameObject;
 class SpellCastTargets;
 class Map;
@@ -476,7 +479,9 @@ class ItemScript : public ScriptObject
 {
 protected:
 
-    ItemScript(const char* name);
+    ItemScript(const char* name) 
+        : ScriptObject(name)
+    { }
 
     void RegisterSelf();
 
@@ -485,7 +490,7 @@ public:
     bool IsDatabaseBound() const { return true; }
 
     // Called when a dummy spell effect is triggered on the item.
-    virtual bool OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Item* target) { return false; }
+    virtual bool OnDummyEffect(Unit* caster, uint32 spellId, uint32 effIndex, Item* target) { return false; }
 
     // Called when a player accepts a quest from the item.
     virtual bool OnQuestAccept(Player* player, Item* item, Quest const* quest) { return false; }
@@ -512,7 +517,7 @@ public:
     bool IsDatabaseBound() const { return true; }
 
     // Called when a dummy spell effect is triggered on the creature.
-    virtual bool OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Creature* target) { return false; }
+    virtual bool OnDummyEffect(Unit* caster, uint32 spellId, uint32 effIndex, Creature* target) { return false; }
 
     // Called when a player opens a gossip dialog with the creature.
     virtual bool OnGossipHello(Player* player, Creature* creature) { return false; }
@@ -557,7 +562,7 @@ public:
     bool IsDatabaseBound() const { return true; }
 
     // Called when a dummy spell effect is triggered on the gameobject.
-    virtual bool OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, GameObject* target) { return false; }
+    virtual bool OnDummyEffect(Unit* caster, uint32 spellId, uint32 effIndex, GameObject* target) { return false; }
 
     // Called when a player opens a gossip dialog with the gameobject.
     virtual bool OnGossipHello(Player* player, GameObject* go) { return false; }
@@ -599,7 +604,7 @@ public:
     bool IsDatabaseBound() const { return true; }
 
     // Called when the area trigger is activated by a player.
-    bool OnTrigger(Player* player, AreaTriggerEntry const* trigger) { return false; }
+    virtual bool OnTrigger(Player* player, AreaTriggerEntry const* trigger) { return false; }
 };
 
 class BattlegroundScript : public ScriptObject
@@ -749,6 +754,9 @@ public:
 
     // Called when a player exits the transport.
     virtual void OnRemovePassenger(Transport* transport, Player* player) { }
+
+    // Called when a transport moves.
+    virtual void OnRelocate(Transport* transport, uint32 waypointId, uint32 mapId, float x, float y, float z) { }
 };
 
 // Placed here due to ScriptRegistry::AddScript dependency.
@@ -823,14 +831,14 @@ public: /* InstanceMapScript */
 
 public: /* ItemScript */
 
-    bool OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Item* target);
+    bool OnDummyEffect(Unit* caster, uint32 spellId, uint32 effIndex, Item* target);
     bool OnQuestAccept(Player* player, Item* item, Quest const* quest);
     bool OnItemUse(Player* player, Item* item, SpellCastTargets const& targets);
 
 
 public: /* CreatureScript */
 
-    bool OnDummyEffect(Unit* caster, uint32 spellId, SpellEffIndex effIndex, Creature* target);
+    bool OnDummyEffect(Unit* caster, uint32 spellId, uint32 effIndex, Creature* target);
     bool OnGossipHello(Player* player, Creature* creature);
     bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action);
     bool OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code);
@@ -926,6 +934,14 @@ public: /* PlayerScript */
     void OnQuestObjectiveProgress(Player* player, Quest const* quest, uint32 objectiveIndex, uint16 progress);
     void OnQuestStatusChange(Player* player, uint32 questId);
     void OnPlayerRepop(Player* player);
+
+public: /* TransportScript */
+
+    void OnAddPassenger(Transport* transport, Player* player);
+    void OnAddCreaturePassenger(Transport* transport, Creature* creature);
+    void OnRemovePassenger(Transport* transport, Player* player);
+    void OnTransportUpdate(Transport* transport, uint32 diff);
+    void OnRelocate(Transport* transport, uint32 waypointId, uint32 mapId, float x, float y, float z);
 
 public: /* ScriptRegistry */
 

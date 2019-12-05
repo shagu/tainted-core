@@ -99,6 +99,88 @@ static InfernalPoint InfernalPoints[] =
 #define AXE_EQUIP_INFO               33448898
 
 //---------Infernal code first
+class netherspite_infernal : public CreatureScript
+{
+public:
+    netherspite_infernal() : CreatureScript("netherspite_infernal") { }
+    struct netherspite_infernalAI : public ScriptedAI
+    {
+        netherspite_infernalAI(Creature* c) : ScriptedAI(c),
+            malchezaar(0), HellfireTimer(0), CleanupTimer(0), point(NULL) {}
+
+        uint32 malchezaar;
+        uint32 HellfireTimer;
+        uint32 CleanupTimer;
+        InfernalPoint* point;
+
+        void Reset() {}
+        void EnterCombat(Unit* /*who*/) {}
+        void MoveInLineOfSight(Unit* /*who*/) {}
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (HellfireTimer)
+            {
+                if (HellfireTimer <= diff)
+                {
+                    DoCast(me, SPELL_HELLFIRE);
+                    HellfireTimer = 0;
+                }
+                else HellfireTimer -= diff;
+            }
+
+            if (CleanupTimer)
+            {
+                if (CleanupTimer <= diff)
+                {
+                    Cleanup();
+                    CleanupTimer = 0;
+                }
+                else CleanupTimer -= diff;
+            }
+        }
+
+        void KilledUnit(Unit* who)
+        {
+            Unit* pMalchezaar = Unit::GetUnit(*me, malchezaar);
+            if (pMalchezaar)
+                CAST_CRE(pMalchezaar)->AI()->KilledUnit(who);
+        }
+
+        void SpellHit(Unit* /*who*/, const SpellEntry* spell)
+        {
+            if (spell->Id == SPELL_INFERNAL_RELAY)
+            {
+                me->SetDisplayId(me->GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID));
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                HellfireTimer = 4000;
+                CleanupTimer = 170000;
+            }
+        }
+
+        void DamageTaken(Unit* done_by, uint32& damage)
+        {
+            if (done_by->GetGUID() != malchezaar)
+                damage = 0;
+        }
+
+        void Cleanup()
+        {
+            Unit* pMalchezaar = Unit::GetUnit(*me, malchezaar);
+
+            if (pMalchezaar && pMalchezaar->IsAlive())
+                CAST_AI(boss_malchezaar::boss_malchezaarAI, CAST_CRE(pMalchezaar)->AI())->Cleanup(me, point);
+        }
+    };
+
+    CreatureAI* GetAI_netherspite_infernal(Creature* pCreature)
+    {
+        return new netherspite_infernalAI(pCreature);
+    }
+
+
+
+};
 
 class boss_malchezaar : public CreatureScript
 {
@@ -299,8 +381,8 @@ public:
                     Infernal->SetFaction(me->GetFaction());
     
                     if (point)
-                        CAST_AI(netherspite_infernalAI, Infernal->AI())->point = point;
-                    CAST_AI(netherspite_infernalAI, Infernal->AI())->malchezaar = me->GetGUID();
+                        CAST_AI(netherspite_infernal::netherspite_infernalAI, Infernal->AI())->point = point;
+                    CAST_AI(netherspite_infernal::netherspite_infernalAI, Infernal->AI())->malchezaar = me->GetGUID();
     
                     infernals.push_back(Infernal->GetGUID());
                     ///CAST_CRE(Relay->AI())->DoCast(Infernal, SPELL_INFERNAL_RELAY));
@@ -554,90 +636,7 @@ public:
 
 };
 
-class netherspite_infernal : public CreatureScript
-{
-public: 
-    netherspite_infernal() : CreatureScript("netherspite_infernal") { }
-    struct netherspite_infernalAI : public ScriptedAI
-    {
-        netherspite_infernalAI(Creature* c) : ScriptedAI(c) ,
-            malchezaar(0), HellfireTimer(0), CleanupTimer(0), point(NULL) {}
-    
-        uint32 malchezaar;
-        uint32 HellfireTimer;
-        uint32 CleanupTimer;
-        InfernalPoint* point;
-    
-        void Reset() {}
-        void EnterCombat(Unit* /*who*/) {}
-        void MoveInLineOfSight(Unit* /*who*/) {}
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (HellfireTimer)
-            {
-                if (HellfireTimer <= diff)
-                {
-                    DoCast(me, SPELL_HELLFIRE);
-                    HellfireTimer = 0;
-                }
-                else HellfireTimer -= diff;
-            }
-    
-            if (CleanupTimer)
-            {
-                if (CleanupTimer <= diff)
-                {
-                    Cleanup();
-                    CleanupTimer = 0;
-                }
-                else CleanupTimer -= diff;
-            }
-        }
-    
-        void KilledUnit(Unit* who)
-        {
-            Unit* pMalchezaar = Unit::GetUnit(*me, malchezaar);
-            if (pMalchezaar)
-                CAST_CRE(pMalchezaar)->AI()->KilledUnit(who);
-        }
-    
-        void SpellHit(Unit* /*who*/, const SpellEntry* spell)
-        {
-            if (spell->Id == SPELL_INFERNAL_RELAY)
-            {
-                me->SetDisplayId(me->GetUInt32Value(UNIT_FIELD_NATIVEDISPLAYID));
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                HellfireTimer = 4000;
-                CleanupTimer = 170000;
-            }
-        }
-    
-        void DamageTaken(Unit* done_by, uint32& damage)
-        {
-            if (done_by->GetGUID() != malchezaar)
-                damage = 0;
-        }
-    
-        void Cleanup();                                         //below ...
 
-        void netherspite_infernalAI::Cleanup()
-        {
-            Unit* pMalchezaar = Unit::GetUnit(*me, malchezaar);
-
-            if (pMalchezaar && pMalchezaar->IsAlive())
-                CAST_AI(boss_malchezaarAI, CAST_CRE(pMalchezaar)->AI())->Cleanup(me, point);
-        }
-    };
-
-    CreatureAI* GetAI_netherspite_infernal(Creature* pCreature)
-    {
-        return new netherspite_infernalAI (pCreature);
-    }
-
-
-    
-};
 
 
 void AddSC_boss_malchezaar()

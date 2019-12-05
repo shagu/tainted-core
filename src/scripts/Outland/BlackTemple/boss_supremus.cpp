@@ -317,12 +317,12 @@ public:
             {
                 uint64 SupremusGUID = pInstance->GetData64(DATA_SUPREMUS);
                 Creature* Supremus = (Unit::GetCreature((*me), SupremusGUID));
-                if (!Eruption && Supremus && !((boss_supremusAI*)Supremus->AI())->Phase1)
+                if (!Eruption && Supremus && !((boss_supremus::boss_supremusAI*)Supremus->AI())->Phase1)
                 {
                     Eruption = true;
                     DoCast(me, SPELL_VOLCANIC_ERUPTION);
                 }
-                else if ((Eruption && Supremus && ((boss_supremusAI*)Supremus->AI())->Phase1) || !Supremus)
+                else if ((Eruption && Supremus && ((boss_supremus::boss_supremusAI*)Supremus->AI())->Phase1) || !Supremus)
                 {
                     if (me->HasAura(SPELL_VOLCANIC_ERUPTION, 0))
                         me->RemoveAura(SPELL_VOLCANIC_ERUPTION, 0);

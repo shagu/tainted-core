@@ -2908,6 +2908,7 @@ public:
             }
             break;
         }
+        return true;
     }
 };
 
@@ -2937,6 +2938,7 @@ public:
             }
             break;
         }
+        return true;
     }
 };
 
@@ -2973,6 +2975,7 @@ public:
             }
             break;
         }
+        return true;
     }
 };
 

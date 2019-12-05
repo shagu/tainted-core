@@ -113,8 +113,278 @@ static CouncilYells CouncilEnrage[] =
 
 #define SPELL_BERSERK              45078
 
+class mob_blood_elf_council_voice_trigger : public CreatureScript
+{
+public:
+    mob_blood_elf_council_voice_trigger() : CreatureScript("mob_blood_elf_council_voice_trigger") { }
+    struct mob_blood_elf_council_voice_triggerAI : public ScriptedAI
+    {
+        mob_blood_elf_council_voice_triggerAI(Creature* c) : ScriptedAI(c)
+        {
+            for (uint8 i = 0; i < 4; ++i)
+                Council[i] = 0;
+        }
+
+        uint64 Council[4];
+
+        uint32 EnrageTimer;
+        uint32 AggroYellTimer;
+
+        uint8 YellCounter;                                      // Serves as the counter for both the aggro and enrage yells
+
+        bool EventStarted;
+
+        void Reset()
+        {
+            EnrageTimer = 900000;                               // 15 minutes
+            AggroYellTimer = 500;
+
+            YellCounter = 0;
+
+            EventStarted = false;
+        }
+
+        // finds and stores the GUIDs for each Council member using instance data system.
+        void LoadCouncilGUIDs()
+        {
+            if (ScriptedInstance* pInstance = (ScriptedInstance*)me->GetInstanceData())
+            {
+                Council[0] = pInstance->GetData64(DATA_GATHIOSTHESHATTERER);
+                Council[1] = pInstance->GetData64(DATA_VERASDARKSHADOW);
+                Council[2] = pInstance->GetData64(DATA_LADYMALANDE);
+                Council[3] = pInstance->GetData64(DATA_HIGHNETHERMANCERZEREVOR);
+            }
+            else error_log(ERROR_INST_DATA);
+        }
+
+        void EnterCombat(Unit* /*who*/) {}
+
+        void AttackStart(Unit* /*who*/) {}
+        void MoveInLineOfSight(Unit* /*who*/) {}
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!EventStarted)
+                return;
+
+            if (YellCounter > 3)
+                return;
+
+            if (AggroYellTimer)
+            {
+                if (AggroYellTimer <= diff)
+                {
+                    if (Unit* pMember = Unit::GetUnit(*me, Council[YellCounter]))
+                    {
+                        DoScriptText(CouncilAggro[YellCounter].entry, pMember);
+                        AggroYellTimer = CouncilAggro[YellCounter].timer;
+                    }
+                    ++YellCounter;
+                    if (YellCounter > 3)
+                        YellCounter = 0;                            // Reuse for Enrage Yells
+                }
+                else AggroYellTimer -= diff;
+            }
+
+            if (EnrageTimer)
+            {
+                if (EnrageTimer <= diff)
+                {
+                    if (Unit* pMember = Unit::GetUnit(*me, Council[YellCounter]))
+                    {
+                        pMember->CastSpell(pMember, SPELL_BERSERK, true);
+                        DoScriptText(CouncilEnrage[YellCounter].entry, pMember);
+                        EnrageTimer = CouncilEnrage[YellCounter].timer;
+                    }
+                    ++YellCounter;
+                }
+                else EnrageTimer -= diff;
+            }
+        }
+    };
+
+    CreatureAI* GetAI_mob_blood_elf_council_voice_trigger(Creature* c)
+    {
+        return new mob_blood_elf_council_voice_triggerAI(c);
+    }
 
 
+
+
+
+
+};
+
+
+class mob_illidari_council : public CreatureScript
+{
+public:
+    mob_illidari_council() : CreatureScript("mob_illidari_council") { }
+    struct mob_illidari_councilAI : public ScriptedAI
+    {
+        mob_illidari_councilAI(Creature* c) : ScriptedAI(c)
+        {
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+            for (uint8 i = 0; i < 4; ++i)
+                Council[i] = 0;
+        }
+
+        ScriptedInstance* pInstance;
+
+        uint64 Council[4];
+
+        uint32 CheckTimer;
+        uint32 EndEventTimer;
+
+        uint8 DeathCount;
+
+        bool EventBegun;
+
+        void Reset()
+        {
+            CheckTimer = 2000;
+            EndEventTimer = 0;
+
+            DeathCount = 0;
+
+            Creature* pMember = NULL;
+            for (uint8 i = 0; i < 4; ++i)
+            {
+                if ((pMember = (Unit::GetCreature((*me), Council[i]))))
+                {
+                    if (!pMember->IsAlive())
+                    {
+                        pMember->RemoveCorpse();
+                        pMember->Respawn();
+                    }
+                    pMember->AI()->EnterEvadeMode();
+                }
+            }
+
+            if (pInstance)
+            {
+                pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, NOT_STARTED);
+                if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
+                    VoiceTrigger->AI()->EnterEvadeMode();
+            }
+
+            EventBegun = false;
+
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            me->SetDisplayId(11686);
+        }
+
+        void EnterCombat(Unit* /*who*/) {}
+        void AttackStart(Unit* /*who*/) {}
+        void MoveInLineOfSight(Unit* /*who*/) {}
+
+        void StartEvent(Unit* pTarget)
+        {
+            if (!pInstance)
+                return;
+
+            if (pTarget && pTarget->IsAlive())
+            {
+                Council[0] = pInstance->GetData64(DATA_GATHIOSTHESHATTERER);
+                Council[1] = pInstance->GetData64(DATA_HIGHNETHERMANCERZEREVOR);
+                Council[2] = pInstance->GetData64(DATA_LADYMALANDE);
+                Council[3] = pInstance->GetData64(DATA_VERASDARKSHADOW);
+
+                // Start the event for the Voice Trigger
+                if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
+                {
+                    CAST_AI(mob_blood_elf_council_voice_trigger::mob_blood_elf_council_voice_triggerAI, VoiceTrigger->AI())->LoadCouncilGUIDs();
+                    CAST_AI(mob_blood_elf_council_voice_trigger::mob_blood_elf_council_voice_triggerAI, VoiceTrigger->AI())->EventStarted = true;
+                }
+
+                for (uint8 i = 0; i < 4; ++i)
+                {
+                    Unit* Member = NULL;
+                    if (Council[i])
+                    {
+                        Member = Unit::GetUnit((*me), Council[i]);
+                        if (Member && Member->IsAlive())
+                            CAST_CRE(Member)->AI()->AttackStart(pTarget);
+                    }
+                }
+
+                pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, IN_PROGRESS);
+
+                EventBegun = true;
+            }
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!EventBegun) return;
+
+            if (EndEventTimer)
+            {
+                if (EndEventTimer <= diff)
+                {
+                    if (DeathCount > 3)
+                    {
+                        if (pInstance)
+                        {
+                            if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
+                                VoiceTrigger->DealDamage(VoiceTrigger, VoiceTrigger->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                            pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, DONE);
+                        }
+                        me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                        return;
+                    }
+
+                    Creature* pMember = (Unit::GetCreature(*me, Council[DeathCount]));
+                    if (pMember && pMember->IsAlive())
+                        pMember->DealDamage(pMember, pMember->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    ++DeathCount;
+                    EndEventTimer = 1500;
+                }
+                else EndEventTimer -= diff;
+            }
+
+            if (CheckTimer)
+            {
+                if (CheckTimer <= diff)
+                {
+                    uint8 EvadeCheck = 0;
+                    for (uint8 i = 0; i < 4; ++i)
+                    {
+                        if (Council[i])
+                        {
+                            if (Creature* Member = (Unit::GetCreature((*me), Council[i])))
+                            {
+                                // This is the evade/death check.
+                                if (Member->IsAlive() && !Member->GetVictim())
+                                    ++EvadeCheck;                   //If all members evade, we reset so that players can properly reset the event
+                                else if (!Member->IsAlive())         // If even one member dies, kill the rest, set instance data, and kill self.
+                                {
+                                    EndEventTimer = 1000;
+                                    CheckTimer = 0;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    if (EvadeCheck > 3)
+                        Reset();
+
+                    CheckTimer = 2000;
+                }
+                else CheckTimer -= diff;
+            }
+
+        }
+    };
+
+    CreatureAI* GetAI_mob_illidari_council(Creature* pCreature)
+    {
+        return GetInstanceAI<mob_illidari_councilAI>(pCreature);
+    }
+
+};
 
 
 struct boss_illidari_councilAI : public ScriptedAI
@@ -139,7 +409,7 @@ struct boss_illidari_councilAI : public ScriptedAI
         {
             Creature* Controller = (Unit::GetCreature(*me, pInstance->GetData64(DATA_ILLIDARICOUNCIL)));
             if (Controller)
-                CAST_AI(mob_illidari_councilAI, Controller->AI())->StartEvent(who);
+                CAST_AI(mob_illidari_council::mob_illidari_councilAI, Controller->AI())->StartEvent(who);
         }
         else
         {
@@ -222,303 +492,6 @@ struct boss_illidari_councilAI : public ScriptedAI
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class mob_illidari_council : public CreatureScript
-{
-public: 
-    mob_illidari_council() : CreatureScript("mob_illidari_council") { }
-    struct mob_illidari_councilAI : public ScriptedAI
-    {
-        mob_illidari_councilAI(Creature* c) : ScriptedAI(c)
-        {
-            pInstance = (ScriptedInstance*)c->GetInstanceData();
-            for (uint8 i = 0; i < 4; ++i)
-                Council[i] = 0;
-        }
-    
-        ScriptedInstance* pInstance;
-    
-        uint64 Council[4];
-    
-        uint32 CheckTimer;
-        uint32 EndEventTimer;
-    
-        uint8 DeathCount;
-    
-        bool EventBegun;
-    
-        void Reset()
-        {
-            CheckTimer    = 2000;
-            EndEventTimer = 0;
-    
-            DeathCount = 0;
-    
-            Creature* pMember = NULL;
-            for (uint8 i = 0; i < 4; ++i)
-            {
-                if ((pMember = (Unit::GetCreature((*me), Council[i]))))
-                {
-                    if (!pMember->IsAlive())
-                    {
-                        pMember->RemoveCorpse();
-                        pMember->Respawn();
-                    }
-                    pMember->AI()->EnterEvadeMode();
-                }
-            }
-    
-            if (pInstance)
-            {
-                pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, NOT_STARTED);
-                if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
-                    VoiceTrigger->AI()->EnterEvadeMode();
-            }
-    
-            EventBegun = false;
-    
-            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-            me->SetDisplayId(11686);
-        }
-    
-        void EnterCombat(Unit* /*who*/) {}
-        void AttackStart(Unit* /*who*/) {}
-        void MoveInLineOfSight(Unit* /*who*/) {}
-    
-        void StartEvent(Unit* pTarget)
-        {
-            if (!pInstance)
-                return;
-    
-            if (pTarget && pTarget->IsAlive())
-            {
-                Council[0] = pInstance->GetData64(DATA_GATHIOSTHESHATTERER);
-                Council[1] = pInstance->GetData64(DATA_HIGHNETHERMANCERZEREVOR);
-                Council[2] = pInstance->GetData64(DATA_LADYMALANDE);
-                Council[3] = pInstance->GetData64(DATA_VERASDARKSHADOW);
-    
-                // Start the event for the Voice Trigger
-                if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
-                {
-                    CAST_AI(mob_blood_elf_council_voice_triggerAI, VoiceTrigger->AI())->LoadCouncilGUIDs();
-                    CAST_AI(mob_blood_elf_council_voice_triggerAI, VoiceTrigger->AI())->EventStarted = true;
-                }
-    
-                for (uint8 i = 0; i < 4; ++i)
-                {
-                    Unit* Member = NULL;
-                    if (Council[i])
-                    {
-                        Member = Unit::GetUnit((*me), Council[i]);
-                        if (Member && Member->IsAlive())
-                            CAST_CRE(Member)->AI()->AttackStart(pTarget);
-                    }
-                }
-    
-                pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, IN_PROGRESS);
-    
-                EventBegun = true;
-            }
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (!EventBegun) return;
-    
-            if (EndEventTimer)
-            {
-                if (EndEventTimer <= diff)
-                {
-                    if (DeathCount > 3)
-                    {
-                        if (pInstance)
-                        {
-                            if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
-                                VoiceTrigger->DealDamage(VoiceTrigger, VoiceTrigger->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                            pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, DONE);
-                        }
-                        me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                        return;
-                    }
-    
-                    Creature* pMember = (Unit::GetCreature(*me, Council[DeathCount]));
-                    if (pMember && pMember->IsAlive())
-                        pMember->DealDamage(pMember, pMember->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    ++DeathCount;
-                    EndEventTimer = 1500;
-                }
-                else EndEventTimer -= diff;
-            }
-    
-            if (CheckTimer)
-            {
-                if (CheckTimer <= diff)
-                {
-                    uint8 EvadeCheck = 0;
-                    for (uint8 i = 0; i < 4; ++i)
-                    {
-                        if (Council[i])
-                        {
-                            if (Creature* Member = (Unit::GetCreature((*me), Council[i])))
-                            {
-                                // This is the evade/death check.
-                                if (Member->IsAlive() && !Member->GetVictim())
-                                    ++EvadeCheck;                   //If all members evade, we reset so that players can properly reset the event
-                                else if (!Member->IsAlive())         // If even one member dies, kill the rest, set instance data, and kill self.
-                                {
-                                    EndEventTimer = 1000;
-                                    CheckTimer = 0;
-                                    return;
-                                }
-                            }
-                        }
-                    }
-    
-                    if (EvadeCheck > 3)
-                        Reset();
-    
-                    CheckTimer = 2000;
-                }
-                else CheckTimer -= diff;
-            }
-    
-        }
-    };
-
-    CreatureAI* GetAI_mob_illidari_council(Creature* pCreature)
-    {
-        return GetInstanceAI<mob_illidari_councilAI>(pCreature);
-    }
-
-    
-
-    
-
-    
-};
-
-class mob_blood_elf_council_voice_trigger : public CreatureScript
-{
-public: 
-    mob_blood_elf_council_voice_trigger() : CreatureScript("mob_blood_elf_council_voice_trigger") { }
-    struct mob_blood_elf_council_voice_triggerAI : public ScriptedAI
-    {
-        mob_blood_elf_council_voice_triggerAI(Creature* c) : ScriptedAI(c)
-        {
-            for (uint8 i = 0; i < 4; ++i)
-                Council[i] = 0;
-        }
-    
-        uint64 Council[4];
-    
-        uint32 EnrageTimer;
-        uint32 AggroYellTimer;
-    
-        uint8 YellCounter;                                      // Serves as the counter for both the aggro and enrage yells
-    
-        bool EventStarted;
-    
-        void Reset()
-        {
-            EnrageTimer = 900000;                               // 15 minutes
-            AggroYellTimer = 500;
-    
-            YellCounter = 0;
-    
-            EventStarted = false;
-        }
-    
-        // finds and stores the GUIDs for each Council member using instance data system.
-        void LoadCouncilGUIDs()
-        {
-            if (ScriptedInstance* pInstance = (ScriptedInstance*)me->GetInstanceData())
-            {
-                Council[0] = pInstance->GetData64(DATA_GATHIOSTHESHATTERER);
-                Council[1] = pInstance->GetData64(DATA_VERASDARKSHADOW);
-                Council[2] = pInstance->GetData64(DATA_LADYMALANDE);
-                Council[3] = pInstance->GetData64(DATA_HIGHNETHERMANCERZEREVOR);
-            }
-            else error_log(ERROR_INST_DATA);
-        }
-    
-        void EnterCombat(Unit* /*who*/) {}
-    
-        void AttackStart(Unit* /*who*/) {}
-        void MoveInLineOfSight(Unit* /*who*/) {}
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (!EventStarted)
-                return;
-    
-            if (YellCounter > 3)
-                return;
-    
-            if (AggroYellTimer)
-            {
-                if (AggroYellTimer <= diff)
-                {
-                    if (Unit* pMember = Unit::GetUnit(*me, Council[YellCounter]))
-                    {
-                        DoScriptText(CouncilAggro[YellCounter].entry, pMember);
-                        AggroYellTimer = CouncilAggro[YellCounter].timer;
-                    }
-                    ++YellCounter;
-                    if (YellCounter > 3)
-                        YellCounter = 0;                            // Reuse for Enrage Yells
-                }
-                else AggroYellTimer -= diff;
-            }
-    
-            if (EnrageTimer)
-            {
-                if (EnrageTimer <= diff)
-                {
-                    if (Unit* pMember = Unit::GetUnit(*me, Council[YellCounter]))
-                    {
-                        pMember->CastSpell(pMember, SPELL_BERSERK, true);
-                        DoScriptText(CouncilEnrage[YellCounter].entry, pMember);
-                        EnrageTimer = CouncilEnrage[YellCounter].timer;
-                    }
-                    ++YellCounter;
-                }
-                else EnrageTimer -= diff;
-            }
-        }
-    };
-
-    CreatureAI* GetAI_mob_blood_elf_council_voice_trigger(Creature* c)
-    {
-        return new mob_blood_elf_council_voice_triggerAI(c);
-    }
-
-    
-
-    
-
-    
-};
 
 class boss_gathios_the_shatterer : public CreatureScript
 {

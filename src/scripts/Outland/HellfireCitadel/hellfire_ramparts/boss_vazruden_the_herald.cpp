@@ -60,6 +60,142 @@ const float VazrudenRing[2][3] =
     { -1377, 1760, 112}
 };
 
+class boss_nazan : public CreatureScript
+{
+public:
+    boss_nazan() : CreatureScript("boss_nazan") { }
+    struct boss_nazanAI : public ScriptedAI
+    {
+        boss_nazanAI(Creature* c) : ScriptedAI(c)
+        {
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+            HeroicMode = me->GetMap()->IsHeroic();
+            VazrudenGUID = 0;
+            flight = true;
+        }
+
+        ScriptedInstance* pInstance;
+
+        uint32 Fireball_Timer;
+        uint32 ConeOfFire_Timer;
+        uint32 BellowingRoar_Timer;
+        uint32 Fly_Timer;
+        uint32 Turn_Timer;
+        uint32 UnsummonCheck;
+        bool flight;
+        uint64 VazrudenGUID;
+        bool HeroicMode;
+        SpellEntry* liquid_fire;
+
+        void Reset()
+        {
+            Fireball_Timer = 4000;
+            Fly_Timer = 45000;
+            Turn_Timer = 0;
+            UnsummonCheck = 5000;
+
+            me->SetCanFly(true);
+            me->SetHover(true);
+        }
+
+        void EnterCombat(Unit* /*who*/) {}
+
+        void JustSummoned(Creature* summoned)
+        {
+            if (summoned && summoned->GetEntry() == ENTRY_LIQUID_FIRE)
+            {
+                summoned->SetLevel(me->getLevel());
+                summoned->SetFaction(me->GetFaction());
+                summoned->CastSpell(summoned, SPELL_BLAZE, true);
+                summoned->CastSpell(summoned, SPELL_FIRE_NOVA_VISUAL, true);
+            }
+        }
+
+        void SpellHitTarget(Unit* pTarget, const SpellEntry* entry)
+        {
+            if (pTarget && entry->Id == SPELL_FIREBALL)
+                me->SummonCreature(ENTRY_LIQUID_FIRE, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 30000);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+            {
+                if (UnsummonCheck <= diff && me->IsAlive())
+                {
+                    me->SetLootRecipient(NULL);
+                    me->SetVisible(false);
+                    me->DealDamage(me, me->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    me->RemoveCorpse();
+                }
+                else UnsummonCheck -= diff;
+                return;
+            }
+
+            if (Fireball_Timer <= diff && flight == true)
+            {
+                if (Unit* victim = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                    DoCast(victim, SPELL_FIREBALL, true);
+                Fireball_Timer = 7000;
+            }
+            else Fireball_Timer -= diff;
+
+            if (flight) // phase 1 - the flight
+            {
+                Creature* Vazruden = Unit::GetCreature(*me, VazrudenGUID);
+                if (Fly_Timer <= diff || !(Vazruden && Vazruden->IsAlive() && (Vazruden->GetHealth() * 5 > Vazruden->GetMaxHealth())))
+                {
+                    flight = false;
+                    BellowingRoar_Timer = 6000;
+                    ConeOfFire_Timer = 12000;
+                    me->SetLevitate(false);
+                    me->SetWalk(true);
+                    me->GetMotionMaster()->Clear();
+                    if (Unit* victim = SelectUnit(SELECT_TARGET_NEAREST, 0))
+                        me->AI()->AttackStart(victim);
+                    DoStartMovement(me->GetVictim());
+                    DoScriptText(EMOTE, me);
+                    return;
+                }
+                else Fly_Timer -= diff;
+
+                if (Turn_Timer <= diff)
+                {
+                    uint32 waypoint = (Fly_Timer / 10000) % 2;
+                    if (me->GetDistance(VazrudenRing[waypoint][0], VazrudenRing[waypoint][1], VazrudenRing[waypoint][2]) > 5)
+                        me->GetMotionMaster()->MovePoint(0, VazrudenRing[waypoint][0], VazrudenRing[waypoint][1], VazrudenRing[waypoint][2]);
+                    Turn_Timer = 10000;
+                }
+                else Turn_Timer -= diff;
+            }
+            else // phase 2 - land fight
+            {
+                if (ConeOfFire_Timer <= diff)
+                {
+                    DoCast(me, SPELL_CONE_OF_FIRE);
+                    ConeOfFire_Timer = 12000;
+                    Fireball_Timer = 4000;
+                }
+                else ConeOfFire_Timer -= diff;
+
+                if (HeroicMode && BellowingRoar_Timer <= diff)
+                {
+                    DoCast(me, SPELL_BELLOWING_ROAR);
+                    BellowingRoar_Timer = 45000;
+                }
+                else BellowingRoar_Timer -= diff;
+
+                DoMeleeAttackIfReady();
+            }
+        }
+    };
+
+    CreatureAI* GetAI_boss_nazan(Creature* pCreature)
+    {
+        return GetInstanceAI<boss_nazanAI>(pCreature);
+    }
+};
+
 class boss_vazruden_the_herald : public CreatureScript
 {
 public: 
@@ -181,7 +317,7 @@ public:
             Unit* victim = me->GetVictim();
             if (summoned->GetEntry() == ENTRY_NAZAN)
             {
-                ((boss_nazanAI*)summoned->AI())->VazrudenGUID = VazrudenGUID;
+                ((boss_nazan::boss_nazanAI*)summoned->AI())->VazrudenGUID = VazrudenGUID;
                 summoned->SetLevitate(true);
                 summoned->SetSpeed(MOVE_FLIGHT, 2.5f);
                 if (victim)
@@ -372,153 +508,6 @@ public:
         return GetInstanceAI<boss_vazrudenAI>(pCreature);
     }
 
-    
-
-    
-
-    
-};
-
-class boss_nazan : public CreatureScript
-{
-public: 
-    boss_nazan() : CreatureScript("boss_nazan") { }
-    struct boss_nazanAI : public ScriptedAI
-    {
-        boss_nazanAI(Creature* c) : ScriptedAI(c)
-        {
-            pInstance = (ScriptedInstance*)c->GetInstanceData();
-            HeroicMode = me->GetMap()->IsHeroic();
-            VazrudenGUID = 0;
-            flight = true;
-        }
-    
-        ScriptedInstance* pInstance;
-    
-        uint32 Fireball_Timer;
-        uint32 ConeOfFire_Timer;
-        uint32 BellowingRoar_Timer;
-        uint32 Fly_Timer;
-        uint32 Turn_Timer;
-        uint32 UnsummonCheck;
-        bool flight;
-        uint64 VazrudenGUID;
-        bool HeroicMode;
-        SpellEntry* liquid_fire;
-    
-        void Reset()
-        {
-            Fireball_Timer = 4000;
-            Fly_Timer = 45000;
-            Turn_Timer = 0;
-            UnsummonCheck = 5000;
-    
-    		me->SetCanFly(true);
-    		me->SetHover(true);
-        }
-    
-        void EnterCombat(Unit* /*who*/) {}
-    
-        void JustSummoned(Creature* summoned)
-        {
-            if (summoned && summoned->GetEntry() == ENTRY_LIQUID_FIRE)
-            {
-                summoned->SetLevel(me->getLevel());
-                summoned->SetFaction(me->GetFaction());
-                summoned->CastSpell(summoned, SPELL_BLAZE, true);
-                summoned->CastSpell(summoned, SPELL_FIRE_NOVA_VISUAL, true);
-            }
-        }
-    
-        void SpellHitTarget(Unit* pTarget, const SpellEntry* entry)
-        {
-            if (pTarget && entry->Id == SPELL_FIREBALL)
-                me->SummonCreature(ENTRY_LIQUID_FIRE, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), pTarget->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 30000);
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (!UpdateVictim())
-            {
-                if (UnsummonCheck <= diff && me->IsAlive())
-                {
-                    me->SetLootRecipient(NULL);
-                    me->SetVisible(false);
-                    me->DealDamage(me, me->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    me->RemoveCorpse();
-                }
-                else UnsummonCheck -= diff;
-                return;
-            }
-    
-    		if (Fireball_Timer <= diff && flight == true)
-            {
-                if (Unit* victim = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                    DoCast(victim, SPELL_FIREBALL, true);
-                Fireball_Timer = 7000;
-            }
-            else Fireball_Timer -= diff;
-    
-            if (flight) // phase 1 - the flight
-            {
-                Creature* Vazruden = Unit::GetCreature(*me, VazrudenGUID);
-                if (Fly_Timer <= diff || !(Vazruden && Vazruden->IsAlive() && (Vazruden->GetHealth() * 5 > Vazruden->GetMaxHealth())))
-                {
-                    flight = false;
-                    BellowingRoar_Timer = 6000;
-                    ConeOfFire_Timer = 12000;
-                    me->SetLevitate(false);
-                    me->SetWalk(true);
-                    me->GetMotionMaster()->Clear();
-                    if (Unit* victim = SelectUnit(SELECT_TARGET_NEAREST, 0))
-                        me->AI()->AttackStart(victim);
-                    DoStartMovement(me->GetVictim());
-                    DoScriptText(EMOTE, me);
-                    return;
-                }
-                else Fly_Timer -= diff;
-    
-                if (Turn_Timer <= diff)
-                {
-                    uint32 waypoint = (Fly_Timer / 10000) % 2;
-                    if (me->GetDistance(VazrudenRing[waypoint][0], VazrudenRing[waypoint][1], VazrudenRing[waypoint][2]) > 5)
-                        me->GetMotionMaster()->MovePoint(0, VazrudenRing[waypoint][0], VazrudenRing[waypoint][1], VazrudenRing[waypoint][2]);
-                    Turn_Timer = 10000;
-                }
-                else Turn_Timer -= diff;
-            }
-            else // phase 2 - land fight
-            {
-                if (ConeOfFire_Timer <= diff)
-                {
-                    DoCast(me, SPELL_CONE_OF_FIRE);
-                    ConeOfFire_Timer = 12000;
-                    Fireball_Timer = 4000;
-                }
-                else ConeOfFire_Timer -= diff;
-    
-                if (HeroicMode && BellowingRoar_Timer <= diff)
-                {
-                    DoCast(me, SPELL_BELLOWING_ROAR);
-                    BellowingRoar_Timer = 45000;
-                }
-                else BellowingRoar_Timer -= diff;
-    
-                DoMeleeAttackIfReady();
-            }
-        }
-    };
-
-    CreatureAI* GetAI_boss_nazan(Creature* pCreature)
-    {
-        return GetInstanceAI<boss_nazanAI>(pCreature);
-    }
-
-    
-
-    
-
-    
 };
 
 class mob_hellfire_sentry : public CreatureScript
@@ -541,7 +530,7 @@ public:
         void JustDied(Unit* who)
         {
             if (Creature* herald = me->FindNearestCreature(ENTRY_VAZRUDEN_HERALD, 150))
-                CAST_AI(boss_vazruden_the_heraldAI, herald->AI())->SentryDownBy(who);
+                CAST_AI(boss_vazruden_the_herald::boss_vazruden_the_heraldAI, herald->AI())->SentryDownBy(who);
         }
     
         void UpdateAI(const uint32 diff)

@@ -69,6 +69,77 @@ class EmpoweringShadowsAura: public Aura
         EmpoweringShadowsAura(SpellEntry* spell, uint32 eff, int32* bp, Unit* pTarget, Unit* caster) : Aura(spell, eff, bp, pTarget, caster, NULL) {}
 };
 
+class mob_voidtraveler : public CreatureScript
+{
+public:
+    mob_voidtraveler() : CreatureScript("mob_voidtraveler") { }
+    struct mob_voidtravelerAI : public ScriptedAI
+    {
+        mob_voidtravelerAI(Creature* c) : ScriptedAI(c)
+        {
+            HeroicMode = me->GetMap()->IsHeroic();
+        }
+
+        bool HeroicMode;
+        Unit* Vorpil;
+        uint32 move;
+        bool sacrificed;
+
+        void Reset()
+        {
+            Vorpil = NULL;
+            move = 0;
+            sacrificed = false;
+            me->SetSpeed(MOVE_RUN, HeroicMode ? 0.5f : 0.7f);
+        }
+
+        void EnterCombat(Unit*) {}
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!Vorpil)
+            {
+                me->DealDamage(me, me->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                return;
+            }
+            if (move <= diff)
+            {
+                if (sacrificed)
+                {
+                    SpellEntry* spell = (SpellEntry*)GetSpellStore()->LookupEntry(HeroicMode ? H_SPELL_EMPOWERING_SHADOWS : SPELL_EMPOWERING_SHADOWS);
+                    if (spell)
+                        Vorpil->AddAura(new EmpoweringShadowsAura(spell, 0, NULL, Vorpil, me));
+                    Vorpil->SetHealth(Vorpil->GetHealth() + Vorpil->GetMaxHealth() / 25);
+                    DoCast(me, SPELL_SHADOW_NOVA, true);
+                    me->DealDamage(me, me->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    return;
+                }
+                me->GetMotionMaster()->MoveFollow(Vorpil, 0, 0);
+                if (me->GetDistance(Vorpil) < 3)
+                {
+                    DoCast(me, SPELL_SACRIFICE, false);
+                    sacrificed = true;
+                    move = 500;
+                    return;
+                }
+                if (!Vorpil->IsInCombat() || Vorpil->isDead())
+                {
+                    me->DealDamage(me, me->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    return;
+                }
+                move = 1000;
+            }
+            else move -= diff;
+        }
+    };
+
+    CreatureAI* GetAI_mob_voidtraveler(Creature* pCreature)
+    {
+        return new mob_voidtravelerAI(pCreature);
+    }
+
+};
+
 class boss_grandmaster_vorpil : public CreatureScript
 {
 public: 
@@ -154,7 +225,7 @@ public:
         void JustSummoned(Creature* summoned)
         {
             if (summoned && summoned->GetEntry() == MOB_VOID_TRAVELER)
-                ((mob_voidtravelerAI*)summoned->AI())->Vorpil = me;
+                ((mob_voidtraveler::mob_voidtravelerAI*)summoned->AI())->Vorpil = me;
         }
     
         void KilledUnit(Unit*)
@@ -278,81 +349,7 @@ public:
     
 };
 
-class mob_voidtraveler : public CreatureScript
-{
-public: 
-    mob_voidtraveler() : CreatureScript("mob_voidtraveler") { }
-    struct mob_voidtravelerAI : public ScriptedAI
-    {
-        mob_voidtravelerAI(Creature* c) : ScriptedAI(c)
-        {
-            HeroicMode = me->GetMap()->IsHeroic();
-        }
-    
-        bool HeroicMode;
-        Unit* Vorpil;
-        uint32 move;
-        bool sacrificed;
-    
-        void Reset()
-        {
-            Vorpil = NULL;
-            move = 0;
-            sacrificed = false;
-            me->SetSpeed(MOVE_RUN, HeroicMode ? 0.5f : 0.7f);
-        }
-    
-        void EnterCombat(Unit*) {}
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (!Vorpil)
-            {
-                me->DealDamage(me, me->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                return;
-            }
-            if (move <= diff)
-            {
-                if (sacrificed)
-                {
-                    SpellEntry* spell = (SpellEntry*)GetSpellStore()->LookupEntry(HeroicMode ? H_SPELL_EMPOWERING_SHADOWS : SPELL_EMPOWERING_SHADOWS);
-                    if (spell)
-                        Vorpil->AddAura(new EmpoweringShadowsAura(spell, 0, NULL, Vorpil, me));
-                    Vorpil->SetHealth(Vorpil->GetHealth() + Vorpil->GetMaxHealth() / 25);
-                    DoCast(me, SPELL_SHADOW_NOVA, true);
-                    me->DealDamage(me, me->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    return;
-                }
-                me->GetMotionMaster()->MoveFollow(Vorpil, 0, 0);
-                if (me->GetDistance(Vorpil) < 3)
-                {
-                    DoCast(me, SPELL_SACRIFICE, false);
-                    sacrificed = true;
-                    move = 500;
-                    return;
-                }
-                if (!Vorpil->IsInCombat() || Vorpil->isDead())
-                {
-                    me->DealDamage(me, me->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    return;
-                }
-                move = 1000;
-            }
-            else move -= diff;
-        }
-    };
 
-    CreatureAI* GetAI_mob_voidtraveler(Creature* pCreature)
-    {
-        return new mob_voidtravelerAI (pCreature);
-    }
-
-    
-
-    
-
-    
-};
 
 
 void AddSC_boss_grandmaster_vorpil()

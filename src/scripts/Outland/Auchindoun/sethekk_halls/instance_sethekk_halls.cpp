@@ -254,7 +254,7 @@ public:
         if (pPlayer->GetQuestStatus(QUEST_BROTHER) == QUEST_STATUS_INCOMPLETE)
         {
             if (Creature* pLakka = pGo->FindNearestCreature(NPC_LAKKA, 5, true))
-                ((npc_lakkaAI*)pLakka->AI())->Start(false, false, pPlayer->GetGUID());
+                ((npc_lakka::npc_lakkaAI*)pLakka->AI())->Start(false, false, pPlayer->GetGUID());
         }
 
         return false;
