@@ -193,14 +193,14 @@ public:
  
 
 
-    bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HOSTAGE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
 
-    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
             pPlayer->CLOSE_GOSSIP_MENU();
@@ -305,15 +305,15 @@ public:
 
     
 
-    static bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
-        if (npc_harrison_jonesAI* ai = dynamic_cast <npc_harrison_jonesAI*> (pCreature->AI()))
+        if (npc_harrison_jonesAI* ai = dynamic_cast <npc_harrison_jonesAI*> (pCreature->AI())) 
             return ai->GossipHello(pPlayer);
     
         return false;
     }
 
-    static bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (npc_harrison_jonesAI* ai = dynamic_cast <npc_harrison_jonesAI*> (pCreature->AI()))
             return ai->GossipSelect();

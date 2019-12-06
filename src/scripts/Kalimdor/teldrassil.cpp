@@ -146,7 +146,7 @@ public:
         return new npc_mistAI(pCreature);
     }
     
-    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
+    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_MIST)
         {

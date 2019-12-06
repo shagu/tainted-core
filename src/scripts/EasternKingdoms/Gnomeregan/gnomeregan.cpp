@@ -140,32 +140,7 @@ public:
                 GoSummonList.clear();
             }
         }
-        bool OnGossipHello(Player* pPlayer, Creature* pCreature)
-        {
-            ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-
-            if (pInstance && pInstance->GetData(TYPE_EVENT) == NOT_STARTED)
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_START_EVENT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-
-            pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXT_EMI, pCreature->GetGUID());
-
-            return true;
-        }
-
-        bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-        {
-            if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-            {
-                if (npc_escortAI* pEscortAI = CAST_AI(npc_blastmaster_emi_shortfuseAI, pCreature->AI()))
-                    pEscortAI->Start(true, false, pPlayer->GetGUID());
-
-                pCreature->SetFaction(pPlayer->GetFaction());
-                pCreature->AI()->SetData(1, 0);
-
-                pPlayer->CLOSE_GOSSIP_MENU();
-            }
-            return true;
-        }
+ 
         void NextStep(uint32 uiTimerStep, bool bNextStep = true, uint8 uiPhaseStep = 0)
         {
             uiTimer = uiTimerStep;
@@ -559,6 +534,33 @@ public:
         return new npc_blastmaster_emi_shortfuseAI(pCreature);
     }
 
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+
+        if (pInstance && pInstance->GetData(TYPE_EVENT) == NOT_STARTED)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_START_EVENT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+        pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXT_EMI, pCreature->GetGUID());
+
+        return true;
+    }
+
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+        {
+            if (npc_escortAI* pEscortAI = CAST_AI(npc_blastmaster_emi_shortfuseAI, pCreature->AI()))
+                pEscortAI->Start(true, false, pPlayer->GetGUID());
+
+            pCreature->SetFaction(pPlayer->GetFaction());
+            pCreature->AI()->SetData(1, 0);
+
+            pPlayer->CLOSE_GOSSIP_MENU();
+        }
+        return true;
+    }
+
 };
 
 class boss_grubbis : public CreatureScript
@@ -691,7 +693,7 @@ public:
 
     
 
-    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
     	if (pQuest->GetQuestId() == QUEST_A_FINE_MESS)
     	{

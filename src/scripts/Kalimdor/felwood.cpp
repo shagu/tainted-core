@@ -80,16 +80,19 @@ public:
             return true;
         }
 
-        bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-        {
-            if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-            {
-                pPlayer->CLOSE_GOSSIP_MENU();
-                pCreature->CastSpell(pPlayer, 15120, false);
-            }
-            return true;
-        }
+        
     };
+
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+        {
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pCreature->CastSpell(pPlayer, 15120, false);
+        }
+        return true;
+    }
+
     CreatureAI* GetAI_script_name(Creature* pCreature)
     {
         return new npcs_riverbreeze_and_silverskyAI(pCreature);

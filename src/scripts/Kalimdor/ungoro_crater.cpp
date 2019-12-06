@@ -49,11 +49,6 @@ enum eAME
     ENTRY_STOMPER       = 6513
 };
 
-
-
-
-
-
 /*####
 # npc_ringo
 ####*/
@@ -87,15 +82,6 @@ enum eRingo
     NPC_SPRAGGLE                = 9997,
     FACTION_ESCORTEE            = 113
 };
-
-
-
-
-
-
-
-
-
 
 class npc_ame : public CreatureScript
 {
@@ -178,8 +164,7 @@ public:
         return new npc_ameAI(pCreature);
     }
     
-
-    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest)
+    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_CHASING_AME)
         {
@@ -355,7 +340,7 @@ public:
 
     
 
-    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
+    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_A_LITTLE_HELP)
         {
@@ -368,8 +353,6 @@ public:
     
         return true;
     }
-
-    
 
     
 };

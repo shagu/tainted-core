@@ -178,7 +178,7 @@ public:
         return (CreatureAI*)testAI;
     }
     
-    bool OnGossipHello(Player* pPlayer, Creature* pCreature)
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         pPlayer->TalkedToCreature(pCreature->GetEntry(), pCreature->GetGUID());
         pPlayer->PrepareGossipMenu(pCreature, 0);
@@ -191,7 +191,7 @@ public:
         return true;
     }
     
-    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
         {
