@@ -219,7 +219,7 @@ void ScriptMgr::LoadDatabase()
     sScriptSystemMgr.LoadScriptWaypoints();
 }
 
-void FillSpellSummary()
+void ScriptMgr::FillSpellSummary()
 {
     SpellSummary = new TSpellSummary[GetSpellStore()->GetNumRows()];
 
@@ -872,104 +872,139 @@ void ScriptMgr::OnDynamicObjectUpdate(DynamicObject* dynobj, uint32 diff)
         itr->second->OnUpdate(dynobj, diff);
 }
 
-void SpellHandlerScript::RegisterSelf()
+SpellHandlerScript::SpellHandlerScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<SpellHandlerScript>::AddScript(this);
 }
 
-void AuraHandlerScript::RegisterSelf()
+AuraHandlerScript::AuraHandlerScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<AuraHandlerScript>::AddScript(this);
 }
 
-void ServerScript::RegisterSelf()
+ServerScript::ServerScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<ServerScript>::AddScript(this);
 }
 
-void WorldScript::RegisterSelf()
+WorldScript::WorldScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<WorldScript>::AddScript(this);
 }
 
-void FormulaScript::RegisterSelf()
+FormulaScript::FormulaScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<FormulaScript>::AddScript(this);
 }
 
-void WorldMapScript::RegisterSelf()
+WorldMapScript::WorldMapScript(const char* name, uint32 mapId)
+    : ScriptObject(name), MapScript(mapId)
 {
+    if (GetEntry() && !GetEntry()->IsContinent())
+        sLog.outError("WorldMapScript for map %u is invalid.", mapId);
+
     ScriptMgr::ScriptRegistry<WorldMapScript>::AddScript(this);
 }
 
-void InstanceMapScript::RegisterSelf()
+InstanceMapScript::InstanceMapScript(const char* name, uint32 mapId)
+    : ScriptObject(name), MapScript(mapId)
 {
+    if (GetEntry() && !GetEntry()->IsDungeon())
+        sLog.outError("InstanceMapScript for map %u is invalid.", mapId);
+
     ScriptMgr::ScriptRegistry<InstanceMapScript>::AddScript(this);
 }
 
-void BattlegroundMapScript::RegisterSelf()
+BattlegroundMapScript::BattlegroundMapScript(const char* name, uint32 mapId)
+    : ScriptObject(name), MapScript(mapId)
 {
+    if (GetEntry() && !GetEntry()->IsBattleground())
+        sLog.outError("BattlegroundMapScript for map %u is invalid.", mapId);
+
     ScriptMgr::ScriptRegistry<BattlegroundMapScript>::AddScript(this);
 }
 
-void AreaTriggerScript::RegisterSelf()
+AreaTriggerScript::AreaTriggerScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<AreaTriggerScript>::AddScript(this);
 }
 
-void ItemScript::RegisterSelf()
+ItemScript::ItemScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<ItemScript>::AddScript(this);
 }
 
-void CreatureScript::RegisterSelf()
+CreatureScript::CreatureScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<CreatureScript>::AddScript(this);
 }
 
-void GameObjectScript::RegisterSelf()
+GameObjectScript::GameObjectScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<GameObjectScript>::AddScript(this);
 }
 
-void BattlegroundScript::RegisterSelf()
+BattlegroundScript::BattlegroundScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<BattlegroundScript>::AddScript(this);
 }
 
-void OutdoorPvPScript::RegisterSelf()
+OutdoorPvPScript::OutdoorPvPScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<OutdoorPvPScript>::AddScript(this);
 }
 
-void CommandScript::RegisterSelf()
+CommandScript::CommandScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<CommandScript>::AddScript(this);
 }
 
-void WeatherScript::RegisterSelf()
+WeatherScript::WeatherScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<WeatherScript>::AddScript(this);
 }
 
-void AuctionHouseScript::RegisterSelf()
+AuctionHouseScript::AuctionHouseScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<AuctionHouseScript>::AddScript(this);
 }
 
-void ConditionScript::RegisterSelf()
+ConditionScript::ConditionScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<ConditionScript>::AddScript(this);
 }
 
-void DynamicObjectScript::RegisterSelf()
+DynamicObjectScript::DynamicObjectScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<DynamicObjectScript>::AddScript(this);
 }
 
-void TransportScript::RegisterSelf()
+TransportScript::TransportScript(const char* name)
+    : ScriptObject(name)
 {
     ScriptMgr::ScriptRegistry<TransportScript>::AddScript(this);
+}
+
+GroupScript::GroupScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<GroupScript>::AddScript(this);
 }
 
 // Group
@@ -1184,7 +1219,8 @@ void ScriptMgr::ScriptRegistry<TScript>::AddScript(TScript* const script)
 
     // See if the script is using the same memory as another script. If this happens, it means that
     // someone forgot to allocate new memory for a script.
-    for (ScriptMap::iterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
+    typedef typename ScriptMap::iterator ScriptMapIterator;
+    for (ScriptMapIterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
     {
         if (it->second == script)
         {
@@ -1201,7 +1237,8 @@ void ScriptMgr::ScriptRegistry<TScript>::AddScript(TScript* const script)
     {
         // Try to find an existing script.
         bool existing = false;
-        for (ScriptMap::iterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
+        typedef typename ScriptMap::iterator ScriptMapIterator;
+        for (ScriptMapIterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
         {
             // If the script names match...
             if (it->second->GetName() == script->GetName())

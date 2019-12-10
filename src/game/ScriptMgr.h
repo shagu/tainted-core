@@ -11,9 +11,8 @@
 #include "Common.h"
 
 #include "DBCStructure.h"
-#include "Config.h"
 #include "ObjectMgr.h"
-#include "BattleGround.h"
+#include "Battleground.h"
 #include "OutdoorPvPMgr.h"
 #include "SharedDefines.h"
 #include "Chat.h"
@@ -70,17 +69,11 @@ public:
 
 protected:
 
-    // Call this to register the script with ScriptMgr.
-    virtual void RegisterSelf() = 0;
-
     ScriptObject(const char* name)
         : _name(std::string(name))
     {
         // Allow the script to do startup routines.
         OnInitialize();
-
-        // Register with ScriptMgr.
-        RegisterSelf();
     }
 
     virtual ~ScriptObject()
@@ -111,11 +104,7 @@ class SpellHandlerScript : public ScriptObject
 {
 protected:
 
-    SpellHandlerScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    SpellHandlerScript(const char* name);
 
 public:
 
@@ -129,11 +118,7 @@ class AuraHandlerScript : public ScriptObject
 {
 protected:
 
-    AuraHandlerScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    AuraHandlerScript(const char* name);
 
 public:
 
@@ -147,11 +132,7 @@ class ServerScript : public ScriptObject
 {
 protected:
 
-    ServerScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    ServerScript(const char* name);
 
 public:
 
@@ -185,11 +166,7 @@ class WorldScript : public ScriptObject, public UpdatableScript<void>
 {
 protected:
 
-    WorldScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    WorldScript(const char* name);
 
 public:
 
@@ -216,9 +193,7 @@ class GroupScript : public ScriptObject
 {
 protected:
 
-    GroupScript(char const* name)
-    : ScriptObject(name)
-    { }
+    GroupScript(char const* name);
 
 public:
 
@@ -248,9 +223,7 @@ class PlayerScript : public ScriptObject
 {
 protected:
 
-    PlayerScript(char const* name)
-	: ScriptObject(name)
-	{ }
+    PlayerScript(char const* name);
 
 public:
 
@@ -354,11 +327,7 @@ class FormulaScript : public ScriptObject
 {
 protected:
 
-    FormulaScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    FormulaScript(const char* name);
 
 public:
 
@@ -430,28 +399,16 @@ class WorldMapScript : public ScriptObject, public MapScript<Map>
 {
 protected:
 
-    WorldMapScript(const char* name, uint32 mapId)
-        : ScriptObject(name), MapScript(mapId)
-    {
-        if (GetEntry() && !GetEntry()->IsContinent())
-            sLog.outError("WorldMapScript for map %u is invalid.", mapId);
-    }
+    WorldMapScript(const char* name, uint32 mapId);
 
-    void RegisterSelf();
 };
 
 class InstanceMapScript : public ScriptObject, public MapScript<InstanceMap>
 {
 protected:
 
-    InstanceMapScript(const char* name, uint32 mapId = 0)
-        : ScriptObject(name), MapScript(mapId)
-    {
-        if (GetEntry() && !GetEntry()->IsDungeon())
-            sLog.outError("InstanceMapScript for map %u is invalid.", mapId);
-    }
+    InstanceMapScript(const char* name, uint32 mapId = 0);
 
-    void RegisterSelf();
 
 public:
 
@@ -465,25 +422,16 @@ class BattlegroundMapScript : public ScriptObject, public MapScript<Battleground
 {
 protected:
 
-    BattlegroundMapScript(const char* name, uint32 mapId)
-        : ScriptObject(name), MapScript(mapId)
-    {
-        if (GetEntry() && !GetEntry()->IsBattleground())
-            sLog.outError("BattlegroundMapScript for map %u is invalid.", mapId);
-    }
+    BattlegroundMapScript(const char* name, uint32 mapId);
 
-    void RegisterSelf();
+  
 };
 
 class ItemScript : public ScriptObject
 {
 protected:
 
-    ItemScript(const char* name) 
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    ItemScript(const char* name);
 
 public:
 
@@ -506,11 +454,7 @@ class CreatureScript : public ScriptObject, public UpdatableScript<Creature>
 {
 protected:
 
-    CreatureScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    CreatureScript(const char* name);
 
 public:
 
@@ -551,11 +495,7 @@ class GameObjectScript : public ScriptObject, public UpdatableScript<GameObject>
 {
 protected:
 
-    GameObjectScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    GameObjectScript(const char* name);
 
 public:
 
@@ -593,11 +533,7 @@ class AreaTriggerScript : public ScriptObject
 {
 protected:
 
-    AreaTriggerScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    AreaTriggerScript(const char* name);
 
 public:
 
@@ -611,11 +547,7 @@ class BattlegroundScript : public ScriptObject
 {
 protected:
 
-    BattlegroundScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    BattlegroundScript(const char* name);
 
 public:
 
@@ -629,11 +561,7 @@ class OutdoorPvPScript : public ScriptObject
 {
 protected:
 
-    OutdoorPvPScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    OutdoorPvPScript(const char* name);
 
 public:
 
@@ -647,11 +575,7 @@ class CommandScript : public ScriptObject
 {
 protected:
 
-    CommandScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    CommandScript(const char* name);
 
 public:
 
@@ -663,11 +587,7 @@ class WeatherScript : public ScriptObject, public UpdatableScript<Weather>
 {
 protected:
 
-    WeatherScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    WeatherScript(const char* name);
 
 public:
 
@@ -681,11 +601,7 @@ class AuctionHouseScript : public ScriptObject
 {
 protected:
 
-    AuctionHouseScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    AuctionHouseScript(const char* name);
 
 public:
 
@@ -706,12 +622,7 @@ class ConditionScript : public ScriptObject
 {
 protected:
 
-    ConditionScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
-
+    ConditionScript(const char* name);
 public:
 
     bool IsDatabaseBound() const { return true; }
@@ -724,23 +635,14 @@ class DynamicObjectScript : public ScriptObject, public UpdatableScript<DynamicO
 {
 protected:
 
-    DynamicObjectScript(const char* name)
-        : ScriptObject(name)
-    { }
-
-    void RegisterSelf();
+    DynamicObjectScript(const char* name);
 };
 
 class TransportScript : public ScriptObject, public UpdatableScript<Transport>
 {
 protected:
 
-    TransportScript(const char* name)
-        : ScriptObject(name)
-    {
-    }
-
-    void RegisterSelf();
+    TransportScript(const char* name);
 
 public:
 
@@ -767,7 +669,7 @@ class ScriptMgr
 {
     friend class ACE_Singleton<ScriptMgr, ACE_Null_Mutex>;
     friend class ScriptObject;
-
+public:
     ScriptMgr();
     virtual~ScriptMgr();
 
@@ -954,7 +856,7 @@ public: /* ScriptRegistry */
     public:
 
         typedef std::map<uint32, TScript*> ScriptMap;
-
+        typedef typename ScriptMap::iterator ScriptMapIterator;
         // The actual list of scripts. This will be accessed concurrently, so it must not be modified
         // after server startup.
         static ScriptMap ScriptPointerList;
@@ -962,7 +864,7 @@ public: /* ScriptRegistry */
         // Gets a script by its ID (assigned by ObjectMgr).
         static TScript* GetScriptById(uint32 id)
         {
-            for (ScriptMap::iterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
+            for (ScriptMapIterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
                 if (it->first == id)
                     return it->second;
 

@@ -35,7 +35,7 @@ void AddSC_guards();
 void AddSC_item_scripts();
 void AddSC_npc_professions();
 void AddSC_npc_innkeeper();
-void AddSC_npcs_special();
+//void AddSC_npcs_special();
 
 //eastern kingdoms
 void AddSC_hillsbrad_foothills();
@@ -83,23 +83,23 @@ void AddSC_deadmines();                      //Deadmines
 void AddSC_instance_deadmines();
 void AddSC_instance_gnomeregan();            //Gnomeregan
 void AddSC_gnomeregan();
-void AddSC_boss_attumen();                   //Karazhan
+//void AddSC_boss_attumen();                   //Karazhan
 void AddSC_boss_curator();
 void AddSC_boss_maiden_of_virtue();
 void AddSC_boss_shade_of_aran();
-void AddSC_boss_malchezaar();
-void AddSC_boss_terestian_illhoof();
+//void AddSC_boss_malchezaar();
+//void AddSC_boss_terestian_illhoof();
 void AddSC_boss_moroes();
 void AddSC_boss_nightbane();
 void AddSC_boss_netherspite();
-void AddSC_bosses_opera();
+//void AddSC_bosses_opera();
 void AddSC_instance_karazhan();
-void AddSC_chess_event();
+//void AddSC_chess_event();
 void AddSC_karazhan();
 void AddSC_boss_felblood_kaelthas();         // Magister's Terrace
 void AddSC_boss_selin_fireheart();
 void AddSC_boss_vexallus();
-void AddSC_boss_priestess_delrissa();
+//void AddSC_boss_priestess_delrissa();
 void AddSC_instance_magisters_terrace();
 void AddSC_magisters_terrace();
 void AddSC_boss_lucifron();                  //Molten core
@@ -129,7 +129,7 @@ void AddSC_boss_four_horsemen();
 void AddSC_boss_arcanist_doan();             //Scarlet Monastery
 void AddSC_boss_azshir_the_sleepless();
 void AddSC_boss_bloodmage_thalnos();
-void AddSC_boss_headless_horseman();
+//void AddSC_boss_headless_horseman();
 void AddSC_boss_herod();
 void AddSC_boss_high_inquisitor_fairbanks();
 void AddSC_boss_houndmaster_loksey();
@@ -175,7 +175,7 @@ void AddSC_boss_brutallus();
 void AddSC_boss_felmyst();
 void AddSC_boss_eredar_twins();
 void AddSC_boss_muru();
-void AddSC_boss_kiljaeden();
+//void AddSC_boss_kiljaeden();
 void AddSC_sunwell_plateau();
 void AddSC_boss_archaedas();                 //Uldaman
 void AddSC_boss_ironaya();
@@ -223,7 +223,7 @@ void AddSC_redridge_mountains();
 void AddSC_searing_gorge();
 void AddSC_silvermoon_city();
 void AddSC_silverpine_forest();
-void AddSC_stormwind_city();
+//void AddSC_stormwind_city();
 void AddSC_stranglethorn_vale();
 void AddSC_tirisfal_glades();
 void AddSC_undercity();
@@ -266,14 +266,14 @@ void AddSC_instance_razorfen_downs();
 void AddSC_razorfen_kraul();                 //Razorfen Kraul
 void AddSC_instance_razorfen_kraul();
 void AddSC_boss_kurinnaxx();                 //Ruins of ahn'qiraj
-void AddSC_boss_cthun();                     //Temple of ahn'qiraj
+//void AddSC_boss_cthun();                     //Temple of ahn'qiraj
 void AddSC_boss_fankriss();
 void AddSC_boss_huhuran();
 void AddSC_bug_trio();
 void AddSC_boss_sartura();
 void AddSC_boss_skeram();
 void AddSC_boss_twinemperors();
-void AddSC_mob_anubisath_sentinel();
+//void AddSC_mob_anubisath_sentinel();
 void AddSC_instance_temple_of_ahnqiraj();
 void AddSC_wailing_caverns();                //Wailing caverns
 void AddSC_instance_wailing_caverns();
@@ -294,7 +294,7 @@ void AddSC_feralas();
 void AddSC_moonglade();
 void AddSC_mulgore();
 void AddSC_orgrimmar();
-void AddSC_silithus();
+//void AddSC_silithus();
 void AddSC_stonetalon_mountains();
 void AddSC_tanaris();
 void AddSC_teldrassil();
@@ -319,12 +319,12 @@ void AddSC_boss_blackheart_the_inciter();
 void AddSC_boss_grandmaster_vorpil();
 void AddSC_boss_murmur();
 void AddSC_black_temple();                   //Black Temple
-void AddSC_boss_illidan();
-void AddSC_boss_shade_of_akama();
+//void AddSC_boss_illidan();
+//void AddSC_boss_shade_of_akama();
 void AddSC_boss_supremus();
 void AddSC_boss_gurtogg_bloodboil();
 void AddSC_boss_mother_shahraz();
-void AddSC_boss_reliquary_of_souls();
+//void AddSC_boss_reliquary_of_souls();
 void AddSC_boss_teron_gorefiend();
 void AddSC_boss_najentus();
 void AddSC_boss_illidari_council();
@@ -382,14 +382,14 @@ void AddSC_instance_mechanar();
 void AddSC_blades_edge_mountains();
 void AddSC_boss_doomlordkazzak();
 void AddSC_boss_doomwalker();
-void AddSC_hellfire_peninsula();
+//void AddSC_hellfire_peninsula();
 void AddSC_nagrand();
-void AddSC_netherstorm();
+//void AddSC_netherstorm();
 void AddSC_shadowmoon_valley();
 void AddSC_shattrath_city();
 void AddSC_terokkar_forest();
 void AddSC_zangarmarsh();
-void AddSC_onevents();
+//void AddSC_onevents();
 
 #endif
 
@@ -409,7 +409,7 @@ void AddScripts()
     AddSC_item_scripts();
     AddSC_npc_professions();
     AddSC_npc_innkeeper();
-    AddSC_npcs_special();
+    //AddSC_npcs_special();
 
     //eastern kingdoms
     AddSC_hillsbrad_foothills();
@@ -457,23 +457,23 @@ void AddScripts()
     AddSC_instance_deadmines();
     AddSC_gnomeregan();                     //Gnomeregan
     AddSC_instance_gnomeregan();
-    AddSC_boss_attumen();                   //Karazhan
+    //AddSC_boss_attumen();                   //Karazhan
     AddSC_boss_curator();
     AddSC_boss_maiden_of_virtue();
     AddSC_boss_shade_of_aran();
-    AddSC_boss_malchezaar();
-    AddSC_boss_terestian_illhoof();
+    //AddSC_boss_malchezaar();
+    //AddSC_boss_terestian_illhoof();
     AddSC_boss_moroes();
-    AddSC_bosses_opera();
+    //AddSC_bosses_opera();
     AddSC_boss_nightbane();
     AddSC_boss_netherspite();
     AddSC_instance_karazhan();
-    AddSC_chess_event();
+    //AddSC_chess_event();
     AddSC_karazhan();
     AddSC_boss_felblood_kaelthas();         // Magister's Terrace
     AddSC_boss_selin_fireheart();
     AddSC_boss_vexallus();
-    AddSC_boss_priestess_delrissa();
+    //AddSC_boss_priestess_delrissa();
     AddSC_instance_magisters_terrace();
     AddSC_magisters_terrace();
     AddSC_boss_lucifron();                  //Molten core
@@ -503,7 +503,7 @@ void AddScripts()
     AddSC_boss_arcanist_doan();             //Scarlet Monastery
     AddSC_boss_azshir_the_sleepless();
     AddSC_boss_bloodmage_thalnos();
-    AddSC_boss_headless_horseman();
+    //AddSC_boss_headless_horseman();
     AddSC_boss_herod();
     AddSC_boss_high_inquisitor_fairbanks();
     AddSC_boss_houndmaster_loksey();
@@ -549,7 +549,7 @@ void AddScripts()
     AddSC_boss_felmyst();
     AddSC_boss_eredar_twins();
     AddSC_boss_muru();
-    AddSC_boss_kiljaeden();
+    //AddSC_boss_kiljaeden();
     AddSC_sunwell_plateau();
     AddSC_boss_archaedas();                 //Uldaman
     AddSC_boss_ironaya();
@@ -597,7 +597,7 @@ void AddScripts()
     AddSC_searing_gorge();
     AddSC_silvermoon_city();
     AddSC_silverpine_forest();
-    AddSC_stormwind_city();
+    //AddSC_stormwind_city();
     AddSC_stranglethorn_vale();
     AddSC_tirisfal_glades();
     AddSC_undercity();
@@ -639,14 +639,14 @@ void AddScripts()
     AddSC_razorfen_kraul();                 //Razorfen Kraul
     AddSC_instance_razorfen_kraul();
     AddSC_boss_kurinnaxx();                 //Ruins of ahn'qiraj
-    AddSC_boss_cthun();                     //Temple of ahn'qiraj
+    //AddSC_boss_cthun();                     //Temple of ahn'qiraj
     AddSC_boss_fankriss();
     AddSC_boss_huhuran();
     AddSC_bug_trio();
     AddSC_boss_sartura();
     AddSC_boss_skeram();
     AddSC_boss_twinemperors();
-    AddSC_mob_anubisath_sentinel();
+    //AddSC_mob_anubisath_sentinel();
     AddSC_instance_temple_of_ahnqiraj();
     AddSC_wailing_caverns();                //Wailing caverns
     AddSC_instance_wailing_caverns();
@@ -667,7 +667,7 @@ void AddScripts()
     AddSC_moonglade();
     AddSC_mulgore();
     AddSC_orgrimmar();
-    AddSC_silithus();
+    //AddSC_silithus();
     AddSC_stonetalon_mountains();
     AddSC_tanaris();
     AddSC_teldrassil();
@@ -691,12 +691,12 @@ void AddScripts()
     AddSC_boss_grandmaster_vorpil();
     AddSC_boss_murmur();
     AddSC_black_temple();                   //Black Temple
-    AddSC_boss_illidan();
-    AddSC_boss_shade_of_akama();
+    //AddSC_boss_illidan();
+    //AddSC_boss_shade_of_akama();
     AddSC_boss_supremus();
     AddSC_boss_gurtogg_bloodboil();
     AddSC_boss_mother_shahraz();
-    AddSC_boss_reliquary_of_souls();
+    //AddSC_boss_reliquary_of_souls();
     AddSC_boss_teron_gorefiend();
     AddSC_boss_najentus();
     AddSC_boss_illidari_council();
@@ -754,14 +754,14 @@ void AddScripts()
     AddSC_blades_edge_mountains();
     AddSC_boss_doomlordkazzak();
     AddSC_boss_doomwalker();
-    AddSC_hellfire_peninsula();
+    //AddSC_hellfire_peninsula();
     AddSC_nagrand();
-    AddSC_netherstorm();
+    //AddSC_netherstorm();
     AddSC_shadowmoon_valley();
     AddSC_shattrath_city();
     AddSC_terokkar_forest();
     AddSC_zangarmarsh();
-    AddSC_onevents();
+    //AddSC_onevents();
     #endif
 }
 
