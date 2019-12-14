@@ -459,13 +459,17 @@ public:
             else
                 FireBreathTimer -= diff;
         }
-    };
-    
-    CreatureAI* GetAI_boss_janalaiAI(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_janalaiAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -492,15 +496,19 @@ public:
         void MoveInLineOfSight(Unit* /*who*/) {}
     
         void UpdateAI(const uint32 /*diff*/) {}
-    };
-    
+    };
 
-    CreatureAI* GetAI_mob_janalai_firebombAI(Creature* pCreature)
+    
+
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_janalai_firebombAI(pCreature);
     }
-
-    
+
+
+    
+
     
 };
 
@@ -508,7 +516,8 @@ class mob_janalai_hatcher : public CreatureScript
 {
 public: 
     mob_janalai_hatcher() : CreatureScript("mob_janalai_hatcher") { }
-    
+    
+
 
 
     struct mob_amanishi_hatcherAI : public ScriptedAI
@@ -627,12 +636,14 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_amanishi_hatcherAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_amanishi_hatcherAI(pCreature);
     }
-
-    
+
+
+    
+
     
 };
 
@@ -640,7 +651,8 @@ class mob_janalai_hatchling : public CreatureScript
 {
 public: 
     mob_janalai_hatchling() : CreatureScript("mob_janalai_hatchling") { }
-    
+    
+
 
     struct mob_hatchlingAI : public ScriptedAI
     {
@@ -691,13 +703,15 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_hatchlingAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_hatchlingAI(pCreature);
     }
 
-
-    
+
+
+    
+
     
 };
 
@@ -705,8 +719,10 @@ class mob_janalai_egg : public CreatureScript
 {
 public: 
     mob_janalai_egg() : CreatureScript("mob_janalai_egg") { }
-    
-        struct mob_eggAI : public ScriptedAI
+    
+
+    
+    struct mob_eggAI : public ScriptedAI
     {
         mob_eggAI(Creature* c) : ScriptedAI(c) {}
         void Reset() {}
@@ -725,12 +741,13 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_eggAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_eggAI(pCreature);
     }
 
-    
+    
+
     
 };
 

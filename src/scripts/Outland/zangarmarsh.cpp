@@ -213,8 +213,10 @@ class npcs_ashyen_and_keleth : public CreatureScript
 {
 public: 
     npcs_ashyen_and_keleth() : CreatureScript("npcs_ashyen_and_keleth") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (player->GetReputationRank(942) > REP_NEUTRAL)
@@ -228,7 +230,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -292,8 +296,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -340,12 +346,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_cooshcoosh(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_cooshcooshAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (player->GetQuestStatus(10009) == QUEST_STATUS_INCOMPLETE)
@@ -354,8 +363,10 @@ public:
         player->SEND_GOSSIP_MENU(9441, pCreature->GetGUID());
         return true;
     }
-    
-    
+    
+
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF)
@@ -367,8 +378,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -421,12 +434,15 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_elder_kuruti(Creature* creature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_elder_kurutiAI(creature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (player->GetQuestStatus(9803) == QUEST_STATUS_INCOMPLETE)
@@ -436,7 +452,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -466,8 +484,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -475,8 +495,10 @@ class npc_mortog_steamhead : public CreatureScript
 {
 public: 
     npc_mortog_steamhead() : CreatureScript("npc_mortog_steamhead") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsVendor() && player->GetReputationRank(942) == REP_EXALTED)
@@ -486,15 +508,19 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_TRADE)
             player->SEND_VENDORLIST(pCreature->GetGUID());
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -540,12 +566,15 @@ public:
                 break;
             }
         }
-    };
-        CreatureAI* GetAI_npc_kayra_longmaneAI(Creature* pCreature)
+    };
+
+    
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_kayra_longmaneAI(pCreature);
     }
-    
+    
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_ESCAPE_FROM)
@@ -557,8 +586,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -566,8 +597,10 @@ class npc_timothy_daniels : public CreatureScript
 {
 public: 
     npc_timothy_daniels() : CreatureScript("npc_timothy_daniels") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -596,8 +629,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -705,13 +740,17 @@ public:
             else
                 EndTimer -= diff;
         }
-    };
-    
-    CreatureAI* GetAI_npc_baby_murloc(Creature* creature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* creature) const
     {
         return new npc_baby_murlocAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -729,13 +768,17 @@ public:
     	}
     
     	void UpdateAI(const uint32 diff) { }
-    };
-    
-    CreatureAI* GetAI_npc_scoutjyoba(Creature* creature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_scoutjyobaAI(creature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -817,14 +860,14 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_wrektslave(Creature* creature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_wrektslaveAI(creature);
-    }
-    
-    
+    }
 };
 
 class npc_dreghooddrudge : public CreatureScript
@@ -888,14 +931,14 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_dreghooddrudge(Creature* creature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_dreghooddrudgeAI(creature);
-    }
-    
-    
+    }
 };
 
 

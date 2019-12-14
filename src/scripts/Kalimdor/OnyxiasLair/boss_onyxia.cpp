@@ -304,13 +304,12 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_onyxiaAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_onyxiaAI (pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_onyxia()
 {
     new boss_onyxia();

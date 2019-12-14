@@ -156,22 +156,23 @@ public:
             if (spawnCreatureID)
                 DoSpawnCreature(spawnCreatureID, 0, 0, 0, me->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
         }
-    };
-    
-    CreatureAI* GetAI_mob_webbed_creature(Creature* pCreature)
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_webbed_creatureAI (pCreature);
-    }
-    
-    
+    }
+
 };
 
 class npc_captured_sunhawk_agent : public CreatureScript
 {
 public: 
     npc_captured_sunhawk_agent() : CreatureScript("npc_captured_sunhawk_agent") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->HasAura(31609, 1) && pPlayer->GetQuestStatus(9756) == QUEST_STATUS_INCOMPLETE)
@@ -183,7 +184,8 @@ public:
             pPlayer->SEND_GOSSIP_MENU(9134, pCreature->GetGUID());
     
         return true;
-    }
+    }
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -215,8 +217,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -276,14 +280,13 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_mob_matis_the_cruel(Creature* pCreature)
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_matis_the_cruelAI(pCreature);
-    }
-    
-    
+    }
+
 };
 
 

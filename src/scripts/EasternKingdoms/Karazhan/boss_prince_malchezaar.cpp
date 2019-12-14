@@ -173,7 +173,7 @@
 //        }
 //    };
 //
-//    CreatureAI* GetAI_netherspite_infernal(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new netherspite_infernalAI(pCreature);
 //    }
@@ -629,7 +629,7 @@
 //        }
 //    };
 //
-//    CreatureAI* GetAI_boss_malchezaar(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return GetInstanceAI<boss_malchezaarAI>(pCreature);
 //    }

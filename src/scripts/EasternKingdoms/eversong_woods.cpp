@@ -430,12 +430,12 @@ void npc_secondTrialAI::Activate(uint64 summonerguid)
     summonerGuid = summonerguid;
 }
 
-CreatureAI* GetAI_master_kelerun_bloodmourn(Creature* pCreature)
+ CreatureAI* GetAI_master_kelerun_bloodmourn(Creature* pCreature)
 {
     return new master_kelerun_bloodmournAI (pCreature);
 }
 
-CreatureAI* GetAI_npc_secondTrial(Creature* pCreature)
+ CreatureAI* GetAI_constnpc_secondTrial(Creature* pCreature)
 {
     return new npc_secondTrialAI (pCreature);
 }
@@ -506,14 +506,13 @@ public:
                     CAST_PLR(caster)->CastedCreatureOrGO(15468, me->GetGUID(), spell->Id);
             return;
         }
-    };
-    
-    CreatureAI* GetAI_mobs_mana_tapped(Creature* pCreature)
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mobs_mana_tappedAI (pCreature);
-    }
-    
-    
+    }
+
 };
 
 class npc_prospector_anvilward : public CreatureScript
@@ -556,12 +555,15 @@ public:
         {
             me->RestoreFaction();
         }
-    };
-    
-    CreatureAI* GetAI_npc_prospector_anvilward(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_prospector_anvilwardAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->GetQuestStatus(QUEST_THE_DWARVEN_SPY) == QUEST_STATUS_INCOMPLETE)
@@ -595,8 +597,10 @@ class npc_second_trial_controller : public CreatureScript
 {
 public: 
     npc_second_trial_controller() : CreatureScript("npc_second_trial_controller") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         // quest only available if not already started
@@ -613,7 +617,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pCreature->GetEntry(), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipHello_master_kelerun_bloodmourn(Player* pPlayer, Creature* pCreature)
     {
         // quest only available if not already started
@@ -630,7 +635,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pCreature->GetEntry(), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool QuestAccept_master_kelerun_bloodmourn(Player* pPlayer, Creature* pCreature, Quest const* quest)
     {
         // One Player exclusive quest, wait for user go activation
@@ -641,7 +647,8 @@ public:
     	}
         return true;
     }
-    
+    
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         // One Player exclusive quest, wait for user go activation
@@ -652,8 +659,10 @@ public:
     	}
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -661,9 +670,12 @@ class npc_second_trial_paladin : public CreatureScript
 {
 public: 
     npc_second_trial_paladin() : CreatureScript("npc_second_trial_paladin") { }
-    
-    
-    
+    
+
+    
+
+    
+
     
 };
 
@@ -671,8 +683,10 @@ class go_second_trial : public GameObjectScript
 {
 public: 
     go_second_trial() : GameObjectScript("go_second_trial") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* /*pPlayer*/, GameObject* pGO) override
     {
         // find spawn :: master_kelerun_bloodmourn
@@ -681,8 +695,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -750,17 +766,15 @@ public:
                 Summon = false;
             }
         }
-    };
-    
+    };
 
-
-
-    CreatureAI* GetAI_npc_apprentice_mirvedaAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_apprentice_mirvedaAI(pCreature);
     }
 
-    
+    
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_UNEXPECTED_RESULT)
@@ -770,8 +784,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -851,11 +867,14 @@ public:
             }
             else WaveTimer -= diff;
         }
-    };
-        CreatureAI* GetAI_npc_infused_crystalAI(Creature* pCreature)
+    };
+
+    
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_infused_crystalAI(pCreature);
-    }
+    }
+
 };
 
 class npc_eversong_ranger : public CreatureScript
@@ -880,10 +899,14 @@ public:
                 }
             }
         }
-    };
-    
-    
-    
+    };
+
+    
+
+    
+
+    
+
     
 };
 

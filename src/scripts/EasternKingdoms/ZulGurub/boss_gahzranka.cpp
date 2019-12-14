@@ -87,7 +87,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_gahzranka(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_gahzrankaAI (pCreature);
     }

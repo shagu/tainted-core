@@ -102,7 +102,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_naga_distiller(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_naga_distillerAI>(pCreature);
     }
@@ -215,16 +215,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_warlord_kalithresh(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_warlord_kalithreshAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

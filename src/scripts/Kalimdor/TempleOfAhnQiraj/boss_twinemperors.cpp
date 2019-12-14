@@ -510,16 +510,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_veknilash(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_veknilashAI (pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 class boss_veklor : public CreatureScript
@@ -651,16 +646,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_veklor(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_veklorAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

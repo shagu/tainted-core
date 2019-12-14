@@ -120,7 +120,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_ras_frostwhisper(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_ras_frostwhisperAI (pCreature);
     }

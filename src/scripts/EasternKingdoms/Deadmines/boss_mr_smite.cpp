@@ -229,13 +229,13 @@ public:
     
     };
     
-    CreatureAI* GetAI_boss_mr_smite(Creature* pCreature)
+    CreatureAI* OnGetAI(Creature* pCreature)
     {
         return new boss_mr_smiteAI (pCreature);
     }
     
-    
 };
+
 void AddSC_boss_mr_smite()
 {
     new boss_mr_smite();

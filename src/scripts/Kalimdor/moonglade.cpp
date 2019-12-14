@@ -533,7 +533,7 @@ public:
 	};
 
 
-	CreatureAI* GetAI_npc_clintar_spirit(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_clintar_spiritAI(pCreature);
 	}
@@ -1157,7 +1157,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_remulos(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_remulosAI(pCreature);
     }
@@ -1537,7 +1537,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_eranikus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_eranikusAI(pCreature);
     }

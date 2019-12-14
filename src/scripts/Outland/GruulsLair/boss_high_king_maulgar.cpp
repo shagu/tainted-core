@@ -354,7 +354,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_high_king_maulgar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_high_king_maulgarAI (pCreature);
     }
@@ -498,7 +498,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_kiggler_the_crazed(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_kiggler_the_crazedAI (pCreature);
     }
@@ -611,7 +611,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_blindeye_the_seer(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_blindeye_the_seerAI (pCreature);
     }
@@ -734,16 +734,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_olm_the_summoner(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_olm_the_summonerAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_krosh_firehand : public CreatureScript
@@ -868,7 +862,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_krosh_firehand(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_krosh_firehandAI (pCreature);
     }

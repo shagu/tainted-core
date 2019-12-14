@@ -108,7 +108,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipHello_npc_blood_knight_dawnstar(Player* pPlayer, Creature* pCreature)
     {
         if (pPlayer->GetQuestStatus(9692) == QUEST_STATUS_INCOMPLETE && !pPlayer->HasItemCount(24226, 1, true))
@@ -118,7 +119,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_blood_knight_dawnstar(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction)
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -133,7 +135,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -148,8 +151,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -157,8 +162,10 @@ class npc_budd_nedreck : public CreatureScript
 {
 public: 
     npc_budd_nedreck() : CreatureScript("npc_budd_nedreck") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -170,7 +177,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipHello_npc_budd_nedreck(Player* pPlayer, Creature* pCreature)
     {
         if (pCreature->IsQuestGiver())
@@ -182,7 +190,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_budd_nedreck(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF)
@@ -192,7 +201,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF)
@@ -202,8 +212,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -211,8 +223,10 @@ class npc_rathis_tomber : public CreatureScript
 {
 public: 
     npc_rathis_tomber() : CreatureScript("npc_rathis_tomber") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -229,15 +243,18 @@ public:
         return true;
     }
 
-   
+   
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_TRADE)
             pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -245,8 +262,10 @@ class go_gilded_brazier : public GameObjectScript
 {
 public: 
     go_gilded_brazier() : GameObjectScript("go_gilded_brazier") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, GameObject* /*_GO*/) override
     {
         if (player->GetQuestStatus(9678) == QUEST_STATUS_INCOMPLETE)
@@ -257,8 +276,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -335,13 +356,15 @@ public:
             if (GameObject* Cage = me->FindNearestGameObject(GO_CAGE, 20))
                 Cage->SetGoState(GO_STATE_READY);
         }
-    };
+    };
 
-    CreatureAI* GetAI_npc_ranger_lilathaAI(Creature* pCreature)
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return  new npc_ranger_lilathaAI(pCreature);
     }
-
+
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_ESCAPE_FROM_THE_CATACOMBS)
@@ -353,8 +376,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

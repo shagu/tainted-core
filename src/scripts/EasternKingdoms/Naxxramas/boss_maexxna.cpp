@@ -100,7 +100,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_webwrap(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_webwrapAI(pCreature);
     }
@@ -248,7 +248,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_maexxna(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_maexxnaAI (pCreature);
     }

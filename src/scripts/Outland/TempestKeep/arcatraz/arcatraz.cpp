@@ -222,7 +222,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_millhouse_manastorm(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_millhouse_manastormAI(pCreature);
     }
@@ -501,7 +501,7 @@ public:
             else EventProgress_Timer -= diff;
         }
     };
-    CreatureAI* GetAI_npc_warden_mellichar(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_warden_mellicharAI(pCreature);
     }
@@ -535,7 +535,7 @@ public:
         void EnterCombat(Unit* /*who*/) {}
     };
 
-    CreatureAI* GetAI_mob_zerekethvoidzoneAI(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_zerekethvoidzoneAI(pCreature);
     }

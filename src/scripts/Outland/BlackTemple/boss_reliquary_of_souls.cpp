@@ -132,7 +132,7 @@
 //        }
 //    };
 //
-//    CreatureAI* GetAI_npc_enslaved_soul(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_enslaved_soulAI(pCreature);
 //    }
@@ -333,7 +333,7 @@
 //        }
 //    };
 //
-//    CreatureAI* GetAI_boss_reliquary_of_souls(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return GetInstanceAI<boss_reliquary_of_soulsAI>(pCreature);
 //    }
@@ -463,7 +463,7 @@
 //        }
 //    };
 //
-//    CreatureAI* GetAI_boss_essence_of_suffering(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_essence_of_sufferingAI (pCreature);
 //    }
@@ -571,7 +571,7 @@
 //        }
 //    };
 //
-//    CreatureAI* GetAI_boss_essence_of_desire(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_essence_of_desireAI (pCreature);
 //    }
@@ -677,7 +677,7 @@
 //        }
 //    };
 //
-//    CreatureAI* GetAI_boss_essence_of_anger(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_essence_of_angerAI (pCreature);
 //    }

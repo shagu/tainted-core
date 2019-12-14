@@ -128,7 +128,7 @@ public:
     };
     
     
-    CreatureAI* GetAI_boss_mechano_lord_capacitus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_mechano_lord_capacitusAI(pCreature);
     }

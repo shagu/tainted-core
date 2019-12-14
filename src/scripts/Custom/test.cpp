@@ -165,7 +165,7 @@ public:
             }
     };
     
-    CreatureAI* GetAI_test(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         npc_testAI* testAI = new npc_testAI(pCreature);
     

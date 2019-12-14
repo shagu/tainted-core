@@ -141,7 +141,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_npc_mist(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_mistAI(pCreature);
     }

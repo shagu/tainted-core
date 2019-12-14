@@ -197,7 +197,7 @@ public:
     
     };
     
-    CreatureAI* GetAI_boss_doomlord_kazzak(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_doomlord_kazzakAI (pCreature);
     }

@@ -242,7 +242,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_jeklik(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_jeklikAI (pCreature);
     }
@@ -319,7 +319,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_batrider(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_batriderAI (pCreature);
     }

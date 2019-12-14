@@ -116,7 +116,7 @@ public:
     	}
     };
     
-    CreatureAI* GetAI_boss_eranikus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new boss_eranikusAI(pCreature);
     }

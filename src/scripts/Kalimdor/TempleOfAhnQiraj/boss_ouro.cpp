@@ -137,7 +137,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_ouro(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_ouroAI (pCreature);
     }

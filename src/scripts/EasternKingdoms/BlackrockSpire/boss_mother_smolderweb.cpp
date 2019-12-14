@@ -80,7 +80,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_mother_smolderweb(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_mother_smolderwebAI (pCreature);
     }

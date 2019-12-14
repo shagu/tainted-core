@@ -105,7 +105,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_emperor_draganthaurissan(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_emperor_dagran_thaurissanAI (pCreature);
     }

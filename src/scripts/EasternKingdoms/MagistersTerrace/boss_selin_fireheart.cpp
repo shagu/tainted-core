@@ -328,16 +328,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_selin_fireheart(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return GetInstanceAI<boss_selin_fireheartAI>(creature);
     }
 
-    
-
-    
-
-    
 };
 
 class mob_fel_crystal : public CreatureScript
@@ -379,7 +374,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_fel_crystal(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return GetInstanceAI<mob_fel_crystalAI>(creature);
     }

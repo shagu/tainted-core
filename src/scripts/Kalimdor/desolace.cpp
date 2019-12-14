@@ -177,12 +177,15 @@ public:
             if (!UpdateVictim())
                 return;
         }
-    };
-    
-    CreatureAI* GetAI_npc_aged_dying_ancient_kodo(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_aged_dying_ancient_kodoAI(pCreature);
-    }
+    }
+
     bool OnDummyEffect(Unit* pCaster, uint32 spellId, uint32 effIndex, Creature* pCreatureTarget) override
     {
         //always check spellid and effectindex
@@ -214,7 +217,8 @@ public:
     
         return false;
     }
-    
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->HasAura(SPELL_KODO_KOMBO_PLAYER_BUFF, 0) && pCreature->HasAura(SPELL_KODO_KOMBO_DESPAWN_BUFF, 0))
@@ -232,8 +236,10 @@ public:
     
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -279,12 +285,15 @@ public:
                 return;
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_dalinda(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_dalindaAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_RETURN_TO_VAHLARRIEL)
@@ -297,8 +306,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -395,12 +406,15 @@ public:
         {
             pSummoned->AI()->AttackStart(me);
         }
-    };
-    
-    CreatureAI* GetAI_npc_melizza_brimbuzzle(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_melizza_brimbuzzleAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_GET_ME_OUT_OF_HERE)
@@ -413,8 +427,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -422,8 +438,10 @@ class go_demon_portal : public GameObjectScript
 {
 public: 
     go_demon_portal() : GameObjectScript("go_demon_portal") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, GameObject* go) override
     {
         if (player->GetQuestStatus(QUEST_PORTAL_OF_THE_LEGION) == QUEST_STATUS_INCOMPLETE)
@@ -434,8 +452,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

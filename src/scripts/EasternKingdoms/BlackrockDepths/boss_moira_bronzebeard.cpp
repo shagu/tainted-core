@@ -93,7 +93,7 @@ public:
     
         }
     };
-    CreatureAI* GetAI_boss_moira_bronzebeard(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_moira_bronzebeardAI (pCreature);
     }

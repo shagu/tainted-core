@@ -84,13 +84,14 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_aku_mai(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_aku_maiAI (pCreature);
     }
     
     
 };
+
 void AddSC_boss_aku_mai()
 {
     new boss_aku_mai();

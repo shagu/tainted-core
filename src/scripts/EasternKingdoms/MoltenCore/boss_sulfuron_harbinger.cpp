@@ -129,7 +129,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_sulfuron(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_sulfuronAI (pCreature);
     }
@@ -203,7 +203,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_flamewaker_priest(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_flamewaker_priestAI (pCreature);
     }

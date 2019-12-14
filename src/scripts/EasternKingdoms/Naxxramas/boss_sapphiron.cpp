@@ -180,7 +180,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_sapphiron(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_sapphironAI (pCreature);
     }

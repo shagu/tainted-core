@@ -119,7 +119,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_warmaster_voone(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_warmaster_vooneAI (pCreature);
     }

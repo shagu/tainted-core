@@ -131,7 +131,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_omrogg_heads(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_omrogg_headsAI(pCreature);
     }
@@ -398,19 +398,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_warbringer_omrogg(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_warbringer_omroggAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
-
-
 
 
 void AddSC_boss_warbringer_omrogg()

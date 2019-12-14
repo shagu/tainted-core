@@ -323,16 +323,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_thekal(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_thekalAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_zealot_lorkhan : public CreatureScript
@@ -503,16 +497,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_zealot_lorkhan(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_zealot_lorkhanAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_zealot_zath : public CreatureScript
@@ -667,16 +655,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_zealot_zath(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_zealot_zathAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

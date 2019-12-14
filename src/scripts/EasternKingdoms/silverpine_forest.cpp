@@ -133,12 +133,15 @@ public:
         {
             me->SetFaction(68);
         }
-    };
-    
-    CreatureAI* GetAI_npc_astor_hadren(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_astor_hadrenAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->GetQuestStatus(1886) == QUEST_STATUS_INCOMPLETE)
@@ -148,7 +151,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -166,8 +171,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -234,9 +241,12 @@ public:
         {
             DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me, who);
         }
-    };
-    
-    
+    };
+
+    
+
+    
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_ESCORTING)
@@ -249,12 +259,14 @@ public:
     
         return true;
     }
-    
-    CreatureAI* GetAI_npc_deathstalker_erlandAI(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_deathstalker_erlandAI(pCreature);
     }
-
+
+
     
 };
 
@@ -396,12 +408,15 @@ public:
             }
             ++Phase; //prepare next phase
         }
-    };
-    
-    CreatureAI* GetAI_pyrewood_ambush(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new pyrewood_ambushAI (pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_PYREWOOD_AMBUSH && !CAST_AI(pyrewood_ambushAI, pCreature->AI())->QuestInProgress)
@@ -414,8 +429,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

@@ -285,7 +285,7 @@
 //
 //
 //
-//	CreatureAI* GetAI_mob_tito(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new mob_titoAI(pCreature);
 //	}
@@ -415,7 +415,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_boss_dorothee(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_dorotheeAI(pCreature);
 //    }
@@ -533,7 +533,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_boss_strawman(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_strawmanAI(pCreature);
 //    }
@@ -653,7 +653,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_boss_tinhead(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_tinheadAI(pCreature);
 //    }
@@ -773,7 +773,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_boss_roar(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_roarAI(pCreature);
 //    }
@@ -857,7 +857,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_boss_crone(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return GetInstanceAI<boss_croneAI>(pCreature);
 //    }
@@ -905,7 +905,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_mob_cyclone(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_cycloneAI(pCreature);
 //    }
@@ -1074,7 +1074,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_boss_bigbadwolf(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return GetInstanceAI<boss_bigbadwolfAI>(pCreature);
 //    }
@@ -1394,7 +1394,7 @@
 //
 //
 //
-//	CreatureAI* GetAI_boss_julianne(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new boss_julianneAI(pCreature);
 //	}
@@ -1609,7 +1609,7 @@
 //
 //
 //
-//	CreatureAI* GetAI_boss_romulo(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new boss_romuloAI(pCreature);
 //	}

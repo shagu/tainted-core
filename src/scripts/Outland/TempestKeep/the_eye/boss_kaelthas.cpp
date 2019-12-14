@@ -1056,7 +1056,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_kaelthas(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_kaelthasAI>(pCreature);
     }
@@ -1156,7 +1156,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_thaladred_the_darkener(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_thaladred_the_darkenerAI>(pCreature);
     }
@@ -1230,7 +1230,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_lord_sanguinar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_lord_sanguinarAI>(pCreature);
     }
@@ -1373,7 +1373,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_grand_astromancer_capernian(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_grand_astromancer_capernianAI>(pCreature);
     }
@@ -1460,16 +1460,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_master_engineer_telonicus(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_master_engineer_telonicusAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_kael_flamestrike : public CreatureScript
@@ -1521,7 +1515,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_kael_flamestrike(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_kael_flamestrikeAI (pCreature);
     }
@@ -1574,16 +1568,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_phoenix_tk(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_phoenix_tkAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_phoenix_egg_tk : public CreatureScript
@@ -1638,7 +1626,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_phoenix_egg_tk(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_phoenix_egg_tkAI (pCreature);
     }

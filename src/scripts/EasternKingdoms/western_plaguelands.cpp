@@ -120,8 +120,10 @@ class npcs_dithers_and_arbington : public CreatureScript
 {
 public: 
     npcs_dithers_and_arbington() : CreatureScript("npcs_dithers_and_arbington") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -142,7 +144,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -173,8 +176,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -182,8 +187,10 @@ class npc_myranda_the_hag : public CreatureScript
 {
 public: 
     npc_myranda_the_hag() : CreatureScript("npc_myranda_the_hag") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -202,7 +209,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -212,8 +221,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -283,14 +294,14 @@ public:
                 }
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_the_scourge_cauldron(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_the_scourge_cauldronAI (pCreature);
-    }
-    
-    
+    }
 };
 
 class npc_andorhal_tower : public CreatureScript
@@ -309,13 +320,17 @@ public:
             if (me->FindNearestGameObject(GO_BEACON_TORCH, 10.0f))
                 CAST_PLR(pWho)->KilledMonsterCredit(me->GetEntry(), me->GetGUID());
         }
-    };
-    
-    CreatureAI* GetAI_npc_andorhal_tower(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_andorhal_towerAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -425,12 +440,15 @@ public:
             if (pSummoned->GetEntry() == NPC_GHOUL)
                 pSummoned->AI()->AttackStart(me);
         }
-    };
-    
-    CreatureAI* GetAI_npc_anchorite_truuen(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_anchorite_truuenAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_TOMB_LIGHTBRINGER)
@@ -444,8 +462,10 @@ public:
         }
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 

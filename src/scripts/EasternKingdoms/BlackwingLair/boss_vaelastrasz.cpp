@@ -256,7 +256,7 @@ public:
         return true;
     }
     
-    CreatureAI* GetAI_boss_vaelastrasz(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_vaelastraszAI (pCreature);
     }

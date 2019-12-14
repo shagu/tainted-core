@@ -492,9 +492,12 @@ public:
                 else TalkTimer -= diff;
             }
         }
-    };
-    
-    
+    };
+
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData())
@@ -526,7 +529,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(8978, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         npc_barnesAI* pBarnesAI = CAST_AI(npc_barnesAI, pCreature->AI());
@@ -560,21 +564,22 @@ public:
     
         return true;
     }
-    
-    CreatureAI* GetAI_npc_barnesAI(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_barnesAI(pCreature);
     }
-
-    
 };
 
 class npc_berthold : public CreatureScript
 {
 public: 
     npc_berthold() : CreatureScript("npc_berthold") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData())
@@ -587,7 +592,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipHello_npc_berthold(Player* pPlayer, Creature* pCreature)
     {
         if (ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData())
@@ -600,7 +606,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_berthold(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction)
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -609,7 +616,8 @@ public:
         pPlayer->CLOSE_GOSSIP_MENU();
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -618,8 +626,10 @@ public:
         pPlayer->CLOSE_GOSSIP_MENU();
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -803,14 +813,14 @@ public:
                 else FireMedivhTimer -= diff;
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_image_of_medivh(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_image_of_medivhAI(pCreature);
-    }
-    
-    
+    }
 };
 
 class npc_concubine : public CreatureScript
@@ -885,14 +895,14 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_concubine(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_concubineAI(pCreature);
-    }
-    
-    
+    }
 };
 
 class npc_arcane_anomaly : public CreatureScript
@@ -951,14 +961,14 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_arcane_anomaly(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_arcane_anomalyAI(pCreature);
-    }
-    
-    
+    }
 };
 
 class npc_chaotic_sentience : public CreatureScript
@@ -1011,14 +1021,15 @@ public:
     
     DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_chaotic_sentience(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_chaotic_sentienceAI(pCreature);
-    }
-    
-    
+    }
+
 };
 
 class npc_mana_feeder : public CreatureScript
@@ -1061,14 +1072,14 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_mana_feeder(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_mana_feederAI(pCreature);
-    }
-    
-    
+    }
 };
 
 class npc_arcane_protector : public CreatureScript
@@ -1152,14 +1163,14 @@ public:
     			
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_arcane_protector(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_arcane_protectorAI(pCreature);
-    }
-    
-    
+    }
 };
 
 

@@ -95,7 +95,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_ramstein_the_gorger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_ramstein_the_gorgerAI (pCreature);
     }

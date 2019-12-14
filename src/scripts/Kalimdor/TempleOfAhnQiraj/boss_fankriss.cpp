@@ -208,7 +208,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_fankriss(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_fankrissAI (pCreature);
     }

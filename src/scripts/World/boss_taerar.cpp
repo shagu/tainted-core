@@ -205,21 +205,23 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_boss_taerar(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_taerarAI (pCreature);
-    }
-    
-    
+    }
+
 };
 
 class boss_shade_of_taerar : public CreatureScript
 {
 public: 
     boss_shade_of_taerar() : CreatureScript("boss_shade_of_taerar") { }
-    
+    
+
 
     // Shades of Taerar Script
     struct boss_shadeoftaerarAI : public ScriptedAI
@@ -264,12 +266,10 @@ public:
 
 
 
-    CreatureAI* GetAI_boss_shadeoftaerar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_shadeoftaerarAI(pCreature);
-    }
-    
-    
+    }
 };
 
 

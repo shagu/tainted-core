@@ -182,14 +182,18 @@ public:
     		}
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_boss_blood_guard_porungAI(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_blood_guard_porungAI>(pCreature);
     }
-
-    
+
+
+    
+
     
 };
 
@@ -244,13 +248,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_shattered_zealot(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_shattered_zealotAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -349,13 +357,17 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_blood_guard(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_blood_guardAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 

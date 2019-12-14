@@ -590,7 +590,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_giant_infernal(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_giant_infernalAI(pCreature);
     }
@@ -697,7 +697,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_abomination(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_abominationAI(pCreature);
     }
@@ -809,7 +809,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_ghoul(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_ghoulAI(pCreature);
     }
@@ -937,7 +937,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_necromancer(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_necromancerAI(pCreature);
     }
@@ -1050,7 +1050,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_banshee(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_bansheeAI(pCreature);
     }
@@ -1148,7 +1148,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_crypt_fiend(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_crypt_fiendAI(pCreature);
     }
@@ -1246,14 +1246,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_fel_stalker(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_fel_stalkerAI(pCreature);
     }
 
-    
-
-    
 
     
 };
@@ -1370,16 +1367,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_frost_wyrm(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_frost_wyrmAI(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 class mob_gargoyle : public CreatureScript
@@ -1520,7 +1512,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_gargoyle(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_gargoyleAI(pCreature);
     }
@@ -1592,16 +1584,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_alliance_rifleman(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new alliance_riflemanAI(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 

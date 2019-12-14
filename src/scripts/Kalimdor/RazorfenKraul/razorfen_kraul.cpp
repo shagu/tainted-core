@@ -128,7 +128,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_willix(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_willixAI(pCreature);
     }
@@ -190,16 +190,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_deaths_head_ward_keeper(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_deaths_head_ward_keeperAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

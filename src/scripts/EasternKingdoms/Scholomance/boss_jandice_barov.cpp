@@ -156,13 +156,15 @@ public:
 
 
 
-    
-    CreatureAI* GetAI_boss_jandicebarov(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_jandicebarovAI(pCreature);
     }
 
-
+
+
     
 };
 
@@ -205,13 +207,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_mob_illusionofjandicebarov(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_illusionofjandicebarovAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 

@@ -521,14 +521,10 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_shattered_rumbler(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_shattered_rumblerAI (pCreature);
     }
-
-    
-
-    
 };
 
 class mob_lump : public CreatureScript
@@ -629,7 +625,7 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_lump(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_lumpAI(pCreature);
     }
@@ -735,7 +731,7 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_sunspring_villager(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_sunspring_villagerAI (pCreature);
     }
@@ -1126,7 +1122,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_maghar_captive(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_maghar_captiveAI(pCreature);
     }
@@ -1193,7 +1189,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_creditmarker_visit_with_ancestors(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_creditmarker_visit_with_ancestorsAI (pCreature);
     }
@@ -1375,7 +1371,7 @@ public:
 		}
 	};
 
-	CreatureAI* GetAI_npc_maghar_prisoner(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_maghar_prisonerAI(pCreature);
 	}
@@ -1478,7 +1474,7 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_sparrowhawk(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_sparrowhawkAI (pCreature);
     }
@@ -1578,7 +1574,7 @@ public:
 
 
 
-	CreatureAI* GetAI_npc_corki1(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_corki1AI(pCreature);
 	}
@@ -1666,7 +1662,7 @@ public:
 		}
 	};
 
-	CreatureAI* GetAI_npc_corki2(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_corki2AI(pCreature);
 	}
@@ -1754,7 +1750,7 @@ public:
 		}
 	};
 
-	CreatureAI* GetAI_npc_corki3(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_corki3AI(pCreature);
 	}
@@ -1902,7 +1898,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_kurenai_captive(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_kurenai_captiveAI(pCreature);
     }
@@ -2172,14 +2168,11 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_warmaul_pyre(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_warmaul_pyreAI(creature);
     }
 
-    
-
-    
 };
 
 class npc_fel_cannon_haf : public CreatureScript
@@ -2221,7 +2214,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_fel_cannon_haf(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_fel_cannon_hafAI(creature);
     }
@@ -2279,7 +2272,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_living_cyclone(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_living_cycloneAI(creature);
     }
@@ -2339,7 +2332,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_enraged_crusher(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_enraged_crusherAI(creature);
     }
@@ -2386,14 +2379,10 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_storm_rager(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_storm_ragerAI(creature);
     }
-
-    
-
-    
 };
 
 class npc_lake_surger : public CreatureScript
@@ -2422,14 +2411,10 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_lake_surger(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_lake_surgerAI(creature);
     }
-
-    
-
-    
 };
 
 class npc_lake_spirit : public CreatureScript
@@ -2469,14 +2454,11 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_lake_spirit(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_lake_spiritAI(creature);
     }
 
-    
-
-    
 };
 
 class npc_tortured_earth_spirit : public CreatureScript
@@ -2529,14 +2511,11 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_tortured_earth_spirit(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_tortured_earth_spiritAI(creature);
     }
 
-    
-
-    
 };
 
 class npc_crashing_wave_spirit : public CreatureScript
@@ -2576,14 +2555,10 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_crashing_wave_spirit(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_crashing_wave_spiritAI(creature);
     }
-
-    
-
-    
 };
 
 class npc_raging_fire_soul : public CreatureScript
@@ -2639,14 +2614,11 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_raging_fire_soul(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_raging_fire_soulAI(creature);
     }
 
-    
-
-    
 };
 
 class npc_storming_wind_ripper : public CreatureScript
@@ -2725,14 +2697,10 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_storming_wind_ripper(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_storming_wind_ripperAI(creature);
     }
-
-    
-
-    
 };
 
 class npc_rumbling_earth_heart : public CreatureScript
@@ -2785,14 +2753,11 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_rumbling_earth_heart(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_rumbling_earth_heartAI(creature);
     }
 
-    
-
-    
 };
 
 

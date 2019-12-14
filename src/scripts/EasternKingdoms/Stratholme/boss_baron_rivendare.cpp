@@ -187,7 +187,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_baron_rivendare(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_baron_rivendareAI>(pCreature);
     }

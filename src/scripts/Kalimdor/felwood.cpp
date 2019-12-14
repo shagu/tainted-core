@@ -93,12 +93,10 @@ public:
         return true;
     }
 
-    CreatureAI* GetAI_script_name(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npcs_riverbreeze_and_silverskyAI(pCreature);
     }
-
-
 };
 
 void AddSC_felwood()

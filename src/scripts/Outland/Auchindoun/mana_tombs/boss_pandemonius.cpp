@@ -114,7 +114,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_pandemonius(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_pandemoniusAI (pCreature);
     }

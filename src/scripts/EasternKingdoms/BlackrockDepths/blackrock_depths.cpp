@@ -454,7 +454,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_marshal_reginald_windsor(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         npc_marshal_reginald_windsorAI* marshal_reginald_windsorAI = new npc_marshal_reginald_windsorAI(pCreature);
 
@@ -724,7 +724,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_grimstone(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<npc_grimstoneAI>(pCreature);
     }
@@ -799,7 +799,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_mob_phalanx(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_phalanxAI(pCreature);
     }
@@ -1035,7 +1035,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_marshal_windsor(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         npc_marshal_windsorAI* marshal_windsorAI = new npc_marshal_windsorAI(pCreature);
 
@@ -1179,7 +1179,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_dughal_stormwing(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         npc_dughal_stormwingAI* dughal_stormwingAI = new npc_dughal_stormwingAI(pCreature);
 
@@ -1258,7 +1258,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_tobias_seecher(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         npc_tobias_seecherAI* tobias_seecherAI = new npc_tobias_seecherAI(pCreature);
 
@@ -1364,7 +1364,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_crest(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_crestAI(pCreature);
     }
@@ -1423,7 +1423,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_shill(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_shillAI(pCreature);
     }
@@ -1486,7 +1486,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_ograbisi(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_ograbisiAI(pCreature);
     }
@@ -1549,7 +1549,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_jaz(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_jazAI(pCreature);
     }
@@ -1653,7 +1653,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_rocknot(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<npc_rocknotAI>(pCreature);
     }

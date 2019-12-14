@@ -282,7 +282,7 @@ public:
 
 
 
-	CreatureAI* GetAI_npc_stormwind_royal_guard(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_stormwind_royal_guardAI(pCreature);
 	}
@@ -450,7 +450,7 @@ public:
 
 
 
-	CreatureAI* GetAI_npc_lord_gregor_lescovar(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_lord_gregor_lescovarAI(pCreature);
 	}
@@ -543,7 +543,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_bartleby(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_bartlebyAI(pCreature);
     }
@@ -598,7 +598,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_dashel_stonefist(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_dashel_stonefistAI(pCreature);
     }
@@ -644,7 +644,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_general_marcus_jonathan(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_general_marcus_jonathanAI(pCreature);
     }
@@ -863,7 +863,7 @@ public:
 		}
 	};
 
-	CreatureAI* GetAI_npc_tyrion_spybot(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_tyrion_spybotAI(pCreature);
 	}
@@ -949,7 +949,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_marzon_silent_blade(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_marzon_silent_bladeAI(pCreature);
     }

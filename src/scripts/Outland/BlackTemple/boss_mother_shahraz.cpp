@@ -341,7 +341,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_mother_shahraz(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_mother_shahrazAI>(pCreature);
     }

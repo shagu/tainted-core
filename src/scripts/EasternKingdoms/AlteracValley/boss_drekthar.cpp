@@ -140,7 +140,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_drekthar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_drektharAI(pCreature);
     }

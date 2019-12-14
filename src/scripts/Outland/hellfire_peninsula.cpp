@@ -771,13 +771,17 @@
 //    
 //            DoMeleeAttackIfReady();
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_aeranas(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_aeranasAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -837,13 +841,17 @@
 //            if (pWho->GetTypeId() == TYPEID_PLAYER)
 //                Start(false, false, pWho->GetGUID());
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_ancestral_wolf(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_ancestral_wolfAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -851,15 +859,19 @@
 //{
 //public: 
 //    go_haaleshi_altar() : GameObjectScript("go_haaleshi_altar") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player*, GameObject* _GO) override
 //    {
 //        _GO->SummonCreature(C_AERANAS, -1321.79f, 4043.80f, 116.24f, 1.25f, TEMPSUMMON_TIMED_DESPAWN, 180000);
 //        return false;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -867,8 +879,10 @@
 //{
 //public: 
 //    npc_naladu() : CreatureScript("npc_naladu") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
 //    {
 //        if (pCreature->IsQuestGiver())
@@ -878,7 +892,8 @@
 //        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
 //    {
 //        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -886,8 +901,10 @@
 //    
 //        return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -895,8 +912,10 @@
 //{
 //public: 
 //    npc_tracy_proudwell() : CreatureScript("npc_tracy_proudwell") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
 //    {
 //        if (pCreature->IsQuestGiver())
@@ -911,7 +930,8 @@
 //        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
 //    {
 //        switch (uiAction)
@@ -930,8 +950,10 @@
 //    
 //        return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -939,8 +961,10 @@
 //{
 //public: 
 //    npc_trollbane() : CreatureScript("npc_trollbane") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
 //    {
 //        if (pCreature->IsQuestGiver())
@@ -951,7 +975,8 @@
 //        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
 //    {
 //        switch (uiAction)
@@ -970,8 +995,10 @@
 //    
 //        return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -979,8 +1006,10 @@
 //{
 //public: 
 //    npc_wing_commander_dabiree() : CreatureScript("npc_wing_commander_dabiree") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player* player, Creature* pCreature) override
 //    {
 //        if (pCreature->IsQuestGiver())
@@ -998,7 +1027,8 @@
 //    
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* player, Creature* /*pCreature*/, uint32 /*sender*/, uint32 action) override
 //    {
 //        if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1013,8 +1043,10 @@
 //        }
 //        return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -1022,8 +1054,10 @@
 //{
 //public: 
 //    npc_gryphoneer_leafbeard() : CreatureScript("npc_gryphoneer_leafbeard") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player* player, Creature* pCreature) override
 //    {
 //        //Go back to Shatter Point if player has completed the quest 10340 - Shatter Point
@@ -1033,7 +1067,8 @@
 //        player->SEND_GOSSIP_MENU(player->GetGossipTextId(pCreature), pCreature->GetGUID());
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* player, Creature* /*pCreature*/, uint32 /*sender*/, uint32 action) override
 //    {
 //        if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1044,8 +1079,10 @@
 //        }
 //        return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -1053,8 +1090,10 @@
 //{
 //public: 
 //    npc_wing_commander_brack() : CreatureScript("npc_wing_commander_brack") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player* player, Creature* pCreature) override
 //    {
 //        if (pCreature->IsQuestGiver())
@@ -1076,7 +1115,9 @@
 //    
 //        return true;
 //    }
-//    ////
+//    
+//
+//
 //    bool OnGossipSelect(Player* player, Creature* /*pCreature*/, uint32 /*sender*/, uint32 action) override
 //    {
 //        switch (action)
@@ -1096,8 +1137,10 @@
 //        }
 //        return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -1156,12 +1199,15 @@
 //        {
 //            summoned->AI()->AttackStart(me);
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_wounded_blood_elf(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_wounded_blood_elfAI(pCreature);
-//    }//
+//    }
+//
 //    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
 //    {
 //        if (quest->GetQuestId() == QUEST_ROAD_TO_FALCON_WATCH)
@@ -1175,8 +1221,10 @@
 //    
 //        return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -1214,13 +1262,17 @@
 //                CAST_AI(npc_anchorite_relic_bunny::npc_anchorite_relic_bunnyAI, Bunny->AI())->DoSpellHit(me);
 //            }
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_hand_berserker(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return new npc_hand_berserkerAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1305,13 +1357,17 @@
 //            }
 //            else EndTimer -= diff;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_anchorite_relic_bunny(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return new npc_anchorite_relic_bunnyAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1584,12 +1640,15 @@
 //            }
 //            else uiStepsTimer -= uiDiff;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_anchorite_barada(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_anchorite_baradaAI(pCreature);
-//    }//
+//    }
+//
 //    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
 //    {
 //        if (pPlayer->GetQuestStatus(QUEST_THE_EXORCIM) == QUEST_STATUS_INCOMPLETE)
@@ -1597,7 +1656,8 @@
 //        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool GossipHello_npc_anchorite_barada(Player* pPlayer, Creature* pCreature)
 //    {
 //        if (pPlayer->GetQuestStatus(QUEST_THE_EXORCIM) == QUEST_STATUS_INCOMPLETE)
@@ -1605,7 +1665,8 @@
 //        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool GossipSelect_npc_anchorite_barada(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
 //    {
 //        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1615,7 +1676,8 @@
 //        }
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
 //    {
 //        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1625,8 +1687,10 @@
 //        }
 //        return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -1713,13 +1777,17 @@
 //            }
 //            else uiChTimer -= uiDiff;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_darkness_released(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_darkness_releasedAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1764,13 +1832,17 @@
 //    
 //            DoMeleeAttackIfReady();
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_foul_purge(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_foul_purgeAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1801,13 +1873,17 @@
 //                pSummoned->GetMotionMaster()->MovePoint(0, 208.029f, 4134.618f, 77.763f);
 //            }
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_sedai_quest_credit_marker(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_sedai_quest_credit_markerAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1951,12 +2027,15 @@
 //            }
 //            else uiSpawnOrcTimer -= uiDiff;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_demoniac_scryer(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_demoniac_scryerAI(pCreature);
-//    }//
+//    }
+//
 //    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
 //    {
 //        if (npc_demoniac_scryerAI* pScryerAI = dynamic_cast<npc_demoniac_scryerAI*>(pCreature->AI()))
@@ -1972,7 +2051,8 @@
 //        pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_PROTECT, pCreature->GetGUID());
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool GossipHello_npc_demoniac_scryer(Player* pPlayer, Creature* pCreature)
 //    {
 //        if (npc_demoniac_scryerAI* pScryerAI = dynamic_cast<npc_demoniac_scryerAI*>(pCreature->AI()))
@@ -1988,7 +2068,8 @@
 //        pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_PROTECT, pCreature->GetGUID());
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool GossipSelect_npc_demoniac_scryer(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
 //    {
 //        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1998,7 +2079,8 @@
 //        }
 //        return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
 //    {
 //        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -2008,8 +2090,10 @@
 //        }
 //        return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -2055,13 +2139,17 @@
 //            }
 //            else uiCheckTimer -= uiDiff;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_magic_sucker_device_spawner(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_magic_sucker_device_spawnerAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -2115,13 +2203,17 @@
 //            }
 //            else uiCheckTimer -= uiDiff;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_living_flare(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_living_flareAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -2244,13 +2336,17 @@
 //                else uiSumTimer -= uiDiff;
 //            }
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_pathaleon_image(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_pathaleon_imageAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -2307,13 +2403,17 @@
 //    
 //            DoMeleeAttackIfReady();
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_fel_guard_hound(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_fel_guard_houndAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -2419,13 +2519,17 @@
 //    
 //    		DoMeleeAttackIfReady();
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_arrazius_the_cruel(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_arrazius_the_cruelAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -2474,13 +2578,17 @@
 //    
 //    		DoMeleeAttackIfReady();
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_fel_cannon(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_fel_cannonAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -2552,13 +2660,17 @@
 //    
 //    		DoMeleeAttackIfReady();
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_maghar_grunt(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_maghar_gruntAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -2638,13 +2750,17 @@
 //    	
 //    		DoMeleeAttackIfReady();
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_dreghood_brute(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_dreghood_bruteAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -2685,12 +2801,15 @@
 //    
 //    		DoMeleeAttackIfReady();
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_dreghood_elder1(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_dreghood_elder1AI(pCreature);
-//    }//
+//    }
+//
 //    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
 //    {
 //    
@@ -2704,7 +2823,8 @@
 //    
 //    	return true;
 //    }
-//    //
+//    
+//
 //    bool GossipHello_npc_dreghood_elder1(Player* pPlayer, Creature* pCreature)
 //    {
 //    
@@ -2718,7 +2838,8 @@
 //    
 //    	return true;
 //    }
-//    //
+//    
+//
 //    bool GossipSelect_npc_dreghood_elder1(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
 //    {
 //    	switch (uiAction)
@@ -2733,7 +2854,8 @@
 //    	}
 //    	return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
 //    {
 //    	switch (uiAction)
@@ -2748,8 +2870,10 @@
 //    	}
 //    	return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -2790,12 +2914,15 @@
 //    
 //    		DoMeleeAttackIfReady();
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_dreghood_elder2(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_dreghood_elder2AI(pCreature);
-//    }//
+//    }
+//
 //    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
 //    {
 //    	if (pCreature->IsQuestGiver())
@@ -2808,7 +2935,8 @@
 //    
 //    	return true;
 //    }
-//    //
+//    
+//
 //    bool GossipHello_npc_dreghood_elder2(Player* pPlayer, Creature* pCreature)
 //    {
 //    	if (pCreature->IsQuestGiver())
@@ -2821,7 +2949,8 @@
 //    
 //    	return true;
 //    }
-//    //
+//    
+//
 //    bool GossipSelect_npc_dreghood_elder2(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
 //    {
 //    	switch (uiAction)
@@ -2835,7 +2964,8 @@
 //    	}
 //    	return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
 //    {
 //    	switch (uiAction)
@@ -2849,8 +2979,10 @@
 //    	}
 //    	return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -2891,12 +3023,15 @@
 //    
 //    		DoMeleeAttackIfReady();
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_dreghood_elder3(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_dreghood_elder3AI(pCreature);
-//    }//
+//    }
+//
 //    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
 //    {
 //    	if (pCreature->IsQuestGiver())
@@ -2909,7 +3044,8 @@
 //    
 //    	return true;
 //    }
-//    //
+//    
+//
 //    bool GossipHello_npc_dreghood_elder3(Player* pPlayer, Creature* pCreature)
 //    {
 //    	if (pCreature->IsQuestGiver())
@@ -2922,7 +3058,8 @@
 //    
 //    	return true;
 //    }
-//    //
+//    
+//
 //    bool GossipSelect_npc_dreghood_elder3(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
 //    {
 //    	switch (uiAction)
@@ -2937,7 +3074,8 @@
 //    	}
 //    	return true;
 //    }
-//    //
+//    
+//
 //    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
 //    {
 //    	switch (uiAction)
@@ -2952,8 +3090,10 @@
 //    	}
 //    	return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -3078,9 +3218,11 @@
 //    	{
 //    		npc_escortAI::UpdateAI(diff);
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_viera(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	npc_vieraAI* vieraAI = new npc_vieraAI(pCreature);
 //    
@@ -3100,7 +3242,8 @@
 //    	vieraAI->AddWaypoint(13, -742.759f, 4073.034f, 47.413f, 0);
 //    
 //    	return vieraAI;
-//    }//
+//    }
+//
 //    bool OnQuestReward(Player* pPlayer, Creature* pCreature, const Quest* _Quest, uint32 /*item*/) override
 //    {
 //    	if (_Quest->GetQuestId() == QUEST_ARELION_MISTRESS_SIDEQ)
@@ -3114,8 +3257,10 @@
 //    
 //    	return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -3233,13 +3378,17 @@
 //    
 //    		DoMeleeAttackIfReady();
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_felblood_initiate(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_felblood_initiateAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3276,13 +3425,17 @@
 //    
 //    		DoMeleeAttackIfReady();
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_felspark(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_felsparkAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3319,13 +3472,17 @@
 //    			}
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_camerashaker(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_camerashakerAI(pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3371,13 +3528,17 @@
 //    			else ResetTimer -= diff;
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_east_hovel(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_east_hovelAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3422,13 +3583,17 @@
 //    			else ResetTimer -= diff;
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_west_hovel(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //    	return new npc_west_hovelAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3474,13 +3639,17 @@
 //    			else ResetTimer -= diff;
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_stable(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //    	return new npc_stableAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3526,13 +3695,17 @@
 //    			else ResetTimer -= diff;
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_barracks(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //    	return new npc_barracksAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3574,13 +3747,17 @@
 //    			else ResetTimer -= diff;
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_tower_forge(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //    	return new npc_tower_forgeAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3622,13 +3799,17 @@
 //    			else ResetTimer -= diff;
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_tower_north(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //    	return new npc_tower_northAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3670,13 +3851,17 @@
 //    			else ResetTimer -= diff;
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_tower_south(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //    	return new npc_tower_southAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3718,13 +3903,17 @@
 //    			else ResetTimer -= diff;
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_tower_foothill(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //    	return new npc_tower_foothillAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3732,15 +3921,19 @@
 //{
 //public: 
 //    go_central_beacon() : GameObjectScript("go_central_beacon") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player*, GameObject* _GO) override
 //    {
 //    	_GO->SummonGameObject(180352, -585.287f, 3779.997f, 31.0f, 0, 0, 0, 0, 0, 60);
 //    	return false;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -3748,15 +3941,19 @@
 //{
 //public: 
 //    go_western_beacon() : GameObjectScript("go_western_beacon") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player*, GameObject* _GO) override
 //    {
 //    	_GO->SummonGameObject(180352, -605.096f, 3988.93f, 31.3f, 0, 0, 0, 0, 0, 60);
 //    	return false;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -3764,15 +3961,19 @@
 //{
 //public: 
 //    go_southern_beacon() : GameObjectScript("go_southern_beacon") { }
-//    //
-//    //
+//    
+//
+//    
+//
 //    bool OnGossipHello(Player*, GameObject* _GO) override
 //    {
 //    	_GO->SummonGameObject(180352, -769.909f, 3674.104f, 29.6f, 0, 0, 0, 0, 0, 60);
 //    	return false;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //
@@ -3815,13 +4016,17 @@
 //    			else ResetTimer -= diff;
 //    		}
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_trigger_beacon_fire(Creature* creature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //    	return new trigger_beacon_fireAI(creature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -3897,12 +4102,15 @@
 //    		}
 //    		else uiStepsTimer -= uiDiff;
 //    	}
-//    };//
-//    //
-//    CreatureAI* GetAI_npc_azethen(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_azethenAI(pCreature);
-//    }//
+//    }
+//
 //    bool OnQuestReward(Player* pPlayer, Creature* pCreature, const Quest* _Quest, uint32 /*item*/) override
 //    {
 //    	if (_Quest->GetQuestId() == 9387)
@@ -3912,8 +4120,10 @@
 //    
 //    	return true;
 //    }
-//    //
-//    //
+//    
+//
+//    
+//
 //    
 //};
 //

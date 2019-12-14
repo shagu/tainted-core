@@ -179,7 +179,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_shirrak_the_dead_watcher(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_shirrak_the_dead_watcherAI (pCreature);
     }
@@ -228,16 +228,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_focus_fire(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_focus_fireAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

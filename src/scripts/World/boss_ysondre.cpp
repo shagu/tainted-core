@@ -155,16 +155,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_ysondre(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_ysondreAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_dementeddruids : public CreatureScript
@@ -200,16 +194,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_dementeddruids(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_dementeddruidsAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

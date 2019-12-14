@@ -107,7 +107,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_npc_lazy_peon(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_lazy_peonAI(pCreature);
     }

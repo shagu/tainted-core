@@ -241,7 +241,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_supremus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_supremusAI>(pCreature);
     }
@@ -267,16 +267,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_molten_flame(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new molten_flameAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class npc_volcano : public CreatureScript
@@ -333,16 +327,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_volcano(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<npc_volcanoAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

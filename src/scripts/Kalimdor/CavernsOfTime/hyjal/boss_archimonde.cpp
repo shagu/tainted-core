@@ -192,16 +192,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_doomfire(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_doomfireAI(pCreature);
     }
-
-
-
-
-
-
 };
 
 class mob_doomfire_targetting : public CreatureScript
@@ -297,16 +291,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_doomfire_targetting(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_doomfire_targettingAI(pCreature);
     }
-
-
-
-
-
-
 };
 
 class mob_ancient_wisp : public CreatureScript
@@ -366,16 +354,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_ancient_wisp(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_ancient_wispAI(pCreature);
     }
-
-
-
-
-
-
 };
 
 class boss_archimonde : public CreatureScript
@@ -767,16 +749,11 @@ public:
         void WaypointReached(uint32 /*i*/) {}
     };
 
-    CreatureAI* GetAI_boss_archimonde(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_archimondeAI (pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 

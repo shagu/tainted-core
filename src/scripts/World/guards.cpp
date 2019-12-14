@@ -3299,11 +3299,13 @@ class guard_azuremyst : public CreatureScript
 {
 public: 
     guard_azuremyst() : CreatureScript("guard_azuremyst") { }
-    
-    CreatureAI* GetAI_guard_azuremyst(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK            , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3316,7 +3318,9 @@ public:
         player->SEND_GOSSIP_MENU(10066, pCreature->GetGUID());
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3333,8 +3337,6 @@ public:
         }
         return true;
     }
-    
-    
     
 };
 
@@ -3342,11 +3344,13 @@ class guard_bluffwatcher : public CreatureScript
 {
 public: 
     guard_bluffwatcher() : CreatureScript("guard_bluffwatcher") { }
-    
-    CreatureAI* GetAI_guard_bluffwatcher(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK         , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3363,7 +3367,8 @@ public:
         player->SEND_GOSSIP_MENU(3543, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3383,8 +3388,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3392,24 +3399,25 @@ class guard_contested : public CreatureScript
 {
 public: 
     guard_contested() : CreatureScript("guard_contested") { }
-    
-    CreatureAI* GetAI_guard_contested(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
-    
-    
+    }
 };
 
 class guard_darnassus : public CreatureScript
 {
 public: 
     guard_darnassus() : CreatureScript("guard_darnassus") { }
-    
-    CreatureAI* GetAI_guard_darnassus(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_AUCTIONHOUSE   , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3446,8 +3454,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3455,11 +3465,13 @@ class guard_dunmorogh : public CreatureScript
 {
 public: 
     guard_dunmorogh() : CreatureScript("guard_dunmorogh") { }
-    
-    CreatureAI* GetAI_guard_dunmorogh(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK             , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3473,7 +3485,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3490,8 +3503,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3499,11 +3514,13 @@ class guard_durotar : public CreatureScript
 {
 public: 
     guard_durotar() : CreatureScript("guard_durotar") { }
-    
-    CreatureAI* GetAI_guard_durotar(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK         , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3532,8 +3549,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3541,11 +3560,13 @@ class guard_elwynnforest : public CreatureScript
 {
 public: 
     guard_elwynnforest() : CreatureScript("guard_elwynnforest") { }
-    
-    CreatureAI* GetAI_guard_elwynnforest(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK          , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3558,7 +3579,8 @@ public:
         player->SEND_GOSSIP_MENU(933, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3575,8 +3597,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3584,11 +3608,13 @@ class guard_eversong : public CreatureScript
 {
 public: 
     guard_eversong() : CreatureScript("guard_eversong") { }
-    
-    CreatureAI* GetAI_guard_eversong(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BATHANDLER    , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3600,7 +3626,8 @@ public:
         player->SEND_GOSSIP_MENU(10180, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3617,8 +3644,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3626,11 +3655,13 @@ class guard_exodar : public CreatureScript
 {
 public: 
     guard_exodar() : CreatureScript("guard_exodar") { }
-    
-    CreatureAI* GetAI_guard_exodar(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_AUCTIONHOUSE   , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3647,7 +3678,9 @@ public:
         player->SEND_GOSSIP_MENU(9551, pCreature->GetGUID());
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3667,8 +3700,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3676,11 +3711,13 @@ class guard_ironforge : public CreatureScript
 {
 public: 
     guard_ironforge() : CreatureScript("guard_ironforge") { }
-    
-    CreatureAI* GetAI_guard_ironforge(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_AUCTIONHOUSE      , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3698,7 +3735,8 @@ public:
         player->SEND_GOSSIP_MENU(2760, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3718,8 +3756,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3727,11 +3767,13 @@ class guard_mulgore : public CreatureScript
 {
 public: 
     guard_mulgore() : CreatureScript("guard_mulgore") { }
-    
-    CreatureAI* GetAI_guard_mulgore(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK         , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3743,7 +3785,9 @@ public:
         player->SEND_GOSSIP_MENU(3543, pCreature->GetGUID());
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3760,8 +3804,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3769,11 +3815,13 @@ class guard_orgrimmar : public CreatureScript
 {
 public: 
     guard_orgrimmar() : CreatureScript("guard_orgrimmar") { }
-    
-    CreatureAI* GetAI_guard_orgrimmar(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI_orgrimmar (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK          , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3793,7 +3841,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3813,8 +3862,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3822,11 +3873,13 @@ class guard_shattrath : public CreatureScript
 {
 public: 
     guard_shattrath() : CreatureScript("guard_shattrath") { }
-    
-    CreatureAI* GetAI_guard_shattrath(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_TAVERN                       , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3844,7 +3897,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3876,8 +3930,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -3940,12 +3996,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_guard_shattrath_aldor(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guard_shattrath_aldorAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_TAVERN                       , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -3962,7 +4021,8 @@ public:
         player->SEND_GOSSIP_MENU(10524, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -3979,8 +4039,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -4043,12 +4105,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_guard_shattrath_scryer(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guard_shattrath_scryerAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_TAVERN                       , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -4065,8 +4130,10 @@ public:
         player->SEND_GOSSIP_MENU(10430, pCreature->GetGUID());
         return true;
     }
-    
-    
+    
+
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -4083,8 +4150,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -4092,11 +4161,13 @@ class guard_silvermoon : public CreatureScript
 {
 public: 
     guard_silvermoon() : CreatureScript("guard_silvermoon") { }
-    
-    CreatureAI* GetAI_guard_silvermoon(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_AUCTIONHOUSE   , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -4113,7 +4184,8 @@ public:
         player->SEND_GOSSIP_MENU(9316, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipHello_guard_silvermoon(Player* player, Creature* pCreature)
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_AUCTIONHOUSE   , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -4130,7 +4202,8 @@ public:
         player->SEND_GOSSIP_MENU(9316, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipSelect_guard_silvermoon(Player* player, Creature* pCreature, uint32 sender, uint32 action)
     {
         switch (sender)
@@ -4156,7 +4229,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -4182,8 +4256,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -4191,11 +4267,13 @@ class guard_stormwind : public CreatureScript
 {
 public: 
     guard_stormwind() : CreatureScript("guard_stormwind") { }
-    
-    CreatureAI* GetAI_guard_stormwind(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI_stormwind (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_AUCTIONHOUSE      , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -4214,7 +4292,8 @@ public:
         player->SEND_GOSSIP_MENU(933, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -4234,8 +4313,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -4243,11 +4324,13 @@ class guard_teldrassil : public CreatureScript
 {
 public: 
     guard_teldrassil() : CreatureScript("guard_teldrassil") { }
-    
-    CreatureAI* GetAI_guard_teldrassil(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK         , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -4260,7 +4343,8 @@ public:
         player->SEND_GOSSIP_MENU(4316, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -4277,8 +4361,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -4286,11 +4372,13 @@ class guard_tirisfal : public CreatureScript
 {
 public: 
     guard_tirisfal() : CreatureScript("guard_tirisfal") { }
-    
-    CreatureAI* GetAI_guard_tirisfal(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK            , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -4302,7 +4390,9 @@ public:
         player->SEND_GOSSIP_MENU(4097, pCreature->GetGUID());
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -4319,8 +4409,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -4328,11 +4420,13 @@ class guard_undercity : public CreatureScript
 {
 public: 
     guard_undercity() : CreatureScript("guard_undercity") { }
-    
-    CreatureAI* GetAI_guard_undercity(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new guardAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK          , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
@@ -4350,7 +4444,8 @@ public:
         player->SEND_GOSSIP_MENU(3543, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)
@@ -4370,8 +4465,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

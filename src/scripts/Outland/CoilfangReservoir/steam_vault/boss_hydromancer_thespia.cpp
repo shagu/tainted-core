@@ -67,7 +67,8 @@ class boss_hydromancer_thespia : public CreatureScript
 {
 public: 
     boss_hydromancer_thespia() : CreatureScript("boss_hydromancer_thespia") { }
-        struct boss_thespiaAI : public ScriptedAI
+    
+    struct boss_thespiaAI : public ScriptedAI
     {
         boss_thespiaAI(Creature* c) : ScriptedAI(c)
         {
@@ -140,11 +141,13 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_thespiaAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_thespiaAI>(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -181,14 +184,18 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    
-    CreatureAI* GetAI_mob_coilfang_waterelementalAI(Creature* pCreature)
+    };
+
+    
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_coilfang_waterelementalAI(pCreature);
     }
-
+
+
     
 };
 

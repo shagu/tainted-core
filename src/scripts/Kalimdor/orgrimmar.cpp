@@ -109,8 +109,10 @@ class npc_neeru_fireblade : public CreatureScript
 {
 public: 
     npc_neeru_fireblade() : CreatureScript("npc_neeru_fireblade") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -122,8 +124,10 @@ public:
         pPlayer->SEND_GOSSIP_MENU(4513, pCreature->GetGUID());
         return true;
     }
-    
-    
+    
+
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -139,8 +143,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -213,12 +219,15 @@ public:
                 }
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_shenthul(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_shenthulAI (pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_SHATTERED_SALUTE)
@@ -228,8 +237,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -273,12 +284,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_thrall_warchief(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_thrall_warchiefAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -290,7 +304,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipHello_npc_thrall_warchief(Player* pPlayer, Creature* pCreature)
     {
         if (pCreature->IsQuestGiver())
@@ -302,7 +317,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_thrall_warchief(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
     {
         switch (uiAction)
@@ -338,7 +354,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -374,8 +391,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -383,8 +402,10 @@ class npc_eitrigg : public CreatureScript
 {
 public: 
     npc_eitrigg() : CreatureScript("npc_eitrigg") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -436,8 +457,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

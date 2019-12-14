@@ -493,13 +493,12 @@ public:
     	}
     };
     
-    CreatureAI* GetAI_boss_nightbane(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_nightbaneAI (pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_nightbane()
 {
     new boss_nightbane();

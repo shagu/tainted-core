@@ -249,16 +249,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_anetheron(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_anetheronAI (pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 class mob_towering_infernal : public CreatureScript
@@ -337,16 +332,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_towering_infernal(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_towering_infernalAI (pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 

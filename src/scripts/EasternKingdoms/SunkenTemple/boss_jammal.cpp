@@ -145,7 +145,7 @@ public:
     	}
     };
     
-    CreatureAI* GetAI_boss_Jammal(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new boss_JammalAI(pCreature);
     }

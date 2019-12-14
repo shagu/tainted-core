@@ -217,12 +217,15 @@ public:
                 if (crew->IsAlive())
                     crew->SetFaction(FACTION_HOSTILE);
         }
-    };
-    
-    CreatureAI* GetAI_npc_sergeant_bly(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_sergeant_blyAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         ScriptedInstance* instance = (ScriptedInstance*)creature->GetInstanceData();
@@ -240,7 +243,8 @@ public:
             player->SEND_GOSSIP_MENU(1516, creature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -251,8 +255,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -298,7 +304,8 @@ public:
                 DoCastAOE(SPELL_BARREL_EXPLOSION, true);
                 /// @todo leave the area...
                 me->DisappearAndDie();
-            };        }
+            };
+        }
 
         void UpdateAI(const uint32 /*diff*/)
         {
@@ -319,11 +326,13 @@ public:
                 destroyingDoor = true;
             }
         }
-    };
-    CreatureAI* GetAI_npc_weegli_blastfuse(Creature* pCreature)
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_weegli_blastfuseAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         ScriptedInstance* instance = (ScriptedInstance*)creature->GetInstanceData();
@@ -345,7 +354,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
@@ -360,8 +371,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -369,8 +382,10 @@ class go_shallow_grave : public GameObjectScript
 {
 public: 
     go_shallow_grave() : GameObjectScript("go_shallow_grave") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* /*pPlayer*/, GameObject* pGo) override
     {
         // randomly summon a zombie or dead hero the first time a grave is used
@@ -385,8 +400,10 @@ public:
         pGo->AddUse();
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -394,8 +411,10 @@ class go_troll_cage : public GameObjectScript
 {
 public: 
     go_troll_cage() : GameObjectScript("go_troll_cage") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* /*pPlayer*/, GameObject* pGo) override
     {
         ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData();
@@ -405,8 +424,10 @@ public:
         pInstance->SetData(EVENT_PYRAMID, PYRAMID_CAGES_OPEN);
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -414,8 +435,10 @@ class at_zumrah : public AreaTriggerScript
 {
 public: 
     at_zumrah() : AreaTriggerScript("at_zumrah") { }
-    
-    
+    
+
+    
+
     bool OnTrigger(Player* pPlayer, const AreaTriggerEntry* /*at*/) override
     {
         Creature* Zumrah = pPlayer->FindNearestCreature(ZUMRAH_ID, 30.0f);
@@ -428,8 +451,10 @@ public:
         Zumrah->AI()->AttackStart(pPlayer);
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -437,8 +462,10 @@ class at_antusul : public AreaTriggerScript
 {
 public: 
     at_antusul() : AreaTriggerScript("at_antusul") { }
-    
-    
+    
+
+    
+
     bool OnTrigger(Player* pPlayer, const AreaTriggerEntry* /*at*/) override
     {
         Creature* Antusul = pPlayer->FindNearestCreature(ANTUSUL_ID, 80.0f);
@@ -449,8 +476,10 @@ public:
         Antusul->AI()->AttackStart(pPlayer);
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

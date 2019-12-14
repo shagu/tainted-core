@@ -92,7 +92,7 @@ public:
         }
     
     };
-    CreatureAI* GetAI_npc_henze_faulk(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_henze_faulkAI (pCreature);
     }

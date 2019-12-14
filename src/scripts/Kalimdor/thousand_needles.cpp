@@ -198,12 +198,15 @@ public:
         {
             pSummoned->AI()->AttackStart(me);
         }
-    };
-    
-    CreatureAI* GetAI_npc_kanati(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_kanatiAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_PROTECT_KANATI)
@@ -213,8 +216,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -258,12 +263,15 @@ public:
                                    m_afBanditLoc[i + uiAmbushId][0], m_afBanditLoc[i + uiAmbushId][1], m_afBanditLoc[i + uiAmbushId][2], 0.0f,
                                    TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000);
         }
-    };
-    
-    CreatureAI* GetAI_npc_lakota_windsong(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_lakota_windsongAI(pCreature);;
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_FREE_AT_LAST)
@@ -276,8 +284,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -316,12 +326,15 @@ public:
                                    m_afWyvernLoc[i][0], m_afWyvernLoc[i][1], m_afWyvernLoc[i][2], 0.0f,
                                    TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000);
         }
-    };
-    
-    CreatureAI* GetAI_npc_paoka_swiftmountain(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_paoka_swiftmountainAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_HOMEWARD)
@@ -334,8 +347,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -414,12 +429,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_plucky(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_pluckyAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->GetQuestStatus(QUEST_SCOOP) == QUEST_STATUS_INCOMPLETE)
@@ -428,7 +446,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipHello_npc_plucky(Player* pPlayer, Creature* pCreature)
     {
         if (pPlayer->GetQuestStatus(QUEST_SCOOP) == QUEST_STATUS_INCOMPLETE)
@@ -437,7 +456,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -449,8 +469,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -475,22 +497,24 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_enraged_panther(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_enraged_pantherAI(pCreature);
-    }
-    
-    
+    }
 };
 
 class go_panther_cage : public GameObjectScript
 {
 public: 
     go_panther_cage() : GameObjectScript("go_panther_cage") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, GameObject* go) override
     {
         go->UseDoorOrButton();
@@ -506,8 +530,10 @@ public:
     
         return true ;
     }
-    
-    
+    
+
+    
+
     
 };
 

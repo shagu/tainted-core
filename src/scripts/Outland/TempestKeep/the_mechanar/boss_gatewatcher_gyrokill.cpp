@@ -82,7 +82,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_gatewatcher_gryo(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_gatewatcher_gryoAI>(pCreature);
     }

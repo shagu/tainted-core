@@ -113,7 +113,8 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_anubshiah(Creature* pCreature)
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_anubshiahAI(pCreature);
     }

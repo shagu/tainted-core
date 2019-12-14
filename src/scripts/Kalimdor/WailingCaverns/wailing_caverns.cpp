@@ -316,7 +316,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_npc_disciple_of_naralex(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_disciple_of_naralexAI(pCreature);
     }

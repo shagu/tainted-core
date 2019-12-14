@@ -75,7 +75,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_timmy_the_cruel(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_timmy_the_cruelAI (pCreature);
     }

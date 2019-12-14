@@ -213,7 +213,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_draenei_survivor(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_draenei_survivorAI(pCreature);
     }
@@ -265,7 +265,7 @@ public:
                 }
         }
     };
-    CreatureAI* GetAI_npc_tavara(Creature* creature)
+    CreatureAI* GetAI(Creature* creature) const
     {
         return new npc_tavaraAI(creature);
     }
@@ -357,7 +357,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_engineer_spark_overgrind(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_engineer_spark_overgrindAI(pCreature);
     }
@@ -404,7 +404,7 @@ public:
 
     };
 
-    CreatureAI* GetAI_npc_injured_draenei(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_injured_draeneiAI(pCreature);
     }
@@ -479,7 +479,7 @@ public:
         void Reset() { }
     };
 
-    CreatureAI* GetAI_npc_magwinAI(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_magwinAI(pCreature);
     }
@@ -658,7 +658,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_geezleAI(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_geezleAI(pCreature);
     }
@@ -720,7 +720,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_nestlewood_owlkinAI(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_nestlewood_owlkinAI(pCreature);
     }
@@ -803,7 +803,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_death_ravagerAI(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_death_ravagerAI(pCreature);
     }
@@ -870,7 +870,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_stillpine_capitiveAI(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_stillpine_capitiveAI(pCreature);
     }

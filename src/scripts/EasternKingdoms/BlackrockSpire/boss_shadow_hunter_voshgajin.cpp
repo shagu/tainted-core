@@ -87,7 +87,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_shadow_hunter_voshgajin(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_shadow_hunter_voshgajinAI (pCreature);
     }

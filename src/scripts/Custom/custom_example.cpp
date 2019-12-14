@@ -260,7 +260,7 @@ public:
                 me->MonsterSay(SAY_SALUTE, LANG_UNIVERSAL, 0);
         }
     };
-    CreatureAI* GetAI_custom_example(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new custom_exampleAI(pCreature);
     }

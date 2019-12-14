@@ -280,13 +280,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_mob_aquementas(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_aquementasAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -384,13 +388,17 @@ public:
         {
             npc_escortAI::UpdateAI(diff);
         }
-    };
-    
-    CreatureAI* GetAI_npc_custodian_of_time(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_custodian_of_timeAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -398,8 +406,10 @@ class npc_marin_noggenfogger : public CreatureScript
 {
 public: 
     npc_marin_noggenfogger() : CreatureScript("npc_marin_noggenfogger") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -412,7 +422,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_TRADE)
@@ -420,8 +431,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -429,8 +442,10 @@ class npc_steward_of_time : public CreatureScript
 {
 public: 
     npc_steward_of_time() : CreatureScript("npc_steward_of_time") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -446,7 +461,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool GossipSelect_npc_steward_of_time(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction)
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -454,7 +471,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -462,7 +480,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnQuestAccept(Player* pPlayer, Creature* /*pCreature*/, Quest const* quest) override
     {
         if (quest->GetQuestId() == 10279)                      //Quest: To The Master's Lair
@@ -470,8 +490,10 @@ public:
     
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -479,8 +501,10 @@ class npc_stone_watcher_of_norgannon : public CreatureScript
 {
 public: 
     npc_stone_watcher_of_norgannon() : CreatureScript("npc_stone_watcher_of_norgannon") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -525,8 +549,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -584,12 +610,15 @@ public:
         {
             summoned->AI()->AttackStart(me);
         }
-    };
-    
-    CreatureAI* GetAI_npc_OOX17(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_OOX17AI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == Q_OOX17)
@@ -605,8 +634,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -614,8 +645,10 @@ class go_landmark_treasure : public GameObjectScript
 {
 public: 
     go_landmark_treasure() : GameObjectScript("go_landmark_treasure") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, GameObject* /*_GO*/) override
     {
         if (player->GetQuestStatus(QUEST_CUERGOS_GOLD) != QUEST_STATUS_INCOMPLETE)
@@ -645,8 +678,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -770,12 +805,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_tooga(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_toogaAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_TOOGA)
@@ -786,8 +824,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

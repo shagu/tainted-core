@@ -102,7 +102,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_maleki_the_pallid(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_maleki_the_pallidAI (pCreature);
     }

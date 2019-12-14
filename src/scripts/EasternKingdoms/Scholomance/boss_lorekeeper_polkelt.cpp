@@ -109,7 +109,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_lorekeeper_polkelt(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_lorekeeper_polkeltAI (pCreature);
     }

@@ -130,7 +130,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_professor_phizzlethorpeAI(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_professor_phizzlethorpeAI(pCreature);
     }

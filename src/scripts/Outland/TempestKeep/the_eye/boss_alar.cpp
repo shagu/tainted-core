@@ -436,16 +436,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_alar(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_alarAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_ember_of_alar : public CreatureScript
@@ -517,16 +511,10 @@ public:
     
     };
 
-    CreatureAI* GetAI_mob_ember_of_alar(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_ember_of_alarAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_flame_patch_alar : public CreatureScript
@@ -543,16 +531,11 @@ public:
         void UpdateAI(const uint32 /*diff*/) {}
     };
 
-    CreatureAI* GetAI_mob_flame_patch_alar(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_flame_patch_alarAI(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 

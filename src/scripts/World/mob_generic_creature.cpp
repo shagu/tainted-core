@@ -161,7 +161,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_generic_creature(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new generic_creatureAI (pCreature);
     }

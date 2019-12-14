@@ -69,7 +69,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_houndmaster_loksey(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_houndmaster_lokseyAI (pCreature);
     }

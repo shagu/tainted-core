@@ -437,13 +437,17 @@ public:
             me->MonsterYell(YELL_DEATH, LANG_UNIVERSAL, 0);
             DoPlaySoundToSet(me, SOUND_DEATH);
         }
-    };
-    
-    CreatureAI* GetAI_boss_halazziAI(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_halazziAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -451,14 +455,17 @@ class mob_halazzi_lynx : public CreatureScript
 {
 public: 
     mob_halazzi_lynx() : CreatureScript("mob_halazzi_lynx") { }
-    
+    
 
-    CreatureAI* GetAI_boss_spiritlynxAI(Creature* pCreature)
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_spiritlynxAI(pCreature);
     }
-
-    
+
+
+    
+
     
 };
 

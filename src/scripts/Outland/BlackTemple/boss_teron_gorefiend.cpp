@@ -129,7 +129,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_doom_blossom(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_doom_blossomAI(pCreature);
     }
@@ -225,7 +225,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_shadowy_construct(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_shadowy_constructAI(pCreature);
     }
@@ -547,16 +547,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_teron_gorefiend(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_teron_gorefiendAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

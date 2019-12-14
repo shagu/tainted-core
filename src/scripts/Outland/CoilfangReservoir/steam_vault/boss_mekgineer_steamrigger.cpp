@@ -182,16 +182,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_mekgineer_steamrigger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_mekgineer_steamriggerAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_steamrigger_mechanic : public CreatureScript
@@ -246,16 +240,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_steamrigger_mechanic(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_steamrigger_mechanicAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

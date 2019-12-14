@@ -109,7 +109,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_npc_cairne_bloodhoof(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_cairne_bloodhoofAI (pCreature);
     }

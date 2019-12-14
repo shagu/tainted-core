@@ -603,21 +603,20 @@ public:
             if (!TankGUID)
                 DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_boss_zuljin(Creature* pCreature)
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_zuljinAI (pCreature);
-    }
-    
-    
+    }
 };
 
 class mob_zuljin_vortex : public CreatureScript
 {
 public: 
     mob_zuljin_vortex() : CreatureScript("mob_zuljin_vortex") { }
-    
+    
+
     struct feather_vortexAI : public ScriptedAI
     {
         feather_vortexAI(Creature* c) : ScriptedAI(c) {}
@@ -678,12 +677,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_feather_vortexAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new feather_vortexAI(pCreature);
-    }
-    
-    
+    }
 };
 
 

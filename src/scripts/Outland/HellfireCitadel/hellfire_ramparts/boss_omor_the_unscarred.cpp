@@ -227,7 +227,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_omor_the_unscarredAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_omor_the_unscarredAI>(pCreature);
     }

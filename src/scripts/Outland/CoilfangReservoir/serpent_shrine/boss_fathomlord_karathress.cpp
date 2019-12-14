@@ -309,7 +309,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_fathomlord_karathress(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_fathomlord_karathressAI>(pCreature);
     }
@@ -464,7 +464,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_fathomguard_sharkkis(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_fathomguard_sharkkisAI>(pCreature);
     }
@@ -591,7 +591,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_fathomguard_tidalvess(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_fathomguard_tidalvessAI>(pCreature);
     }
@@ -757,7 +757,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_fathomguard_caribdis(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_fathomguard_caribdisAI>(pCreature);
     }

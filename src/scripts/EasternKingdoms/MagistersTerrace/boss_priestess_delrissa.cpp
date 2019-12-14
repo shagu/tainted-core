@@ -571,7 +571,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_boss_priestess_delrissa(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return GetInstanceAI<boss_priestess_delrissaAI>(creature);
 //    }
@@ -674,7 +674,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_boss_kagani_nightstrike(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return GetInstanceAI<boss_kagani_nightstrikeAI>(creature);
 //    }
@@ -770,7 +770,7 @@
 //    
 //
 //    
-//    CreatureAI* GetAI_ellris_duskhallow(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return GetInstanceAI<boss_ellris_duskhallowAI>(creature);
 //    }
@@ -827,7 +827,7 @@
 //    
 //
 //    
-//    CreatureAI* GetAI_eramas_brightblaze(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return GetInstanceAI<boss_eramas_brightblazeAI>(creature);
 //    }
@@ -956,7 +956,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_yazzai(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return GetInstanceAI<boss_yazzaiAI>(creature);
 //    }
@@ -1075,7 +1075,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_warlord_salaris(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return GetInstanceAI<boss_warlord_salarisAI>(creature);
 //    }
@@ -1198,7 +1198,7 @@
 //    
 //
 //    
-//    CreatureAI* GetAI_garaxxas(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return GetInstanceAI<boss_garaxxasAI>(creature);
 //    }
@@ -1296,7 +1296,7 @@
 //    
 //
 //
-//    CreatureAI* GetAI_apoko(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return GetInstanceAI<boss_apokoAI>(creature);
 //    }
@@ -1390,7 +1390,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_zelfan(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return GetInstanceAI<boss_zelfanAI>(creature);
 //    }
@@ -1431,7 +1431,7 @@
 //
 //    
 //
-//    //CreatureAI* GetAI_mob_high_explosive_sheep(Creature* creature)
+//    // CreatureAI* GetAI(Creature* creature) const
 //    //{
 //    //    return new mob_high_explosive_sheepAI (creature);
 //    //}

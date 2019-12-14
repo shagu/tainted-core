@@ -268,7 +268,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_marli(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_marliAI (pCreature);
     }
@@ -336,7 +336,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_spawn_of_marli(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_spawn_of_marliAI (pCreature);
     }

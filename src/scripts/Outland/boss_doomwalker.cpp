@@ -192,7 +192,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_doomwalker(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_doomwalkerAI (pCreature);
     }

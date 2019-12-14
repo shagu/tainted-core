@@ -129,7 +129,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_archmage_arugal(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_archmage_arugalAI(pCreature);
     }

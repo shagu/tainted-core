@@ -50,6 +50,7 @@ enum Misc
 class instance_deadmines : public InstanceMapScript
 {
 public: 
+
     instance_deadmines() : InstanceMapScript("instance_deadmines") { }
     struct instance_deadminesAI : public ScriptedInstance
     {
@@ -313,13 +314,13 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_deadminesAI(Map* pMap)
+    InstanceData* GetInstanceData(Map* pMap) const
     {
         return new instance_deadminesAI(pMap);
     }
     
-    
 };
+
 void AddSC_instance_deadmines()
 {
     new instance_deadmines();

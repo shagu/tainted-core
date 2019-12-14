@@ -187,7 +187,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_talon_king_ikiss(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_talon_king_ikissAI>(pCreature);
     }

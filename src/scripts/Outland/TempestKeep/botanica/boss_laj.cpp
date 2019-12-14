@@ -149,7 +149,7 @@ public:
             uint32 _lastTransform;
     };
     
-    CreatureAI* GetAI_boss_laj(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_lajAI (pCreature);
     }

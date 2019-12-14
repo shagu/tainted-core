@@ -259,14 +259,14 @@ public:
     
             //DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_medivh_bm(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_medivh_bmAI (pCreature);
-    }
-    
-    
+    }
 };
 
 class npc_time_rift : public CreatureScript
@@ -369,13 +369,17 @@ public:
     
             pInstance->SetData(TYPE_RIFT, SPECIAL);
         }
-    };
-    
-    CreatureAI* GetAI_npc_time_rift(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_time_riftAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -383,8 +387,10 @@ class npc_saat : public CreatureScript
 {
 public: 
     npc_saat() : CreatureScript("npc_saat") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -406,7 +412,8 @@ public:
         player->SEND_GOSSIP_MENU(10002, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -416,8 +423,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

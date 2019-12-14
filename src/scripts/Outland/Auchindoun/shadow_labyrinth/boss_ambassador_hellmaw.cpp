@@ -222,13 +222,13 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_ambassador_hellmaw(Creature* pCreature)
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_ambassador_hellmawAI>(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_ambassador_hellmaw()
 {
     new boss_ambassador_hellmaw();

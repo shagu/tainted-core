@@ -272,13 +272,17 @@ public:
             }
         }
     
-    };
-    
-    CreatureAI* GetAI_boss_archaedas(Creature* pCreature)
+    };
+
+    
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_archaedasAI>(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -286,8 +290,10 @@ class go_altar_of_archaedas : public GameObjectScript
 {
 public: 
     go_altar_of_archaedas() : GameObjectScript("go_altar_of_archaedas") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, GameObject* go) override
     {
         bool alreadyUsed;
@@ -330,8 +336,10 @@ public:
     
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -414,13 +422,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_mob_archaedas_minions(Creature* pCreature)
+    };
+
+    
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_archaedas_minionsAI>(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -428,8 +440,10 @@ class go_altar_of_the_keepers : public GameObjectScript
 {
 public: 
     go_altar_of_the_keepers() : GameObjectScript("go_altar_of_the_keepers") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, GameObject* pGo) override
     {
         ScriptedInstance* pInstance = (ScriptedInstance*)pPlayer->GetInstanceData();
@@ -481,8 +495,10 @@ public:
         pInstance->SetData(DATA_STONE_KEEPERS, IN_PROGRESS);        // activate the Stone Keepers
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -531,13 +547,17 @@ public:
                 pInstance->SetData(DATA_STONE_KEEPERS, IN_PROGRESS);    // activate next stonekeeper
         }
     
-    };
-    
-    CreatureAI* GetAI_mob_stonekeepers(Creature* pCreature)
+    };
+
+    
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_stonekeepersAI>(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 

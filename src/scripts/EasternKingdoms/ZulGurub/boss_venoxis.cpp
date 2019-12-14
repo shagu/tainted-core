@@ -214,7 +214,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_venoxis(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_venoxisAI (pCreature);
     }

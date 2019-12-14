@@ -217,16 +217,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_scarlet_commander_mograine(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_scarlet_commander_mograineAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_high_inquisitor_whitemane : public CreatureScript
@@ -389,16 +383,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_high_inquisitor_whitemane(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_high_inquisitor_whitemaneAI(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 

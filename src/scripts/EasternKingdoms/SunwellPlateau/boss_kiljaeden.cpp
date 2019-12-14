@@ -287,8 +287,10 @@
 //{
 //public: 
 //    go_orb_of_the_blue_flight() : GameObjectScript("go_orb_of_the_blue_flight") { }
-//    //
-//    //    bool GOHello_go_orb_of_the_blue_flight(Player* pPlayer, GameObject* pGo)
+//    
+//
+//    
+//    bool GOHello_go_orb_of_the_blue_flight(Player* pPlayer, GameObject* pGo)
 //    {
 //        if (pGo->GetUInt32Value(GAMEOBJECT_FACTION) == 35)
 //        {
@@ -304,7 +306,8 @@
 //        }
 //        return true;
 //    }
-//    //
+//    
+//
 //    
 //};
 //
@@ -434,13 +437,17 @@
 //                }
 //            }
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_boss_kalecgos_kj(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_kalecgos_kjAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -825,13 +832,17 @@
 //                else return;
 //            }
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_boss_kiljaeden(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_kiljaedenAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -993,13 +1004,17 @@
 //                DoSpawnCreature(CREATURE_KILJAEDEN, 0, 0, 0, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
 //            }
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_mob_kiljaeden_controller(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_kiljaeden_controllerAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1085,13 +1100,17 @@
 //    
 //            DoMeleeAttackIfReady();
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_mob_hand_of_the_deceiver(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_hand_of_the_deceiverAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1129,13 +1148,17 @@
 //            }
 //            else uiSpawnFiendTimer -= diff;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_mob_felfire_portal(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_felfire_portalAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1204,13 +1227,17 @@
 //                else uiKillTimer -= diff;
 //            }
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_mob_volatile_felfire_fiend(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_volatile_felfire_fiendAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1258,13 +1285,17 @@
 //            }
 //            else uiTimer -= diff;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_mob_armageddon(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_armageddonAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1343,13 +1374,17 @@
 //    
 //            bPointReached = true;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_mob_shield_orb(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_shield_orbAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //
@@ -1513,13 +1548,17 @@
 //            for (uint8 i = 0; i < 3; ++i)
 //                uiTimer[i] -= diff;
 //        }
-//    };//
-//    //
-//    CreatureAI* GetAI_mob_sinster_reflection(Creature* pCreature)
+//    };
+//
+//    
+//
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_sinster_reflectionAI (pCreature);
-//    }//
-//    //
+//    }
+//
+//    
+//
 //    
 //};
 //

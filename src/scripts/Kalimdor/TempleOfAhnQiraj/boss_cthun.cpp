@@ -425,7 +425,7 @@
 //
 //
 //    //GetAIs
-//    CreatureAI* GetAI_eye_of_cthun(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new eye_of_cthunAI(pCreature);
 //    }
@@ -500,7 +500,7 @@
 //
 //	};
 //
-//	CreatureAI* GetAI_flesh_tentacle(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new flesh_tentacleAI(pCreature);
 //	}
@@ -1000,7 +1000,7 @@
 //    };
 //
 //
-//    CreatureAI* GetAI_cthun(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new cthunAI(pCreature);
 //    }
@@ -1081,7 +1081,7 @@
 //    };
 //
 //
-//    CreatureAI* GetAI_eye_tentacle(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new eye_tentacleAI(pCreature);
 //    }
@@ -1193,7 +1193,7 @@
 //    };
 //
 //
-//    CreatureAI* GetAI_claw_tentacle(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new claw_tentacleAI(pCreature);
 //    }
@@ -1321,7 +1321,7 @@
 //
 //
 //
-//    CreatureAI* GetAI_giant_claw_tentacle(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new giant_claw_tentacleAI(pCreature);
 //    }
@@ -1385,7 +1385,7 @@
 //        }
 //    };
 //
-//    CreatureAI* GetAI_giant_eye_tentacle(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new giant_eye_tentacleAI(pCreature);
 //    }

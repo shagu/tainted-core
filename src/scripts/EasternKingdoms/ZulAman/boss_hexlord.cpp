@@ -288,7 +288,8 @@ class boss_hexlord_malacrass : public CreatureScript
 {
 public: 
     boss_hexlord_malacrass() : CreatureScript("boss_hexlord_malacrass") { }
-        
+    
+    
 struct boss_hex_lord_malacrassAI : public ScriptedAI
 {
     boss_hex_lord_malacrassAI(Creature* c) : ScriptedAI(c)
@@ -569,13 +570,15 @@ struct boss_hex_lord_malacrassAI : public ScriptedAI
 
 
 
-    CreatureAI* GetAI_boss_hex_lord_malacrass(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_hex_lord_malacrassAI(pCreature);
     }
 
-
-    
+
+
+    
+
     
 };
 
@@ -625,13 +628,17 @@ public:
     
             boss_hexlord_addAI::UpdateAI(diff);
         }
-    };
-    
-    CreatureAI* GetAI_boss_thurg(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_thurgAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -680,13 +687,17 @@ public:
     
             boss_hexlord_addAI::UpdateAI(diff);
         }
-    };
-    
-    CreatureAI* GetAI_boss_gazakroth(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_gazakrothAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -730,14 +741,14 @@ public:
     
             boss_hexlord_addAI::UpdateAI(diff);
         }
-    };
-    
-    CreatureAI* GetAI_boss_lord_raadan(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_lord_raadanAI (pCreature);
-    }
-    
-    
+    }
 };
 
 class boss_darkheart : public CreatureScript
@@ -769,14 +780,15 @@ public:
     
             boss_hexlord_addAI::UpdateAI(diff);
         }
-    };
-    
-    CreatureAI* GetAI_boss_darkheart(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_darkheartAI (pCreature);
-    }
-    
-    
+    }
+
 };
 
 class boss_slither : public CreatureScript
@@ -825,14 +837,15 @@ public:
     
             boss_hexlord_addAI::UpdateAI(diff);
         }
-    };
-    
-    CreatureAI* GetAI_boss_slither(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_slitherAI (pCreature);
-    }
-    
-    
+    }
+
 };
 
 class boss_fenstalker : public CreatureScript
@@ -866,14 +879,14 @@ public:
     
             boss_hexlord_addAI::UpdateAI(diff);
         }
-    };
-    
-    CreatureAI* GetAI_boss_fenstalker(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_fenstalkerAI (pCreature);
-    }
-    
-    
+    }
 };
 
 class boss_koragg : public CreatureScript
@@ -913,13 +926,17 @@ public:
     
             boss_hexlord_addAI::UpdateAI(diff);
         }
-    };
-    
-    CreatureAI* GetAI_boss_koragg(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_koraggAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1008,14 +1025,14 @@ public:
     
             boss_hexlord_addAI::UpdateAI(diff);
         }
-    };
-    
-    CreatureAI* GetAI_boss_alyson_antille(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_alyson_antilleAI (pCreature);
-    }
-    
-    
+    }
 };
 
 

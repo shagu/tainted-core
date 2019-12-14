@@ -151,7 +151,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_inner_demon(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_inner_demonAI(pCreature);
     }
@@ -631,16 +631,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_leotheras_the_blind(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_leotheras_the_blindAI>(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 class boss_leotheras_the_blind_demonform : public CreatureScript
@@ -721,7 +716,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_leotheras_the_blind_demonform(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_leotheras_the_blind_demonformAI>(pCreature);
     }
@@ -863,7 +858,7 @@ public:
         void JustDied(Unit* /*killer*/) {}
     };
 
-    CreatureAI* GetAI_mob_greyheart_spellbinder(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_greyheart_spellbinderAI>(pCreature);
     }

@@ -134,13 +134,12 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_amnennar_the_coldbringer(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_amnennar_the_coldbringerAI (pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_amnennar_the_coldbringer()
 {
     new boss_amnennar_the_coldbringer();

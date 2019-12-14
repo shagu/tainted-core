@@ -305,7 +305,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_gruul(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_gruulAI>(pCreature);
     }

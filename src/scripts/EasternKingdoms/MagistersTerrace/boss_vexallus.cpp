@@ -192,7 +192,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_vexallus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_vexallusAI>(pCreature);
     };
@@ -222,7 +222,7 @@ public:
         void AttackStart(Unit* /*who*/) {}
     };
 
-    CreatureAI* GetAI_mob_pure_energy(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_pure_energyAI(pCreature);
     };

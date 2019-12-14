@@ -95,7 +95,7 @@ public:
         }
         return true;
     }
-    CreatureAI* GetAI_npc_royal_historian_archesonus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_royal_historian_archesonusAI(pCreature);
     }

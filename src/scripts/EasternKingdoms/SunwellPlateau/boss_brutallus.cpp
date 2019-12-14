@@ -126,16 +126,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_madrigosa(Creature* creature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new npc_madrigosaAI(creature);
+        return new npc_madrigosaAI(pCreature);
     }
-
-
-
-
-
-
 };
 
 class boss_brutallus : public CreatureScript
@@ -512,7 +506,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_brutallus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_brutallusAI (pCreature);
     }
@@ -577,9 +571,9 @@ public:
         }
     };
 
-    CreatureAI* GetAI_trigger_death_cloud(Creature* creature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new trigger_death_cloudAI(creature);
+        return new trigger_death_cloudAI(pCreature);
     }
 
     

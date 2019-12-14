@@ -375,13 +375,17 @@ public:
                 }
             }
         }
-    };
-    
-    CreatureAI* GetAI_boss_the_lurker_below(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_the_lurker_belowAI>(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -389,8 +393,9 @@ class mob_coilfang_guardian : public CreatureScript
 {
 public: 
     mob_coilfang_guardian() : CreatureScript("mob_coilfang_guardian") { }
-    
-    CreatureAI* GetAI_mob_coilfang_guardian(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         SimpleAI* ai = new SimpleAI (pCreature);
     
@@ -407,8 +412,10 @@ public:
         ai->Spell[1].Cast_Target_Type = CAST_HOSTILE_TARGET;
     
         return ai;
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -472,13 +479,17 @@ public:
             }
             else ShootBowTimer -= diff;
         }
-    };
-    
-    CreatureAI* GetAI_mob_coilfang_ambusher(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_coilfang_ambusherAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 

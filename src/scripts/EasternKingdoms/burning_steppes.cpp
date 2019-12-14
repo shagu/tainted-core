@@ -75,7 +75,7 @@ public:
         void EnterCombat(Unit* /*who*/) {}
     };
     
-    CreatureAI* GetAI_npc_ragged_john(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_ragged_johnAI (pCreature);
     }

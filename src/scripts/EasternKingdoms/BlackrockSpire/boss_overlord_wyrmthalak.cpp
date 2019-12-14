@@ -121,7 +121,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_overlord_wyrmthalak(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_overlord_wyrmthalakAI(pCreature);
     }

@@ -135,7 +135,7 @@ public:
         }
         return true;
     }
-    CreatureAI* GetAI_npc_galen_goodward(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_galen_goodwardAI(pCreature);
     }

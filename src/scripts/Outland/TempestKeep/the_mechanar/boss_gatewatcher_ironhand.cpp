@@ -91,7 +91,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_gatewatcher_iron_hand(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_gatewatcher_iron_handAI>(pCreature);
     }

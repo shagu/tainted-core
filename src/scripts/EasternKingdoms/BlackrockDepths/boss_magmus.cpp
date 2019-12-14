@@ -92,7 +92,7 @@ public:
                 pInstance->HandleGameObject(pInstance->GetData64(DATA_THRONE_DOOR), true);
         }
     };
-    CreatureAI* GetAI_boss_magmus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_magmusAI (pCreature);
     }

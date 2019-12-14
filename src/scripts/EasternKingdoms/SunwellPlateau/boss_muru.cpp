@@ -279,16 +279,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_muru(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_muruAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_entropius : public CreatureScript
@@ -385,7 +379,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_entropius(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_entropiusAI (pCreature);
     }
@@ -470,7 +464,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_muru_portal(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_muru_portalAI (pCreature);
     }
@@ -537,16 +531,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_dark_fiend(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_dark_fiendAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class npc_void_sentinel : public CreatureScript
@@ -604,7 +592,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_void_sentinel(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_void_sentinelAI (pCreature);
     }
@@ -689,16 +677,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_blackhole(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_blackholeAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class npc_sentinal_summoner : public CreatureScript
@@ -743,16 +725,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_sentinal_summoner(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_sentinal_summonerAI(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 

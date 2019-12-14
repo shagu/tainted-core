@@ -457,7 +457,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_kelthuzadAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_kelthuzadAI (pCreature);
     }

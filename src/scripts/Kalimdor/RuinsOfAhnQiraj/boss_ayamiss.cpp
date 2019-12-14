@@ -100,7 +100,8 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_ayamiss(Creature* pCreature)
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_ayamissAI (pCreature);
     }

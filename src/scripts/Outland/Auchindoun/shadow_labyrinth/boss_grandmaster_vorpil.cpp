@@ -133,7 +133,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_voidtraveler(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_voidtravelerAI(pCreature);
     }
@@ -337,7 +337,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_grandmaster_vorpil(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_grandmaster_vorpilAI>(pCreature);
     }

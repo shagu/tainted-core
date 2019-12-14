@@ -130,7 +130,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_vanndar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_vanndarAI(pCreature);
     }

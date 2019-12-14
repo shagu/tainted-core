@@ -204,7 +204,7 @@ public:
 		}
 	};
 
-	CreatureAI* GetAI_mob_abyssalAI(Creature* creature)
+	 CreatureAI* GetAI(Creature* creature) const
 	{
 		return new mob_abyssalAI(creature);
 	}
@@ -474,7 +474,7 @@ public:
 		}
 	};
 
-    CreatureAI* GetAI_boss_magtheridon(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return GetInstanceAI<boss_magtheridonAI>(creature);
     }
@@ -591,14 +591,10 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_hellfire_channeler(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return GetInstanceAI<mob_hellfire_channelerAI>(creature);
     }
-
-    
-
-    
 };
 
 class go_manticron_cube : public GameObjectScript

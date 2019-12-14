@@ -48,7 +48,7 @@ public:
         {
         }
     };
-    CreatureAI* GetAI_boss_death_knight_darkreaver(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_death_knight_darkreaverAI (pCreature);
     }

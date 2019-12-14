@@ -272,12 +272,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_raliq_the_drunk(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_raliq_the_drunkAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (player->GetQuestStatus(10009) == QUEST_STATUS_INCOMPLETE)
@@ -287,7 +290,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipHello_npc_raliq_the_drunk(Player* player, Creature* pCreature)
     {
         if (player->GetQuestStatus(10009) == QUEST_STATUS_INCOMPLETE)
@@ -297,7 +301,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_raliq_the_drunk(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -309,7 +314,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -321,8 +327,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -374,13 +382,17 @@ public:
     				break;
     		}
     	}
-    };
-    
-    CreatureAI* GetAI_npc_kylene(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_kyleneAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -427,12 +439,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_salsalabim(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_salsalabimAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
     	if (pCreature->IsQuestGiver())
@@ -445,7 +460,8 @@ public:
     	
     	return true;
     }
-    
+    
+
     bool GossipHello_npc_salsalabim(Player* player, Creature* pCreature)
     {
     	if (pCreature->IsQuestGiver())
@@ -458,7 +474,8 @@ public:
     	
     	return true;
     }
-    
+    
+
     bool GossipSelect_npc_salsalabim(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
     {
     	if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -470,7 +487,8 @@ public:
     	}
     	return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
     	if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -482,8 +500,10 @@ public:
     	}
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -491,8 +511,10 @@ class npc_shattrathflaskvendors : public CreatureScript
 {
 public: 
     npc_shattrathflaskvendors() : CreatureScript("npc_shattrathflaskvendors") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->GetEntry() == 23484)
@@ -529,8 +551,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -538,8 +562,10 @@ class npc_zephyr : public CreatureScript
 {
 public: 
     npc_zephyr() : CreatureScript("npc_zephyr") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (player->GetReputationRank(989) >= REP_REVERED)
@@ -549,7 +575,9 @@ public:
     
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* /*pCreature*/, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -557,8 +585,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -803,13 +833,17 @@ public:
             }
             return;
         }
-    };
-    
-    CreatureAI* GetAI_npc_khadgars_servant(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_khadgars_servantAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -980,13 +1014,16 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_dirty_larryAI(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_dirty_larryAI(pCreature);
     }
-
+
+
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         if (creature->IsQuestGiver())
@@ -998,7 +1035,9 @@ public:
         player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1010,8 +1049,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1265,12 +1306,15 @@ public:
     
     		DoMeleeAttackIfReady();
     	}
-    };
-    
-    CreatureAI* GetAI_npc_ishanah(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_ishanahAI(pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* player, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -1283,7 +1327,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -1293,8 +1338,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -1302,8 +1349,10 @@ class npc_khadgar : public CreatureScript
 {
 public: 
     npc_khadgar() : CreatureScript("npc_khadgar") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, Creature* creature) override
     {
         if (creature->IsQuestGiver())
@@ -1316,7 +1365,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* player, Creature* creature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -1352,8 +1402,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

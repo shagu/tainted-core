@@ -96,7 +96,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_vectus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_vectusAI (pCreature);
     }

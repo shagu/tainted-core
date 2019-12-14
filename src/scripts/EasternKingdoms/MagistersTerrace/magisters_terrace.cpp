@@ -103,7 +103,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_npc_kalecgos(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_kalecgosAI(pCreature);
     }

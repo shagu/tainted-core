@@ -141,13 +141,17 @@ public:
                 }
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_tapoke_slim_jahn(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_tapoke_slim_jahnAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -155,8 +159,10 @@ class npc_mikhail : public CreatureScript
 {
 public: 
     npc_mikhail() : CreatureScript("npc_mikhail") { }
-    
-    
+    
+
+    
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_MISSING_DIPLO_PT11)
@@ -174,8 +180,10 @@ public:
         }
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 

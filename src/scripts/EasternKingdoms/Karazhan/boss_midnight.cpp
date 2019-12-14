@@ -171,7 +171,7 @@
 //		}
 //	};
 //
-//	CreatureAI* GetAI_boss_midnight(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new boss_midnightAI(pCreature);
 //	}
@@ -337,7 +337,7 @@
 //		}
 //	};
 //
-//	CreatureAI* GetAI_boss_attumen(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new boss_attumenAI(pCreature);
 //	}

@@ -105,7 +105,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_hungarfen(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_hungarfenAI (pCreature);
     }
@@ -160,7 +160,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_underbog_mushroom(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_underbog_mushroomAI (pCreature);
     }

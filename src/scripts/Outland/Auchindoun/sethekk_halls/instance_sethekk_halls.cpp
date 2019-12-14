@@ -78,7 +78,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_lakka(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_lakkaAI(pCreature);
     }

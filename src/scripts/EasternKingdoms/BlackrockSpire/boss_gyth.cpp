@@ -202,7 +202,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_gyth(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_gythAI (pCreature);
     }

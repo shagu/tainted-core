@@ -78,7 +78,8 @@ class mob_warp_splinter_treant : public CreatureScript
 {
 public:
     mob_warp_splinter_treant() : CreatureScript("mob_warp_splinter_treant") { }
-    struct mob_warp_splinter_treantAI : public ScriptedAI
+
+    struct mob_warp_splinter_treantAI : public ScriptedAI
     {
         mob_warp_splinter_treantAI(Creature* c) : ScriptedAI(c)
         {
@@ -126,11 +127,12 @@ public:
     };
 
 
-    CreatureAI* GetAI_mob_treant(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_warp_splinter_treantAI(pCreature);
     }
-
+
+
 
 };
 
@@ -223,17 +225,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_boss_warp_splinter(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_warp_splinterAI (pCreature);
-    }
-    
-    
+    }
 };
-
-
 
 void AddSC_boss_warp_splinter()
 {

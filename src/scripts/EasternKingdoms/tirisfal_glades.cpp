@@ -157,12 +157,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_calvin_montague(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_calvin_montagueAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_590)
@@ -172,8 +175,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -181,8 +186,10 @@ class go_mausoleum_door : public GameObjectScript
 {
 public: 
     go_mausoleum_door() : GameObjectScript("go_mausoleum_door") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, GameObject* /*pGo*/) override
     {
         if (pPlayer->GetQuestStatus(QUEST_ULAG) != QUEST_STATUS_INCOMPLETE)
@@ -197,8 +204,10 @@ public:
     
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -206,8 +215,10 @@ class go_mausoleum_trigger : public GameObjectScript
 {
 public: 
     go_mausoleum_trigger() : GameObjectScript("go_mausoleum_trigger") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, GameObject* pGo) override
     {
         if (pPlayer->GetQuestStatus(QUEST_ULAG) != QUEST_STATUS_INCOMPLETE)
@@ -222,8 +233,10 @@ public:
     
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 

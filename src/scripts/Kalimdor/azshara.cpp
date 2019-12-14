@@ -98,7 +98,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mobs_spitelashes(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mobs_spitelashesAI(pCreature);
     }
@@ -458,7 +458,7 @@ public:
         }
 
     };
-    CreatureAI* GetAI_mob_rizzle_sprysprocket(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_rizzle_sprysprocketAI(pCreature);
     }
@@ -523,7 +523,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_depth_charge(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_depth_chargeAI(pCreature);
     }

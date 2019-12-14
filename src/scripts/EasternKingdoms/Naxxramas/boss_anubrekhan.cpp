@@ -161,13 +161,14 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_anubrekhan(Creature* pCreature)
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_anubrekhanAI (pCreature);
     }
     
-    
 };
+
 void AddSC_boss_anubrekhan()
 {
     new boss_anubrekhan();

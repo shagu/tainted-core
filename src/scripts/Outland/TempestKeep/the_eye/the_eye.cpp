@@ -91,7 +91,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_mob_crystalcore_devastator(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_crystalcore_devastatorAI (pCreature);
     }

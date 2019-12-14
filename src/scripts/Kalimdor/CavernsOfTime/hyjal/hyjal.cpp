@@ -71,8 +71,9 @@ class npc_jaina_proudmoore : public CreatureScript
 {
 public: 
     npc_jaina_proudmoore() : CreatureScript("npc_jaina_proudmoore") { }
-    
-    CreatureAI* GetAI_npc_jaina_proudmoore(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         hyjalAI* ai = new hyjalAI(pCreature);
     
@@ -92,7 +93,8 @@ public:
         ai->Spell[2].TargetType = TARGETTYPE_SELF;
     
         return ai;
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         hyjalAI* ai = CAST_AI(hyjalAI, pCreature->AI());
@@ -138,17 +140,16 @@ public:
         }
         return true;
     }
-    
-    
-    
+
 };
 
 class npc_thrall : public CreatureScript
 {
 public: 
     npc_thrall() : CreatureScript("npc_thrall") { }
-    
-    CreatureAI* GetAI_npc_thrall(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         hyjalAI* ai = new hyjalAI(pCreature);
     
@@ -164,7 +165,8 @@ public:
         ai->Spell[1].TargetType = TARGETTYPE_RANDOM;
     
         return ai;
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         hyjalAI* ai = CAST_AI(hyjalAI, pCreature->AI());
@@ -191,7 +193,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(907, pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         hyjalAI* ai = CAST_AI(hyjalAI, pCreature->AI());
@@ -216,8 +219,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -225,14 +230,16 @@ class npc_tyrande_whisperwind : public CreatureScript
 {
 public: 
     npc_tyrande_whisperwind() : CreatureScript("npc_tyrande_whisperwind") { }
-    
-    CreatureAI* GetAI_npc_tyrande_whisperwind(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         hyjalAI* ai = new hyjalAI(pCreature);
         ai->Reset();
         ai->EnterEvadeMode();
         return ai;
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         hyjalAI* ai = CAST_AI(hyjalAI, pCreature->AI());
@@ -262,8 +269,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

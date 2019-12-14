@@ -132,8 +132,10 @@ class npc_skorn_whitecloud : public CreatureScript
 {
 public: 
     npc_skorn_whitecloud() : CreatureScript("npc_skorn_whitecloud") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -146,7 +148,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipHello_npc_skorn_whitecloud(Player* pPlayer, Creature* pCreature)
     {
         if (pCreature->IsQuestGiver())
@@ -159,7 +162,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_skorn_whitecloud(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF)
@@ -167,7 +171,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF)
@@ -175,8 +180,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -288,13 +295,17 @@ public:
                     m_uiEventTimer -= diff;
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_kyle_the_frenzied(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_kyle_the_frenziedAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -344,14 +355,14 @@ public:
                 newWaypoint = false;
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_plains_vision(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_plains_visionAI (pCreature);
-    }
-    
-    
+    }
 };
 
 

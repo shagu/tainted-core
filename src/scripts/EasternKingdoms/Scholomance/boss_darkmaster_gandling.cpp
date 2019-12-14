@@ -220,7 +220,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_darkmaster_gandling(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_darkmaster_gandlingAI (pCreature);
     }

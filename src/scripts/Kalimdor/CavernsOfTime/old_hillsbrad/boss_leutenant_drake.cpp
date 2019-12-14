@@ -228,7 +228,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_lieutenant_drake(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return new boss_lieutenant_drakeAI(creature);
     }

@@ -291,16 +291,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_arlokk(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_arlokkAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_prowler : public CreatureScript
@@ -353,16 +347,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_prowler(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_prowlerAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

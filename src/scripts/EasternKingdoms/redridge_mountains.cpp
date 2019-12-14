@@ -164,7 +164,7 @@ public:
         return false;
     }
     
-    CreatureAI* GetAI_npc_corporal_keeshan(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_corporal_keeshanAI(pCreature);
     }

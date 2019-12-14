@@ -70,7 +70,8 @@ class npc_henry_stern : public CreatureScript
 {
 public: 
     npc_henry_stern() : CreatureScript("npc_henry_stern") { }
-    
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->GetBaseSkillValue(SKILL_COOKING) >= 175 && !pPlayer->HasSpell(SPELL_GOLDTHORN_TEA))
@@ -99,8 +100,10 @@ public:
 
         return true;
     }
-
-    
+
+
+    
+
     
 };
 
@@ -108,8 +111,10 @@ class go_gong : public GameObjectScript
 {
 public: 
     go_gong() : GameObjectScript("go_gong") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* /*pPlayer*/, GameObject* pGO) override
     {
         //basic support, not blizzlike data is missing...
@@ -123,8 +128,10 @@ public:
     
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -172,14 +179,14 @@ public:
             if (pInstance)
                 pInstance->SetData(DATA_GONG_WAVES, pInstance->GetData(DATA_GONG_WAVES) + 1);
         }
-    };
-    
-    CreatureAI* GetAI_npc_tomb_creature(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_tomb_creatureAI (pCreature);
-    }
-    
-    
+    }
 };
 
 

@@ -214,16 +214,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_azgalor(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_azgalorAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_lesser_doomguard : public CreatureScript
@@ -318,7 +312,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_lesser_doomguard(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_lesser_doomguardAI (pCreature);
     }

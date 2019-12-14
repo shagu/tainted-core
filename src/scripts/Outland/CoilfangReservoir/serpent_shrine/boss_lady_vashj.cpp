@@ -637,13 +637,17 @@ public:
                 else Check_Timer -= diff;
             }
         }
-    };
-    
-    CreatureAI* GetAI_boss_lady_vashj(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_lady_vashjAI>(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -754,13 +758,17 @@ public:
             }
             else move -= diff;
         }
-    };
-    
-    CreatureAI* GetAI_mob_enchanted_elemental(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_enchanted_elementalAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -829,13 +837,17 @@ public:
             }
             else Despawn_Timer -= diff;
         }
-    };
-    
-    CreatureAI* GetAI_mob_tainted_elemental(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_tainted_elementalAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -937,13 +949,17 @@ public:
             }
             else Check_Timer -= diff;
         }
-    };
-    
-    CreatureAI* GetAI_mob_toxic_sporebat(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_toxic_sporebatAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -951,8 +967,9 @@ class mob_coilfang_elite : public CreatureScript
 {
 public: 
     mob_coilfang_elite() : CreatureScript("mob_coilfang_elite") { }
-    
-    CreatureAI* GetAI_mob_coilfang_elite(Creature* pCreature)
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         SimpleAI* ai = new SimpleAI (pCreature);
     
@@ -966,8 +983,10 @@ public:
         ai->EnterEvadeMode();
     
         return ai;
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1009,13 +1028,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_mob_coilfang_strider(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_coilfang_striderAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1069,13 +1092,17 @@ public:
             }
             else Check_Timer -= diff;
         }
-    };
-    
-    CreatureAI* GetAI_mob_shield_generator_channel(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_shield_generator_channelAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -1083,8 +1110,10 @@ class item_tainted_core : public ItemScript
 {
 public: 
     item_tainted_core() : ItemScript("item_tainted_core") { }
-    
-    
+    
+
+    
+
     bool OnUse(Player* pPlayer, Item* /*_Item*/, SpellCastTargets const& targets) override
     {
         ScriptedInstance* pInstance = (ScriptedInstance*)pPlayer->GetInstanceData();
@@ -1157,8 +1186,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

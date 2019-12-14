@@ -544,7 +544,7 @@
 //    
 //
 //    
-//    CreatureAI* GetAI_explosive_sheep(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_explosive_sheepAI(pCreature);
 //    }
@@ -650,7 +650,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_chicken_cluck(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_chicken_cluckAI(pCreature);
 //    }
@@ -778,7 +778,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_dancing_flames(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_dancing_flamesAI(pCreature);
 //    }
@@ -980,7 +980,7 @@
 //		return true;
 //	}
 //
-//	CreatureAI* GetAI_npc_doctor(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new npc_doctorAI(pCreature);
 //	}
@@ -1096,7 +1096,7 @@
 //
 //
 //
-//	CreatureAI* GetAI_npc_injured_patient(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new npc_injured_patientAI(pCreature);
 //	}
@@ -1294,7 +1294,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_garments_of_quests(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_garments_of_questsAI(pCreature);
 //    }
@@ -1337,7 +1337,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_guardian(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_guardianAI (pCreature);
 //    }
@@ -1621,7 +1621,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_steam_tonk(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_steam_tonkAI(pCreature);
 //    }
@@ -1667,7 +1667,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_tonk_mine(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_tonk_mineAI(pCreature);
 //    }
@@ -1693,7 +1693,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_brewfest_reveler(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_brewfest_revelerAI(pCreature);
 //    }
@@ -1738,7 +1738,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_winter_reveler(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_winter_revelerAI(pCreature);
 //    }
@@ -1833,7 +1833,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_training_dummy(Creature* creature)
+//     CreatureAI* GetAI(Creature* creature) const
 //    {
 //        return new npc_training_dummyAI(creature);
 //    }
@@ -1891,7 +1891,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_force_of_nature_treants(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_force_of_nature_treantsAI(pCreature);
 //    }
@@ -1990,7 +1990,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_snake_trap_serpents(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_snake_trap_serpentsAI(pCreature);
 //    }
@@ -2088,7 +2088,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_mob_mojo(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_mojoAI (pCreature);
 //    }
@@ -2210,7 +2210,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_mob_rift_spawn(Creature* _Creature)
+//     CreatureAI* GetAI(Creature* _Creature) const
 //    {
 //        return new mob_rift_spawnAI (_Creature);
 //    }
@@ -2279,7 +2279,7 @@
 //    };
 //
 //
-//    CreatureAI* GetAI_mob_inferno_infernal(Creature* _Creature)
+//     CreatureAI* GetAI(Creature* _Creature) const
 //    {
 //        return new mob_inferno_infernalAI(_Creature);
 //    }
@@ -2353,7 +2353,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_barmaid(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_barmaidAI(pCreature);
 //    }

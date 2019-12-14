@@ -669,7 +669,7 @@ CreatureAI* ScriptMgr::GetCreatureAI(Creature* creature)
     ASSERT(creature);
 
     GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, NULL);
-    return tmpscript->OnGetAI(creature);
+    return tmpscript->GetAI(creature);
 }
 
 void ScriptMgr::OnCreatureUpdate(Creature* creature, uint32 diff)

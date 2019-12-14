@@ -184,7 +184,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_watchkeeper_gargolmarAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_watchkeeper_gargolmarAI>(pCreature);
     }

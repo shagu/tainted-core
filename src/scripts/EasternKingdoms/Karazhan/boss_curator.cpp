@@ -160,7 +160,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_curator(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_curatorAI (pCreature);
     }

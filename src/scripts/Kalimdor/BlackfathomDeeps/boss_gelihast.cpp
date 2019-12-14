@@ -75,7 +75,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_gelihast(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_gelihastAI (pCreature);
     }

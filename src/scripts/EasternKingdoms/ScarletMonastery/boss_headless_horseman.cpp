@@ -287,7 +287,7 @@
 //
 //
 //
-//	CreatureAI* GetAI_mob_head(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new mob_headAI(pCreature);
 //	}
@@ -706,7 +706,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_boss_headless_horseman(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new boss_headless_horsemanAI(pCreature);
 //    }
@@ -795,7 +795,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_mob_pulsing_pumpkin(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_pulsing_pumpkinAI(pCreature);
 //    }
@@ -887,7 +887,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_mob_wisp_invis(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_wisp_invisAI(pCreature);
 //    }

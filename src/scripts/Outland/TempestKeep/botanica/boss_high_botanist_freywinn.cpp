@@ -155,7 +155,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_high_botanist_freywinn(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_high_botanist_freywinnAI(pCreature);
     }

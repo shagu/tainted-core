@@ -987,7 +987,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_manaforge_control_console(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_manaforge_control_consoleAI (pCreature);
 //    }
@@ -1290,7 +1290,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_commander_dawnforge(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_commander_dawnforgeAI(pCreature);
 //    }
@@ -1493,7 +1493,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_phase_hunter(Creature* c)
+//     CreatureAI* GetAI(Creature* c) const
 //    {
 //        return new npc_phase_hunterAI (c);
 //    }
@@ -1567,7 +1567,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_bessy(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_bessyAI(pCreature);
 //    }
@@ -1660,7 +1660,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_maxx_a_million_escort(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_maxx_a_million_escortAI(pCreature);
 //    }
@@ -1722,7 +1722,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_zeppit(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_zeppitAI (pCreature);
 //    }
@@ -1794,7 +1794,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_dr_boom(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_dr_boomAI (pCreature);
 //    }
@@ -1860,7 +1860,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_boom_bot(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_boom_botAI (pCreature);
 //    }
@@ -2076,7 +2076,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_drijya(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_drijyaAI(pCreature);
 //    }
@@ -2138,7 +2138,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_mana_wraith(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_mana_wraithAI(pCreature);
 //    }
@@ -2188,7 +2188,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_warp_abberation(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_warp_abberationAI(pCreature);
 //    }
@@ -2263,7 +2263,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_scrapped_fel_reaver(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_scrapped_fel_reaverAI(pCreature);
 //    }
@@ -2347,7 +2347,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_mana_seeker(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_mana_seekerAI(pCreature);
 //    }
@@ -2431,7 +2431,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_mageslayer(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_mageslayerAI(pCreature);
 //    }
@@ -2523,7 +2523,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_naberius(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_naberiusAI(pCreature);
 //    }
@@ -2566,7 +2566,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_doctor_vomisa(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_doctor_vomisaAI(pCreature);
 //    }
@@ -2696,7 +2696,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_negatron(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_negatronAI(pCreature);
 //    }
@@ -2770,7 +2770,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_farahlon_lasher(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_farahlon_lasherAI(pCreature);
 //    }
@@ -2850,7 +2850,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_talbuk_doe(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_talbuk_doeAI(pCreature);
 //    }
@@ -2930,7 +2930,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_talbuk_sire(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_talbuk_sireAI(pCreature);
 //    }
@@ -2987,7 +2987,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_warp_monstrosity(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_warp_monstrosityAI(pCreature);
 //    }
@@ -3052,7 +3052,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_gehenna_trigger(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new gehenna_triggerAI(pCreature);
 //    }
@@ -3101,7 +3101,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_legion_aldor_trigger(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new legion_aldor_triggerAI(pCreature);
 //    }
@@ -3322,7 +3322,7 @@
 //
 //
 //
-//	CreatureAI* GetAI_npc_socrethar(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new npc_socretharAI(pCreature);
 //	}
@@ -3481,7 +3481,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_adyen_lightwarden(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new adyen_lightwardenAI(pCreature);
 //    }
@@ -3836,7 +3836,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_kaylaan(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_kaylaanAI(pCreature);
 //    }
@@ -3887,7 +3887,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_socre_helper(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_socre_helperAI(pCreature);
 //    }
@@ -3936,7 +3936,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_legion_beam_trigger(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new legion_beam_triggerAI(pCreature);
 //    }
@@ -3993,7 +3993,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_arena_event_controller(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new arena_event_controllerAI(pCreature);
 //    }
@@ -4080,7 +4080,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_windtrader_marid(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_windtrader_maridAI(pCreature);
 //    }
@@ -4215,7 +4215,7 @@
 //
 //
 //
-//	CreatureAI* GetAI_npc_salhadaar(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new npc_salhadaarAI(pCreature);
 //	}
@@ -4269,7 +4269,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_captured_protectorate(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	npc_captured_protectorateAI* protectorateAI = new npc_captured_protectorateAI(pCreature);
 //    
@@ -4396,7 +4396,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_protectorate_demolitionist(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	npc_protectorate_demolitionistAI* protectorateAI = new npc_protectorate_demolitionistAI(pCreature);
 //    
@@ -4478,7 +4478,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_energy_ball(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_energy_ballAI(pCreature);
 //    }
@@ -4754,7 +4754,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_captain_saeed(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	npc_captain_saeedAI* captain_saeedAI = new npc_captain_saeedAI(pCreature);
 //    
@@ -4944,7 +4944,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_dimensius_devourer(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_dimensius_devourerAI(pCreature);
 //    }
@@ -5076,7 +5076,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_npc_commander_ameer(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new npc_commander_ameerAI(pCreature);
 //    }
@@ -5214,7 +5214,7 @@
 //    };
 //
 //    
-//    CreatureAI* GetAI_reflection_of_ya_six(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_reflection_of_ya_sixAI(pCreature);
 //    }

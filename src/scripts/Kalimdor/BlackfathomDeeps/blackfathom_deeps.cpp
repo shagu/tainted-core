@@ -188,7 +188,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_blackfathom_deeps_event(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_blackfathom_deeps_eventAI(pCreature);
     }
@@ -249,7 +249,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_morridune(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_morriduneAI(pCreature);
     }

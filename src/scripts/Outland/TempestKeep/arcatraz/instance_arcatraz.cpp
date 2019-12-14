@@ -232,7 +232,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_arcatrazAI(Map* map)
+    InstanceData* GetInstanceData(Map* map)
     {
         return new instance_arcatrazAI(map);
     }

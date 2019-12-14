@@ -404,9 +404,9 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_epoch_hunter(Creature *creature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_epoch_hunterAI (creature);
+        return new boss_epoch_hunterAI (pCreature);
     }
     
     

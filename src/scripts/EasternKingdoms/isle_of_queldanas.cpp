@@ -97,13 +97,17 @@ public:
                 else Timer -= diff;
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_converted_sentry(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_converted_sentryAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -152,14 +156,12 @@ public:
         {
             DoMeleeAttackIfReady();
         }
-    };
-    CreatureAI* GetAI_npc_greengill_slaveAI(Creature* pCreature)
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_greengill_slaveAI(pCreature);
-    }
-    
-    
-    
+    }
 };
 
 

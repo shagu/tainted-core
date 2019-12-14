@@ -173,7 +173,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_sartura(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_sarturaAI (pCreature);
     }
@@ -288,16 +288,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_sartura_royal_guard(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_sartura_royal_guardAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

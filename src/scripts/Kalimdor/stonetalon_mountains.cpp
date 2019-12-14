@@ -82,8 +82,10 @@ class npc_braug_dimspirit : public CreatureScript
 {
 public: 
     npc_braug_dimspirit() : CreatureScript("npc_braug_dimspirit") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -120,8 +122,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -163,12 +167,15 @@ public:
         }
     
         void Reset() {}
-    };
-        CreatureAI* GetAI_npc_kaya_flathoofAI(Creature* pCreature)
+    };
+
+    
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_kaya_flathoofAI(pCreature);
     }
-    
+    
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_PROTECT_KAYA)
@@ -182,8 +189,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

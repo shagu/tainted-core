@@ -261,7 +261,7 @@ public:
 
     
 
-    CreatureAI* GetAI_boss_najentus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_najentusAI>(pCreature);
     }

@@ -314,16 +314,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_kelidan_the_breaker(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_kelidan_the_breakerAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_shadowmoon_channeler : public CreatureScript
@@ -389,7 +383,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_shadowmoon_channeler(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_shadowmoon_channelerAI (pCreature);
     }
@@ -435,7 +429,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_kelridan_trigger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_kelridan_triggerAI(pCreature);
     }

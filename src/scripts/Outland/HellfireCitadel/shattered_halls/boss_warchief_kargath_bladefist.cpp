@@ -329,7 +329,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_warchief_kargath_bladefist(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_warchief_kargath_bladefistAI>(pCreature);
     }

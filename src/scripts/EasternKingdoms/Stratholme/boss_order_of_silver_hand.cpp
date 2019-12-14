@@ -149,13 +149,14 @@ public:
         }
     
     };
-    CreatureAI* GetAI_boss_silver_hand_bossesAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_silver_hand_bossesAI (pCreature);
     }
     
     
 };
+
 void AddSC_boss_order_of_silver_hand()
 {
     new boss_silver_hand_bosses();

@@ -132,7 +132,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_galvangar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_galvangarAI(pCreature);
     }

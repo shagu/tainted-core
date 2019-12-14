@@ -98,7 +98,7 @@
 //
 //
 //
-//	CreatureAI* GetAI_mob_fiendish_portal(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new mob_fiendish_portalAI(pCreature);
 //	}
@@ -313,7 +313,7 @@
 //    };
 //
 //
-//    CreatureAI* GetAI_boss_terestian_illhoof(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new boss_terestian_illhoofAI(pCreature);
 //    }
@@ -361,7 +361,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_mob_fiendish_imp(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new mob_fiendish_impAI(pCreature);
 //    }
@@ -445,7 +445,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_mob_kilrek(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new mob_kilrekAI(pCreature);
 //    }
@@ -487,7 +487,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_mob_demon_chain(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //    	return new mob_demon_chainAI(pCreature);
 //    }

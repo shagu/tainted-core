@@ -457,14 +457,14 @@ public:
                 break;
             }
         }
-    };
-    
-    CreatureAI* GetAI_boss_kalecgos(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_kalecgosAI (pCreature);
-    }
-    
-    
+    }
 };
 
 class boss_sathrovarr : public CreatureScript
@@ -697,14 +697,18 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    
-    CreatureAI* GetAI_boss_Sathrovarr(Creature* pCreature)
+    };
+
+    
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_sathrovarrAI(pCreature);
     }
-
+
+
     
 };
 
@@ -800,13 +804,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_boss_kalec(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_kalecAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -814,8 +822,10 @@ class kalecgos_teleporter : public GameObjectScript
 {
 public: 
     kalecgos_teleporter() : GameObjectScript("kalecgos_teleporter") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, GameObject* pGo) override
     {
         int32 SpectralPlayers = 0;
@@ -833,8 +843,10 @@ public:
             pPlayer->CastSpell(pPlayer, SPELL_TELEPORT_SPECTRAL, true);
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

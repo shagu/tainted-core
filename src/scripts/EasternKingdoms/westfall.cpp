@@ -99,7 +99,7 @@ public:
         return true;
     }
     
-    CreatureAI* GetAI_npc_defias_traitor(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_defias_traitorAI(pCreature);
     }

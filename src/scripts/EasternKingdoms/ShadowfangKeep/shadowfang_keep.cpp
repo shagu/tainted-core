@@ -109,7 +109,7 @@ public:
         void EnterCombat(Unit* /*who*/) {}
     };
 
-    CreatureAI* GetAI_npc_shadowfang_prisoner(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_shadowfang_prisonerAI(pCreature);
     }
@@ -191,7 +191,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_arugal_voidwalker(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_arugal_voidwalkerAI(pCreature);
     }

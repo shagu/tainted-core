@@ -133,7 +133,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_chrono_lord_deja(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_chrono_lord_dejaAI (pCreature);
     }

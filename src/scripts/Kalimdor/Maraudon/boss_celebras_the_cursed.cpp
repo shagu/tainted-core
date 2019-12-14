@@ -153,13 +153,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_celebras_the_cursed(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_celebras_the_cursedAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -274,9 +278,11 @@ public:
     			else awaken_timer -= uiDiff;
     		}
     	}
-    };
-    
-    CreatureAI* GetAI_npc_celebras(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	npc_celebrasAI* celebrasAI = new npc_celebrasAI(pCreature);
     
@@ -296,7 +302,8 @@ public:
     	celebrasAI->AddWaypoint(13, 651.491f, 84.702f, -86.831f, 0);
     
     	return celebrasAI;
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest) override
     {
     	if (pQuest->GetQuestId() == QUEST_THE_SCEPTER_OF_CELEBERAS)
@@ -311,8 +318,10 @@ public:
     	}
     	return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -320,8 +329,10 @@ class go_incantbook : public GameObjectScript
 {
 public: 
     go_incantbook() : GameObjectScript("go_incantbook") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* /*pPlayer*/, GameObject* pGO) override
     {
     	ScriptedInstance* instance = (ScriptedInstance*)pGO->GetInstanceData();
@@ -334,8 +345,10 @@ public:
     
     	return false;
     }
-    
-    
+    
+
+    
+
     
 };
 

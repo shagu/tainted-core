@@ -120,7 +120,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_razorgore(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_razorgoreAI (pCreature);
     }

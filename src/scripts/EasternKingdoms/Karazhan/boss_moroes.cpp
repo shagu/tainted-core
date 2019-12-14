@@ -350,7 +350,7 @@ public:
 		}
 	};
 
-	CreatureAI* GetAI_boss_moroes(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return GetInstanceAI<boss_moroesAI>(pCreature);
 	}
@@ -488,7 +488,7 @@ public:
 
     
 
-    CreatureAI* GetAI_baroness_dorothea_millstipe(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_baroness_dorothea_millstipeAI>(pCreature);
     }
@@ -549,7 +549,7 @@ public:
 
     
 
-    CreatureAI* GetAI_baron_rafe_dreuger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_baron_rafe_dreugerAI>(pCreature);
     }
@@ -624,7 +624,7 @@ public:
 
     
 
-    CreatureAI* GetAI_lady_catriona_von_indi(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_lady_catriona_von_indiAI>(pCreature);
     }
@@ -704,7 +704,7 @@ public:
     
 
     
-    CreatureAI* GetAI_lady_keira_berrybuck(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_lady_keira_berrybuckAI>(pCreature);
     }
@@ -765,7 +765,7 @@ public:
     
 
     
-    CreatureAI* GetAI_lord_robin_daris(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_lord_robin_darisAI>(pCreature);
     }
@@ -832,7 +832,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_lord_crispin_ference(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_lord_crispin_ferenceAI>(pCreature);
     }

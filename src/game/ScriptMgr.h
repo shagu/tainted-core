@@ -415,7 +415,7 @@ public:
     bool IsDatabaseBound() const { return true; }
 
     // Gets an InstanceData object for this instance.
-    virtual InstanceData* OnGetInstanceData(InstanceMap* map) { return NULL; }
+    virtual InstanceData* OnGetInstanceData(InstanceMap* map) const { return NULL; }
 };
 
 class BattlegroundMapScript : public ScriptObject, public MapScript<BattlegroundMap>
@@ -488,7 +488,7 @@ public:
     virtual uint32 OnDialogStatus(Player* player, Creature* creature) { return 0; }
 
     // Called when a CreatureAI object is needed for the creature.
-    virtual CreatureAI* OnGetAI(Creature* creature) { return NULL; }
+    virtual CreatureAI* GetAI(Creature* creature) const { return NULL; }
 };
 
 class GameObjectScript : public ScriptObject, public UpdatableScript<GameObject>

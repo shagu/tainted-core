@@ -108,7 +108,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_doctor_theolen_krastinov(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_doctor_theolen_krastinovAI (pCreature);
     }

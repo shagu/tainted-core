@@ -293,7 +293,7 @@ public:
             }
         }
     };
-    CreatureAI* GetAI_boss_ragnaros(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_ragnarosAI (pCreature);
     }

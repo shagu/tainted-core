@@ -172,14 +172,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
+    };
+
     
-    CreatureAI* GetAI_boss_broggokAI(Creature* pCreature)
+
+    
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_broggokAI>(pCreature);
     }
-    
+    
+
     
 };
 
@@ -248,13 +251,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_mob_nascent_orc(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_nascent_orcAI>(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -278,13 +285,17 @@ public:
     
         void AttackedBy(Unit* /*who*/) {}
         void AttackStart(Unit* /*who*/) {}
-    };
-    
-    CreatureAI* GetAI_mob_broggok_poisoncloud(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_broggok_poisoncloudAI>(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 

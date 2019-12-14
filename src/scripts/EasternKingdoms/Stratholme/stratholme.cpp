@@ -88,8 +88,10 @@ class go_gauntlet_gate : public GameObjectScript
 {
 public: 
     go_gauntlet_gate() : GameObjectScript("go_gauntlet_gate") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* player, GameObject* pGo) override
     {
         ScriptedInstance* pInstance = (ScriptedInstance*)pGo->GetInstanceData();
@@ -122,8 +124,10 @@ public:
         pInstance->SetData(TYPE_BARON_RUN, IN_PROGRESS);
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -141,13 +145,17 @@ public:
         }
     
         void EnterCombat(Unit* /*who*/) {}
-    };
-    
-    CreatureAI* GetAI_mob_freed_soul(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_freed_soulAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -210,13 +218,17 @@ public:
                 else Die_Timer -= diff;
             }
         }
-    };
-    
-    CreatureAI* GetAI_mob_restless_soul(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_restless_soulAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -297,13 +309,17 @@ public:
                 break;
             }
         }
-    };
-    
-    CreatureAI* GetAI_mobs_spectral_ghostly_citizen(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mobs_spectral_ghostly_citizenAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 

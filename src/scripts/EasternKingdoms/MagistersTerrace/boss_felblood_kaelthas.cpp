@@ -312,7 +312,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_felblood_kaelthas(Creature* c)
+     CreatureAI* GetAI(Creature* c) const
     {
         return GetInstanceAI<boss_felblood_kaelthasAI>(c);
     }
@@ -374,7 +374,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_arcane_sphere(Creature* c)
+     CreatureAI* GetAI(Creature* c) const
     {
         return new mob_arcane_sphereAI(c);
     }
@@ -496,7 +496,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_felkael_phoenix(Creature* c)
+     CreatureAI* GetAI(Creature* c) const
     {
         return GetInstanceAI<mob_felkael_phoenixAI>(c);
     }
@@ -532,7 +532,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_felkael_phoenix_egg(Creature* c)
+     CreatureAI* GetAI(Creature* c) const
     {
         return new mob_felkael_phoenix_eggAI(c);
     }
@@ -577,7 +577,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_felkael_flamestrike(Creature* c)
+     CreatureAI* GetAI(Creature* c) const
     {
         return new mob_felkael_flamestrikeAI(c);
     }

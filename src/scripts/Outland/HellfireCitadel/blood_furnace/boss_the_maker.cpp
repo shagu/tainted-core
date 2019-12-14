@@ -141,7 +141,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_the_makerAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_the_makerAI>(pCreature);
     }

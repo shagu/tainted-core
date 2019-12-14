@@ -202,7 +202,7 @@ public:
     
     };
 
-    CreatureAI* GetAI_npc_therylune(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_theryluneAI(pCreature);
     }
@@ -314,7 +314,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_kerlonian(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_kerlonianAI(pCreature);
     }
@@ -420,7 +420,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_prospector_remtravel(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_prospector_remtravelAI(pCreature);
     }
@@ -476,7 +476,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_threshwackonator(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_threshwackonatorAI(pCreature);
     }
@@ -624,7 +624,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_rabid_bear(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_rabid_bearAI(pCreature);
     }

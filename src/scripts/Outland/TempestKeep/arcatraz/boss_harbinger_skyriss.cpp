@@ -309,7 +309,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_harbinger_skyriss(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_harbinger_skyrissAI>(pCreature);
     }
@@ -339,7 +339,7 @@ public:
         void EnterCombat(Unit* /*who*/) { }
     };
 
-    CreatureAI* GetAI_boss_harbinger_skyriss_illusion(Creature* c)
+     CreatureAI* GetAI(Creature* c) const
     {
         return GetInstanceAI<boss_harbinger_skyriss_illusionAI>(c);
     }

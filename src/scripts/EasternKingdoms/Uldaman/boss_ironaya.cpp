@@ -98,7 +98,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_ironaya(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_ironayaAI (pCreature);
     }

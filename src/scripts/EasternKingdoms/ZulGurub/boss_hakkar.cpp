@@ -255,7 +255,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_hakkar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_hakkarAI (pCreature);
     }

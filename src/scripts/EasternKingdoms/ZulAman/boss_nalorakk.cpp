@@ -461,7 +461,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_nalorakk(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_nalorakkAI (pCreature);
     }

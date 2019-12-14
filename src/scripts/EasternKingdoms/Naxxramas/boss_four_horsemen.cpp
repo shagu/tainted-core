@@ -187,7 +187,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_lady_blaumeux(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_lady_blaumeuxAI (pCreature);
     }
@@ -249,7 +249,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_rivendare_naxx(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_rivendare_naxxAI (pCreature);
     }
@@ -335,7 +335,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_thane_korthazz(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_thane_korthazzAI (pCreature);
     }
@@ -422,7 +422,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_sir_zeliek(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_sir_zeliekAI (pCreature);
     }

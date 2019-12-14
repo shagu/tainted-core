@@ -93,13 +93,17 @@ public:
             if (Killer->GetTypeId() == TYPEID_PLAYER)
                 me->SummonCreature(11064, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN, 60000);
         }
-    };
-    
-    CreatureAI* GetAI_mobs_ghoul_flayer(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mobs_ghoul_flayerAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -107,8 +111,10 @@ class npc_augustus_the_touched : public CreatureScript
 {
 public: 
     npc_augustus_the_touched() : CreatureScript("npc_augustus_the_touched") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -120,7 +126,8 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipHello_npc_augustus_the_touched(Player* pPlayer, Creature* pCreature)
     {
         if (pCreature->IsQuestGiver())
@@ -132,22 +139,26 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_augustus_the_touched(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
     {
         if (uiAction == GOSSIP_ACTION_TRADE)
             pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_TRADE)
             pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -167,12 +178,15 @@ public:
     
         void EnterCombat(Unit* /*who*/) {}
     
-    };
-    
-    CreatureAI* GetAI_npc_darrowshire_spirit(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_darrowshire_spiritAI (pCreature);
-    }
+    }
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         pPlayer->SEND_GOSSIP_MENU(3873, pCreature->GetGUID());
@@ -180,17 +194,16 @@ public:
         pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         return true;
     }
-    
-    
-    
 };
 
 class npc_tirion_fordring : public CreatureScript
 {
 public: 
     npc_tirion_fordring() : CreatureScript("npc_tirion_fordring") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -203,7 +216,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipHello_npc_tirion_fordring(Player* pPlayer, Creature* pCreature)
     {
         if (pCreature->IsQuestGiver())
@@ -216,7 +230,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool GossipSelect_npc_tirion_fordring(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
     {
         switch (uiAction)
@@ -240,7 +255,8 @@ public:
         }
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -264,8 +280,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

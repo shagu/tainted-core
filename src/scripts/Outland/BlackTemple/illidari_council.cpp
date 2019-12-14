@@ -203,16 +203,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_blood_elf_council_voice_trigger(Creature* c)
+    CreatureAI* GetAI(Creature* c) const
     {
         return new mob_blood_elf_council_voice_triggerAI(c);
     }
-
-
-
-
-
-
 };
 
 
@@ -379,7 +373,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_illidari_council(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_illidari_councilAI>(pCreature);
     }
@@ -666,16 +660,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_gathios_the_shatterer(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_gathios_the_shattererAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_lady_malande : public CreatureScript
@@ -752,16 +740,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_lady_malande(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_lady_malandeAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_veras_darkshadow : public CreatureScript
@@ -860,16 +842,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_veras_darkshadow(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_veras_darkshadowAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_high_nethermancer_zerevor : public CreatureScript
@@ -974,16 +950,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_high_nethermancer_zerevor(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_high_nethermancer_zerevorAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

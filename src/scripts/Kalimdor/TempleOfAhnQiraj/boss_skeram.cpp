@@ -341,7 +341,7 @@ public:
     
     };
     
-    CreatureAI* GetAI_boss_skeram(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_skeramAI (pCreature);
     }

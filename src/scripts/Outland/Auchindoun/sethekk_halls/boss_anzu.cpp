@@ -203,13 +203,14 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_anzu(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_anzuAI>(pCreature);
     }
     
     
 };
+
 void AddSC_boss_anzu()
 {
     new boss_anzu();

@@ -129,7 +129,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_high_inquisitor_fairbanks(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_high_inquisitor_fairbanksAI (pCreature);
     }

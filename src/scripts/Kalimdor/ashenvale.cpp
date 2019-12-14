@@ -221,7 +221,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_muglash(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_muglashAI(pCreature);
     }
@@ -369,7 +369,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_torek(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_torekAI(pCreature);
     }
@@ -464,7 +464,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_ruul_snowhoofAI(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_ruul_snowhoofAI(pCreature);
     }
@@ -584,7 +584,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_feero(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         npc_feeroAI* feeroAI = new npc_feeroAI(pCreature);
 

@@ -123,7 +123,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_golemagg(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_golemaggAI(pCreature);
     }
@@ -188,7 +188,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_core_rager(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_core_ragerAI(pCreature);
     }

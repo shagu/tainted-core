@@ -361,7 +361,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_sacrolash(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_sacrolashAI (pCreature);
     }
@@ -704,7 +704,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_alythess(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_alythessAI (pCreature);
     }
@@ -794,7 +794,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_shadow_image(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_shadow_imageAI (pCreature);
     }

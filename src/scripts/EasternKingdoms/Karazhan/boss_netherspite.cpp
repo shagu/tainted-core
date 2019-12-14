@@ -342,7 +342,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_netherspite(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_netherspiteAI>(pCreature);
     }

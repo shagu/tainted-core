@@ -548,7 +548,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_felmyst(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_felmystAI(pCreature);
     }
@@ -604,7 +604,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_felmyst_vapor(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_felmyst_vaporAI(pCreature);
     }
@@ -651,7 +651,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_felmyst_trail(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_felmyst_trailAI(pCreature);
     }
@@ -701,7 +701,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_unyielding_dead(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_unyielding_deadAI(pCreature);
     }

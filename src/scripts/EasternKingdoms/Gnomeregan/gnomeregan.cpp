@@ -529,7 +529,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_blastmaster_emi_shortfuse(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_blastmaster_emi_shortfuseAI(pCreature);
     }
@@ -601,7 +601,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_grubbis(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_grubbisAI(pCreature);
     }
@@ -686,7 +686,7 @@ public:
     	}
     };
 
-    CreatureAI* GetAI_npc_kernobee(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_kernobeeAI(pCreature);
     }

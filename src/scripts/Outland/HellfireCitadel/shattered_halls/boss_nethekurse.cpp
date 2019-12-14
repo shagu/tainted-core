@@ -420,16 +420,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_grand_warlock_nethekurse(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_grand_warlock_nethekurseAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_fel_orc_convert : public CreatureScript
@@ -503,16 +497,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_fel_orc_convert(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_fel_orc_convertAI>(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 class mob_lesser_shadow_fissure : public CreatureScript
@@ -570,16 +559,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_lesser_shadow_fissure(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_lesser_shadow_fissureAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

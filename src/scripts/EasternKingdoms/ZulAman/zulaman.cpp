@@ -148,15 +148,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_forest_frog(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_forest_frogAI (pCreature);
     }
-
-    
-
-    
-
     
 };
 
@@ -186,7 +181,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_zulaman_hostage(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_zulaman_hostageAI(pCreature);
     }
@@ -298,7 +293,7 @@ public:
         bool handleGossips;
     };
 
-    CreatureAI* GetAI_npc_harrison_jones(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_harrison_jonesAI(pCreature);
     }

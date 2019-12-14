@@ -92,7 +92,7 @@ public:
         }
     
     };
-    CreatureAI* GetAI_npc_narm_faulk(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_narm_faulkAI (pCreature);
     }

@@ -84,8 +84,10 @@ class npc_gregan_brewspewer : public CreatureScript
 {
 public: 
     npc_gregan_brewspewer() : CreatureScript("npc_gregan_brewspewer") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -97,7 +99,9 @@ public:
         pPlayer->SEND_GOSSIP_MENU(2433, pCreature->GetGUID());
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -109,8 +113,10 @@ public:
             pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -172,12 +178,14 @@ public:
         {
             summoned->AI()->AttackStart(me);
         }
-    };
-    
-    CreatureAI* GetAI_npc_oox22fe(Creature* pCreature)
+    };
+
+    
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_oox22feAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_RESCUE_OOX22FE)
@@ -194,8 +202,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -203,8 +213,10 @@ class npc_screecher_spirit : public CreatureScript
 {
 public: 
     npc_screecher_spirit() : CreatureScript("npc_screecher_spirit") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         pPlayer->SEND_GOSSIP_MENU(2039, pCreature->GetGUID());
@@ -214,8 +226,10 @@ public:
         pCreature->ForcedDespawn(3 * IN_MILLISECONDS);
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

@@ -144,7 +144,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_kri(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_kriAI (pCreature);
     }
@@ -244,7 +244,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_vem(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_vemAI (pCreature);
     }
@@ -372,7 +372,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_yauj(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_yaujAI (pCreature);
     }

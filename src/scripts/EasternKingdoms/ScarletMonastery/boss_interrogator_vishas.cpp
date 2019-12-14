@@ -110,7 +110,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_interrogator_vishas(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_interrogator_vishasAI (pCreature);
     }

@@ -130,7 +130,7 @@ public:
     		}
     	};
 
-        CreatureAI* GetAI_npc_myzrael(Creature* pCreature)
+         CreatureAI* GetAI(Creature* pCreature) const
     	{
     		return new npc_myzraelAI(pCreature);
     	}
@@ -209,7 +209,7 @@ public:
     		}
     	};
 
-        CreatureAI* GetAI_npc_prismatic_exile(Creature* pCreature)
+         CreatureAI* GetAI(Creature* pCreature) const
     	{
     		return new npc_prismatic_exileAI(pCreature);
     	}

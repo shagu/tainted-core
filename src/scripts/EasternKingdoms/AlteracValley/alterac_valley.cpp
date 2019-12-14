@@ -186,7 +186,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_av_marshal_or_warmaster(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_av_marshal_or_warmasterAI(pCreature);
     }

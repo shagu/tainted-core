@@ -440,7 +440,7 @@ public:
 
     
 
-    CreatureAI* GetAI_mobs_risen_husk_spirit(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mobs_risen_husk_spiritAI (pCreature);
     }
@@ -502,7 +502,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_deserter_agitator(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_deserter_agitatorAI(pCreature);
     }
@@ -679,7 +679,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_gavis_greyshield(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_gavis_greyshieldAI(pCreature);
     }
@@ -736,7 +736,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_theramore_guard(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_theramore_guardAI(pCreature);
     }
@@ -858,7 +858,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_jaina_proudmooreAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_jaina_proudmooreAI(pCreature);
     }
@@ -1047,7 +1047,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_morokk(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_morokkAI(pCreature);
     }
@@ -1302,7 +1302,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_ogron(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_ogronAI(pCreature);
     }
@@ -1505,7 +1505,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_private_hendel(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_private_hendelAI(pCreature);
     }
@@ -1586,7 +1586,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_zelfrax(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_zelfraxAI(pCreature);
     }
@@ -1710,7 +1710,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_stinky(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_stinkyAI(pCreature);
     }
@@ -1773,14 +1773,10 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_mottled_drywallow_crocolisk(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return new npc_mottled_drywallow_crocoliskAI(creature);
     }
-
-    
-
-    
 };
 
 class npc_cassa_crimsonwing : public CreatureScript

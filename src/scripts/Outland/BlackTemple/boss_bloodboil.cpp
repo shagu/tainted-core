@@ -346,7 +346,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_gurtogg_bloodboil(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_gurtogg_bloodboilAI>(pCreature);
     }

@@ -144,7 +144,7 @@
 //
 //
 //
-//	CreatureAI* GetAI_mob_ashtongue_channeler(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new mob_ashtongue_channelerAI(pCreature);
 //	}
@@ -504,7 +504,7 @@
 //	};
 //
 //
-//	CreatureAI* GetAI_boss_shade_of_akama(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return GetInstanceAI<boss_shade_of_akamaAI>(pCreature);
 //	}
@@ -891,7 +891,7 @@
 //
 //    
 //
-//    CreatureAI* GetAI_mob_ashtongue_sorcerer(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new mob_ashtongue_sorcererAI (pCreature);
 //    }
@@ -907,7 +907,7 @@
 //    npc_akama_shade() : CreatureScript("npc_akama_shade") { }
 //    
 //
-//    CreatureAI* GetAI_npc_akama_shade(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return new npc_akamaAI (pCreature);
 //    }

@@ -585,7 +585,7 @@
 //		}
 //	};
 //
-//	CreatureAI* GetAI_boss_maiev(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new boss_maievAI(pCreature);
 //	}
@@ -1057,7 +1057,7 @@
 //	};
 //
 //
-//	CreatureAI* GetAI_npc_akama_at_illidan(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new npc_akama_illidanAI(pCreature);
 //	}
@@ -1157,7 +1157,7 @@
 //	};
 //
 //
-//	CreatureAI* GetAI_mob_flame_of_azzinoth(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new flame_of_azzinothAI(pCreature);
 //	}
@@ -1180,7 +1180,7 @@
 //		}
 //	};
 //
-//	CreatureAI* GetAI_blade_of_azzinoth(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new blade_of_azzinothAI(pCreature);
 //	}
@@ -1259,7 +1259,7 @@
 //		}
 //	};
 //
-//	CreatureAI* GetAI_cage_trap_trigger(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new cage_trap_triggerAI(pCreature);
 //	}
@@ -1333,7 +1333,7 @@
 //		}
 //	};
 //
-//	CreatureAI* GetAI_shadow_demon(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new shadow_demonAI(pCreature);
 //	}
@@ -1419,7 +1419,7 @@
 //		}
 //	};
 //
-//	CreatureAI* GetAI_parasitic_shadowfiend(Creature* pCreature)
+//	 CreatureAI* GetAI(Creature* pCreature) const
 //	{
 //		return new mob_parasitic_shadowfiendAI(pCreature);
 //	}
@@ -2299,7 +2299,7 @@
 //
 //    /********************************** End of Illidan AI ******************************************/
 //
-//    CreatureAI* GetAI_boss_illidan_stormrage(Creature* pCreature)
+//     CreatureAI* GetAI(Creature* pCreature) const
 //    {
 //        return GetInstanceAI<boss_illidan_stormrageAI>(pCreature);
 //    }

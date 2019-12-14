@@ -87,7 +87,7 @@ public:
     	void UpdateAI(const uint32 uiDiff) { }
     };
 
-    CreatureAI* GetAI_npc_honorfallendefender(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_honorfallendefenderAI(creature);
     }
@@ -123,7 +123,7 @@ public:
     	void UpdateAI(const uint32 uiDiff) { }
     };
 
-    CreatureAI* GetAI_npc_honorfalleninfantry(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_honorfalleninfantryAI(creature);
     }
@@ -347,7 +347,7 @@ public:
     	}
     };
 
-    CreatureAI* GetAI_npc_shattered_legionnaire(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_shattered_legionnaireAI(creature);
     }
@@ -408,7 +408,7 @@ public:
     	void UpdateAI(const uint32 uiDiff) { }
     };
 
-    CreatureAI* GetAI_npc_shatteredscout(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
     	return new npc_shatteredscoutAI(creature);
     }

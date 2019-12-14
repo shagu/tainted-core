@@ -119,16 +119,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_herod(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_herodAI(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 class mob_scarlet_trainee : public CreatureScript
@@ -164,16 +159,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_scarlet_trainee(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_scarlet_traineeAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

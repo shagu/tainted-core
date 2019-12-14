@@ -125,7 +125,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_bloodmage_thalnos(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_bloodmage_thalnosAI (pCreature);
     }

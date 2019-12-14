@@ -602,7 +602,7 @@
 //	}
 //
 //
-//	CreatureAI* GetAI_echo_of_medivh(Creature *_Creature)
+//	 CreatureAI* GetAI(Creature* _Creature) const
 //	{
 //		return GetInstanceAI<npc_echo_of_medivhAI>(_Creature);
 //	}
@@ -1271,7 +1271,7 @@
 //
 //
 //
-//    CreatureAI* GetAI_chess_npc(Creature *_Creature)
+//     CreatureAI* GetAI(Creature* _Creature) const
 //    {
 //        return GetInstanceAI<chess_npcAI>(_Creature);
 //    }
@@ -1433,7 +1433,7 @@
 //    };
 //
 //    
-//    CreatureAI* GetAI_move_marker(Creature *_Creature)
+//     CreatureAI* GetAI(Creature* _Creature) const
 //    {
 //        return GetInstanceAI<Move_markerAI>(_Creature);
 //    }
@@ -1582,7 +1582,7 @@
 //    };
 //
 //    
-//    CreatureAI* GetAI_victory_controler(Creature *_Creature)
+//     CreatureAI* GetAI(Creature* _Creature) const
 //    {
 //        return GetInstanceAI<chess_victory_controlerAI>(_Creature);
 //    }

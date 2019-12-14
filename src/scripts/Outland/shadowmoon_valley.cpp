@@ -873,7 +873,7 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_mature_netherwing_drake(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_mature_netherwing_drakeAI(pCreature);
     }
@@ -1008,14 +1008,10 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_enslaved_netherwing_drake(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_enslaved_netherwing_drakeAI(pCreature);
     }
-
-    
-
-    
 };
 
 class mob_dragonmaw_peon : public CreatureScript
@@ -1112,7 +1108,7 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_dragonmaw_peon(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_dragonmaw_peonAI(pCreature);
     }
@@ -1355,7 +1351,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_karynaku(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_karynakuAI(pCreature);
     }
@@ -1434,7 +1430,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_oronok_tornheart(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_oronok_tornheartAI(pCreature);
     }
@@ -1817,7 +1813,7 @@ public:
     
 
 
-    CreatureAI* GetAI_npc_overlord_morghorAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_overlord_morghorAI(pCreature);
     }
@@ -2021,7 +2017,7 @@ public:
     };
 
     
-    CreatureAI* GetAI_npc_earthmender_wildaAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_earthmender_wildaAI(pCreature);
     }
@@ -2197,7 +2193,7 @@ public:
 		}
 	};
 
-	CreatureAI* GetAI_mob_torloth(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new mob_torlothAI(pCreature);
 	}
@@ -2426,7 +2422,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_lord_illidan_stormrage(Creature * (pCreature))
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_lord_illidan_stormrageAI(pCreature);
     }
@@ -2532,7 +2528,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_enraged_spirit(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_enraged_spiritAI(pCreature);
     }
@@ -2707,7 +2703,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_azaloth(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return new npc_azalothAI(creature);
     }
@@ -2765,7 +2761,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_sunfurywarlock(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_sunfurywarlockAI(pCreature);
     }
@@ -2811,7 +2807,7 @@ public:
 
     
 
-    CreatureAI* GetAI_legion_infernal_summon_trigger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new legion_infernal_summon_triggerAI(pCreature);
     }
@@ -2850,7 +2846,7 @@ public:
 
     
 
-    CreatureAI* GetAI_legion_infernal_summoner_trigger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new legion_infernal_summoner_triggerAI(pCreature);
     }
@@ -2905,7 +2901,7 @@ public:
 
     
 
-    CreatureAI* GetAI_legion_hold_device_trigger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new legion_hold_device_triggerAI(pCreature);
     }
@@ -3030,7 +3026,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_deathbringer_jovaan(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_deathbringer_jovaanAI(pCreature);
     }
@@ -3093,7 +3089,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_shadowcouncil_warlock(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_shadowcouncil_warlockAI(pCreature);
     }
@@ -3298,7 +3294,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_zuluhed_the_whacked(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_zuluhed_the_whackedAI(pCreature);
     }
@@ -3420,7 +3416,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_dragonmaw_archer(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_dragonmaw_archerAI(pCreature);
     }
@@ -3544,7 +3540,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_karsius_the_ancient_watcher(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_karsius_the_ancient_watcherAI(pCreature);
     }
@@ -3599,7 +3595,7 @@ public:
 
     
 
-    CreatureAI* GetAI_teron_trigger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new teron_triggerAI(pCreature);
     }
@@ -3672,7 +3668,7 @@ public:
 
     
 
-    CreatureAI* GetAI_teron_gorefiend_event(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new teron_gorefiend_eventAI(pCreature);
     }
@@ -3760,7 +3756,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_artor(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_artorAI(pCreature);
     }
@@ -3840,7 +3836,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_tiny_trigger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_tiny_triggerAI(pCreature);
     }
@@ -3898,7 +3894,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_painmistress_gabrisa(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_painmistress_gabrisaAI(pCreature);
     }
@@ -4002,7 +3998,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_illidari_shocktrooper(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_illidari_shocktrooperAI(pCreature);
     }
@@ -4053,7 +4049,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_veneratus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_veneratusAI(pCreature);
     }
@@ -4139,7 +4135,7 @@ public:
 
 
 
-	CreatureAI* GetAI_npc_icarus_trigger(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_icarus_triggerAI(pCreature);
 	}
@@ -4263,7 +4259,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_envoy_icarius(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_envoy_icariusAI(pCreature);
     } 
@@ -4413,7 +4409,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_guldan(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_guldanAI(pCreature);
     }
@@ -4611,7 +4607,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_oronok(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_oronokAI(pCreature);
     }
@@ -4722,7 +4718,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_cyrukh_the_firelord(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_cyrukh_the_firelordAI(pCreature);
     }

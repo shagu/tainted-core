@@ -137,7 +137,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_00x09hl(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_00x09hlAI(pCreature);
     }
@@ -303,7 +303,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_rinji(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_rinjiAI(pCreature);
     }

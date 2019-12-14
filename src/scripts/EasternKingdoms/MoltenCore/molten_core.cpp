@@ -45,7 +45,7 @@ class mob_ancient_core_hound : public CreatureScript
 {
 public:
     mob_ancient_core_hound() : CreatureScript("mob_ancient_core_hound") { }
-    CreatureAI* GetAI_mob_ancient_core_hound(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         SimpleAI* ai = new SimpleAI(pCreature);
 

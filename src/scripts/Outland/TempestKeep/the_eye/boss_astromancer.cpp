@@ -409,16 +409,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_high_astromancer_solarian(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_high_astromancer_solarianAI>(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 class mob_solarium_priest : public CreatureScript
@@ -495,16 +490,11 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_solarium_priest(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_solarium_priestAI>(pCreature);
     }
 
-    
-
-    
-
-    
 };
 
 

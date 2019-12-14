@@ -203,7 +203,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_rage_winterchill(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_rage_winterchillAI (pCreature);
     }

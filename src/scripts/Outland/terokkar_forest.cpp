@@ -533,42 +533,47 @@ enum
 	QUEST_HUNGRY_NETHER_RAYS = 11093
 };
 
-struct npc_hungry_nether_rayAI : public ScriptedAI
+class npc_hungry_nether_ray : public CreatureScript
 {
-	npc_hungry_nether_rayAI(Creature* pCreature) : ScriptedAI(pCreature) {}
+public:
+    npc_hungry_nether_ray() : CreatureScript("npc_hungry_nether_ray") {}
 
-	uint32 uiCheckTimer;
-	uint64 uiWarpGUID;
+    struct npc_hungry_nether_rayAI : public ScriptedAI
+    {
+        npc_hungry_nether_rayAI(Creature* pCreature) : ScriptedAI(pCreature) {}
 
-	void Reset()
-	{
-		uiCheckTimer = 4000;
-		uiWarpGUID = 0;
-	}
+        uint32 uiCheckTimer;
+        uint64 uiWarpGUID;
 
-	void UpdateAI(const uint32 uiDiff)
-	{
-		if (uiCheckTimer <= uiDiff)
-		{
-			if (Creature* pWarp = me->FindNearestCreature(NPC_BLACKWING_WARP_CHASER, 9.0f, false))
-			{
-				if (pWarp->GetGUID() != uiWarpGUID && CAST_PLR(me->GetOwner())->GetQuestStatus(QUEST_HUNGRY_NETHER_RAYS) == QUEST_STATUS_INCOMPLETE)
-				{
-					uiWarpGUID = pWarp->GetGUID();
-					me->HandleEmoteCommand(ANIM_EMOTE_EAT);
-				}
-			}
-			uiCheckTimer = 4000;
-		}
-		else uiCheckTimer -= uiDiff;
-	}
+        void Reset()
+        {
+            uiCheckTimer = 4000;
+            uiWarpGUID = 0;
+        }
+
+        void UpdateAI(const uint32 uiDiff)
+        {
+            if (uiCheckTimer <= uiDiff)
+            {
+                if (Creature* pWarp = me->FindNearestCreature(NPC_BLACKWING_WARP_CHASER, 9.0f, false))
+                {
+                    if (pWarp->GetGUID() != uiWarpGUID && CAST_PLR(me->GetOwner())->GetQuestStatus(QUEST_HUNGRY_NETHER_RAYS) == QUEST_STATUS_INCOMPLETE)
+                    {
+                        uiWarpGUID = pWarp->GetGUID();
+                        me->HandleEmoteCommand(ANIM_EMOTE_EAT);
+                    }
+                }
+                uiCheckTimer = 4000;
+            }
+            else uiCheckTimer -= uiDiff;
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_hungry_nether_rayAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_npc_hungry_nether_ray(Creature* pCreature)
-{
-	return new npc_hungry_nether_rayAI(pCreature);
-}
-
 
 /*######
 ## go_ancient_skull_pile
@@ -578,23 +583,37 @@ CreatureAI* GetAI_npc_hungry_nether_ray(Creature* pCreature)
 #define NPC_TEROKK        21838
 #define QUEST_TEROKK	  11073
 
-
-
-void SendActionMenu_go_ancient_skull_pile(Player *player, GameObject* _GO, uint32 action)
+class go_ancient_skull_pile : public GameObjectScript
 {
-	switch (action)
-	{
-	case GOSSIP_ACTION_INFO_DEF + 1:
-		if (player->HasItemCount(ITEM_OFFERING, 1))
-		{
-			player->DestroyItemCount(ITEM_OFFERING, 1, true);
-			player->SummonCreature(NPC_TEROKK, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
-		}
-		break;
-	}
-}
+public:
+    go_ancient_skull_pile() : GameObjectScript("go_ancient_skull_pile") {}
 
+    bool OnGossipHello(Player *player, GameObject* _GO) override
+    {
+        if (player->GetQuestStatus(QUEST_TEROKK) == QUEST_STATUS_INCOMPLETE)
+        {
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_S_TEROKK, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        }
 
+        player->SEND_GOSSIP_MENU(921062, _GO->GetGUID());
+        return true;
+    }
+
+    bool OnGossipSelect(Player* player, GameObject* go, uint32 sender, uint32 action)
+    {
+        switch (action)
+        {
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            if (player->HasItemCount(ITEM_OFFERING, 1))
+            {
+                player->DestroyItemCount(ITEM_OFFERING, 1, true);
+                player->SummonCreature(NPC_TEROKK, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+            }
+            break;
+        }
+        return true;
+    }
+};
 
 enum Terokk
 {
@@ -622,25 +641,6 @@ enum Terokk
 	SPELL_BOMB = 40657,
 	SPELL_FLARE = 40655
 };
-
-
-
-
-
-
-
-
-
-/*######
-## QUEST_FIRES_OVER_SKETTIS (11007)
-######*/
-
-
-
-
-
-
-
 
 class mob_unkor_the_ruthless : public CreatureScript
 {
@@ -739,15 +739,10 @@ public:
         }
     };
 
-    
-
-    CreatureAI* GetAI_mob_unkor_the_ruthless(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_unkor_the_ruthlessAI (pCreature);
     }
-
-    
-
     
 };
 
@@ -799,14 +794,10 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_infested_root_walker(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_infested_root_walkerAI (pCreature);
     }
-
-    
-
-    
 };
 
 class mob_rotting_forest_rager : public CreatureScript
@@ -863,13 +854,10 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_rotting_forest_rager(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_rotting_forest_ragerAI (pCreature);
     }
-
-    
-
     
 };
 
@@ -909,7 +897,7 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_netherweb_victim(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_netherweb_victimAI (pCreature);
     }
@@ -973,7 +961,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_floon(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_floonAI (pCreature);
     }
@@ -1114,7 +1102,7 @@ public:
     
 
 
-    CreatureAI* GetAI_npc_isla_starmaneAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return  new npc_isla_starmaneAI(pCreature);
     }
@@ -1219,7 +1207,7 @@ public:
     
 
 
-    CreatureAI* GetAI_npc_skywingAI(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_skywingAI(pCreature);
     }
@@ -1349,7 +1337,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_akuno(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_akunoAI(pCreature);
     }
@@ -1579,7 +1567,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_letoll(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_letollAI(pCreature);
     }
@@ -1695,14 +1683,10 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_mana_bomb_exp_trigger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_mana_bomb_exp_triggerAI(pCreature);
     }
-
-    
-
-    
 };
 
 class go_mana_bomb : public GameObjectScript
@@ -1828,7 +1812,7 @@ public:
     };
 
 
-    CreatureAI* GetAI_npc_captive_child(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_captive_childAI(pCreature);
     }
@@ -1951,7 +1935,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_skyguard_prisoner(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_skyguard_prisonerAI(pCreature);
     }
@@ -2052,14 +2036,10 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_darkscreecher_akarai(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_darkscreecher_akaraiAI(pCreature);
     }
-
-    
-
-    
 };
 
 class npc_private_weeks : public CreatureScript
@@ -2348,7 +2328,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_shadowy_summoner(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_shadowy_summonerAI(pCreature);
     }
@@ -2408,7 +2388,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_shadowy_advisor(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_shadowy_advisorAI(pCreature);
     }
@@ -2518,7 +2498,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_shadowy_initiate(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_shadowy_initiateAI(pCreature);
     }
@@ -2663,7 +2643,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_empoor(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_empoorAI(pCreature);
     }
@@ -2815,16 +2795,10 @@ public:
     	}
     };
 
-    
-
-    CreatureAI* GetAI_npc_pathaleon_image2(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_pathaleon_image2AI(pCreature);
     }
-
-    
-
-    
 };
 
 class npc_voldoun : public CreatureScript
@@ -2947,14 +2921,10 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_voldoun(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_voldounAI(pCreature);
     }
-
-    
-
-    
 };
 
 class mob_mountain_colossus : public CreatureScript
@@ -2983,7 +2953,7 @@ public:
 
     
 
-    CreatureAI* GetAI_mob_mountain_colossus(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new mob_mountain_colossusAI(pCreature);
     }
@@ -2993,40 +2963,6 @@ public:
     
 };
 
-class go_ancient_skull_pile : public GameObjectScript
-{
-public: 
-    go_ancient_skull_pile() : GameObjectScript("go_ancient_skull_pile") { }
-    
-
-    
-
-    bool OnGossipHello(Player *player, GameObject* _GO) override
-    {
-    	if (player->GetQuestStatus(QUEST_TEROKK) == QUEST_STATUS_INCOMPLETE)
-    	{
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_S_TEROKK, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    	}
-    
-    	player->SEND_GOSSIP_MENU(921062, _GO->GetGUID());
-    	return true;
-    }
-    
-
-    bool OnGossipSelect(Player *player, GameObject* _GO, uint32 sender, uint32 action) override
-    {
-    	switch (sender)
-    	{
-    	case GOSSIP_SENDER_MAIN:    SendActionMenu_go_ancient_skull_pile(player, _GO, action); break;
-    	}
-    	return true;
-    }
-    
-
-    
-
-    
-};
 
 class npc_skyguard_ace : public CreatureScript
 {
@@ -3057,7 +2993,7 @@ public:
 		}
 	};
 
-	CreatureAI* GetAI_npc_skyguard_ace(Creature* pCreature)
+	 CreatureAI* GetAI(Creature* pCreature) const
 	{
 		return new npc_skyguard_aceAI(pCreature);
 	}
@@ -3250,7 +3186,7 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_terokk(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
     	return new npc_terokkAI(pCreature);
     }
@@ -3298,14 +3234,10 @@ public:
 
     
 
-    CreatureAI* GetAI_npc_kalliri_trigger(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_kalliri_triggerAI(pCreature);
     }
-
-    
-
-    
 };
 
 

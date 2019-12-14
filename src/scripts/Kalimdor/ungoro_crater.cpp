@@ -159,7 +159,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_ame(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_ameAI(pCreature);
     }
@@ -333,7 +333,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_ringo(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_ringoAI(pCreature);
     }

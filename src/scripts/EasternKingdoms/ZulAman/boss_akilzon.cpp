@@ -423,21 +423,21 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_boss_akilzon(Creature* pCreature)
+    };
+
+    
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_akilzonAI(pCreature);
-    }
-    
-    
+    }
 };
 
 class mob_akilzon_eagle : public CreatureScript
 {
 public: 
     mob_akilzon_eagle() : CreatureScript("mob_akilzon_eagle") { }
-    
+    
+
 
     struct mob_soaring_eagleAI : public ScriptedAI
     {
@@ -510,15 +510,11 @@ public:
     };
 
     //Soaring Eagle
-    CreatureAI* GetAI_mob_soaring_eagle(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_soaring_eagleAI(pCreature);
     }
 
-
-
-    
-    
 };
 
 

@@ -79,7 +79,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_quartermaster_zigris(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_quartermaster_zigrisAI (pCreature);
     }

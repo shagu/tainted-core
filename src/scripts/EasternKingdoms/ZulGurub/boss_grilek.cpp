@@ -86,7 +86,8 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_grilek(Creature* pCreature)
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_grilekAI (pCreature);
     }

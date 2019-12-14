@@ -172,7 +172,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_blackheart_the_inciter(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_blackheart_the_inciterAI>(pCreature);
     }

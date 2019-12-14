@@ -178,16 +178,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_jindo(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_jindoAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_healing_ward : public CreatureScript
@@ -233,7 +227,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_healing_ward(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_healing_wardAI (pCreature);
     }
@@ -278,7 +272,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_shade_of_jindo(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_shade_of_jindoAI (pCreature);
     }

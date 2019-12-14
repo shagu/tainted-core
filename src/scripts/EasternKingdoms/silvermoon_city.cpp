@@ -97,7 +97,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_npc_blood_knight_stillblade(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_blood_knight_stillbladeAI (pCreature);
     }

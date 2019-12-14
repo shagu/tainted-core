@@ -92,7 +92,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_lord_alexei_barov(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_lord_alexei_barovAI (pCreature);
     }

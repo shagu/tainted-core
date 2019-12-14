@@ -277,7 +277,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_mobs_nether_drake(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mobs_nether_drakeAI(pCreature);
     }
@@ -320,7 +320,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_daranelle(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_daranelleAI(pCreature);
     }
@@ -434,7 +434,7 @@ public:
         void UpdateAI(const uint32 /*uiDiff*/) {}
     };
 
-    CreatureAI* GetAI_npc_bloodmaul_brutebane(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_bloodmaul_brutebaneAI(pCreature);
     }
@@ -508,7 +508,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_ogre_brute(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_ogre_bruteAI(pCreature);
     }
@@ -661,7 +661,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_light_orb_collector(Creature* creature)
+    CreatureAI* GetAI(Creature* creature) const
     {
         return new npc_light_orb_collectorAI(creature);
     }
@@ -710,7 +710,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_anger_camp(Creature* creature)
+    CreatureAI* GetAI(Creature* creature) const
     {
         return new npc_anger_campAI(creature);
     }
@@ -822,7 +822,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_bloodmaul_direwolf(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_bloodmaul_direwolfAI(pCreature);
     }
@@ -928,7 +928,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_prophecy_trigger(Creature *_Creature)
+    CreatureAI* GetAI(Creature *_Creature) const
     {
         return new npc_prophecy_triggerAI(_Creature);
     }
@@ -1000,7 +1000,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_grishna_arakkoa(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_grishna_arakkoaAI(pCreature);
     }
@@ -1055,7 +1055,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_koikoi_spirit(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_koikoi_spiritAI(pCreature);
     }
@@ -1121,7 +1121,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_raven_leafbeard(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_raven_leafbeardAI(pCreature);
     }
@@ -1195,7 +1195,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_wyrmkult_zealot(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_wyrmkult_zealotAI(pCreature);
     }
@@ -1281,7 +1281,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_wyrmkult_acolyte(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_wyrmkult_acolyteAI(pCreature);
     }
@@ -1336,7 +1336,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_evergrove_ancient(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_evergrove_ancientAI(pCreature);
     }
@@ -1422,7 +1422,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_baelmon(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_baelmonAI(pCreature);
     }
@@ -1486,7 +1486,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_groc_trigger(Creature *_Creature)
+    CreatureAI* GetAI(Creature *_Creature) const
     {
         return new npc_groc_triggerAI(_Creature);
     }
@@ -1605,7 +1605,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_goc(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_gocAI(pCreature);
     }
@@ -1721,7 +1721,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_sabelian_human(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_sabelian_humanAI(pCreature);
     }
@@ -1775,7 +1775,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_sabelian_dragon(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_sabelian_dragonAI(pCreature);
     }
@@ -1893,7 +1893,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_rexxar(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_rexxarAI(pCreature);
     }
@@ -1932,7 +1932,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_grimgut(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_grimgutAI(pCreature);
     }
@@ -1976,7 +1976,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_onspiritswings_trigger(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_onspiritswings_triggerAI(pCreature);
     }
@@ -2065,7 +2065,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_huffer(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_hufferAI(pCreature);
     }
@@ -2160,7 +2160,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_nexusprince_razaan(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_nexusprince_razaanAI(pCreature);
     }
@@ -2198,7 +2198,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_summon_circle_trigger(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_summon_circle_triggerAI(pCreature);
     }
@@ -2238,7 +2238,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_vimgol_circle_trigger(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_vimgol_circle_triggerAI(pCreature);
     }
@@ -2315,7 +2315,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_vimgol_the_vile(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_vimgol_the_vileAI(pCreature);
     }
@@ -2420,7 +2420,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_the_soulgrinder(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new the_soulgrinderAI(pCreature);
     }
@@ -2446,7 +2446,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_helper_bunny_1(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new helper_bunny_1AI(pCreature);
     }
@@ -2472,7 +2472,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_helper_bunny_2(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new helper_bunny_2AI(pCreature);
     }
@@ -2498,7 +2498,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_helper_bunny_3(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new helper_bunny_3AI(pCreature);
     }
@@ -2860,7 +2860,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_skulloc_soulgrinder(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new skulloc_soulgrinderAI(pCreature);
     }
@@ -3030,7 +3030,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_aether_ray(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_aether_rayAI(pCreature);
     }
@@ -3065,7 +3065,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_felburn_trigger(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_felburn_triggerAI(pCreature);
     }
@@ -3151,7 +3151,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_legion_flak_cannon(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_legion_flak_cannonAI(pCreature);
     }
@@ -3228,7 +3228,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_abyssal_flamebringer(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_abyssal_flamebringerAI(pCreature);
     }

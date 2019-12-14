@@ -180,7 +180,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_murmur(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_murmurAI (pCreature);
     }

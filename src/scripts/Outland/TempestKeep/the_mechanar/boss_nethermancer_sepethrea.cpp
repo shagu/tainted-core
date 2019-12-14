@@ -181,16 +181,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_nethermancer_sepethrea(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_nethermancer_sepethreaAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_ragin_flames : public CreatureScript
@@ -246,16 +240,10 @@ public:
     
     };
 
-    CreatureAI* GetAI_mob_ragin_flames(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_ragin_flamesAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

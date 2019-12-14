@@ -167,8 +167,10 @@ class npc_beaten_corpse : public CreatureScript
 {
 public: 
     npc_beaten_corpse() : CreatureScript("npc_beaten_corpse") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->GetQuestStatus(QUEST_LOST_IN_BATTLE) == QUEST_STATUS_INCOMPLETE || pPlayer->GetQuestStatus(QUEST_LOST_IN_BATTLE) == QUEST_STATUS_COMPLETE)
@@ -187,8 +189,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -246,12 +250,15 @@ public:
                 DoScriptText(RAND(SAY_GIL_AGGRO_1, SAY_GIL_AGGRO_2, SAY_GIL_AGGRO_3, SAY_GIL_AGGRO_4), me, pWho);
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_gilthares(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_giltharesAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_FREE_FROM_HOLD)
@@ -266,8 +273,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -275,8 +284,10 @@ class npc_sputtervalve : public CreatureScript
 {
 public: 
     npc_sputtervalve() : CreatureScript("npc_sputtervalve") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -288,7 +299,9 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
+    
+
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF)
@@ -298,8 +311,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -378,13 +393,17 @@ public:
                 }
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_taskmaster_fizzule(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_taskmaster_fizzuleAI(pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -576,13 +595,17 @@ public:
                 }
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_twiggy_flathead(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_twiggy_flatheadAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -710,9 +733,12 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    
+    };
+
+    
+
+    
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         if (quest->GetQuestId() == QUEST_ESCAPE)
@@ -723,13 +749,15 @@ public:
         }
         return true;
     }
-        CreatureAI* GetAI_npc_wizzlecrank_shredderAI(Creature* pCreature)
+    
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_wizzlecrank_shredderAI(pCreature);
     }
 
 
-    
+    
+
     
 };
 

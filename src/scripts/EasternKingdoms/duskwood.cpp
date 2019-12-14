@@ -125,13 +125,17 @@ public:
             }
             else CreatureOfNightmare_Timer -= diff;
             DoMeleeAttackIfReady();
-        };
-        };
-    CreatureAI* GetAI_boss_twilight_corrupter(Creature* pCreature)
+        };
+
+    
+    };
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_twilight_corrupterAI (pCreature);
-    }
-    
+    }
+
+    
+
     
 };
 
@@ -139,8 +143,10 @@ class at_twilight_grove : public AreaTriggerScript
 {
 public: 
     at_twilight_grove() : AreaTriggerScript("at_twilight_grove") { }
-    
-    
+    
+
+    
+
     bool OnTrigger(Player* pPlayer, const AreaTriggerEntry* /*at*/) override
     {
         if (pPlayer->HasQuestForItem(21149))
@@ -165,8 +171,10 @@ public:
         }
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -174,8 +182,10 @@ class go_grave_dirt : public GameObjectScript
 {
 public: 
     go_grave_dirt() : GameObjectScript("go_grave_dirt") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, GameObject* pGO) override
     {
         if (pGO->FindNearestCreature(NPC_ELIZA, 100.0f, true))
@@ -189,8 +199,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

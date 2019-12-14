@@ -295,13 +295,17 @@ public:
                 DoMeleeAttackIfReady();
             }
         }
-    };
-    CreatureAI* GetAI_boss_mandokir(Creature* pCreature)
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_mandokirAI (pCreature);
-    }
-    
-    
+    }
+
+    
+
+    
+
     
 };
 
@@ -349,13 +353,17 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    CreatureAI* GetAI_mob_ohgan(Creature* pCreature)
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_ohganAI (pCreature);
-    }
-    
-    
+    }
+
+    
+
+    
+
     
 };
 

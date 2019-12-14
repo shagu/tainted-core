@@ -305,9 +305,9 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_captain_skarloc(Creature *creature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_captain_skarlocAI (creature);
+        return new boss_captain_skarlocAI (pCreature);
     }
     
     

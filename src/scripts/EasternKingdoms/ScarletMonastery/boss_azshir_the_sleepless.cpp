@@ -92,7 +92,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_azshir_the_sleepless(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_azshir_the_sleeplessAI (pCreature);
     }

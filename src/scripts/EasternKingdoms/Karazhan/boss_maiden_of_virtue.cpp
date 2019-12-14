@@ -136,7 +136,7 @@ public:
     
     };
     
-    CreatureAI* GetAI_boss_maiden_of_virtue(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_maiden_of_virtueAI (pCreature);
     }

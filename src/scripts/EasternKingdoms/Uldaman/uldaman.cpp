@@ -135,22 +135,25 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_mob_jadespine_basilisk(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_jadespine_basiliskAI (pCreature);
-    }
-    
-    
+    }
+
 };
 
 class npc_lore_keeper_of_norgannon : public CreatureScript
 {
 public: 
     npc_lore_keeper_of_norgannon() : CreatureScript("npc_lore_keeper_of_norgannon") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pPlayer->GetQuestStatus(2278) == QUEST_STATUS_INCOMPLETE)
@@ -160,8 +163,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -233,8 +238,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -242,8 +249,10 @@ class go_keystone_chamber : public GameObjectScript
 {
 public: 
     go_keystone_chamber() : GameObjectScript("go_keystone_chamber") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player*, GameObject* go) override
     {
         ScriptedInstance* pInstance = (ScriptedInstance*)go->GetInstanceData();
@@ -256,8 +265,10 @@ public:
     
         return false;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -265,8 +276,10 @@ class at_map_chamber : public AreaTriggerScript
 {
 public: 
     at_map_chamber() : AreaTriggerScript("at_map_chamber") { }
-    
-    
+    
+
+    
+
     bool OnTrigger(Player* pPlayer, const AreaTriggerEntry*) override
     {
         if (pPlayer && pPlayer->GetQuestStatus(QUEST_HIDDEN_CHAMBER) == QUEST_STATUS_INCOMPLETE)
@@ -274,8 +287,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

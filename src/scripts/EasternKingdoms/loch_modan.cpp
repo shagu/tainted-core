@@ -76,8 +76,10 @@ class npc_mountaineer_pebblebitty : public CreatureScript
 {
 public: 
     npc_mountaineer_pebblebitty() : CreatureScript("npc_mountaineer_pebblebitty") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -90,7 +92,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         switch (uiAction)
@@ -125,8 +128,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -168,12 +173,15 @@ public:
         {
             pSummoned->AI()->AttackStart(me);
         }
-    };
-    
-    CreatureAI* GetAI_npc_miran(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_miranAI(pCreature);
-    }
+    }
+
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
     {
         if (pQuest->GetQuestId() == QUEST_PROTECTING_THE_SHIPMENT)
@@ -185,8 +193,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

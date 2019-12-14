@@ -350,7 +350,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_victor_nefarius(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_victor_nefariusAI (pCreature);
     }

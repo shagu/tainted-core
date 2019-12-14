@@ -200,7 +200,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_exarch_maladaar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_exarch_maladaarAI (pCreature);
     }
@@ -248,7 +248,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_avatar_of_martyred(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_avatar_of_martyredAI (pCreature);
     }
@@ -336,9 +336,9 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_stolen_soul(Creature* creature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new mob_stolen_soulAI (creature);
+        return new mob_stolen_soulAI (pCreature);
     }
 
     

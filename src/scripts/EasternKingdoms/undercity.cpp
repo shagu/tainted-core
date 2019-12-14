@@ -158,12 +158,15 @@ public:
     
             DoMeleeAttackIfReady();
         }
-    };
-    
-    CreatureAI* GetAI_npc_lady_sylvanas_windrunner(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_lady_sylvanas_windrunnerAI (pCreature);
-    }
+    }
+
     bool OnQuestReward(Player* /*pPlayer*/, Creature* pCreature, const Quest* _Quest, uint32 /*slot*/) override
     {
         if (_Quest->GetQuestId() == 9180)
@@ -178,8 +181,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -235,22 +240,25 @@ public:
                 else EventCast_Timer -= diff;
             }
         }
-    };
-    
-    CreatureAI* GetAI_npc_highborne_lamenter(Creature* pCreature)
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_highborne_lamenterAI (pCreature);
-    }
-    
-    
+    }
+
 };
 
 class npc_parqual_fintallas : public CreatureScript
 {
 public: 
     npc_parqual_fintallas() : CreatureScript("npc_parqual_fintallas") { }
-    
-    
+    
+
+    
+
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
@@ -268,7 +276,8 @@ public:
     
         return true;
     }
-    
+    
+
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -283,8 +292,10 @@ public:
         }
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

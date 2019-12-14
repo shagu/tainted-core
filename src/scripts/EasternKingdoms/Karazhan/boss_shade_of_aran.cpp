@@ -123,7 +123,8 @@ class boss_shade_of_aran : public CreatureScript
 {
 public: 
     boss_shade_of_aran() : CreatureScript("boss_shade_of_aran") { }
-        struct boss_shade_of_aranAI : public ScriptedAI
+    
+    struct boss_shade_of_aranAI : public ScriptedAI
     {
         boss_shade_of_aranAI(Creature* c) : ScriptedAI(c)
         {
@@ -704,23 +705,23 @@ public:
             return false;
         }
     };
-        CreatureAI* GetAI_boss_shade_of_aran(Creature* pCreature)
+    
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_shade_of_aranAI(pCreature);
     }
 
-    
-    
 };
 
 class mob_shadow_of_aran : public CreatureScript
 {
 public: 
     mob_shadow_of_aran() : CreatureScript("mob_shadow_of_aran") { }
-    
+    
+
     
     // CONVERT TO ACID
-    CreatureAI* GetAI_mob_shadow_of_aran(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         outstring_log("OSCR: Convert simpleAI script for Creature Entry %u to ACID", pCreature->GetEntry());
         SimpleAI* ai = new SimpleAI(pCreature);
@@ -735,7 +736,8 @@ public:
 
         return ai;
     }
-    
+    
+
     
 };
 
@@ -743,7 +745,8 @@ class mob_aran_elemental : public CreatureScript
 {
 public: 
     mob_aran_elemental() : CreatureScript("mob_aran_elemental") { }
-        struct mob_aran_elementalAI : public ScriptedAI
+    
+    struct mob_aran_elementalAI : public ScriptedAI
     {
         mob_aran_elementalAI(Creature* c) : ScriptedAI(c) {}
 
@@ -769,12 +772,14 @@ public:
             else CastTimer -= diff;
         }
     };
-        CreatureAI* GetAI_mob_aran_elemental(Creature* pCreature)
+    
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_aran_elementalAI(pCreature);
     }
 
-    
+    
+
     
 };
 

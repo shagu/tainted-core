@@ -216,7 +216,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_darkweaver_syth(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_darkweaver_sythAI>(pCreature);
     }
@@ -271,7 +271,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_syth_fire(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_syth_fireAI (pCreature);
     }
@@ -328,7 +328,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_syth_arcane(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_syth_arcaneAI (pCreature);
     }
@@ -385,7 +385,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_syth_frost(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_syth_frostAI (pCreature);
     }
@@ -442,7 +442,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_syth_shadow(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_syth_shadowAI (pCreature);
     }

@@ -962,7 +962,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_thrall_old_hillsbrad(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return new npc_thrall_old_hillsbradAI(creature);
     }
@@ -1127,7 +1127,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_npc_taretha(Creature* creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return new npc_tarethaAI(creature);
     }
@@ -1321,7 +1321,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_erozion_image(Creature *creature)
+     CreatureAI* GetAI(Creature* creature) const
     {
         return new erozion_imageAI(creature);
     }

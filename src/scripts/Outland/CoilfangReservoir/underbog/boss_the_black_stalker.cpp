@@ -186,7 +186,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_the_black_stalker(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_the_black_stalkerAI (pCreature);
     }

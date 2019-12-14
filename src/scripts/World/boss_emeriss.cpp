@@ -135,7 +135,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_emeriss(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_emerissAI (pCreature);
     }

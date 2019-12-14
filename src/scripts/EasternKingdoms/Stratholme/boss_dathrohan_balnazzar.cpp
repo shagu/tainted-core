@@ -217,7 +217,7 @@ public:
         }
     };
     
-    CreatureAI* GetAI_boss_dathrohan_balnazzar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_dathrohan_balnazzarAI (pCreature);
     }

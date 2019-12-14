@@ -190,7 +190,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_nazan(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_nazanAI>(pCreature);
     }
@@ -395,16 +395,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_vazruden_the_herald(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_vazruden_the_heraldAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_vazruden : public CreatureScript
@@ -503,7 +497,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_vazruden(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_vazrudenAI>(pCreature);
     }
@@ -550,16 +544,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_hellfire_sentry(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_hellfire_sentryAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

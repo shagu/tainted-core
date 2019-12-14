@@ -83,7 +83,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_garr(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_garrAI(pCreature);
     }
@@ -163,7 +163,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_firesworn(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_fireswornAI(pCreature);
     }

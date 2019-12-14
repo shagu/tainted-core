@@ -196,16 +196,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_nexusprince_shaffar(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_nexusprince_shaffarAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_ethereal_beacon : public CreatureScript
@@ -293,16 +287,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_ethereal_beacon(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_ethereal_beaconAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_ethereal_apprentice : public CreatureScript
@@ -348,16 +336,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_ethereal_apprentice(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_ethereal_apprenticeAI (pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 

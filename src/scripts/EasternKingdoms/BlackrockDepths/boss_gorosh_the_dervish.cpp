@@ -78,7 +78,7 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    CreatureAI* GetAI_boss_gorosh_the_dervish(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_gorosh_the_dervishAI(pCreature);
     }

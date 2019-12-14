@@ -341,16 +341,10 @@ public:
         }
     };
 
-    CreatureAI* GetAI_boss_morogrim_tidewalker(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_morogrim_tidewalkerAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_water_globule : public CreatureScript
@@ -411,7 +405,7 @@ public:
         }
     };
 
-    CreatureAI* GetAI_mob_water_globule(Creature* pCreature)
+     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_water_globuleAI (pCreature);
     }
