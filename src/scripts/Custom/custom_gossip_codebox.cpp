@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Custom_Gossip_Codebox
-SD%Complete: 100
-SDComment: Show a codebox in gossip option
-SDCategory: Script Examples
-EndScriptData */
+ /* ScriptData
+ SDName: Custom_Gossip_Codebox
+ SD%Complete: 100
+ SDComment: Show a codebox in gossip option
+ SDCategory: Script Examples
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -30,7 +30,7 @@ EndScriptData */
 class custom_gossip_codebox : CreatureScript
 {
 public:
-    custom_gossip_codebox() : CreatureScript("custom_gossip_codebox"){}
+    custom_gossip_codebox() : CreatureScript("custom_gossip_codebox") {}
 
     bool OnGossipHello(Player* player, Creature* creature) override
     {

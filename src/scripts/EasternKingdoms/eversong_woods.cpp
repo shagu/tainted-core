@@ -15,92 +15,70 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Eversong_Woods
-SD%Complete: 100
-SDComment: Quest support: 8346, 8483, 8488, 8490
-SDCategory: Eversong Woods
-EndScriptData */
+ /* ScriptData
+ SDName: Eversong_Woods
+ SD%Complete: 100
+ SDComment: Quest support: 8346, 8483, 8488, 8490
+ SDCategory: Eversong Woods
+ EndScriptData */
 
-/* ContentData
-mobs_mana_tapped
-npc_prospector_anvilward
-npc_apprentice_mirveda
-npc_infused_crystal
-EndContentData */
+ /* ContentData
+ mobs_mana_tapped
+ npc_prospector_anvilward
+ npc_apprentice_mirveda
+ npc_infused_crystal
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptedGossip.h"
 
-/*######
-## mobs_mana_tapped
-######*/
-
-
-
-
-/*######
-## npc_prospector_anvilward
-######*/
 
 #define GOSSIP_HELLO    "I need a moment of your time, sir."
 #define GOSSIP_SELECT   "Why... yes, of course. I've something to show you right inside this building, Mr. Anvilward."
 
 enum eProspectorAnvilward
 {
-    SAY_ANVIL1                                  = -1000209,
-    SAY_ANVIL2                                  = -1000210,
-    QUEST_THE_DWARVEN_SPY                       = 8483,
+    SAY_ANVIL1 = -1000209,
+    SAY_ANVIL2 = -1000210,
+    QUEST_THE_DWARVEN_SPY = 8483,
 };
-
-
-
-
-
-
-
-
-
-/*######
-## Quest 9686 Second Trial
-######*/
 
 enum eTrial
 {
-    QUEST_SECOND_TRIAL            = 9686,
+    QUEST_SECOND_TRIAL = 9686,
 
-    MASTER_KELERUN_BLOODMOURN     = 17807,
+    MASTER_KELERUN_BLOODMOURN = 17807,
 
-    CHAMPION_BLOODWRATH           = 17809,
-    CHAMPION_LIGHTREND            = 17810,
-    CHAMPION_SWIFTBLADE           = 17811,
-    CHAMPION_SUNSTRIKER           = 17812,
+    CHAMPION_BLOODWRATH = 17809,
+    CHAMPION_LIGHTREND = 17810,
+    CHAMPION_SWIFTBLADE = 17811,
+    CHAMPION_SUNSTRIKER = 17812,
 
     HARBINGER_OF_THE_SECOND_TRIAL = 182052,
 
-    SPELL_FLASH_OF_LIGHT          = 19939,
-    TIMER_FLASH_OF_LIGHT          = 3225,
+    SPELL_FLASH_OF_LIGHT = 19939,
+    TIMER_FLASH_OF_LIGHT = 3225,
 
-    SPELL_SEAL_OF_JUSTICE         = 20164,
-    TIMER_SEAL_OF_JUSTICE         = 10000,
+    SPELL_SEAL_OF_JUSTICE = 20164,
+    TIMER_SEAL_OF_JUSTICE = 10000,
 
-    SPELL_JUDGEMENT_OF_LIGHT      = 20271,
-    TIMER_JUDGEMENT_OF_LIGHT      = 10000,
+    SPELL_JUDGEMENT_OF_LIGHT = 20271,
+    TIMER_JUDGEMENT_OF_LIGHT = 10000,
 
-    SPELL_SEAL_OF_COMMAND         = 20375,
-    TIMER_SEAL_OF_COMMAND         = 20000,
+    SPELL_SEAL_OF_COMMAND = 20375,
+    TIMER_SEAL_OF_COMMAND = 20000,
 
-    OFFSET_NEXT_ATTACK            = 750,
+    OFFSET_NEXT_ATTACK = 750,
 
-    FACTION_HOSTILE               = 45,
-    FACTION_FRIENDLY              = 7,
+    FACTION_HOSTILE = 45,
+    FACTION_FRIENDLY = 7,
 
-    TEXT_SECOND_TRIAL_1           = -1000319,
-    TEXT_SECOND_TRIAL_2           = -1000320,
-    TEXT_SECOND_TRIAL_3           = -1000321,
-    TEXT_SECOND_TRIAL_4           = -1000322
+    TEXT_SECOND_TRIAL_1 = -1000319,
+    TEXT_SECOND_TRIAL_2 = -1000320,
+    TEXT_SECOND_TRIAL_3 = -1000321,
+    TEXT_SECOND_TRIAL_4 = -1000322
 };
 
 struct Locations
@@ -116,11 +94,8 @@ static Locations SpawnPosition[] =
     { -11.9f, -18, 0.361f, 5.87f}
 };
 
-static uint32 PaladinEntry[] = {CHAMPION_BLOODWRATH, CHAMPION_LIGHTREND, CHAMPION_SWIFTBLADE, CHAMPION_SUNSTRIKER};
+static uint32 PaladinEntry[] = { CHAMPION_BLOODWRATH, CHAMPION_LIGHTREND, CHAMPION_SWIFTBLADE, CHAMPION_SUNSTRIKER };
 
-/*######
-## npc_second_trial_paladin
-######*/
 
 struct npc_secondTrialAI : public ScriptedAI
 {
@@ -152,32 +127,32 @@ struct npc_secondTrialAI : public ScriptedAI
         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
         spellFlashLight = false;
-        spellJustice    = false;
-        spellJudLight   = false;
-        spellCommand    = false;
+        spellJustice = false;
+        spellJudLight = false;
+        spellCommand = false;
 
         switch (me->GetEntry())
         {
-            case CHAMPION_BLOODWRATH:
-                spellFlashLight = true;
-                timerFlashLight = TIMER_FLASH_OF_LIGHT;
-                break;
-            case CHAMPION_LIGHTREND:
-                spellJustice    = true;
-                timerJustice    = 500;
-                break;
-            case CHAMPION_SWIFTBLADE:
-                spellJudLight   = false;  // Misses Script Effect // http://www.wowhead.com/?spell=20271
-                timerJudLight   = 500;
-                break;
-            case CHAMPION_SUNSTRIKER:
-                spellFlashLight = true;
-                spellJudLight   = false;  // Misses Script Effect // http://www.wowhead.com/?spell=20271
-                spellCommand    = false;  // Misses Dummy // http://www.wowhead.com/?spell=20375
-                timerFlashLight = TIMER_FLASH_OF_LIGHT;
-                timerJudLight   = 500;
-                timerCommand    = 1500;
-                break;
+        case CHAMPION_BLOODWRATH:
+            spellFlashLight = true;
+            timerFlashLight = TIMER_FLASH_OF_LIGHT;
+            break;
+        case CHAMPION_LIGHTREND:
+            spellJustice = true;
+            timerJustice = 500;
+            break;
+        case CHAMPION_SWIFTBLADE:
+            spellJudLight = false;  // Misses Script Effect // http://www.wowhead.com/?spell=20271
+            timerJudLight = 500;
+            break;
+        case CHAMPION_SUNSTRIKER:
+            spellFlashLight = true;
+            spellJudLight = false;  // Misses Script Effect // http://www.wowhead.com/?spell=20271
+            spellCommand = false;  // Misses Dummy // http://www.wowhead.com/?spell=20375
+            timerFlashLight = TIMER_FLASH_OF_LIGHT;
+            timerJudLight = 500;
+            timerCommand = 1500;
+            break;
         }
     }
 
@@ -214,7 +189,7 @@ struct npc_secondTrialAI : public ScriptedAI
                 if (timerFlashLight <= diff)
                 {
                     DoCast(me, SPELL_FLASH_OF_LIGHT);
-                    timerFlashLight = TIMER_FLASH_OF_LIGHT +  rand() % TIMER_FLASH_OF_LIGHT;
+                    timerFlashLight = TIMER_FLASH_OF_LIGHT + rand() % TIMER_FLASH_OF_LIGHT;
                 }
                 else
                     timerFlashLight -= diff;
@@ -263,10 +238,6 @@ struct npc_secondTrialAI : public ScriptedAI
 
 };
 
-/*######
-## npc_second_trial_controller
-######*/
-
 struct master_kelerun_bloodmournAI : public ScriptedAI
 {
     master_kelerun_bloodmournAI(Creature* c) : ScriptedAI(c) {}
@@ -275,12 +246,12 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
     uint8  paladinPhase;
     uint32 timer;
 
-	uint64 PlayerGUID;
+    uint64 PlayerGUID;
     uint64 paladinGuid[4];
 
     void Reset()
     {
-		PlayerGUID = 0;
+        PlayerGUID = 0;
 
         questPhase = 0;
         timer = 60000;
@@ -311,30 +282,30 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
                     CAST_AI(npc_secondTrialAI, paladinSpawn->AI())->Activate(me->GetGUID());
 
                     switch (paladinPhase)
-                    {					
-                        case 0:
-                            DoScriptText(TEXT_SECOND_TRIAL_1, me);
-                            if(Creature* creature = me->FindNearestCreature(CHAMPION_BLOODWRATH, 20.0f, true))
-                                creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            break;
-                        case 1:
-                            DoScriptText(TEXT_SECOND_TRIAL_2, me);
-							if (Creature* creature = me->FindNearestCreature(CHAMPION_LIGHTREND, 30.0f, true))
-								creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            break;
-                        case 2:
-                            DoScriptText(TEXT_SECOND_TRIAL_3, me);
-                            if(Creature* creature = me->FindNearestCreature(CHAMPION_SWIFTBLADE, 35.0f, true))
-                                creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            break;
-                        case 3:
-							Player* player = Unit::GetPlayer(*me, PlayerGUID);
-							{
-								DoScriptText(TEXT_SECOND_TRIAL_4, me, player);
-							}
-                            if(Creature* creature = me->FindNearestCreature(CHAMPION_SUNSTRIKER, 25.0f, true))
-                                creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                            break;
+                    {
+                    case 0:
+                        DoScriptText(TEXT_SECOND_TRIAL_1, me);
+                        if (Creature* creature = me->FindNearestCreature(CHAMPION_BLOODWRATH, 20.0f, true))
+                            creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        break;
+                    case 1:
+                        DoScriptText(TEXT_SECOND_TRIAL_2, me);
+                        if (Creature* creature = me->FindNearestCreature(CHAMPION_LIGHTREND, 30.0f, true))
+                            creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        break;
+                    case 2:
+                        DoScriptText(TEXT_SECOND_TRIAL_3, me);
+                        if (Creature* creature = me->FindNearestCreature(CHAMPION_SWIFTBLADE, 35.0f, true))
+                            creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        break;
+                    case 3:
+                        Player* player = Unit::GetPlayer(*me, PlayerGUID);
+                        {
+                            DoScriptText(TEXT_SECOND_TRIAL_4, me, player);
+                        }
+                        if (Creature* creature = me->FindNearestCreature(CHAMPION_SUNSTRIKER, 25.0f, true))
+                            creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        break;
                     }
                 }
                 else
@@ -372,10 +343,6 @@ struct master_kelerun_bloodmournAI : public ScriptedAI
     void SecondTrialKill();
     void SummonedCreatureDespawn(Creature* /*c*/) {}
 };
-
-
-
-
 
 void master_kelerun_bloodmournAI::SecondTrialKill()
 {
@@ -430,42 +397,28 @@ void npc_secondTrialAI::Activate(uint64 summonerguid)
     summonerGuid = summonerguid;
 }
 
- CreatureAI* GetAI_master_kelerun_bloodmourn(Creature* pCreature)
+CreatureAI* GetAI_master_kelerun_bloodmourn(Creature* pCreature)
 {
-    return new master_kelerun_bloodmournAI (pCreature);
+    return new master_kelerun_bloodmournAI(pCreature);
 }
 
- CreatureAI* GetAI_constnpc_secondTrial(Creature* pCreature)
+CreatureAI* GetAI_constnpc_secondTrial(Creature* pCreature)
 {
-    return new npc_secondTrialAI (pCreature);
+    return new npc_secondTrialAI(pCreature);
 }
-
-/*######
-## go_second_trial
-######*/
-
-
-
-/*######
-## npc_apprentice_mirveda
-######*/
 
 enum eMirveda
 {
     QUEST_UNEXPECTED_RESULT = 8488,
-    MOB_GHARZUL             = 15958,
-    MOB_ANGERSHADE          = 15656
+    MOB_GHARZUL = 15958,
+    MOB_ANGERSHADE = 15656
 };
 
 
-/*######
-## npc_infused_crystal
-######*/
-
 enum eCrystal
 {
-    MOB_ENRAGED_WRAITH          = 17086,
-    EMOTE                       = -1000283,
+    MOB_ENRAGED_WRAITH = 17086,
+    EMOTE = -1000283,
     QUEST_POWERING_OUR_DEFENSES = 8490
 };
 
@@ -489,16 +442,17 @@ static Location SpawnLocations[] =
 
 class mobs_mana_tapped : public CreatureScript
 {
-public: 
+public:
     mobs_mana_tapped() : CreatureScript("mobs_mana_tapped") { }
+
     struct mobs_mana_tappedAI : public ScriptedAI
     {
         mobs_mana_tappedAI(Creature* c) : ScriptedAI(c) {}
-    
+
         void Reset() { }
-    
+
         void EnterCombat(Unit*) { }
-    
+
         void SpellHit(Unit* caster, const SpellEntry* spell)
         {
             if (caster->GetTypeId() == TYPEID_PLAYER)
@@ -508,30 +462,30 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new mobs_mana_tappedAI (pCreature);
+        return new mobs_mana_tappedAI(pCreature);
     }
 
 };
 
 class npc_prospector_anvilward : public CreatureScript
 {
-public: 
+public:
     npc_prospector_anvilward() : CreatureScript("npc_prospector_anvilward") { }
     struct npc_prospector_anvilwardAI : public npc_escortAI
     {
         // CreatureAI functions
         npc_prospector_anvilwardAI(Creature* c) : npc_escortAI(c) {}
-    
+
         // Pure Virtual Functions
         void WaypointReached(uint32 i)
         {
             Player* pPlayer = GetPlayerForEscort();
-    
+
             if (!pPlayer)
                 return;
-    
+
             switch (i)
             {
             case 0:
@@ -545,21 +499,21 @@ public:
                 break;
             }
         }
-    
+
         void Reset()
         {
             me->RestoreFaction();
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             me->RestoreFaction();
         }
     };
 
-    
 
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_prospector_anvilwardAI(pCreature);
     }
@@ -568,7 +522,7 @@ public:
     {
         if (pPlayer->GetQuestStatus(QUEST_THE_DWARVEN_SPY) == QUEST_STATUS_INCOMPLETE)
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    
+
         pPlayer->SEND_GOSSIP_MENU(8239, pCreature->GetGUID());
         return true;
     }
@@ -577,11 +531,11 @@ public:
     {
         switch (uiAction)
         {
-        case GOSSIP_ACTION_INFO_DEF+1:
+        case GOSSIP_ACTION_INFO_DEF + 1:
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
             pPlayer->SEND_GOSSIP_MENU(8240, pCreature->GetGUID());
             break;
-        case GOSSIP_ACTION_INFO_DEF+2:
+        case GOSSIP_ACTION_INFO_DEF + 2:
             pPlayer->CLOSE_GOSSIP_MENU();
             if (npc_escortAI* pEscortAI = CAST_AI(npc_prospector_anvilwardAI, pCreature->AI()))
                 pEscortAI->Start(true, false, pPlayer->GetGUID());
@@ -589,17 +543,13 @@ public:
         }
         return true;
     }
-    
-    
+
 };
 
 class npc_second_trial_controller : public CreatureScript
 {
-public: 
+public:
     npc_second_trial_controller() : CreatureScript("npc_second_trial_controller") { }
-    
-
-    
 
     bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
@@ -607,17 +557,17 @@ public:
         // Quest_template flag is set to : QUEST_FLAGS_EVENT
         // Escort quests or any other event-driven quests. If player in party, all players that can accept this quest will receive confirmation box to accept quest.
         // !not sure if this really works!
-    
+
         if (CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase == 0)
         {
             pPlayer->PrepareQuestMenu(pCreature->GetGUID());
             pPlayer->SendPreparedQuest(pCreature->GetGUID());
         }
-    
+
         pPlayer->SEND_GOSSIP_MENU(pCreature->GetEntry(), pCreature->GetGUID());
         return true;
     }
-    
+
 
     bool GossipHello_master_kelerun_bloodmourn(Player* pPlayer, Creature* pCreature)
     {
@@ -625,96 +575,80 @@ public:
         // Quest_template flag is set to : QUEST_FLAGS_EVENT
         // Escort quests or any other event-driven quests. If player in party, all players that can accept this quest will receive confirmation box to accept quest.
         // !not sure if this really works!
-    
+
         if (CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase == 0)
         {
             pPlayer->PrepareQuestMenu(pCreature->GetGUID());
             pPlayer->SendPreparedQuest(pCreature->GetGUID());
         }
-    
+
         pPlayer->SEND_GOSSIP_MENU(pCreature->GetEntry(), pCreature->GetGUID());
         return true;
     }
-    
+
 
     bool QuestAccept_master_kelerun_bloodmourn(Player* pPlayer, Creature* pCreature, Quest const* quest)
     {
         // One Player exclusive quest, wait for user go activation
-    	if (quest->GetQuestId() == QUEST_SECOND_TRIAL)
-    	{
-    		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase = 1;
-    		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->PlayerGUID = pPlayer->GetGUID();
-    	}
+        if (quest->GetQuestId() == QUEST_SECOND_TRIAL)
+        {
+            CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase = 1;
+            CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->PlayerGUID = pPlayer->GetGUID();
+        }
         return true;
     }
-    
+
 
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
         // One Player exclusive quest, wait for user go activation
-    	if (quest->GetQuestId() == QUEST_SECOND_TRIAL)
-    	{
-    		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase = 1;
-    		CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->PlayerGUID = pPlayer->GetGUID();
-    	}
+        if (quest->GetQuestId() == QUEST_SECOND_TRIAL)
+        {
+            CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->questPhase = 1;
+            CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->PlayerGUID = pPlayer->GetGUID();
+        }
         return true;
     }
-    
 
-    
-
-    
 };
 
 class npc_second_trial_paladin : public CreatureScript
 {
-public: 
+public:
     npc_second_trial_paladin() : CreatureScript("npc_second_trial_paladin") { }
-    
 
-    
-
-    
-
-    
 };
 
 class go_second_trial : public GameObjectScript
 {
-public: 
+public:
     go_second_trial() : GameObjectScript("go_second_trial") { }
-    
-
-    
 
     bool OnGossipHello(Player* /*pPlayer*/, GameObject* pGO) override
     {
         // find spawn :: master_kelerun_bloodmourn
         if (Creature* pCreature = pGO->FindNearestCreature(MASTER_KELERUN_BLOODMOURN, 30.0f))
             CAST_AI(master_kelerun_bloodmournAI, pCreature->AI())->StartEvent();
-    
+
         return true;
     }
-    
 
-    
-
-    
 };
 
 class npc_apprentice_mirveda : public CreatureScript
 {
-public: 
+public:
     npc_apprentice_mirveda() : CreatureScript("npc_apprentice_mirveda") { }
+
     struct npc_apprentice_mirvedaAI : public ScriptedAI
     {
         npc_apprentice_mirvedaAI(Creature* c) : ScriptedAI(c), Summons(me) {}
-    
+
         uint32 KillCount;
         uint64 PlayerGUID;
         bool Summon;
         SummonList Summons;
-    
+
         void Reset()
         {
             KillCount = 0;
@@ -722,28 +656,28 @@ public:
             Summons.DespawnAll();
             Summon = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void JustSummoned(Creature* summoned)
         {
             summoned->AI()->AttackStart(me);
             Summons.Summon(summoned);
         }
-    
+
         void SummonedCreatureDespawn(Creature* summoned)
         {
             Summons.Despawn(summoned);
             ++KillCount;
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             if (PlayerGUID)
                 if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
                     CAST_PLR(pPlayer)->FailQuest(QUEST_UNEXPECTED_RESULT);
         }
-    
+
         void UpdateAI(const uint32 /*diff*/)
         {
             if (KillCount >= 3 && PlayerGUID)
@@ -755,8 +689,8 @@ public:
                     KillCount = 0;
                 }
             }
-            
-    
+
+
             if (Summon)
             {
                 me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
@@ -768,12 +702,11 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_apprentice_mirvedaAI(pCreature);
     }
 
-    
 
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
@@ -784,27 +717,23 @@ public:
         }
         return true;
     }
-    
 
-    
-
-    
 };
 
 class npc_infused_crystal : public CreatureScript
 {
-public: 
+public:
     npc_infused_crystal() : CreatureScript("npc_infused_crystal") { }
     struct npc_infused_crystalAI : public Scripted_NoMovementAI
     {
         npc_infused_crystalAI(Creature* c) : Scripted_NoMovementAI(c) {}
-    
+
         uint32 EndTimer;
         uint32 WaveTimer;
         bool Completed;
         bool Progress;
         uint64 PlayerGUID;
-    
+
         void Reset()
         {
             EndTimer = 0;
@@ -813,7 +742,7 @@ public:
             PlayerGUID = 0;
             WaveTimer = 0;
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!Progress && who->GetTypeId() == TYPEID_PLAYER && me->IsWithinDistInMap(who, 10.0f))
@@ -827,34 +756,34 @@ public:
                 }
             }
         }
-    
+
         void JustSummoned(Creature* summoned)
         {
             summoned->AI()->AttackStart(me);
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             if (PlayerGUID && !Completed)
                 if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
                     CAST_PLR(pPlayer)->FailQuest(QUEST_POWERING_OUR_DEFENSES);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (EndTimer < diff && Progress)
             {
                 Player* player = ObjectAccessor::GetPlayer(*me, PlayerGUID);
-    
-                DoScriptText(EMOTE, me, player );
+
+                DoScriptText(EMOTE, me, player);
                 Completed = true;
                 CAST_PLR(player)->KilledMonsterCredit(16364, 0);
-    
+
                 me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 me->RemoveCorpse();
             }
             else EndTimer -= diff;
-    
+
             if (WaveTimer < diff && !Completed && Progress)
             {
                 uint32 ran1 = rand() % 8;
@@ -869,8 +798,8 @@ public:
         }
     };
 
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_infused_crystalAI(pCreature);
     }
@@ -879,14 +808,14 @@ public:
 
 class npc_eversong_ranger : public CreatureScript
 {
-public: 
+public:
     npc_eversong_ranger() : CreatureScript("npc_eversong_ranger") { }
     struct npc_eversong_rangerAI : public ScriptedAI
     {
         npc_eversong_rangerAI(Creature* c) : ScriptedAI(c) {}
-    
+
         void Reset() { }
-    
+
         void SpellHit(Unit* pHitter, const SpellEntry* pSpell)
         {
             if (pSpell->Id == 1243 || pSpell->Id == 1244 || pSpell->Id == 1245)
@@ -901,13 +830,6 @@ public:
         }
     };
 
-    
-
-    
-
-    
-
-    
 };
 
 

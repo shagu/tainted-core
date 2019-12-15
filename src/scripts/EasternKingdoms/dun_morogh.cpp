@@ -15,38 +15,34 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Dun_Morogh
-SD%Complete: 50
-SDComment: Quest support: 1783
-SDCategory: Dun Morogh
-EndScriptData */
+ /* ScriptData
+ SDName: Dun_Morogh
+ SD%Complete: 50
+ SDComment: Quest support: 1783
+ SDCategory: Dun Morogh
+ EndScriptData */
 
-/* ContentData
-npc_narm_faulk
-EndContentData */
+ /* ContentData
+ npc_narm_faulk
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-/*######
-## npc_narm_faulk
-######*/
-
 #define SAY_HEAL -1000187
-
 
 class npc_narm_faulk : public CreatureScript
 {
-public: 
+public:
     npc_narm_faulk() : CreatureScript("npc_narm_faulk") { }
+
     struct npc_narm_faulkAI : public ScriptedAI
     {
         uint32 lifeTimer;
         bool spellHit;
-    
+
         npc_narm_faulkAI(Creature* c) : ScriptedAI(c) {}
-    
+
         void Reset()
         {
             lifeTimer = 120000;
@@ -54,16 +50,16 @@ public:
             me->SetStandState(UNIT_STAND_STATE_DEAD);
             spellHit = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void MoveInLineOfSight(Unit* /*who*/)
         {
             return;
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (me->IsStandState())
@@ -77,7 +73,7 @@ public:
                     lifeTimer -= diff;
             }
         }
-    
+
         void SpellHit(Unit* /*Hitter*/, const SpellEntry* Spellkind)
         {
             if (Spellkind->Id == 8593 && !spellHit)
@@ -90,14 +86,15 @@ public:
                 spellHit = true;
             }
         }
-    
+
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new npc_narm_faulkAI (pCreature);
+        return new npc_narm_faulkAI(pCreature);
     }
-    
-    
+
+
 };
 void AddSC_dun_morogh()
 {

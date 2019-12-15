@@ -15,55 +15,51 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Durotar
-SD%Complete: 100
-SDComment: Quest support: 5441.
-SDCategory: Durotar
-EndScriptData */
+ /* ScriptData
+ SDName: Durotar
+ SD%Complete: 100
+ SDComment: Quest support: 5441.
+ SDCategory: Durotar
+ EndScriptData */
 
-/* ContentData
-npc_lazy_peon
-EndContentData */
+ /* ContentData
+ npc_lazy_peon
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-/*######
-## npc_lazy_peon
-######*/
-
 enum LazyPeon
 {
-    SAY_SPELL_HIT             = -1000622,
+    SAY_SPELL_HIT = -1000622,
 
-    QUEST_LAZY_PEONS          = 5441,
-    GO_LUMBERPILE             = 175784,
-    SPELL_BUFF_SLEEP          = 17743,
-    SPELL_AWAKEN_PEON         = 19938
+    QUEST_LAZY_PEONS = 5441,
+    GO_LUMBERPILE = 175784,
+    SPELL_BUFF_SLEEP = 17743,
+    SPELL_AWAKEN_PEON = 19938
 };
-
 
 class npc_lazy_peon : public CreatureScript
 {
-public: 
+public:
     npc_lazy_peon() : CreatureScript("npc_lazy_peon") { }
+
     struct npc_lazy_peonAI : public ScriptedAI
     {
         npc_lazy_peonAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint64 uiPlayerGUID;
-    
+
         uint32 m_uiRebuffTimer;
         bool work;
-    
-        void Reset ()
+
+        void Reset()
         {
             uiPlayerGUID = 0;
             m_uiRebuffTimer = 0;
             work = false;
         }
-    
+
         void MovementInform(uint32 /*type*/, uint32 id)
         {
             if (id == 1)
@@ -73,7 +69,7 @@ public:
                     me->SetFacingToObject(Lumberpile);
             }
         }
-    
+
         void SpellHit(Unit* caster, const SpellEntry* spell)
         {
             if (spell->Id == SPELL_AWAKEN_PEON && caster->GetTypeId() == TYPEID_PLAYER
@@ -86,12 +82,12 @@ public:
                     me->GetMotionMaster()->MovePoint(1, Lumberpile->GetPositionX() - 1, Lumberpile->GetPositionY(), Lumberpile->GetPositionZ());
             }
         }
-    
+
         void UpdateAI(const uint32 uiDiff)
         {
             if (work == true)
                 me->HandleEmoteCommand(466);
-    
+
             if (m_uiRebuffTimer <= uiDiff)
             {
                 DoCast(me, SPELL_BUFF_SLEEP);
@@ -99,21 +95,21 @@ public:
             }
             else
                 m_uiRebuffTimer -= uiDiff;
-    
+
             if (!UpdateVictim())
                 return;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new npc_lazy_peonAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_durotar()
 {
     new npc_lazy_peon();

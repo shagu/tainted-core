@@ -15,38 +15,34 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Elwynn_Forest
-SD%Complete: 50
-SDComment: Quest support: 1786
-SDCategory: Elwynn Forest
-EndScriptData */
+ /* ScriptData
+ SDName: Elwynn_Forest
+ SD%Complete: 50
+ SDComment: Quest support: 1786
+ SDCategory: Elwynn Forest
+ EndScriptData */
 
-/* ContentData
-npc_henze_faulk
-EndContentData */
+ /* ContentData
+ npc_henze_faulk
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-/*######
-## npc_henze_faulk
-######*/
-
 #define SAY_HEAL -1000187
-
 
 class npc_henze_faulk : public CreatureScript
 {
-public: 
+public:
     npc_henze_faulk() : CreatureScript("npc_henze_faulk") { }
+
     struct npc_henze_faulkAI : public ScriptedAI
     {
         uint32 lifeTimer;
         bool spellHit;
-    
+
         npc_henze_faulkAI(Creature* c) : ScriptedAI(c) {}
-    
+
         void Reset()
         {
             lifeTimer = 120000;
@@ -54,16 +50,16 @@ public:
             me->SetStandState(UNIT_STAND_STATE_DEAD);   // lay down
             spellHit = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void MoveInLineOfSight(Unit* /*who*/)
         {
             return;
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (me->IsStandState())
@@ -77,7 +73,7 @@ public:
                     lifeTimer -= diff;
             }
         }
-    
+
         void SpellHit(Unit* /*Hitter*/, const SpellEntry* Spellkind)
         {
             if (Spellkind->Id == 8593 && !spellHit)
@@ -90,15 +86,16 @@ public:
                 spellHit = true;
             }
         }
-    
+
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new npc_henze_faulkAI (pCreature);
+        return new npc_henze_faulkAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_elwynn_forest()
 {
     new npc_henze_faulk();

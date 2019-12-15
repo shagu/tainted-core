@@ -15,73 +15,54 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Duskwood
-SD%Complete: 100
-SDComment: Quest Support:8735
-SDCategory: Duskwood
-EndScriptData */
+ /* ScriptData
+ SDName: Duskwood
+ SD%Complete: 100
+ SDComment: Quest Support:8735
+ SDCategory: Duskwood
+ EndScriptData */
 
-/* ContentData
-boss_twilight_corrupter
-at_twilight_grove
-EndContentData */
+ /* ContentData
+ boss_twilight_corrupter
+ at_twilight_grove
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-/*#####
-## Quest: Bride of the Embalmer (Grave dirt)
-#####*/
 enum misc
 {
     QUEST_BRIDE_OF_THE_EMBER = 253,
     NPC_ELIZA = 314,
 };
 
-
-
-
-/*#####
-## Quest: The Nightmare's Corruption
-#####*/
-
 enum
 {
-    CORRUPTER_YELL_COME         = -1000654,
-    CORRUPTER_YELL_CANT_STOP    = -1000655,
-    CORRUPTER_EMOTE_SQUEEZER    = -1000656,
+    CORRUPTER_YELL_COME = -1000654,
+    CORRUPTER_YELL_CANT_STOP = -1000655,
+    CORRUPTER_EMOTE_SQUEEZER = -1000656,
 
-    NPC_TWILINGHT_CORRUPTER     = 15625,
-    CORRUPTER_DESPAWN_TIMER     = 1800000, //30 min timer
+    NPC_TWILINGHT_CORRUPTER = 15625,
+    CORRUPTER_DESPAWN_TIMER = 1800000, //30 min timer
 
-    SPELL_SOUL_CORRUPTION       = 25805,
+    SPELL_SOUL_CORRUPTION = 25805,
     SPELL_CREATURE_OF_NIGHTMARE = 25806,
-    SPELL_LEVEL_UP              = 24312
+    SPELL_LEVEL_UP = 24312
 };
-
-/*######
-# at_twilight_grove
-######*/
-
-
-
-/*######
-# boss_twilight_corrupter
-######*/
 
 class boss_twilight_corrupter : public CreatureScript
 {
-public: 
+public:
     boss_twilight_corrupter() : CreatureScript("boss_twilight_corrupter") { }
+
     struct boss_twilight_corrupterAI : public ScriptedAI
     {
         boss_twilight_corrupterAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 SoulCorruption_Timer;
         uint32 CreatureOfNightmare_Timer;
         uint8 KillCount;
-    
+
         void Reset()
         {
             SoulCorruption_Timer = 15000;
@@ -92,14 +73,14 @@ public:
         {
             DoScriptText(CORRUPTER_YELL_CANT_STOP, me);
         }
-    
+
         void KilledUnit(Unit* victim)
         {
             if (victim->GetTypeId() == TYPEID_PLAYER)
             {
                 ++KillCount;
                 DoScriptText(CORRUPTER_EMOTE_SQUEEZER, me, victim);
-    
+
                 if (KillCount == 3)
                 {
                     DoCast(me, SPELL_LEVEL_UP, true);
@@ -107,45 +88,39 @@ public:
                 }
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
             if (SoulCorruption_Timer <= diff)
             {
-                DoCastVictim( SPELL_SOUL_CORRUPTION);
+                DoCastVictim(SPELL_SOUL_CORRUPTION);
                 SoulCorruption_Timer = rand() % 4000 + 15000; //gotta confirm Timers
             }
             else SoulCorruption_Timer -= diff;
             if (CreatureOfNightmare_Timer <= diff)
             {
-                DoCastVictim( SPELL_CREATURE_OF_NIGHTMARE);
+                DoCastVictim(SPELL_CREATURE_OF_NIGHTMARE);
                 CreatureOfNightmare_Timer = 45000; //gotta confirm Timers
             }
             else CreatureOfNightmare_Timer -= diff;
             DoMeleeAttackIfReady();
         };
 
-    
+
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_twilight_corrupterAI (pCreature);
+        return new boss_twilight_corrupterAI(pCreature);
     }
-
-    
-
-    
 };
 
 class at_twilight_grove : public AreaTriggerScript
 {
-public: 
+public:
     at_twilight_grove() : AreaTriggerScript("at_twilight_grove") { }
-    
-
-    
 
     bool OnTrigger(Player* pPlayer, const AreaTriggerEntry* /*at*/) override
     {
@@ -156,13 +131,13 @@ public:
                 DoScriptText(CORRUPTER_YELL_COME, pCorrupter, pPlayer);
                 return false;
             }
-    
+
             if (Creature* pCorrupter = pPlayer->SummonCreature(NPC_TWILINGHT_CORRUPTER, -10636.9f, -389.254f, 102.626f, 0, TEMPSUMMON_TIMED_DESPAWN, CORRUPTER_DESPAWN_TIMER))
             {
                 pCorrupter->SetVisible(false);
                 DoScriptText(CORRUPTER_YELL_COME, pCorrupter, pPlayer);
             }
-    
+
             if (Creature* TCorrupter = pPlayer->SummonCreature(NPC_TWILINGHT_CORRUPTER, -10328.16f, -489.57f, 49.95f, 0, TEMPSUMMON_MANUAL_DESPAWN, 60000))
             {
                 TCorrupter->SetFaction(14);
@@ -171,47 +146,33 @@ public:
         }
         return false;
     }
-    
 
-    
-
-    
 };
 
 class go_grave_dirt : public GameObjectScript
 {
-public: 
+public:
     go_grave_dirt() : GameObjectScript("go_grave_dirt") { }
-    
-
-    
 
     bool OnGossipHello(Player* pPlayer, GameObject* pGO) override
     {
         if (pGO->FindNearestCreature(NPC_ELIZA, 100.0f, true))
             return false;
-    
+
         if (pPlayer->GetQuestStatus(QUEST_BRIDE_OF_THE_EMBER) == QUEST_STATUS_INCOMPLETE)
         {
             pGO->SummonCreature(NPC_ELIZA, pGO->GetPosition(), TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5 * MINUTE*IN_MILLISECONDS);
             return true;
-    
+
         }
         return true;
     }
-    
-
-    
-
-    
 };
-
 
 void AddSC_duskwood()
 {
     new boss_twilight_corrupter();
     new at_twilight_grove();
     new go_grave_dirt();
-
 }
 

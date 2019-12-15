@@ -15,28 +15,28 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Custom_Example
-SD%Complete: 100
-SDComment: Short custom scripting example
-SDCategory: Script Examples
-EndScriptData */
+ /* ScriptData
+ SDName: Custom_Example
+ SD%Complete: 100
+ SDComment: Short custom scripting example
+ SDCategory: Script Examples
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 
-// **** This script is designed as an example for others to build on ****
-// **** Please modify whatever you'd like to as this script is only for developement ****
+ // **** This script is designed as an example for others to build on ****
+ // **** Please modify whatever you'd like to as this script is only for developement ****
 
-// **** Script Info ****
-// This script is written in a way that it can be used for both friendly and hostile monsters
-// Its primary purpose is to show just how much you can really do with scripts
-// I recommend trying it out on both an agressive NPC and on friendly npc
+ // **** Script Info ****
+ // This script is written in a way that it can be used for both friendly and hostile monsters
+ // Its primary purpose is to show just how much you can really do with scripts
+ // I recommend trying it out on both an agressive NPC and on friendly npc
 
-// **** Quick Info ****
-// Functions with Handled Function marked above them are functions that are called automatically by the core
-// Functions that are marked Custom Function are functions I've created to simplify code
+ // **** Quick Info ****
+ // Functions with Handled Function marked above them are functions that are called automatically by the core
+ // Functions that are marked Custom Function are functions I've created to simplify code
 
 #define SPELL_BUFF      25661
 #define SPELL_ONE       12555
@@ -260,7 +260,8 @@ public:
                 me->MonsterSay(SAY_SALUTE, LANG_UNIVERSAL, 0);
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new custom_exampleAI(pCreature);
     }
@@ -273,5 +274,5 @@ public:
 void AddSC_custom_example()
 {
     new custom_example;
-} 
+}
 
