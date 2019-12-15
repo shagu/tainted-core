@@ -294,7 +294,7 @@ void AddSC_feralas();
 void AddSC_moonglade();
 void AddSC_mulgore();
 void AddSC_orgrimmar();
-//void AddSC_silithus();
+void AddSC_silithus();
 void AddSC_stonetalon_mountains();
 void AddSC_tanaris();
 void AddSC_teldrassil();
@@ -667,7 +667,7 @@ void AddScripts()
     AddSC_moonglade();
     AddSC_mulgore();
     AddSC_orgrimmar();
-    //AddSC_silithus();
+    AddSC_silithus();
     AddSC_stonetalon_mountains();
     AddSC_tanaris();
     AddSC_teldrassil();
