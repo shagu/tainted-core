@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Watchkeeper_Gargolmar
-SD%Complete: 99
-SDComment: Missing adds to heal him. Should work with ACID.
-SDCategory: Hellfire Citadel, Hellfire Ramparts
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Watchkeeper_Gargolmar
+ SD%Complete: 99
+ SDComment: Missing adds to heal him. Should work with ACID.
+ SDCategory: Hellfire Citadel, Hellfire Ramparts
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -41,11 +41,11 @@ EndScriptData */
 #define SPELL_SURGE             34645
 #define SPELL_RETALIATION       22857
 
-
 class boss_watchkeeper_gargolmar : public CreatureScript
 {
-public: 
+public:
     boss_watchkeeper_gargolmar() : CreatureScript("boss_watchkeeper_gargolmar") { }
+
     struct boss_watchkeeper_gargolmarAI : public ScriptedAI
     {
         boss_watchkeeper_gargolmarAI(Creature* c) : ScriptedAI(c)
@@ -53,30 +53,30 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
         bool HeroicMode;
-    
+
         uint32 Surge_Timer;
         uint32 MortalWound_Timer;
         uint32 Retaliation_Timer;
-    
+
         bool HasTaunted;
         bool YelledForHeal;
-    
+
         void Reset()
         {
             Surge_Timer = 5000;
             MortalWound_Timer = 4000;
             Retaliation_Timer = 0;
-    
+
             HasTaunted = false;
             YelledForHeal = false;
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_GARGOLMAR, NOT_STARTED);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             switch (rand() % 3)
@@ -91,18 +91,18 @@ public:
                 DoScriptText(SAY_AGGRO_3, me);
                 break;
             }
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_GARGOLMAR, IN_PROGRESS);
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
-            if (!me->GetVictim() && who->isTargetableForAttack() && (me->IsHostileTo(who)) && who->isInAccessiblePlaceFor (me))
+            if (!me->GetVictim() && who->isTargetableForAttack() && (me->IsHostileTo(who)) && who->isInAccessiblePlaceFor(me))
             {
                 if (!me->CanFly() && me->GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE)
                     return;
-    
+
                 float attackRadius = me->GetAttackDistance(who);
                 if (me->IsWithinDistInMap(who, attackRadius) && me->IsWithinLOSInMap(who))
                 {
@@ -116,7 +116,7 @@ public:
                 }
             }
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             switch (rand() % 2)
@@ -129,38 +129,38 @@ public:
                 break;
             }
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DIE, me);
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_GARGOLMAR, DONE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (MortalWound_Timer <= diff)
             {
                 DoCastVictim(HeroicMode ? H_SPELL_MORTAL_WOUND : SPELL_MORTAL_WOUND);
                 MortalWound_Timer = 5000 + rand() % 8000;
             }
             else MortalWound_Timer -= diff;
-    
+
             if (Surge_Timer <= diff)
             {
                 DoScriptText(SAY_SURGE, me);
-    
+
                 if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     DoCast(pTarget, SPELL_SURGE);
-    
+
                 Surge_Timer = 5000 + rand() % 8000;
             }
             else Surge_Timer -= diff;
-    
+
             if ((me->GetHealth() * 100) / me->GetMaxHealth() < 30)
             {
                 if (Retaliation_Timer <= diff)
@@ -170,7 +170,7 @@ public:
                 }
                 else Retaliation_Timer -= diff;
             }
-    
+
             if (!YelledForHeal)
             {
                 if ((me->GetHealth() * 100) / me->GetMaxHealth() < 40)
@@ -179,18 +179,18 @@ public:
                     YelledForHeal = true;
                 }
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_watchkeeper_gargolmarAI>(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_watchkeeper_gargolmar()
 {
     new boss_watchkeeper_gargolmar();

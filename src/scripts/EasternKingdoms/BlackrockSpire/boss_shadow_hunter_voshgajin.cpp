@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Shadow_Hunter_Voshgajin
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Shadow_Hunter_Voshgajin
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Spire
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -29,44 +29,44 @@ EndScriptData */
 #define SPELL_HEX               16708
 #define SPELL_CLEAVE            20691
 
-
 class boss_shadow_hunter_voshgajin : public CreatureScript
 {
-public: 
+public:
     boss_shadow_hunter_voshgajin() : CreatureScript("boss_shadow_hunter_voshgajin") { }
+
     struct boss_shadow_hunter_voshgajinAI : public ScriptedAI
     {
         boss_shadow_hunter_voshgajinAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 CurseOfBlood_Timer;
         uint32 Hex_Timer;
         uint32 Cleave_Timer;
-    
+
         void Reset()
         {
             CurseOfBlood_Timer = 2000;
             Hex_Timer = 8000;
             Cleave_Timer = 14000;
-    
+
             //DoCast(me, SPELL_ICEARMOR, true);
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //CurseOfBlood_Timer
             if (CurseOfBlood_Timer <= diff)
             {
-                DoCastVictim( SPELL_CURSEOFBLOOD);
+                DoCastVictim(SPELL_CURSEOFBLOOD);
                 CurseOfBlood_Timer = 45000;
             }
             else CurseOfBlood_Timer -= diff;
-    
+
             //Hex_Timer
             if (Hex_Timer <= diff)
             {
@@ -75,25 +75,26 @@ public:
                 Hex_Timer = 15000;
             }
             else Hex_Timer -= diff;
-    
+
             //Cleave_Timer
             if (Cleave_Timer <= diff)
             {
-                DoCastVictim( SPELL_CLEAVE);
+                DoCastVictim(SPELL_CLEAVE);
                 Cleave_Timer = 7000;
             }
             else Cleave_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_shadow_hunter_voshgajinAI (pCreature);
+        return new boss_shadow_hunter_voshgajinAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_shadowvosh()
 {
     new boss_shadow_hunter_voshgajin();

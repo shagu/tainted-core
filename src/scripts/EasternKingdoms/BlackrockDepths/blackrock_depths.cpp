@@ -15,26 +15,26 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Blackrock_Depths
-SD%Complete: 95
-SDComment: Quest support: 4001, 4342, 7604, 4322. Vendor Lokhtos Darkbargainer. Need to rewrite the Jail Break support
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Blackrock_Depths
+ SD%Complete: 95
+ SDComment: Quest support: 4001, 4342, 7604, 4322. Vendor Lokhtos Darkbargainer. Need to rewrite the Jail Break support
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
-/* ContentData
-go_shadowforge_brazier
-at_ring_of_law
-npc_grimstone
-mob_phalanx
-npc_kharan_mighthammer
-npc_lokhtos_darkbargainer
-npc_dughal_stormwing
-npc_marshal_windsor
-npc_marshal_reginald_windsor
-npc_tobias_seecher
-npc_rocknot
-EndContentData */
+ /* ContentData
+ go_shadowforge_brazier
+ at_ring_of_law
+ npc_grimstone
+ mob_phalanx
+ npc_kharan_mighthammer
+ npc_lokhtos_darkbargainer
+ npc_dughal_stormwing
+ npc_marshal_windsor
+ npc_marshal_reginald_windsor
+ npc_tobias_seecher
+ npc_rocknot
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -43,17 +43,17 @@ EndContentData */
 #include "blackrock_depths.h"
 
 
-/*######
-## npc_grimstone
-######*/
+ /*######
+ ## npc_grimstone
+ ######*/
 
 enum eGrimstone
 {
-    NPC_GRIMSTONE                                          = 10096,
-    NPC_THELDREN                                           = 16059,
+    NPC_GRIMSTONE = 10096,
+    NPC_THELDREN = 16059,
 
     //4 or 6 in total? 1+2+1 / 2+2+2 / 3+3. Depending on this, code should be changed.
-    MAX_MOB_AMOUNT                                         = 4
+    MAX_MOB_AMOUNT = 4
 };
 
 uint32 RingMob[] =
@@ -84,12 +84,12 @@ uint32 RingBoss[] =
 
 enum GrimstoneTexts
 {
-    SCRIPT_TEXT1                                           = -1000000,
-    SCRIPT_TEXT2                                           = -1000001,
-    SCRIPT_TEXT3                                           = -1000002,
-    SCRIPT_TEXT4                                           = -1000003,
-    SCRIPT_TEXT5                                           = -1000004,
-    SCRIPT_TEXT6                                           = -1000005
+    SCRIPT_TEXT1 = -1000000,
+    SCRIPT_TEXT2 = -1000001,
+    SCRIPT_TEXT3 = -1000002,
+    SCRIPT_TEXT4 = -1000003,
+    SCRIPT_TEXT5 = -1000004,
+    SCRIPT_TEXT6 = -1000005
 };
 
 
@@ -101,8 +101,8 @@ enum GrimstoneTexts
 
 enum KharamQuests
 {
-    QUEST_4001                                             = 4001,
-    QUEST_4342                                             = 4342
+    QUEST_4001 = 4001,
+    QUEST_4342 = 4342
 };
 
 #define GOSSIP_ITEM_KHARAN_1    "I need to know where the princess are, Kharan!"
@@ -124,18 +124,18 @@ enum KharamQuests
 
 enum LokhtosItems
 {
-    ITEM_THRORIUM_BROTHERHOOD_CONTRACT                     = 18628,
-    ITEM_SULFURON_INGOT                                    = 17203
+    ITEM_THRORIUM_BROTHERHOOD_CONTRACT = 18628,
+    ITEM_SULFURON_INGOT = 17203
 };
 
 enum LokhtosQuests
 {
-    QUEST_A_BINDING_CONTRACT                               = 7604
+    QUEST_A_BINDING_CONTRACT = 7604
 };
 
 enum LokhtosSpells
 {
-    SPELL_CREATE_THORIUM_BROTHERHOOD_CONTRACT_DND          = 23059
+    SPELL_CREATE_THORIUM_BROTHERHOOD_CONTRACT_DND = 23059
 };
 
 #define GOSSIP_ITEM_SHOW_ACCESS     "Show me what I have access to, Lothos."
@@ -155,7 +155,7 @@ enum Encounters
 
 enum JailBreak
 {
-    QUEST_JAIL_BREAK                                       = 4322
+    QUEST_JAIL_BREAK = 4322
 };
 
 /*######
@@ -246,17 +246,17 @@ enum JailBreak
 
 enum RocknotSays
 {
-    SAY_GOT_BEER                                           = -1230000
+    SAY_GOT_BEER = -1230000
 };
 
 enum RocknotSpells
 {
-    SPELL_DRUNKEN_RAGE                                     = 14872
+    SPELL_DRUNKEN_RAGE = 14872
 };
 
 enum RocknotQuests
 {
-    QUEST_ALE                                              = 4295
+    QUEST_ALE = 4295
 };
 
 
@@ -1697,7 +1697,7 @@ void AddSC_blackrock_depths()
     new mob_phalanx();
     new npc_kharan_mighthammer();
     new npc_lokhtos_darkbargainer();
-	new npc_dughal_stormwing();
+    new npc_dughal_stormwing();
     new npc_tobias_seecher();
     new npc_marshal_windsor();
     new npc_marshal_reginald_windsor();
@@ -1705,5 +1705,5 @@ void AddSC_blackrock_depths()
     new npc_shill();
     new npc_ograbisi();
     new npc_jaz();
-	new npc_rocknot();
+    new npc_rocknot();
 }

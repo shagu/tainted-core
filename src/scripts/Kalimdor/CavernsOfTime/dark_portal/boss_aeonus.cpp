@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Aeonus
-SD%Complete: 80
-SDComment: Some spells not implemented
-SDCategory: Caverns of Time, The Dark Portal
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Aeonus
+ SD%Complete: 80
+ SDComment: Some spells not implemented
+ SDCategory: Caverns of Time, The Dark Portal
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -43,7 +43,7 @@ EndScriptData */
 
 class boss_aeonus : public CreatureScript
 {
-public: 
+public:
     boss_aeonus() : CreatureScript("boss_aeonus") { }
     struct boss_aeonusAI : public ScriptedAI
     {
@@ -52,26 +52,26 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
         bool HeroicMode;
-    
+
         uint32 SandBreath_Timer;
         uint32 TimeStop_Timer;
         uint32 Frenzy_Timer;
-    
+
         void Reset()
         {
             SandBreath_Timer = 30000;
             TimeStop_Timer = 40000;
             Frenzy_Timer = 120000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(SAY_AGGRO, me);
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             //Despawn Time Keeper
@@ -83,21 +83,21 @@ public:
                     me->DealDamage(who, who->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 }
             }
-    
+
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
+
         void JustDied(Unit* /*victim*/)
         {
             DoScriptText(SAY_DEATH, me);
-    
+
             if (pInstance)
             {
                 pInstance->SetData(TYPE_RIFT, DONE);
                 pInstance->SetData(TYPE_MEDIVH, DONE); //FIXME: later should be removed
             }
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             switch (rand() % 2)
@@ -110,29 +110,29 @@ public:
                 break;
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Sand Breath
             if (SandBreath_Timer <= diff)
             {
-                DoCastVictim( SPELL_SAND_BREATH);
+                DoCastVictim(SPELL_SAND_BREATH);
                 SandBreath_Timer = 30000;
             }
             else SandBreath_Timer -= diff;
-    
+
             //Time Stop
             if (TimeStop_Timer <= diff)
             {
-                DoCastVictim( SPELL_TIME_STOP);
+                DoCastVictim(SPELL_TIME_STOP);
                 TimeStop_Timer = 40000;
             }
             else TimeStop_Timer -= diff;
-    
+
             //Frenzy
             if (Frenzy_Timer <= diff)
             {
@@ -141,17 +141,17 @@ public:
                 Frenzy_Timer = 120000;
             }
             else Frenzy_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_aeonusAI (pCreature);
+        return new boss_aeonusAI(pCreature);
     }
-    
-    
+
+
 };
 void AddSC_boss_aeonus()
 {

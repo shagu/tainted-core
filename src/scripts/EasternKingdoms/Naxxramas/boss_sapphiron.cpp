@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Sapphiron
-SD%Complete: 0
-SDComment: Place Holder
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Sapphiron
+ SD%Complete: 0
+ SDComment: Place Holder
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -35,15 +35,15 @@ EndScriptData */
 #define SPELL_BLIZZARD          28547
 #define SPELL_BESERK            26662
 
-
 class boss_sapphiron : public CreatureScript
 {
-public: 
+public:
     boss_sapphiron() : CreatureScript("boss_sapphiron") { }
+
     struct boss_sapphironAI : public ScriptedAI
     {
         boss_sapphironAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Icebolt_Count;
         uint32 Icebolt_Timer;
         uint32 FrostBreath_Timer;
@@ -56,7 +56,7 @@ public:
         uint32 phase;
         bool IsInFly;
         uint32 land_Timer;
-    
+
         void Reset()
         {
             FrostAura_Timer = 2000;
@@ -69,19 +69,19 @@ public:
             phase = 1;
             Icebolt_Count = 0;
             IsInFly = false;
-    
+
             me->SetLevitate(false);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (phase == 1)
             {
                 if (FrostAura_Timer <= diff)
@@ -90,7 +90,7 @@ public:
                     FrostAura_Timer = 5000;
                 }
                 else FrostAura_Timer -= diff;
-    
+
                 if (LifeDrain_Timer <= diff)
                 {
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
@@ -98,7 +98,7 @@ public:
                     LifeDrain_Timer = 24000;
                 }
                 else LifeDrain_Timer -= diff;
-    
+
                 if (Blizzard_Timer <= diff)
                 {
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
@@ -106,7 +106,7 @@ public:
                     Blizzard_Timer = 20000;
                 }
                 else Blizzard_Timer -= diff;
-    
+
                 if (HealthAbovePct(10))
                 {
                     if (Fly_Timer <= diff)
@@ -124,7 +124,7 @@ public:
                     else Fly_Timer -= diff;
                 }
             }
-    
+
             if (phase == 2)
             {
                 if (Icebolt_Timer <= diff && Icebolt_Count < 5)
@@ -139,7 +139,7 @@ public:
                     Icebolt_Timer = 4000;
                 }
                 else Icebolt_Timer -= diff;
-    
+
                 if (Icebolt_Count == 5 && IsInFly && FrostBreath_Timer <= diff)
                 {
                     DoScriptText(EMOTE_BREATH, me);
@@ -149,7 +149,7 @@ public:
                     FrostBreath_Timer = 6000;
                 }
                 else FrostBreath_Timer -= diff;
-    
+
                 if (!IsInFly && land_Timer <= diff)
                 {
                     phase = 1;
@@ -163,7 +163,7 @@ public:
                 }
                 else land_Timer -= diff;
             }
-    
+
             if ((me->GetHealth() * 100) / me->GetMaxHealth() <= 10)
             {
                 if (Beserk_Timer <= diff)
@@ -174,19 +174,19 @@ public:
                 }
                 else Beserk_Timer -= diff;
             }
-    
+
             if (phase != 2)
                 DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_sapphironAI (pCreature);
+        return new boss_sapphironAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_sapphiron()
 {
     new boss_sapphiron();

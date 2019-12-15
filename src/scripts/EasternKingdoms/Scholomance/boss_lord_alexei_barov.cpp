@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Lord_Alexei_Barov
-SD%Complete: 100
-SDComment: aura applied/defined in database
-SDCategory: Scholomance
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Lord_Alexei_Barov
+ SD%Complete: 100
+ SDComment: aura applied/defined in database
+ SDCategory: Scholomance
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -32,73 +32,74 @@ EndScriptData */
 
 class boss_lord_alexei_barov : public CreatureScript
 {
-public: 
+public:
     boss_lord_alexei_barov() : CreatureScript("boss_lord_alexei_barov") { }
+
     struct boss_lord_alexei_barovAI : public ScriptedAI
     {
         boss_lord_alexei_barovAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Immolate_Timer;
         uint32 VeilofShadow_Timer;
-    
+
         void Reset()
         {
             Immolate_Timer = 7000;
             VeilofShadow_Timer = 15000;
-    
+
             me->LoadCreaturesAddon();
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             ScriptedInstance* pInstance = (ScriptedInstance*)me->GetInstanceData();
             if (pInstance)
             {
                 pInstance->SetData(DATA_LORDALEXEIBAROV_DEATH, 0);
-    
+
                 if (pInstance->GetData(TYPE_GANDLING) == IN_PROGRESS)
                     me->SummonCreature(1853, 180.73f, -9.43856f, 75.507f, 1.61399f, TEMPSUMMON_DEAD_DESPAWN, 0);
             }
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //Immolate_Timer
             if (Immolate_Timer <= diff)
             {
                 Unit* pTarget = NULL;
                 pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0);
                 if (pTarget) DoCast(pTarget, SPELL_IMMOLATE);
-    
+
                 Immolate_Timer = 12000;
             }
             else Immolate_Timer -= diff;
-    
+
             //VeilofShadow_Timer
             if (VeilofShadow_Timer <= diff)
             {
-                DoCastVictim( SPELL_VEILOFSHADOW);
+                DoCastVictim(SPELL_VEILOFSHADOW);
                 VeilofShadow_Timer = 20000;
             }
             else VeilofShadow_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_lord_alexei_barovAI (pCreature);
+        return new boss_lord_alexei_barovAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_lordalexeibarov()
 {
     new boss_lord_alexei_barov();

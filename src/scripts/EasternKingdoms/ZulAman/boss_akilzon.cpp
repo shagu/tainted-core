@@ -15,14 +15,14 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: boss_Akilzon
-SD%Complete: 75%
-SDComment: Check Working & Missing Event
-SQLUpdate:
-#Temporary fix for Soaring Eagles
+ /* ScriptData
+ SDName: boss_Akilzon
+ SD%Complete: 75%
+ SDComment: Check Working & Missing Event
+ SQLUpdate:
+ #Temporary fix for Soaring Eagles
 
-EndScriptData */
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -37,59 +37,56 @@ EndScriptData */
 
 enum //Spells
 {
-    SPELL_STATIC_DISRUPTION       = 44008, //original spellID 43622
-    SPELL_STATIC_VISUAL           = 45265,
-    SPELL_CALL_LIGHTNING          = 43661,
-    SPELL_GUST_OF_WIND            = 43621,
-    SPELL_ELECTRICAL_STORM        = 43648,
+    SPELL_STATIC_DISRUPTION = 44008, //original spellID 43622
+    SPELL_STATIC_VISUAL = 45265,
+    SPELL_CALL_LIGHTNING = 43661,
+    SPELL_GUST_OF_WIND = 43621,
+    SPELL_ELECTRICAL_STORM = 43648,
     SPELL_ELECTRICAL_STORM_VISUAL = 44007,
-    SPELL_BERSERK                 = 45078,
-    SPELL_ELECTRICAL_DAMAGE       = 43657,
-    SPELL_ELECTRICAL_OVERLOAD     = 43658,
-    SPELL_EAGLE_SWOOP             = 44732
+    SPELL_BERSERK = 45078,
+    SPELL_ELECTRICAL_DAMAGE = 43657,
+    SPELL_ELECTRICAL_OVERLOAD = 43658,
+    SPELL_EAGLE_SWOOP = 44732
 };
 
-static const char SAY_ONAGGRO[]   = "I be da predator! You da prey...";
+static const char SAY_ONAGGRO[] = "I be da predator! You da prey...";
 static const char SAY_ONSUMMON1[] = "Feed, me bruddahs!";
 static const char SAY_ONSUMMON2[] = "Come, and join me bruddah!";
-static const char SAY_ONENRAGE[]  = "All you be doing is wasting my time!";
-static const char SAY_ONSLAY1[]   = "Ya got nothin'!";
-static const char SAY_ONSLAY2[]   = "Stop your cryin'!";
-static const char SAY_ONDEATH[]   = "You can't... kill... me spirit!";
-static const char SAY_EVENT1[]    = "My eagles gonna bear your spirits to me! Your sacrifice is not gonna be in vain!";
-static const char SAY_EVENT2[]    = "Your death gonna be quick, strangers. You shoulda never have come to this place...";
+static const char SAY_ONENRAGE[] = "All you be doing is wasting my time!";
+static const char SAY_ONSLAY1[] = "Ya got nothin'!";
+static const char SAY_ONSLAY2[] = "Stop your cryin'!";
+static const char SAY_ONDEATH[] = "You can't... kill... me spirit!";
+static const char SAY_EVENT1[] = "My eagles gonna bear your spirits to me! Your sacrifice is not gonna be in vain!";
+static const char SAY_EVENT2[] = "Your death gonna be quick, strangers. You shoulda never have come to this place...";
 
 enum //Sounds
 {
-    SOUND_ONAGGRO   = 12013,
+    SOUND_ONAGGRO = 12013,
     SOUND_ONSUMMON1 = 12014,
     SOUND_ONSUMMON2 = 12015,
-    SOUND_ONENRAGE  = 12016,
-    SOUND_ONSLAY1   = 12017,
-    SOUND_ONSLAY2   = 12018,
-    SOUND_ONDEATH   = 12019,
-    SOUND_EVENT1    = 12122,
-    SOUND_EVENT2    = 12123
+    SOUND_ONENRAGE = 12016,
+    SOUND_ONSLAY1 = 12017,
+    SOUND_ONSLAY2 = 12018,
+    SOUND_ONDEATH = 12019,
+    SOUND_EVENT1 = 12122,
+    SOUND_EVENT2 = 12123
 };
 
 enum //Misc
 {
     MOB_SOARING_EAGLE = 24858,
-    SE_LOC_X_MAX      =   400,
-    SE_LOC_X_MIN      =   335,
-    SE_LOC_Y_MAX      =  1435,
-    SE_LOC_Y_MIN      =  1370
+    SE_LOC_X_MAX = 400,
+    SE_LOC_X_MIN = 335,
+    SE_LOC_Y_MAX = 1435,
+    SE_LOC_Y_MIN = 1370
 };
-
-
-
-
 
 
 class boss_akilzon : public CreatureScript
 {
-public: 
+public:
     boss_akilzon() : CreatureScript("boss_akilzon") { }
+
     struct boss_akilzonAI : public ScriptedAI
     {
         boss_akilzonAI(Creature* c) : ScriptedAI(c)
@@ -100,62 +97,62 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
         ScriptedInstance* pInstance;
-    
+
         uint64 BirdGUIDs[8];
         uint64 TargetGUID;
         uint64 CycloneGUID;
         uint64 CloudGUID;
-    
+
         uint32 StaticDisruption_Timer;
         uint32 GustOfWind_Timer;
         uint32 CallLighting_Timer;
         uint32 ElectricalStorm_Timer;
         uint32 SummonEagles_Timer;
         uint32 Enrage_Timer;
-    
+
         uint32 StormCount;
         uint32 StormSequenceTimer;
-    
+
         bool isRaining;
-    
+
         void Reset()
         {
             if (pInstance)
                 pInstance->SetData(ENCOUNTER_AKILZON, NOT_STARTED);
-    
+
             StaticDisruption_Timer = urand(10 * 1000, 20 * 1000); // 10 to 20 seconds (bosskillers)
-            GustOfWind_Timer       = urand(20 * 1000, 30 * 1000); // 20 to 30 seconds (bosskillers)
-            CallLighting_Timer     = urand(10 * 1000, 20 * 1000); // totaly random timer. can't find any info on this
-            ElectricalStorm_Timer  = 60 * 1000;                   // 60 seconds(bosskillers)
-            Enrage_Timer           = 10 * 60 * 1000;              // 10 minutes till enrage(bosskillers)
-            SummonEagles_Timer     = 99999;
-    
-            TargetGUID  = 0;
-            CloudGUID   = 0;
+            GustOfWind_Timer = urand(20 * 1000, 30 * 1000); // 20 to 30 seconds (bosskillers)
+            CallLighting_Timer = urand(10 * 1000, 20 * 1000); // totaly random timer. can't find any info on this
+            ElectricalStorm_Timer = 60 * 1000;                   // 60 seconds(bosskillers)
+            Enrage_Timer = 10 * 60 * 1000;              // 10 minutes till enrage(bosskillers)
+            SummonEagles_Timer = 99999;
+
+            TargetGUID = 0;
+            CloudGUID = 0;
             CycloneGUID = 0;
-    
+
             DespawnSummons();
             for (uint8 i = 0; i < 8; ++i)
                 BirdGUIDs[i] = 0;
-    
+
             StormCount = 0;
             StormSequenceTimer = 0;
-    
+
             isRaining = false;
-    
+
             SetWeather(WEATHER_STATE_FINE, 0.0f);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             me->MonsterYell(SAY_ONAGGRO, LANG_UNIVERSAL, 0);
             DoPlaySoundToSet(me, SOUND_ONAGGRO);
             DoZoneInCombat();
-    
+
             if (pInstance)
                 pInstance->SetData(ENCOUNTER_AKILZON, IN_PROGRESS);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             me->MonsterYell(SAY_ONDEATH, LANG_UNIVERSAL, 0);
@@ -164,7 +161,7 @@ public:
                 pInstance->SetData(ENCOUNTER_AKILZON, DONE);
             DespawnSummons();
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             switch (urand(0, 1))
@@ -179,7 +176,7 @@ public:
                 break;
             }
         }
-    
+
         void DespawnSummons()
         {
             for (uint8 i = 0; i < 8; ++i)
@@ -192,19 +189,19 @@ public:
                 }
             }
         }
-    
+
         void SetWeather(uint32 weather, float grade)
         {
             Map* pMap = me->GetMap();
             if (!pMap->IsDungeon())
                 return;
-    
+
             WorldPacket data(SMSG_WEATHER, (4 + 4 + 4));
             data << uint32(weather) << float(grade) << uint8(0);
-    
+
             pMap->SendToPlayers(&data);
         }
-    
+
         void HandleStormSequence(Unit* Cloud) // 1: begin, 2-9: tick, 10: end
         {
             if (StormCount < 10 && StormCount > 1)
@@ -213,23 +210,23 @@ public:
                 int32 bp0 = 800;
                 for (uint8 i = 2; i < StormCount; ++i)
                     bp0 *= 2;
-    
+
                 CellCoord p(Oregon::ComputeCellCoord(me->GetPositionX(), me->GetPositionY()));
                 Cell cell(p);
                 cell.SetNoCreate();
-    
+
                 std::list<Unit* > tempUnitMap;
-    
+
                 {
                     Oregon::AnyAoETargetUnitInObjectRangeCheck u_check(me, me, SIZE_OF_GRIDS);
                     Oregon::UnitListSearcher<Oregon::AnyAoETargetUnitInObjectRangeCheck> searcher(tempUnitMap, u_check);
-    
+
                     TypeContainerVisitor<Oregon::UnitListSearcher<Oregon::AnyAoETargetUnitInObjectRangeCheck>, WorldTypeMapContainer > world_unit_searcher(searcher);
                     TypeContainerVisitor<Oregon::UnitListSearcher<Oregon::AnyAoETargetUnitInObjectRangeCheck>, GridTypeMapContainer >  grid_unit_searcher(searcher);
-    
+
                     cell.Visit(p, world_unit_searcher, *me->GetMap(), *me, SIZE_OF_GRIDS);
                     cell.Visit(p, grid_unit_searcher, *me->GetMap(), *me, SIZE_OF_GRIDS);
-    
+
                 }
                 //dealdamege
                 for (std::list<Unit*>::const_iterator i = tempUnitMap.begin(); i != tempUnitMap.end(); ++i)
@@ -269,12 +266,12 @@ public:
             }
             StormSequenceTimer = 1000;
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (StormCount)
             {
                 Unit* pTarget = Unit::GetUnit(*me, CloudGUID);
@@ -285,15 +282,15 @@ public:
                 }
                 else if (Unit* Cyclone = Unit::GetUnit(*me, CycloneGUID))
                     Cyclone->CastSpell(pTarget, 25160, true); // keep casting or...
-    
+
                 if (StormSequenceTimer <= diff)
                     HandleStormSequence(pTarget);
                 else
                     StormSequenceTimer -= diff;
-    
+
                 return;
             }
-    
+
             if (Enrage_Timer <= diff)
             {
                 me->MonsterYell(SAY_ONENRAGE, LANG_UNIVERSAL, 0);
@@ -303,7 +300,7 @@ public:
             }
             else
                 Enrage_Timer -= diff;
-    
+
             if (StaticDisruption_Timer <= diff)
             {
                 Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
@@ -312,13 +309,13 @@ public:
                 DoCast(pTarget, SPELL_STATIC_DISRUPTION, false);
                 me->SetInFront(me->GetVictim());
                 StaticDisruption_Timer = (diff - StaticDisruption_Timer) + (10 + rand() % 8) * 1000; // < 20s
-    
+
                 /*if (float dist = me->IsWithinDist3d(pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 5.0f) dist = 5.0f;
                 SDisruptAOEVisual_Timer = 1000 + floor(dist / 30 * 1000.0f);*/
             }
             else
                 StaticDisruption_Timer -= diff;
-    
+
             if (GustOfWind_Timer <= diff)
             {
                 Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
@@ -328,21 +325,21 @@ public:
             }
             else
                 GustOfWind_Timer -= diff;
-    
+
             if (CallLighting_Timer <= diff)
             {
-                DoCastVictim( SPELL_CALL_LIGHTNING);
+                DoCastVictim(SPELL_CALL_LIGHTNING);
                 CallLighting_Timer = (diff - CallLighting_Timer) + (12 + rand() % 5) * 1000; //totaly random timer. can't find any info on this
             }
             else
                 CallLighting_Timer -= diff;
-    
+
             if (!isRaining && ElectricalStorm_Timer < 8000 + urand(0, 5000))
             {
                 SetWeather(WEATHER_STATE_HEAVY_RAIN, 0.9999f);
                 isRaining = true;
             }
-    
+
             if (ElectricalStorm_Timer <= diff)
             {
                 Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 50, true);
@@ -353,7 +350,7 @@ public:
                 }
                 pTarget->CastSpell(pTarget, SPELL_ELECTRICAL_STORM_VISUAL, true);//cloud visual
                 DoCast(pTarget, SPELL_ELECTRICAL_STORM, false);//storm cyclon + visual
-    
+
                 float x, y, z;
                 pTarget->GetPosition(x, y, z);
                 pTarget->SetLevitate(true);
@@ -378,7 +375,7 @@ public:
             }
             else
                 ElectricalStorm_Timer -= diff;
-    
+
             if (SummonEagles_Timer <= diff)
             {
                 if (urand(0, 1))
@@ -391,10 +388,10 @@ public:
                     me->MonsterYell(SAY_ONSUMMON2, LANG_UNIVERSAL, 0);
                     DoPlaySoundToSet(me, SOUND_ONSUMMON2);
                 }
-    
+
                 float x, y, z;
                 me->GetPosition(x, y, z);
-    
+
                 for (uint8 i = 0; i < 8; ++i)
                 {
                     if (!Unit::GetUnit(*me, BirdGUIDs[i])) // they despawn on death
@@ -407,7 +404,7 @@ public:
                             if (z > 95)
                                 z = 95 - urand(0, 5);
                         }
-    
+
                         if (Creature* pCreature = me->SummonCreature(MOB_SOARING_EAGLE, x, y, z, 0, TEMPSUMMON_CORPSE_DESPAWN, 0))
                         {
                             pCreature->AddThreat(me->GetVictim(), 1.0f);
@@ -420,12 +417,12 @@ public:
             }
             else
                 SummonEagles_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-    
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_akilzonAI(pCreature);
@@ -434,9 +431,9 @@ public:
 
 class mob_akilzon_eagle : public CreatureScript
 {
-public: 
+public:
     mob_akilzon_eagle() : CreatureScript("mob_akilzon_eagle") { }
-    
+
 
 
     struct mob_soaring_eagleAI : public ScriptedAI
@@ -517,11 +514,9 @@ public:
 
 };
 
-
 void AddSC_boss_akilzon()
 {
     new boss_akilzon();
     new mob_akilzon_eagle();
-
 }
 

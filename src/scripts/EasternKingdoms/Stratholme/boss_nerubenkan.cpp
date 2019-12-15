@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Nerubenkan
-SD%Complete: 70
-SDComment:
-SDCategory: Stratholme
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Nerubenkan
+ SD%Complete: 70
+ SDComment:
+ SDCategory: Stratholme
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -31,25 +31,25 @@ EndScriptData */
 #define SPELL_CRYPT_SCARABS         31602
 #define SPELL_RAISEUNDEADSCARAB     17235
 
-
 class boss_nerubenkan : public CreatureScript
 {
-public: 
+public:
     boss_nerubenkan() : CreatureScript("boss_nerubenkan") { }
+
     struct boss_nerubenkanAI : public ScriptedAI
     {
         boss_nerubenkanAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)me->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 EncasingWebs_Timer;
         uint32 PierceArmor_Timer;
         uint32 CryptScarabs_Timer;
         uint32 RaiseUndeadScarab_Timer;
-    
+
         void Reset()
         {
             CryptScarabs_Timer = 3000;
@@ -57,54 +57,54 @@ public:
             PierceArmor_Timer = 19000;
             RaiseUndeadScarab_Timer = 3000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             if (pInstance)
                 pInstance->SetData(TYPE_NERUB, IN_PROGRESS);
         }
-    
+
         void RaiseUndeadScarab(Unit* pVictim)
         {
             if (Creature* pUndeadScarab = DoSpawnCreature(10876, irand(-9, 9), irand(-9, 9), 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 180000))
                 if (pUndeadScarab->AI())
                     pUndeadScarab->AI()->AttackStart(pVictim);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //EncasingWebs
             if (EncasingWebs_Timer <= diff)
             {
-                DoCastVictim( SPELL_ENCASINGWEBS);
+                DoCastVictim(SPELL_ENCASINGWEBS);
                 EncasingWebs_Timer = 30000;
             }
             else EncasingWebs_Timer -= diff;
-    
+
             //PierceArmor
             if (PierceArmor_Timer <= diff)
             {
                 if (urand(0, 3) < 2)
-                    DoCastVictim( SPELL_PIERCEARMOR);
+                    DoCastVictim(SPELL_PIERCEARMOR);
                 PierceArmor_Timer = 35000;
             }
             else PierceArmor_Timer -= diff;
-    
+
             //CryptScarabs_Timer
             if (CryptScarabs_Timer <= diff)
             {
-                DoCastVictim( SPELL_CRYPT_SCARABS);
+                DoCastVictim(SPELL_CRYPT_SCARABS);
                 CryptScarabs_Timer = 20000;
             }
             else CryptScarabs_Timer -= diff;
-    
+
             //RaiseUndeadScarab
             if (RaiseUndeadScarab_Timer <= diff)
             {
@@ -112,17 +112,18 @@ public:
                 RaiseUndeadScarab_Timer = 16000;
             }
             else RaiseUndeadScarab_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_nerubenkanAI (pCreature);
+        return new boss_nerubenkanAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_nerubenkan()
 {
     new boss_nerubenkan();

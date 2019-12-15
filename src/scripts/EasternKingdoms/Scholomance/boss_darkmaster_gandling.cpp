@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Darkmaster_Gandling
-SD%Complete: 99
-SDComment: Doors missing in instance script.
-SDCategory: Scholomance
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Darkmaster_Gandling
+ SD%Complete: 99
+ SDComment: Doors missing in instance script.
+ SDCategory: Scholomance
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -53,22 +53,23 @@ EndScriptData */
 
 class boss_darkmaster_gandling : public CreatureScript
 {
-public: 
+public:
     boss_darkmaster_gandling() : CreatureScript("boss_darkmaster_gandling") { }
+
     struct boss_darkmaster_gandlingAI : public ScriptedAI
     {
         boss_darkmaster_gandlingAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)me->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 ArcaneMissiles_Timer;
         uint32 ShadowShield_Timer;
         uint32 Curse_Timer;
         uint32 Teleport_Timer;
-    
+
         void Reset()
         {
             ArcaneMissiles_Timer = 4500;
@@ -76,30 +77,30 @@ public:
             Curse_Timer = 2000;
             Teleport_Timer = 16000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             if (pInstance)
                 pInstance->SetData(TYPE_GANDLING, DONE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //ArcaneMissiles_Timer
             if (ArcaneMissiles_Timer <= diff)
             {
-                DoCastVictim( SPELL_ARCANEMISSILES);
+                DoCastVictim(SPELL_ARCANEMISSILES);
                 ArcaneMissiles_Timer = 8000;
             }
             else ArcaneMissiles_Timer -= diff;
-    
+
             //ShadowShield_Timer
             if (ShadowShield_Timer <= diff)
             {
@@ -107,15 +108,15 @@ public:
                 ShadowShield_Timer = 14000 + rand() % 14000;
             }
             else ShadowShield_Timer -= diff;
-    
+
             //Curse_Timer
             if (Curse_Timer <= diff)
             {
-                DoCastVictim( SPELL_CURSE);
+                DoCastVictim(SPELL_CURSE);
                 Curse_Timer = 15000 + rand() % 12000;
             }
             else Curse_Timer -= diff;
-    
+
             //Teleporting Random Target to one of the six pre boss rooms and spawn 3-4 skeletons near the gamer.
             //We will only telport if gandling has more than 3% of hp so teleported gamers can always loot.
             if (HealthAbovePct(3))
@@ -128,7 +129,7 @@ public:
                     {
                         if (DoGetThreat(pTarget))
                             DoModifyThreatPercent(pTarget, -100);
-    
+
                         Creature* Summoned = NULL;
                         switch (rand() % 6)
                         {
@@ -216,17 +217,17 @@ public:
                 }
                 else Teleport_Timer -= diff;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_darkmaster_gandlingAI (pCreature);
+        return new boss_darkmaster_gandlingAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_darkmaster_gandling()
 {
     new boss_darkmaster_gandling();

@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Temporus
-SD%Complete: 75
-SDComment: More abilities need to be implemented
-SDCategory: Caverns of Time, The Dark Portal
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Temporus
+ SD%Complete: 75
+ SDComment: More abilities need to be implemented
+ SDCategory: Caverns of Time, The Dark Portal
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -39,11 +39,11 @@ EndScriptData */
 #define H_SPELL_WING_BUFFET     38593
 #define SPELL_REFLECT           38592                       //Not Implemented (Heroic mod)
 
-
 class boss_temporus : public CreatureScript
 {
-public: 
+public:
     boss_temporus() : CreatureScript("boss_temporus") { }
+
     struct boss_temporusAI : public ScriptedAI
     {
         boss_temporusAI(Creature* c) : ScriptedAI(c)
@@ -51,24 +51,24 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
         bool HeroicMode;
-    
+
         uint32 Haste_Timer;
         uint32 SpellReflection_Timer;
-    
+
         void Reset()
         {
             Haste_Timer = 20000;
             SpellReflection_Timer = 40000;
         }
-    
+
         void EnterCombat(Unit*)
         {
             DoScriptText(SAY_AGGRO, me);
         }
-    
+
         void KilledUnit(Unit*)
         {
             switch (rand() % 2)
@@ -81,15 +81,15 @@ public:
                 break;
             }
         }
-    
+
         void JustDied(Unit*)
         {
             DoScriptText(SAY_DEATH, me);
-    
+
             if (pInstance)
                 pInstance->SetData(TYPE_RIFT, SPECIAL);
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             //Despawn Time Keeper
@@ -98,20 +98,20 @@ public:
                 if (me->IsWithinDistInMap(who, 20.0f))
                 {
                     DoScriptText(SAY_BANISH, me);
-    
+
                     me->DealDamage(who, who->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 }
             }
-    
+
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Attack Haste
             if (Haste_Timer <= diff)
             {
@@ -119,7 +119,7 @@ public:
                 Haste_Timer = 20000 + rand() % 5000;
             }
             else Haste_Timer -= diff;
-    
+
             //Spell Reflection
             if (SpellReflection_Timer <= diff)
             {
@@ -127,18 +127,17 @@ public:
                 SpellReflection_Timer = 40000 + rand() % 10000;
             }
             else SpellReflection_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_temporusAI (pCreature);
+        return new boss_temporusAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_temporus()
 {
     new boss_temporus();

@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Omar_The_Unscarred
-SD%Complete: 99
-SDComment:
-SDCategory: Hellfire Citadel, Hellfire Ramparts
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Omar_The_Unscarred
+ SD%Complete: 99
+ SDComment:
+ SDCategory: Hellfire Citadel, Hellfire Ramparts
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -47,8 +47,9 @@ EndScriptData */
 
 class boss_omor_the_unscarred : public CreatureScript
 {
-public: 
+public:
     boss_omor_the_unscarred() : CreatureScript("boss_omor_the_unscarred") { }
+
     struct boss_omor_the_unscarredAI : public Scripted_NoMovementAI
     {
         boss_omor_the_unscarredAI(Creature* c) : Scripted_NoMovementAI(c)
@@ -56,10 +57,10 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
         bool HeroicMode;
-    
+
         uint32 OrbitalStrike_Timer;
         uint32 ShadowWhip_Timer;
         uint32 Aura_Timer;
@@ -68,11 +69,11 @@ public:
         uint32 Summon_Timer;
         uint64 playerGUID;
         bool CanPullBack;
-    
+
         void Reset()
         {
             DoScriptText(SAY_WIPE, me);
-    
+
             OrbitalStrike_Timer = 25000;
             ShadowWhip_Timer = 2000;
             Aura_Timer = 12300;
@@ -81,11 +82,11 @@ public:
             Summon_Timer = 19600;
             playerGUID = 0;
             CanPullBack = false;
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_OMOR, NOT_STARTED);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             switch (rand() % 3)
@@ -100,40 +101,40 @@ public:
                 DoScriptText(SAY_AGGRO_3, me);
                 break;
             }
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_OMOR, IN_PROGRESS);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             if (rand() % 2)
                 return;
-    
+
             DoScriptText(SAY_KILL_1, me);
         }
-    
+
         void JustSummoned(Creature* summoned)
         {
             DoScriptText(SAY_SUMMON, me);
-    
+
             if (Unit* random = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 summoned->AI()->AttackStart(random);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DIE, me);
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_OMOR, DONE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (Summon_Timer <= diff)
             {
                 me->InterruptNonMeleeSpells(false);
@@ -141,7 +142,7 @@ public:
                 Summon_Timer = 24100 + rand() % 2800;
             }
             else Summon_Timer -= diff;
-    
+
             if (CanPullBack)
             {
                 if (ShadowWhip_Timer <= diff)
@@ -163,7 +164,7 @@ public:
                     ShadowWhip_Timer = 2000;
                 }
                 else ShadowWhip_Timer -= diff;
-    
+
             }
             else if (OrbitalStrike_Timer <= diff)
             {
@@ -171,14 +172,14 @@ public:
                 if (me->IsWithinMeleeRange(me->GetVictim()))
                     temp = me->GetVictim();
                 else temp = SelectUnit(SELECT_TARGET_RANDOM, 0);
-    
+
                 if (temp && temp->GetTypeId() == TYPEID_PLAYER)
                 {
                     me->InterruptNonMeleeSpells(false);
                     DoCast(temp, SPELL_ORBITAL_STRIKE);
                     OrbitalStrike_Timer = 14000 + rand() % 2000;
                     playerGUID = temp->GetGUID();
-    
+
                     if (playerGUID)
                     {
                         CanPullBack = true;
@@ -187,7 +188,7 @@ public:
                 }
             }
             else OrbitalStrike_Timer -= diff;
-    
+
             if ((me->GetHealth() * 100) / me->GetMaxHealth() < 20)
             {
                 if (DemonicShield_Timer <= diff)
@@ -197,11 +198,11 @@ public:
                 }
                 else DemonicShield_Timer -= diff;
             }
-    
+
             if (Aura_Timer <= diff)
             {
                 DoScriptText(SAY_CURSE, me);
-    
+
                 if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 {
                     DoCast(pTarget, HeroicMode ? H_SPELL_BANE_OF_TREACHERY : SPELL_TREACHEROUS_AURA);
@@ -209,31 +210,30 @@ public:
                 }
             }
             else Aura_Timer -= diff;
-    
+
             if (Shadowbolt_Timer <= diff)
             {
                 if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 {
                     if (pTarget)
                         pTarget = me->GetVictim();
-    
+
                     DoCast(pTarget, HeroicMode ? H_SPELL_SHADOW_BOLT : SPELL_SHADOW_BOLT);
                     Shadowbolt_Timer = 4000 + rand() % 3100;
                 }
             }
             else Shadowbolt_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_omor_the_unscarredAI>(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_omor_the_unscarred()
 {
     new boss_omor_the_unscarred();

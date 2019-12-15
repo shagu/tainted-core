@@ -15,31 +15,31 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Areatrigger_Scripts
-SD%Complete: 100
-SDComment: Scripts for areatriggers
-SDCategory: Areatrigger
-EndScriptData */
+ /* ScriptData
+ SDName: Areatrigger_Scripts
+ SD%Complete: 100
+ SDComment: Scripts for areatriggers
+ SDCategory: Areatrigger
+ EndScriptData */
 
-/* ContentData
-at_coilfang_waterfall           4591
-at_legion_teleporter            4560 Teleporter TO Invasion Point: Cataclysm
-at_ravenholdt
-at_scent_larkorwi               1726,1727,1728,1729,1730,1731,1732,1733,1734,1735,1736,1737,1738,1739,1740
-at_ancient_leaf                 3587
-EndContentData */
+ /* ContentData
+ at_coilfang_waterfall           4591
+ at_legion_teleporter            4560 Teleporter TO Invasion Point: Cataclysm
+ at_ravenholdt
+ at_scent_larkorwi               1726,1727,1728,1729,1730,1731,1732,1733,1734,1735,1736,1737,1738,1739,1740
+ at_ancient_leaf                 3587
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-/*######
-## at_coilfang_waterfall
-######*/
+ /*######
+ ## at_coilfang_waterfall
+ ######*/
 
 enum eCoilfangGOs
 {
-    GO_COILFANG_WATERFALL   = 184212
+    GO_COILFANG_WATERFALL = 184212
 };
 class AreaTrigger_at_coilfang_waterfall : public AreaTriggerScript
 {
@@ -62,11 +62,11 @@ public:
 
 enum eLegionTeleporter
 {
-    SPELL_TELE_A_TO         = 37387,
-    QUEST_GAINING_ACCESS_A  = 10589,
+    SPELL_TELE_A_TO = 37387,
+    QUEST_GAINING_ACCESS_A = 10589,
 
-    SPELL_TELE_H_TO         = 37389,
-    QUEST_GAINING_ACCESS_H  = 10604
+    SPELL_TELE_H_TO = 37389,
+    QUEST_GAINING_ACCESS_H = 10604
 };
 
 class AreaTrigger_at_legion_teleporter : AreaTriggerScript
@@ -99,8 +99,8 @@ public:
 
 enum eRavenholdt
 {
-    QUEST_MANOR_RAVENHOLDT  = 6681,
-    NPC_RAVENHOLDT          = 13936
+    QUEST_MANOR_RAVENHOLDT = 6681,
+    NPC_RAVENHOLDT = 13936
 };
 
 class AreaTrigger_at_ravenholt : AreaTriggerScript
@@ -124,8 +124,8 @@ public:
 
 enum eLarkorwi
 {
-    QUEST_SCENT_OF_LARKORWI     = 4291,
-    NPC_LARKORWI_MATE           = 9683
+    QUEST_SCENT_OF_LARKORWI = 4291,
+    NPC_LARKORWI_MATE = 9683
 };
 
 class AreaTrigger_at_scent_larkorwi : AreaTriggerScript
@@ -152,13 +152,13 @@ public:
 
 enum eAncientLeaf
 {
-    QUEST_ANCIENT_LEAF              = 7632,
+    QUEST_ANCIENT_LEAF = 7632,
 
-    NPC_VARTRUS                     = 14524,
-    NPC_STOMA                       = 14525,
-    NPC_HASTAT                      = 14526,
+    NPC_VARTRUS = 14524,
+    NPC_STOMA = 14525,
+    NPC_HASTAT = 14526,
 
-    MAX_ANCIENTS                    = 3
+    MAX_ANCIENTS = 3
 };
 
 struct AncientSpawn
@@ -202,7 +202,7 @@ public:
 /*######
 ## at_haramad_teleport
 ######*/
- 
+
 enum
 {
     QUEST_SPECIAL_DELIVERY_TO_SHATTRATH = 10280

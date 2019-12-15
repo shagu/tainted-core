@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Murmur
-SD%Complete: 90
-SDComment: Timers may be incorrect
-SDCategory: Auchindoun, Shadow Labyrinth
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Murmur
+ SD%Complete: 90
+ SDComment: Timers may be incorrect
+ SDCategory: Auchindoun, Shadow Labyrinth
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -38,15 +38,16 @@ EndScriptData */
 
 class boss_murmur : public CreatureScript
 {
-public: 
+public:
     boss_murmur() : CreatureScript("boss_murmur") { }
+
     struct boss_murmurAI : public Scripted_NoMovementAI
     {
         boss_murmurAI(Creature* c) : Scripted_NoMovementAI(c)
         {
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         uint32 SonicBoom_Timer;
         uint32 MurmursTouch_Timer;
         uint32 Resonance_Timer;
@@ -55,7 +56,7 @@ public:
         uint32 ThunderingStorm_Timer;
         bool HeroicMode;
         bool SonicBoom;
-    
+
         void Reset()
         {
             SonicBoom_Timer = 30000;
@@ -65,28 +66,28 @@ public:
             ThunderingStorm_Timer = 15000;
             SonicShock_Timer = 10000;
             SonicBoom = false;
-    
+
             //database should have `RegenHealth`=0 to prevent regen
             uint32 hp = (me->GetMaxHealth() * 40) / 100;
             if (hp) me->SetHealth(hp);
             me->SetPlayerDamaged(false);
         }
-    
+
         void EnterCombat(Unit*) { }
-    
+
         // Sonic Boom instant damage (needs core fix instead of this)
         void SpellHitTarget(Unit* pTarget, const SpellEntry* spell)
         {
             if (pTarget && pTarget->IsAlive() && spell && spell->Id == SPELL_SONIC_BOOM_EFFECT)
                 me->DealDamage(pTarget, (pTarget->GetHealth() * 90) / 100, NULL, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NATURE, spell);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target or casting
             if (!UpdateVictim() || me->IsNonMeleeSpellCast(false))
                 return;
-    
+
             // Sonic Boom
             if (SonicBoom)
             {
@@ -103,7 +104,7 @@ public:
                 return;
             }
             else SonicBoom_Timer -= diff;
-    
+
             // Murmur's Touch
             if (MurmursTouch_Timer <= diff)
             {
@@ -112,7 +113,7 @@ public:
                 MurmursTouch_Timer = 30000;
             }
             else MurmursTouch_Timer -= diff;
-    
+
             // Resonance
             if (Resonance_Timer <= diff)
             {
@@ -121,7 +122,7 @@ public:
                 Resonance_Timer = 5000;
             }
             else Resonance_Timer -= diff;
-    
+
             // Magnetic Pull
             if (MagneticPull_Timer <= diff)
             {
@@ -135,7 +136,7 @@ public:
                 MagneticPull_Timer = 500;
             }
             else MagneticPull_Timer -= diff;
-    
+
             if (HeroicMode)
             {
                 // Thundering Storm
@@ -149,7 +150,7 @@ public:
                     ThunderingStorm_Timer = 15000;
                 }
                 else ThunderingStorm_Timer -= diff;
-    
+
                 // Sonic Shock
                 if (SonicShock_Timer <= diff)
                 {
@@ -160,7 +161,7 @@ public:
                 }
                 else SonicShock_Timer -= diff;
             }
-    
+
             // Select nearest most aggro target if top aggro too far
             if (!me->isAttackReady())
                 return;
@@ -168,25 +169,25 @@ public:
             {
                 ThreatContainer::StorageType threatlist = me->getThreatManager().getThreatList();
                 for (ThreatContainer::StorageType::const_iterator i = threatlist.begin(); i != threatlist.end(); ++i)
-                if (Unit* pTarget = Unit::GetUnit((*me), (*i)->getUnitGuid()))
-                if (pTarget->IsAlive() && me->IsWithinMeleeRange(pTarget))
-                {
-                    me->TauntApply(pTarget);
-                    break;
-                }
+                    if (Unit* pTarget = Unit::GetUnit((*me), (*i)->getUnitGuid()))
+                        if (pTarget->IsAlive() && me->IsWithinMeleeRange(pTarget))
+                        {
+                            me->TauntApply(pTarget);
+                            break;
+                        }
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_murmurAI (pCreature);
+        return new boss_murmurAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_murmur()
 {
     new boss_murmur();

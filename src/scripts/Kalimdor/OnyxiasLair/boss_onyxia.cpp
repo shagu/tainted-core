@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-/* ScriptData
-SDName: Boss_Onyxia
-SD%Complete: 90
-SDComment: Spell Heated Ground is wrong, flying animation, visual for area effect
-SDCategory: Onyxia's Lair
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Onyxia
+ SD%Complete: 90
+ SDComment: Spell Heated Ground is wrong, flying animation, visual for area effect
+ SDCategory: Onyxia's Lair
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -66,14 +66,15 @@ static float SpawnLocations[4][3] =
 
 class boss_onyxia : public CreatureScript
 {
-public: 
+public:
     boss_onyxia() : CreatureScript("boss_onyxia") { }
+
     struct boss_onyxiaAI : public ScriptedAI
     {
         boss_onyxiaAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Phase;
-    
+
         uint32 FlameBreathTimer;
         uint32 CleaveTimer;
         uint32 TailSweepTimer;
@@ -84,13 +85,13 @@ public:
         uint32 WingBuffetTimer;
         uint32 KnockAwayTimer;
         uint32 FireballTimer;
-    
+
         bool InitialSpawn;
-    
+
         void Reset()
         {
             Phase = 1;
-    
+
             FlameBreathTimer = 20000;
             TailSweepTimer = 2000;
             CleaveTimer = 15000;
@@ -101,30 +102,30 @@ public:
             WingBuffetTimer = 17000;
             KnockAwayTimer = 15000;
             FireballTimer = 18000;
-    
+
             InitialSpawn = true;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(SAY_AGGRO, me);
             DoZoneInCombat();
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             DoScriptText(SAY_KILL, me);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (HealthBelowPct(60) && (Phase == 1))
             {
                 Phase = 2;
@@ -135,7 +136,7 @@ public:
                 me->GetMotionMaster()->MoveIdle();
                 DoScriptText(SAY_PHASE_2_TRANS, me);
             }
-    
+
             if (HealthBelowPct(40) && (Phase == 2))
             {
                 Phase = 3;
@@ -147,76 +148,76 @@ public:
                 me->SetWalk(false);
                 DoScriptText(SAY_PHASE_3_TRANS, me);
             }
-    
+
             if (Phase == 1 || Phase == 3)
             {
                 if (FlameBreathTimer <= diff)
                 {
-                    DoCastVictim( SPELL_FLAMEBREATH);
+                    DoCastVictim(SPELL_FLAMEBREATH);
                     FlameBreathTimer = 15000;
                 }
                 else FlameBreathTimer -= diff;
-    
+
                 if (TailSweepTimer <= diff)
                 {
                     Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
                     if (pTarget && !me->HasInArc(float(M_PI), pTarget))
                         DoCast(pTarget, SPELL_TAILSWEEP);
-    
+
                     TailSweepTimer = 10000;
                 }
                 else TailSweepTimer -= diff;
-    
+
                 if (CleaveTimer <= diff)
                 {
-                    DoCastVictim( SPELL_CLEAVE);
+                    DoCastVictim(SPELL_CLEAVE);
                     CleaveTimer = 10000;
                 }
                 else CleaveTimer -= diff;
-    
+
                 if (WingBuffetTimer <= diff)
                 {
-                    DoCastVictim( SPELL_WINGBUFFET);
+                    DoCastVictim(SPELL_WINGBUFFET);
                     WingBuffetTimer = 7000 + ((rand() % 8) * 1000);
                 }
                 else WingBuffetTimer -= diff;
-    
+
                 if (KnockAwayTimer <= diff)
                 {
                     if (rand() <= 30)
-                        DoCastVictim( SPELL_KNOCK_AWAY);
+                        DoCastVictim(SPELL_KNOCK_AWAY);
                     KnockAwayTimer = 15000;
                 }
                 else KnockAwayTimer -= diff;
-    
+
                 if (Phase == 3)
                 {
                     if (BellowingRoarTimer <= diff)
                     {
-                        DoCastVictim( SPELL_BELLOWINGROAR);
-    
+                        DoCastVictim(SPELL_BELLOWINGROAR);
+
                         BellowingRoarTimer = 30000;
                     }
                     else BellowingRoarTimer -= diff;
-    
+
                     if (SummonWhelpsTimer <= diff)
                     {
                         SummonWhelps(Phase);
-    
+
                         SummonWhelpsTimer = 45000;
                     }
                     else SummonWhelpsTimer -= diff;
                 }
-    
+
                 DoMeleeAttackIfReady();
             }
-    
+
             if (Phase == 2)
             {
                 if (InitialSpawn)
                 {
                     InitialSpawn = false;
-    
+
                     for (uint32 i = 0; i < 10; ++i)
                     {
                         uint32 random = rand() % 4;
@@ -225,54 +226,54 @@ public:
                             Whelp->AI()->AttackStart(SelectUnit(SELECT_TARGET_RANDOM, 0));
                     }
                 }
-    
+
                 if (EngulfingFlamesTimer <= diff)
                 {
                     DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_ENGULFINGFLAMES);
                     me->HandleEmoteCommand(ANIM_FLY);
-    
+
                     EngulfingFlamesTimer = 10000;
                 }
                 else EngulfingFlamesTimer -= diff;
-    
+
                 if (FireballTimer <= diff)
                 {
                     DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_FIREBALL);
-    
+
                     FireballTimer = 18000;
                 }
                 else FireballTimer -= diff;
-    
+
                 if (MovementTimer <= diff)
                 {
                     if (rand() % 100 < 30)
                     {
                         DoScriptText(EMOTE_BREATH, me);
-                        DoCastVictim( SPELL_DEEPBREATH);
+                        DoCastVictim(SPELL_DEEPBREATH);
                     }
                     else ChangePosition();
-    
+
                     MovementTimer = 25000;
                 }
                 else MovementTimer -= diff;
-    
+
                 if (SummonWhelpsTimer <= diff)
                 {
                     SummonWhelps(Phase);
-    
+
                     SummonWhelpsTimer = 45000;
                 }
                 else SummonWhelpsTimer -= diff;
             }
         }
-    
+
         void ChangePosition()
         {
             uint32 random = rand() % 4;
             if (random < 4)
                 me->GetMotionMaster()->MovePoint(0, MovementLocations[random][0], MovementLocations[random][1], MovementLocations[random][2]);
         }
-    
+
         void SummonWhelps(uint32 Phase)
         {
             if (Phase == 2)
@@ -286,7 +287,7 @@ public:
                         Whelp->AI()->AttackStart(SelectUnit(SELECT_TARGET_RANDOM, 0));
                 }
             }
-    
+
             if (Phase == 3)
             {
                 uint32 max = rand() % 10 + 1;
@@ -303,10 +304,10 @@ public:
             }
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_onyxiaAI (pCreature);
+        return new boss_onyxiaAI(pCreature);
     }
 };
 

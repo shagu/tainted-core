@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: boss_kri, boss_yauj, boss_vem : The Bug Trio
-SD%Complete: 100
-SDComment:
-SDCategory: Temple of Ahn'Qiraj
-EndScriptData */
+ /* ScriptData
+ SDName: boss_kri, boss_yauj, boss_vem : The Bug Trio
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Temple of Ahn'Qiraj
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -37,55 +37,41 @@ EndScriptData */
 #define SPELL_HEAL      25807
 #define SPELL_FEAR      19408
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class boss_kri : public CreatureScript
 {
-public: 
+public:
     boss_kri() : CreatureScript("boss_kri") { }
+
     struct boss_kriAI : public ScriptedAI
     {
         boss_kriAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 Cleave_Timer;
         uint32 ToxicVolley_Timer;
         uint32 Check_Timer;
-    
+
         bool VemDead;
         bool Death;
-    
+
         void Reset()
         {
             Cleave_Timer = 4000 + rand() % 4000;
             ToxicVolley_Timer = 6000 + rand() % 6000;
             Check_Timer = 2000;
-    
+
             VemDead = false;
             Death = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             if (pInstance)
@@ -93,7 +79,7 @@ public:
                 if (pInstance->GetData(DATA_BUG_TRIO_DEATH) < 2)
                     // Unlootable if death
                     me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
-    
+
                 pInstance->SetData(DATA_BUG_TRIO_DEATH, 1);
             }
         }
@@ -102,7 +88,7 @@ public:
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Cleave_Timer
             if (Cleave_Timer <= diff)
             {
@@ -110,7 +96,7 @@ public:
                 Cleave_Timer = 5000 + rand() % 7000;
             }
             else Cleave_Timer -= diff;
-    
+
             //ToxicVolley_Timer
             if (ToxicVolley_Timer <= diff)
             {
@@ -118,13 +104,13 @@ public:
                 ToxicVolley_Timer = 10000 + rand() % 5000;
             }
             else ToxicVolley_Timer -= diff;
-    
+
             if (me->GetHealth() <= me->GetMaxHealth() * 0.05f && !Death)
             {
                 DoCastVictim(SPELL_POISON_CLOUD);
                 Death = true;
             }
-    
+
             if (!VemDead)
             {
                 //Checking if Vem is dead. If yes we will enrage.
@@ -139,51 +125,46 @@ public:
                 }
                 else Check_Timer -= diff;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_kriAI (pCreature);
+        return new boss_kriAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_vem : public CreatureScript
 {
-public: 
+public:
     boss_vem() : CreatureScript("boss_vem") { }
+
     struct boss_vemAI : public ScriptedAI
     {
         boss_vemAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 Charge_Timer;
         uint32 KnockBack_Timer;
         uint32 Enrage_Timer;
-    
+
         bool Enraged;
-    
+
         void Reset()
         {
             Charge_Timer = 15000 + rand() % 12000;
             KnockBack_Timer = 8000 + rand() % 12000;
             Enrage_Timer = 120000;
-    
+
             Enraged = false;
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             if (pInstance)
@@ -195,17 +176,17 @@ public:
                 pInstance->SetData(DATA_BUG_TRIO_DEATH, 1);
             }
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Charge_Timer
             if (Charge_Timer <= diff)
             {
@@ -217,11 +198,11 @@ public:
                     //me->SendMonsterMove(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, true,1);
                     AttackStart(pTarget);
                 }
-    
+
                 Charge_Timer = 8000 + rand() % 8000;
             }
             else Charge_Timer -= diff;
-    
+
             //KnockBack_Timer
             if (KnockBack_Timer <= diff)
             {
@@ -231,7 +212,7 @@ public:
                 KnockBack_Timer = 15000 + rand() % 10000;
             }
             else KnockBack_Timer -= diff;
-    
+
             //Enrage_Timer
             if (!Enraged && Enrage_Timer <= diff)
             {
@@ -239,51 +220,46 @@ public:
                 Enraged = true;
             }
             else Charge_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_vemAI (pCreature);
+        return new boss_vemAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_yauj : public CreatureScript
 {
-public: 
+public:
     boss_yauj() : CreatureScript("boss_yauj") { }
+
     struct boss_yaujAI : public ScriptedAI
     {
         boss_yaujAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 Heal_Timer;
         uint32 Fear_Timer;
         uint32 Check_Timer;
-    
+
         bool VemDead;
-    
+
         void Reset()
         {
             Heal_Timer = 25000 + rand() % 15000;
             Fear_Timer = 12000 + rand() % 12000;
             Check_Timer = 2000;
-    
+
             VemDead = false;
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             if (pInstance)
@@ -293,7 +269,7 @@ public:
                     me->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
                 pInstance->SetData(DATA_BUG_TRIO_DEATH, 1);
             }
-    
+
             for (int i = 0; i < 10; i++)
             {
                 Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0);
@@ -302,17 +278,17 @@ public:
                     ((CreatureAI*)Summoned->AI())->AttackStart(pTarget);
             }
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Fear_Timer
             if (Fear_Timer <= diff)
             {
@@ -321,7 +297,7 @@ public:
                 Fear_Timer = 20000;
             }
             else Fear_Timer -= diff;
-    
+
             //Casting Heal to other twins or herself.
             if (Heal_Timer <= diff)
             {
@@ -329,7 +305,7 @@ public:
                 {
                     Unit* pKri = Unit::GetUnit((*me), pInstance->GetData64(DATA_KRI));
                     Unit* pVem = Unit::GetUnit((*me), pInstance->GetData64(DATA_VEM));
-    
+
                     switch (rand() % 3)
                     {
                     case 0:
@@ -345,11 +321,11 @@ public:
                         break;
                     }
                 }
-    
+
                 Heal_Timer = 15000 + rand() % 15000;
             }
             else Heal_Timer -= diff;
-    
+
             //Checking if Vem is dead. If yes we will enrage.
             if (Check_Timer <= diff)
             {
@@ -367,21 +343,15 @@ public:
                 Check_Timer = 2000;
             }
             else Check_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_yaujAI (pCreature);
+        return new boss_yaujAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 
@@ -390,6 +360,5 @@ void AddSC_bug_trio()
     new boss_kri();
     new boss_vem();
     new boss_yauj();
-
 }
 

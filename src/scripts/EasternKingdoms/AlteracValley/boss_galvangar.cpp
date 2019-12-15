@@ -15,34 +15,35 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Galvangar
-SD%Complete:
-SDComment:
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Galvangar
+ SD%Complete:
+ SDComment:
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_CLEAVE                                  = 15284,
-    SPELL_FRIGHTENING_SHOUT                       = 19134,
-    SPELL_WHIRLWIND1                              = 15589,
-    SPELL_WHIRLWIND2                              = 13736,
-    SPELL_MORTAL_STRIKE                           = 16856
+    SPELL_CLEAVE = 15284,
+    SPELL_FRIGHTENING_SHOUT = 19134,
+    SPELL_WHIRLWIND1 = 15589,
+    SPELL_WHIRLWIND2 = 13736,
+    SPELL_MORTAL_STRIKE = 16856
 };
 
 enum Yells
 {
-    YELL_AGGRO                                    = -1810021,
-    YELL_EVADE                                    = -1810022
+    YELL_AGGRO = -1810021,
+    YELL_EVADE = -1810022
 };
 
 class boss_galvangar : public CreatureScript
 {
 public:
     boss_galvangar() : CreatureScript("boss_galvangar") { }
+
     struct boss_galvangarAI : public ScriptedAI
     {
         boss_galvangarAI(Creature* c) : ScriptedAI(c) {}
@@ -132,11 +133,12 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_galvangarAI(pCreature);
     }
 };
+
 void AddSC_boss_galvangar()
 {
     new boss_galvangar();

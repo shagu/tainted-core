@@ -15,43 +15,44 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_DrekThar
-SD%Complete: 50%
-SDComment:
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_DrekThar
+ SD%Complete: 50%
+ SDComment:
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_WHIRLWIND                               = 15589,
-    SPELL_WHIRLWIND2                              = 13736,
-    SPELL_KNOCKDOWN                               = 19128,
-    SPELL_FRENZY                                  = 8269,
-    SPELL_SWEEPING_STRIKES                        = 18765, // not sure
-    SPELL_CLEAVE                                  = 20677, // not sure
-    SPELL_WINDFURY                                = 35886, // not sure
-    SPELL_STORMPIKE                               = 51876  // not sure
+    SPELL_WHIRLWIND = 15589,
+    SPELL_WHIRLWIND2 = 13736,
+    SPELL_KNOCKDOWN = 19128,
+    SPELL_FRENZY = 8269,
+    SPELL_SWEEPING_STRIKES = 18765, // not sure
+    SPELL_CLEAVE = 20677, // not sure
+    SPELL_WINDFURY = 35886, // not sure
+    SPELL_STORMPIKE = 51876  // not sure
 };
 
 enum Yells
 {
-    YELL_AGGRO                                    = -1810000,
-    YELL_EVADE                                    = -1810001,
-    YELL_RESPAWN                                  = -1810002,
-    YELL_RANDOM1                                  = -1810003,
-    YELL_RANDOM2                                  = -1810004,
-    YELL_RANDOM3                                  = -1810005,
-    YELL_RANDOM4                                  = -1810006,
-    YELL_RANDOM5                                  = -1810007
+    YELL_AGGRO = -1810000,
+    YELL_EVADE = -1810001,
+    YELL_RESPAWN = -1810002,
+    YELL_RANDOM1 = -1810003,
+    YELL_RANDOM2 = -1810004,
+    YELL_RANDOM3 = -1810005,
+    YELL_RANDOM4 = -1810006,
+    YELL_RANDOM5 = -1810007
 };
 
 class boss_drekthar : public CreatureScript
 {
 public:
     boss_drekthar() : CreatureScript("boss_drekthar") { }
+
     struct boss_drektharAI : public ScriptedAI
     {
         boss_drektharAI(Creature* c) : ScriptedAI(c) {}
@@ -140,11 +141,10 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_drektharAI(pCreature);
     }
-
 };
 
 void AddSC_boss_drekthar()

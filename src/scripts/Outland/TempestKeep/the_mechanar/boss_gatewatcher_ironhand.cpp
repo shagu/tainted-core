@@ -26,18 +26,19 @@ enum GateWatcherIronHand
 
 class boss_gatewatcher_iron_hand : public CreatureScript
 {
-public: 
+public:
     boss_gatewatcher_iron_hand() : CreatureScript("boss_gatewatcher_iron_hand") { }
+
     struct boss_gatewatcher_iron_handAI : public ScriptedAI
     {
         boss_gatewatcher_iron_handAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
         EventMap events;
-    
+
         void Reset()
         {
             events.Reset();
@@ -49,27 +50,27 @@ public:
             events.ScheduleEvent(EVENT_JACKHAMMER, 35000);
             events.ScheduleEvent(EVENT_SHADOW_POWER, 25000);
         }
-    
+
         void KilledUnit(Unit* victim)
         {
             if (victim->GetTypeId() == TYPEID_PLAYER)
                 DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH_1, me);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_STREAM_OF_MACHINE_FLUID:
@@ -87,17 +88,17 @@ public:
                 events.ScheduleEvent(EVENT_SHADOW_POWER, 25000);
                 break;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_gatewatcher_iron_handAI>(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_gatewatcher_iron_hand()
 {
     new boss_gatewatcher_iron_hand();

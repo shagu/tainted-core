@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_instructormalicia
-SD%Complete: 100
-SDComment:
-SDCategory: Scholomance
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_instructormalicia
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Scholomance
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -35,12 +35,13 @@ EndScriptData */
 
 class boss_instructor_malicia : public CreatureScript
 {
-public: 
+public:
     boss_instructor_malicia() : CreatureScript("boss_instructor_malicia") { }
+
     struct boss_instructor_maliciaAI : public ScriptedAI
     {
         boss_instructor_maliciaAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 CallOfGraves_Timer;
         uint32 Corruption_Timer;
         uint32 FlashHeal_Timer;
@@ -48,7 +49,7 @@ public:
         uint32 HealingTouch_Timer;
         uint32 FlashCounter;
         uint32 TouchCounter;
-    
+
         void Reset()
         {
             CallOfGraves_Timer = 4000;
@@ -59,47 +60,47 @@ public:
             FlashCounter = 0;
             TouchCounter = 0;
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             ScriptedInstance* pInstance = (ScriptedInstance*)me->GetInstanceData();
             if (pInstance)
             {
                 pInstance->SetData(DATA_INSTRUCTORMALICIA_DEATH, 0);
-    
+
                 if (pInstance->GetData(TYPE_GANDLING) == IN_PROGRESS)
                     me->SummonCreature(1853, 180.73f, -9.43856f, 75.507f, 1.61399f, TEMPSUMMON_DEAD_DESPAWN, 0);
             }
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //CallOfGraves_Timer
             if (CallOfGraves_Timer <= diff)
             {
-                DoCastVictim( SPELL_CALLOFGRAVES);
+                DoCastVictim(SPELL_CALLOFGRAVES);
                 CallOfGraves_Timer = 65000;
             }
             else CallOfGraves_Timer -= diff;
-    
+
             //Corruption_Timer
             if (Corruption_Timer <= diff)
             {
                 Unit* pTarget = NULL;
                 pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0);
                 if (pTarget) DoCast(pTarget, SPELL_CORRUPTION);
-    
+
                 Corruption_Timer = 24000;
             }
             else Corruption_Timer -= diff;
-    
+
             //Renew_Timer
             if (Renew_Timer <= diff)
             {
@@ -107,12 +108,12 @@ public:
                 Renew_Timer = 10000;
             }
             else Renew_Timer -= diff;
-    
+
             //FlashHeal_Timer
             if (FlashHeal_Timer <= diff)
             {
                 DoCast(me, SPELL_FLASHHEAL);
-    
+
                 //5 Flashheals will be casted
                 if (FlashCounter < 2)
                 {
@@ -126,12 +127,12 @@ public:
                 }
             }
             else FlashHeal_Timer -= diff;
-    
+
             //HealingTouch_Timer
             if (HealingTouch_Timer <= diff)
             {
                 DoCast(me, SPELL_HEALINGTOUCH);
-    
+
                 //3 Healingtouchs will be casted
                 if (HealingTouch_Timer < 2)
                 {
@@ -145,17 +146,18 @@ public:
                 }
             }
             else HealingTouch_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_instructor_maliciaAI (pCreature);
+        return new boss_instructor_maliciaAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_instructormalicia()
 {
     new boss_instructor_malicia();

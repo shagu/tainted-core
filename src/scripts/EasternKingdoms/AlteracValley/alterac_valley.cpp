@@ -15,44 +15,44 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: AV Marshals
-SD%Complete:
-SDComment: Returns AV marshals to inside the building
-SDCategory: Bosses
-EndScriptData */
+ /* ScriptData
+ SDName: AV Marshals
+ SD%Complete:
+ SDComment: Returns AV marshals to inside the building
+ SDCategory: Bosses
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_CHARGE                                  = 22911,
-    SPELL_CLEAVE                                  = 40504,
-    SPELL_DEMORALIZING_SHOUT                      = 23511,
-    SPELL_ENRAGE                                  = 8599,
-    SPELL_WHIRLWIND1                              = 15589,
-    SPELL_WHIRLWIND2                              = 13736,
-    SPELL_NORTH_MARSHAL                           = 45828,
-    SPELL_SOUTH_MARSHAL                           = 45829,
-    SPELL_STONEHEARTH_MARSHAL                     = 45830,
-    SPELL_ICEWING_MARSHAL                         = 45831,
-    SPELL_ICEBLOOD_WARMASTER                      = 45822,
-    SPELL_TOWER_POINT_WARMASTER                   = 45823,
-    SPELL_WEST_FROSTWOLF_WARMASTER                = 45824,
-    SPELL_EAST_FROSTWOLF_WARMASTER                = 45826
+    SPELL_CHARGE = 22911,
+    SPELL_CLEAVE = 40504,
+    SPELL_DEMORALIZING_SHOUT = 23511,
+    SPELL_ENRAGE = 8599,
+    SPELL_WHIRLWIND1 = 15589,
+    SPELL_WHIRLWIND2 = 13736,
+    SPELL_NORTH_MARSHAL = 45828,
+    SPELL_SOUTH_MARSHAL = 45829,
+    SPELL_STONEHEARTH_MARSHAL = 45830,
+    SPELL_ICEWING_MARSHAL = 45831,
+    SPELL_ICEBLOOD_WARMASTER = 45822,
+    SPELL_TOWER_POINT_WARMASTER = 45823,
+    SPELL_WEST_FROSTWOLF_WARMASTER = 45824,
+    SPELL_EAST_FROSTWOLF_WARMASTER = 45826
 };
 
 enum Creatures
 {
-    NPC_NORTH_MARSHAL                             = 14762,
-    NPC_SOUTH_MARSHAL                             = 14763,
-    NPC_ICEWING_MARSHAL                           = 14764,
-    NPC_STONEHEARTH_MARSHAL                       = 14765,
-    NPC_EAST_FROSTWOLF_WARMASTER                  = 14772,
-    NPC_ICEBLOOD_WARMASTER                        = 14773,
-    NPC_TOWER_POINT_WARMASTER                     = 14776,
-    NPC_WEST_FROSTWOLF_WARMASTER                  = 14777
+    NPC_NORTH_MARSHAL = 14762,
+    NPC_SOUTH_MARSHAL = 14763,
+    NPC_ICEWING_MARSHAL = 14764,
+    NPC_STONEHEARTH_MARSHAL = 14765,
+    NPC_EAST_FROSTWOLF_WARMASTER = 14772,
+    NPC_ICEBLOOD_WARMASTER = 14773,
+    NPC_TOWER_POINT_WARMASTER = 14776,
+    NPC_WEST_FROSTWOLF_WARMASTER = 14777
 };
 
 class mob_av_marshal_or_warmaster : public CreatureScript

@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Anubrekhan
-SD%Complete: 70
-SDComment:
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Anubrekhan
+ SD%Complete: 70
+ SDComment:
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -40,7 +40,7 @@ EndScriptData */
 #define SPELL_LOCUSTSWARM   28785                           //This is a self buff that triggers the dmg debuff
 #define H_SPELL_LOCUSTSWARM 54021
 
-//invalid
+ //invalid
 #define SPELL_SUMMONGUARD   29508                           //Summons 1 crypt guard at targeted location
 
 #define SPELL_SELF_SPAWN_5  29105                           //This spawns 5 corpse scarabs ontop of us (most likely the player casts this on death)
@@ -49,35 +49,35 @@ EndScriptData */
 
 class boss_anubrekhan : public CreatureScript
 {
-public: 
+public:
     boss_anubrekhan() : CreatureScript("boss_anubrekhan") { }
     struct boss_anubrekhanAI : public ScriptedAI
     {
         boss_anubrekhanAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Impale_Timer;
         uint32 LocustSwarm_Timer;
         uint32 Summon_Timer;
         bool HasTaunted;
-    
+
         void Reset()
         {
             Impale_Timer = 15000;                               //15 seconds
             LocustSwarm_Timer = 80000 + (rand() % 40000);       //Random time between 80 seconds and 2 minutes for initial cast
             Summon_Timer = LocustSwarm_Timer + 45000;           //45 seconds after initial locust swarm
         }
-    
+
         void KilledUnit(Unit* Victim)
         {
             //Force the player to spawn corpse scarabs via spell
             Victim->CastSpell(Victim, SPELL_SELF_SPAWN_5, true);
-    
+
             if (rand() % 5)
                 return;
-    
+
             DoScriptText(SAY_SLAY, me);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             switch (rand() % 3)
@@ -93,10 +93,10 @@ public:
                 break;
             }
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
-    
+
             if (!HasTaunted && me->IsWithinDistInMap(who, 60.0f))
             {
                 switch (rand() % 5)
@@ -121,12 +121,12 @@ public:
             }
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //Impale_Timer
             if (Impale_Timer <= diff)
             {
@@ -137,11 +137,11 @@ public:
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                         DoCast(pTarget, SPELL_IMPALE);
                 }
-    
+
                 Impale_Timer = 15000;
             }
             else Impale_Timer -= diff;
-    
+
             //LocustSwarm_Timer
             if (LocustSwarm_Timer <= diff)
             {
@@ -149,7 +149,7 @@ public:
                 LocustSwarm_Timer = 90000;
             }
             else LocustSwarm_Timer -= diff;
-    
+
             //Summon_Timer
             if (Summon_Timer <= diff)
             {
@@ -157,16 +157,15 @@ public:
                 Summon_Timer = 45000;
             }
             else Summon_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_anubrekhanAI (pCreature);
+        return new boss_anubrekhanAI(pCreature);
     }
-    
 };
 
 void AddSC_boss_anubrekhan()

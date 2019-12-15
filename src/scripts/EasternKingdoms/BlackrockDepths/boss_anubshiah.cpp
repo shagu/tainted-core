@@ -15,23 +15,23 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Anubshiah
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Anubshiah
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_SHADOWBOLT                                       = 17228,
-    SPELL_CURSEOFTONGUES                                   = 15470,
-    SPELL_CURSEOFWEAKNESS                                  = 17227,
-    SPELL_DEMONARMOR                                       = 11735,
-    SPELL_ENVELOPINGWEB                                    = 15471
+    SPELL_SHADOWBOLT = 17228,
+    SPELL_CURSEOFTONGUES = 15470,
+    SPELL_CURSEOFWEAKNESS = 17227,
+    SPELL_DEMONARMOR = 11735,
+    SPELL_ENVELOPINGWEB = 15471
 };
 
 class boss_anubshiah : public CreatureScript

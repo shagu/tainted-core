@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Maexxna
-SD%Complete: 80
-SDComment:
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Maexxna
+ SD%Complete: 80
+ SDComment:
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -53,6 +53,7 @@ class mob_webwrap : public CreatureScript
 {
 public:
     mob_webwrap() : CreatureScript("mob_webwrap") { }
+
     struct mob_webwrapAI : public ScriptedAI
     {
         mob_webwrapAI(Creature* c) : ScriptedAI(c) {}
@@ -100,28 +101,28 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_webwrapAI(pCreature);
     }
-
 };
 
 class boss_maexxna : public CreatureScript
 {
-public: 
+public:
     boss_maexxna() : CreatureScript("boss_maexxna") { }
+
     struct boss_maexxnaAI : public ScriptedAI
     {
         boss_maexxnaAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 WebTrap_Timer;
         uint32 WebSpray_Timer;
         uint32 PoisonShock_Timer;
         uint32 NecroticPoison_Timer;
         uint32 SummonSpiderling_Timer;
         bool Enraged;
-    
+
         void Reset()
         {
             WebTrap_Timer = 20000;                              //20 sec init, 40 sec normal
@@ -131,20 +132,20 @@ public:
             SummonSpiderling_Timer = 30000;                     //30 sec init, 40 sec normal
             Enraged = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void DoCastWebWrap()
         {
             std::list<HostileReference*> t_list = me->getThreatManager().getThreatList();
             std::vector<Unit* > targets;
-    
+
             //This spell doesn't work if we only have 1 player on threat list
             if (t_list.size() < 2)
                 return;
-    
+
             //begin + 1 , so we don't target the one with the highest threat
             std::list<HostileReference*>::iterator itr = t_list.begin();
             std::advance(itr, 1);
@@ -155,11 +156,11 @@ public:
                 if (pTarget && pTarget->IsAlive() && pTarget->GetTypeId() == TYPEID_PLAYER)
                     targets.push_back(pTarget);
             }
-    
+
             while (targets.size() > 3)
                 //cut down to size if we have more than 3 targets
                 targets.erase(targets.begin() + rand() % targets.size());
-    
+
             int i = 0;
             for (std::vector<Unit* >::iterator itr = targets.begin(); itr != targets.end(); ++itr, ++i)
             {
@@ -191,12 +192,12 @@ public:
                 }
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //WebTrap_Timer
             if (WebTrap_Timer <= diff)
             {
@@ -204,31 +205,31 @@ public:
                 WebTrap_Timer = 40000;
             }
             else WebTrap_Timer -= diff;
-    
+
             //WebSpray_Timer
             if (WebSpray_Timer <= diff)
             {
-                DoCastVictim( SPELL_WEBSPRAY);
+                DoCastVictim(SPELL_WEBSPRAY);
                 WebSpray_Timer = 40000;
             }
             else WebSpray_Timer -= diff;
-    
+
             //PoisonShock_Timer
             if (PoisonShock_Timer <= diff)
             {
-                DoCastVictim( SPELL_POISONSHOCK);
+                DoCastVictim(SPELL_POISONSHOCK);
                 PoisonShock_Timer = 20000;
             }
             else PoisonShock_Timer -= diff;
-    
+
             //NecroticPoison_Timer
             if (NecroticPoison_Timer <= diff)
             {
-                DoCastVictim( SPELL_NECROTICPOISON);
+                DoCastVictim(SPELL_NECROTICPOISON);
                 NecroticPoison_Timer = 30000;
             }
             else NecroticPoison_Timer -= diff;
-    
+
             //SummonSpiderling_Timer
             if (SummonSpiderling_Timer <= diff)
             {
@@ -236,27 +237,24 @@ public:
                 SummonSpiderling_Timer = 40000;
             }
             else SummonSpiderling_Timer -= diff;
-    
+
             //Enrage if not already enraged and below 30%
             if (!Enraged && HealthBelowPct(30))
             {
                 DoCast(me, SPELL_FRENZY);
                 Enraged = true;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_maexxnaAI (pCreature);
+        return new boss_maexxnaAI(pCreature);
     }
-  
+
 };
-
-
-
 
 void AddSC_boss_maexxna()
 {

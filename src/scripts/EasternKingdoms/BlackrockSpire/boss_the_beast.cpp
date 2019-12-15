@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_The_Best
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_The_Best
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Spire
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -29,44 +29,44 @@ EndScriptData */
 #define SPELL_IMMOLATE              20294
 #define SPELL_TERRIFYINGROAR        14100
 
-
 class boss_the_beast : public CreatureScript
 {
-public: 
+public:
     boss_the_beast() : CreatureScript("boss_the_beast") { }
+
     struct boss_the_beastAI : public ScriptedAI
     {
         boss_the_beastAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Flamebreak_Timer;
         uint32 Immolate_Timer;
         uint32 TerrifyingRoar_Timer;
-    
+
         void Reset()
         {
             Flamebreak_Timer = 12000;
             Immolate_Timer = 3000;
             TerrifyingRoar_Timer = 23000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Flamebreak_Timer
             if (Flamebreak_Timer <= diff)
             {
-                DoCastVictim( SPELL_FLAMEBREAK);
+                DoCastVictim(SPELL_FLAMEBREAK);
                 Flamebreak_Timer = 10000;
             }
             else Flamebreak_Timer -= diff;
-    
+
             //Immolate_Timer
             if (Immolate_Timer <= diff)
             {
@@ -75,25 +75,25 @@ public:
                 Immolate_Timer = 8000;
             }
             else Immolate_Timer -= diff;
-    
+
             //TerrifyingRoar_Timer
             if (TerrifyingRoar_Timer <= diff)
             {
-                DoCastVictim( SPELL_TERRIFYINGROAR);
+                DoCastVictim(SPELL_TERRIFYINGROAR);
                 TerrifyingRoar_Timer = 20000;
             }
             else TerrifyingRoar_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_the_beastAI (pCreature);
+        return new boss_the_beastAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_thebeast()
 {
     new boss_the_beast();

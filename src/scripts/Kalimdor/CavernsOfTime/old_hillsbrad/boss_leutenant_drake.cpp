@@ -17,26 +17,25 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Luetenant_Drake
-SD%Complete: 99
-SDComment:
-SDCategory: Caverns of Time, Old Hillsbrad Foothills
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Luetenant_Drake
+ SD%Complete: 99
+ SDComment:
+ SDCategory: Caverns of Time, Old Hillsbrad Foothills
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "old_hillsbrad.h"
 
-/*######
-## go_barrel_old_hillsbrad
-######*/
+ /*######
+ ## go_barrel_old_hillsbrad
+ ######*/
 
 class go_barrel_old_hillsbrad : public GameObjectScript
 {
 public:
     go_barrel_old_hillsbrad() : GameObjectScript("go_barrel_old_hillsbrad") { }
-
 
     bool OnGossipHello(Player *player, GameObject* go) override
     {
@@ -81,7 +80,7 @@ struct Location
     float z;
 };
 
-static Location DrakeWP[]=
+static Location DrakeWP[] =
 {
     {0, 2125.84f, 88.2535f, 54.8830f},
     {1, 2111.01f, 93.8022f, 52.6356f},
@@ -103,11 +102,11 @@ static Location DrakeWP[]=
 };
 
 
-
 class boss_lieutenant_drake : public CreatureScript
 {
 public:
     boss_lieutenant_drake() : CreatureScript("boss_lieutenant_drake") { }
+
     struct boss_lieutenant_drakeAI : public ScriptedAI
     {
         boss_lieutenant_drakeAI(Creature *creature) : ScriptedAI(creature)
@@ -228,13 +227,12 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* creature) const
+    CreatureAI* GetAI(Creature* creature) const
     {
         return new boss_lieutenant_drakeAI(creature);
     }
 
 };
-
 
 void AddSC_boss_lieutenant_drake()
 {

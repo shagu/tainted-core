@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Warmaster_Voone
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Warmaster_Voone
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Spire
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -35,19 +35,20 @@ EndScriptData */
 
 class boss_warmaster_voone : public CreatureScript
 {
-public: 
+public:
     boss_warmaster_voone() : CreatureScript("boss_warmaster_voone") { }
+
     struct boss_warmaster_vooneAI : public ScriptedAI
     {
         boss_warmaster_vooneAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Snapkick_Timer;
         uint32 Cleave_Timer;
         uint32 Uppercut_Timer;
         uint32 MortalStrike_Timer;
         uint32 Pummel_Timer;
         uint32 ThrowAxe_Timer;
-    
+
         void Reset()
         {
             Snapkick_Timer = 8000;
@@ -57,75 +58,76 @@ public:
             Pummel_Timer = 32000;
             ThrowAxe_Timer = 1000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Snapkick_Timer
             if (Snapkick_Timer <= diff)
             {
-                DoCastVictim( SPELL_SNAPKICK);
+                DoCastVictim(SPELL_SNAPKICK);
                 Snapkick_Timer = 6000;
             }
             else Snapkick_Timer -= diff;
-    
+
             //Cleave_Timer
             if (Cleave_Timer <= diff)
             {
-                DoCastVictim( SPELL_CLEAVE);
+                DoCastVictim(SPELL_CLEAVE);
                 Cleave_Timer = 12000;
             }
             else Cleave_Timer -= diff;
-    
+
             //Uppercut_Timer
             if (Uppercut_Timer <= diff)
             {
-                DoCastVictim( SPELL_UPPERCUT);
+                DoCastVictim(SPELL_UPPERCUT);
                 Uppercut_Timer = 14000;
             }
             else Uppercut_Timer -= diff;
-    
+
             //MortalStrike_Timer
             if (MortalStrike_Timer <= diff)
             {
-                DoCastVictim( SPELL_MORTALSTRIKE);
+                DoCastVictim(SPELL_MORTALSTRIKE);
                 MortalStrike_Timer = 10000;
             }
             else MortalStrike_Timer -= diff;
-    
+
             //Pummel_Timer
             if (Pummel_Timer <= diff)
             {
-                DoCastVictim( SPELL_PUMMEL);
+                DoCastVictim(SPELL_PUMMEL);
                 Pummel_Timer = 16000;
             }
             else Pummel_Timer -= diff;
-    
+
             //ThrowAxe_Timer
             if (ThrowAxe_Timer <= diff)
             {
-                DoCastVictim( SPELL_THROWAXE);
+                DoCastVictim(SPELL_THROWAXE);
                 ThrowAxe_Timer = 8000;
             }
             else ThrowAxe_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_warmaster_vooneAI (pCreature);
+        return new boss_warmaster_vooneAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_warmastervoone()
 {
     new boss_warmaster_voone();

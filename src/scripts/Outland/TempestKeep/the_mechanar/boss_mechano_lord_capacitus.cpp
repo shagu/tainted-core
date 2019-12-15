@@ -30,19 +30,18 @@ enum says
 
 enum events
 {
-    EVENT_HEAD_CRACK     = 1,
-    EVENT_NETHERBOMB     = 2,
-    EVENT_REFLECTIVE     = 3,
+    EVENT_HEAD_CRACK = 1,
+    EVENT_NETHERBOMB = 2,
+    EVENT_REFLECTIVE = 3,
     EVENT_POLARITY_SHIFT = 4,
-    EVENT_ENRAGE         = 5
+    EVENT_ENRAGE = 5
 };
-
-
 
 class boss_mechano_lord_capacitus : public CreatureScript
 {
-public: 
+public:
     boss_mechano_lord_capacitus() : CreatureScript("boss_mechano_lord_capacitus") { }
+
     struct boss_mechano_lord_capacitusAI : public ScriptedAI
     {
         boss_mechano_lord_capacitusAI(Creature* c) : ScriptedAI(c), summons(me)
@@ -50,17 +49,17 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         SummonList summons;
         ScriptedInstance* pInstance;
         bool HeroicMode;
         EventMap events;
-    
+
         void Reset()
         {
             events.Reset();
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(YELL_AGGRO, me);
@@ -69,33 +68,33 @@ public:
             events.ScheduleEvent(EVENT_ENRAGE, 180000);
             events.ScheduleEvent(HeroicMode ? EVENT_POLARITY_SHIFT : EVENT_REFLECTIVE, 15000);
         }
-    
+
         void JustDied(Unit* /*victim*/)
         {
             DoScriptText(YELL_DEATH, me, nullptr);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             DoScriptText(RAND(YELL_KILL1, YELL_KILL2), me);
         }
-    
+
         void JustSummoned(Creature* summon)
         {
             summons.Summon(summon);
             summon->GetMotionMaster()->MoveRandom(30.0f);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
-    
+
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_HEAD_CRACK:
@@ -124,17 +123,16 @@ public:
             }
             DoMeleeAttackIfReady();
         }
-    
+
     };
-    
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_mechano_lord_capacitusAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_mechano_lord_capacitus()
 {
     new boss_mechano_lord_capacitus();

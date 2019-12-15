@@ -15,16 +15,16 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Warchief_Kargath_Bladefist
-SD%Complete: 99
-SDComment:
-SDCategory: Hellfire Citadel, Shattered Halls
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Warchief_Kargath_Bladefist
+ SD%Complete: 99
+ SDComment:
+ SDCategory: Hellfire Citadel, Shattered Halls
+ EndScriptData */
 
-/* ContentData
-boss_warchief_kargath_bladefist
-EndContentData */
+ /* ContentData
+ boss_warchief_kargath_bladefist
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -49,15 +49,15 @@ EndContentData */
 #define MOB_SHARPSHOOTER_GUARD          17622
 #define MOB_REAVER_GUARD                17623
 
-float AssassEntrance[3] = {275.136f, -84.29f, 2.3f}; // y +-8
-float AssassExit[3] = {184.233f, -84.29f, 2.3f}; // y +-8
-float AddsEntrance[3] = {306.036f, -84.29f, 1.93f};
-
+float AssassEntrance[3] = { 275.136f, -84.29f, 2.3f }; // y +-8
+float AssassExit[3] = { 184.233f, -84.29f, 2.3f }; // y +-8
+float AddsEntrance[3] = { 306.036f, -84.29f, 1.93f };
 
 class boss_warchief_kargath_bladefist : public CreatureScript
 {
-public: 
+public:
     boss_warchief_kargath_bladefist() : CreatureScript("boss_warchief_kargath_bladefist") { }
+
     struct boss_warchief_kargath_bladefistAI : public ScriptedAI
     {
         boss_warchief_kargath_bladefistAI(Creature* c) : ScriptedAI(c)
@@ -65,55 +65,55 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
         bool HeroicMode;
-    
+
         std::vector<uint64> adds;
         std::vector<uint64> assassins;
-    
+
         uint32 Charge_timer;
         uint32 Blade_Dance_Timer;
         uint32 Summon_Assistant_Timer;
         uint32 resetcheck_timer;
         uint32 Wait_Timer;
-    
+
         uint32 Assassins_Timer;
-    
+
         uint32 summoned;
         bool InBlade;
-    
+
         uint32 target_num;
-    
+
         void Reset()
         {
             removeAdds();
-    
+
             me->SetSpeed(MOVE_RUN, 2);
             me->SetWalk(false);
-    
+
             summoned = 1;
             InBlade = false;
             Wait_Timer = 0;
-    
+
             Charge_timer = 0;
             Blade_Dance_Timer = 30000;
             Summon_Assistant_Timer = 15000;
             Assassins_Timer = 5000;
             resetcheck_timer = 5000;
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_KARGATH, NOT_STARTED);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(RAND(SAY_AGGRO1, SAY_AGGRO2, SAY_AGGRO3), me);
-    
+
             if (pInstance)
             {
                 pInstance->SetData(DATA_KARGATH, IN_PROGRESS);
-    
+
                 if (pInstance->GetData64(DATA_WARBRINGER))
                 {
                     Creature* pWar = Unit::GetCreature(*me, pInstance->GetData64(DATA_WARBRINGER));
@@ -122,7 +122,7 @@ public:
                 }
             }
         }
-    
+
         void JustSummoned(Creature* summoned)
         {
             switch (summoned->GetEntry())
@@ -138,32 +138,32 @@ public:
                 break;
             }
         }
-    
+
         void KilledUnit(Unit* victim)
         {
             if (victim->GetTypeId() == TYPEID_PLAYER)
                 DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), me);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
             removeAdds();
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_KARGATH, DONE);
         }
-    
+
         void MovementInform(uint32 type, uint32 id)
         {
             if (InBlade)
             {
                 if (type != POINT_MOTION_TYPE)
                     return;
-    
+
                 if (id != 1)
                     return;
-    
+
                 if (target_num > 0) // to prevent loops
                 {
                     Wait_Timer = 1;
@@ -172,7 +172,7 @@ public:
                 }
             }
         }
-    
+
         void removeAdds()
         {
             for (std::vector<uint64>::iterator itr = adds.begin(); itr != adds.end(); ++itr)
@@ -186,7 +186,7 @@ public:
                 }
             }
             adds.clear();
-    
+
             for (std::vector<uint64>::iterator itr = assassins.begin(); itr != assassins.end(); ++itr)
             {
                 Unit* temp = Unit::GetUnit((*me), *itr);
@@ -206,24 +206,24 @@ public:
             me->SummonCreature(MOB_SHATTERED_ASSASSIN, AssassExit[0], AssassExit[1] + 8, AssassExit[2], 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
             me->SummonCreature(MOB_SHATTERED_ASSASSIN, AssassExit[0], AssassExit[1] - 8, AssassExit[2], 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 10000);
         }
-    
-    	bool CheckInRoom()
-    	{
-    		if (me->GetDistance2d(me->GetHomePosition().GetPositionX(), me->GetHomePosition().GetPositionY()) > 70.0f)
-    		{
-    			DoScriptText(SAY_EVADE, me);
-    			EnterEvadeMode();
-    			return false;
-    		}
-    
-    		return true;
-    	}
-    
+
+        bool CheckInRoom()
+        {
+            if (me->GetDistance2d(me->GetHomePosition().GetPositionX(), me->GetHomePosition().GetPositionY()) > 70.0f)
+            {
+                DoScriptText(SAY_EVADE, me);
+                EnterEvadeMode();
+                return false;
+            }
+
+            return true;
+        }
+
         void UpdateAI(const uint32 diff)
         {
-    		if (!UpdateVictim() || !CheckInRoom())
-    			return;
-    
+            if (!UpdateVictim() || !CheckInRoom())
+                return;
+
             if (Assassins_Timer)
             {
                 if (Assassins_Timer <= diff)
@@ -256,8 +256,8 @@ public:
                             float x, y, randx, randy;
                             randx = float(rand() % 40);
                             randy = float(rand() % 40);
-                            x = 210 + randx ;
-                            y = -60 - randy ;
+                            x = 210 + randx;
+                            y = -60 - randy;
                             (*me).GetMotionMaster()->MovePoint(1, x, y, me->GetPositionZ());
                             Wait_Timer = 0;
                         }
@@ -307,13 +307,13 @@ public:
                         }
                     }
                     if (rand() % 100 < 6) summoned++;
-                    Summon_Assistant_Timer = 15000 + (rand() % 5000) ;
+                    Summon_Assistant_Timer = 15000 + (rand() % 5000);
                 }
                 else Summon_Assistant_Timer -= diff;
-    
+
                 DoMeleeAttackIfReady();
             }
-    
+
             if (resetcheck_timer <= diff)
             {
                 float tempx;
@@ -328,14 +328,14 @@ public:
             else resetcheck_timer -= diff;
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_warchief_kargath_bladefistAI>(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_warchief_kargath_bladefist()
 {
     new boss_warchief_kargath_bladefist();

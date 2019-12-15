@@ -15,25 +15,25 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Black_Temple
-SD%Complete: 95
-SDComment: Spirit of Olum: Player Teleporter to Seer Kanai Teleport after defeating Naj'entus and Supremus. @todo Find proper gossip.
-SDCategory: Black Temple
-EndScriptData */
+ /* ScriptData
+ SDName: Black_Temple
+ SD%Complete: 95
+ SDComment: Spirit of Olum: Player Teleporter to Seer Kanai Teleport after defeating Naj'entus and Supremus. @todo Find proper gossip.
+ SDCategory: Black Temple
+ EndScriptData */
 
-/* ContentData
-npc_spirit_of_olum
-EndContentData */
+ /* ContentData
+ npc_spirit_of_olum
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "black_temple.h"
 #include "ScriptedGossip.h"
 
-/*###
-# npc_spirit_of_olum
-####*/
+ /*###
+ # npc_spirit_of_olum
+ ####*/
 
 #define SPELL_TELEPORT      41566                           // s41566 - Teleport to Ashtongue NPC's
 #define GOSSIP_OLUM1        "Teleport me to the other Ashtongue Deathsworn"

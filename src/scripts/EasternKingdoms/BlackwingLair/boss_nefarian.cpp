@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Nefarian
-SD%Complete: 80
-SDComment: Some issues with class calls effecting more than one class
-SDCategory: Blackwing Lair
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Nefarian
+ SD%Complete: 80
+ SDComment: Some issues with class calls effecting more than one class
+ SDCategory: Blackwing Lair
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -60,15 +60,15 @@ EndScriptData */
 #define SPELL_HUNTER                23436                   //bow broke
 #define SPELL_ROGUE                 23414                   //Paralise
 
-
 class boss_nefarian : public CreatureScript
 {
-public: 
+public:
     boss_nefarian() : CreatureScript("boss_nefarian") { }
+
     struct boss_nefarianAI : public ScriptedAI
     {
         boss_nefarianAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 ShadowFlame_Timer;
         uint32 BellowingRoar_Timer;
         uint32 VeilOfShadow_Timer;
@@ -76,9 +76,9 @@ public:
         uint32 TailLash_Timer;
         uint32 ClassCall_Timer;
         bool Phase3;
-    
+
         uint32 DespawnTimer;
-    
+
         void Reset()
         {
             ShadowFlame_Timer = 12000;                          //These times are probably wrong
@@ -88,31 +88,31 @@ public:
             TailLash_Timer = 10000;
             ClassCall_Timer = 35000;                            //35-40 seconds
             Phase3 = false;
-    
+
             DespawnTimer = 5000;
         }
-    
+
         void KilledUnit(Unit* Victim)
         {
             if (rand() % 5)
                 return;
-    
+
             DoScriptText(SAY_SLAY, me, Victim);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
         }
-    
+
         void EnterCombat(Unit* who)
         {
             DoScriptText(RAND(SAY_XHEALTH, SAY_AGGRO, SAY_SHADOWFLAME), me);
-    
+
             DoCast(who, SPELL_SHADOWFLAME_INITIAL);
             DoZoneInCombat();
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (DespawnTimer <= diff)
@@ -122,59 +122,59 @@ public:
                 DespawnTimer = 5000;
             }
             else DespawnTimer -= diff;
-    
+
             if (!UpdateVictim())
                 return;
-    
+
             //ShadowFlame_Timer
             if (ShadowFlame_Timer <= diff)
             {
-                DoCastVictim( SPELL_SHADOWFLAME);
+                DoCastVictim(SPELL_SHADOWFLAME);
                 ShadowFlame_Timer = 12000;
             }
             else ShadowFlame_Timer -= diff;
-    
+
             //BellowingRoar_Timer
             if (BellowingRoar_Timer <= diff)
             {
-                DoCastVictim( SPELL_BELLOWINGROAR);
+                DoCastVictim(SPELL_BELLOWINGROAR);
                 BellowingRoar_Timer = 30000;
             }
             else BellowingRoar_Timer -= diff;
-    
+
             //VeilOfShadow_Timer
             if (VeilOfShadow_Timer <= diff)
             {
-                DoCastVictim( SPELL_VEILOFSHADOW);
+                DoCastVictim(SPELL_VEILOFSHADOW);
                 VeilOfShadow_Timer = 15000;
             }
             else VeilOfShadow_Timer -= diff;
-    
+
             //Cleave_Timer
             if (Cleave_Timer <= diff)
             {
-                DoCastVictim( SPELL_CLEAVE);
+                DoCastVictim(SPELL_CLEAVE);
                 Cleave_Timer = 7000;
             }
             else Cleave_Timer -= diff;
-    
+
             //TailLash_Timer
             if (TailLash_Timer <= diff)
             {
                 //Cast NYI since we need a better check for behind target
                 //DoCastVictim( SPELL_TAILLASH);
-    
+
                 TailLash_Timer = 10000;
             }
             else TailLash_Timer -= diff;
-    
+
             //ClassCall_Timer
             if (ClassCall_Timer <= diff)
             {
                 //Cast a random class call
                 //On official it is based on what classes are currently on the hostil list
                 //but we can't do that yet so just randomly call one
-    
+
                 switch (urand(0, 8))
                 {
                 case 0:
@@ -214,28 +214,29 @@ public:
                     DoCast(me, SPELL_ROGUE);
                     break;
                 }
-    
+
                 ClassCall_Timer = 35000 + (rand() % 5000);
             }
             else ClassCall_Timer -= diff;
-    
+
             //Phase3 begins when we are below X health
             if (!Phase3 && HealthBelowPct(20))
             {
                 Phase3 = true;
                 DoScriptText(SAY_RAISE_SKELETONS, me);
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_nefarianAI (pCreature);
+        return new boss_nefarianAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_nefarian()
 {
     new boss_nefarian();

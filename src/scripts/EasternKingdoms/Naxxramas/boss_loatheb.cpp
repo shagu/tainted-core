@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Loatheb
-SD%Complete: 100
-SDComment:
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Loatheb
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -67,19 +67,20 @@ EndScriptData */
 
 class boss_loatheb : public CreatureScript
 {
-public: 
+public:
     boss_loatheb() : CreatureScript("boss_loatheb") { }
+
     struct boss_loathebAI : public ScriptedAI
     {
         boss_loathebAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 CorruptedMind_Timer;
         uint32 PoisonAura_Timer;
         uint32 InevitableDoom_Timer;
         uint32 InevitableDoom5mins_Timer;
         uint32 RemoveCurse_Timer;
         uint32 Summon_Timer;
-    
+
         void Reset()
         {
             CorruptedMind_Timer = 4000;
@@ -89,7 +90,7 @@ public:
             RemoveCurse_Timer = 30000;
             Summon_Timer = 8000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             switch (rand() % 3)
@@ -108,7 +109,7 @@ public:
                 break;
             }
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             switch (rand() % 6)
@@ -139,18 +140,18 @@ public:
                 break;
             }
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             me->MonsterYell(SAY_DEATH, LANG_UNIVERSAL, 0);
             DoPlaySoundToSet(me, SOUND_DEATH);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //CorruptedMind_Timer
             if (CorruptedMind_Timer <= diff)
             {
@@ -158,7 +159,7 @@ public:
                 CorruptedMind_Timer = 62000;
             }
             else CorruptedMind_Timer -= diff;
-    
+
             //PoisonAura_Timer
             if (PoisonAura_Timer <= diff)
             {
@@ -166,7 +167,7 @@ public:
                 PoisonAura_Timer = 60000;
             }
             else PoisonAura_Timer -= diff;
-    
+
             //InevitableDoom_Timer
             if (InevitableDoom_Timer <= diff)
             {
@@ -174,7 +175,7 @@ public:
                 InevitableDoom_Timer = 120000;
             }
             else InevitableDoom_Timer -= diff;
-    
+
             //InevitableDoom5mins_Timer
             if (InevitableDoom5mins_Timer <= diff)
             {
@@ -182,7 +183,7 @@ public:
                 InevitableDoom5mins_Timer = 15000;
             }
             else InevitableDoom5mins_Timer -= diff;
-    
+
             //RemoveCurse_Timer
             if (RemoveCurse_Timer <= diff)
             {
@@ -190,13 +191,13 @@ public:
                 RemoveCurse_Timer = 30000;
             }
             else RemoveCurse_Timer -= diff;
-    
+
             //Summon_Timer
             if (Summon_Timer <= diff)
             {
                 Unit* pTarget = NULL;
                 Unit* SummonedSpores = NULL;
-    
+
                 SummonedSpores = me->SummonCreature(16286, ADD_1X, ADD_1Y, ADD_1Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 80000);
                 SummonedSpores = me->SummonCreature(16286, ADD_2X, ADD_2Y, ADD_2Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 80000);
                 SummonedSpores = me->SummonCreature(16286, ADD_3X, ADD_3Y, ADD_3Z, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 80000);
@@ -206,21 +207,22 @@ public:
                     if (pTarget)
                         SummonedSpores->AddThreat(pTarget, 1.0f);
                 }
-    
+
                 Summon_Timer = 28000;
             }
             else Summon_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_loathebAI (pCreature);
+        return new boss_loathebAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_loatheb()
 {
     new boss_loatheb();

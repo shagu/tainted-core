@@ -15,37 +15,37 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Balinda
-SD%Complete:
-SDComment:
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Balinda
+ SD%Complete:
+ SDComment:
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_ARCANE_EXPLOSION                        = 46608,
-    SPELL_CONE_OF_COLD                            = 38384,
-    SPELL_FIREBALL                                = 46988,
-    SPELL_FROSTBOLT                               = 46987
+    SPELL_ARCANE_EXPLOSION = 46608,
+    SPELL_CONE_OF_COLD = 38384,
+    SPELL_FIREBALL = 46988,
+    SPELL_FROSTBOLT = 46987
 };
 
 enum Yells
 {
-    YELL_AGGRO                                    = -1810019,
-    YELL_EVADE                                    = -1810020
+    YELL_AGGRO = -1810019,
+    YELL_EVADE = -1810020
 };
 
 enum Creatures
 {
-    NPC_WATER_ELEMENTAL                           = 25040
+    NPC_WATER_ELEMENTAL = 25040
 };
 
 enum WaterElementalSpells
 {
-    SPELL_WATERBOLT                               = 46983
+    SPELL_WATERBOLT = 46983
 };
 
 class mob_water_elemental : public CreatureScript
@@ -93,12 +93,11 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* _Creature) const
+    CreatureAI* GetAI(Creature* _Creature) const
     {
         return new mob_water_elementalAI(_Creature);
     }
 };
-
 
 class boss_balinda : public CreatureScript
 {
@@ -212,12 +211,11 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_balindaAI(pCreature);
     }
 };
-
 
 void AddSC_boss_balinda()
 {

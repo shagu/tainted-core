@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Felblood_Kaelthas
-SD%Complete: 80
-SDComment: Normal and Heroic Support. Issues: Arcane Spheres do not initially follow targets.
-SDCategory: Magisters' Terrace
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Felblood_Kaelthas
+ SD%Complete: 80
+ SDComment: Normal and Heroic Support. Issues: Arcane Spheres do not initially follow targets.
+ SDCategory: Magisters' Terrace
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -36,9 +36,9 @@ EndScriptData */
 #define SAY_RECAST_GRAVITY          -1585028
 #define SAY_DEATH                   -1585029
 
-/*** Spells ***/
+ /*** Spells ***/
 
-// Phase 1 spells
+ // Phase 1 spells
 #define SPELL_FIREBALL_NORMAL         44189                 // Deals 2700-3300 damage at current target
 #define SPELL_FIREBALL_HEROIC         46164                 //       4950-6050
 
@@ -92,11 +92,11 @@ enum Misc
     ACTION_REMOVE_FLY = 4,
 };
 
-
 class boss_felblood_kaelthas : public CreatureScript
 {
-public: 
+public:
     boss_felblood_kaelthas() : CreatureScript("boss_felblood_kaelthas") { }
+
     struct boss_felblood_kaelthasAI : public ScriptedAI
     {
         boss_felblood_kaelthasAI(Creature* c) : ScriptedAI(c), summons(me)
@@ -104,14 +104,14 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             introSpeak = false;
         }
-    
+
         ScriptedInstance* pInstance;
         EventMap events;
         EventMap events2;
         SummonList summons;
         bool introSpeak;
-    
-    
+
+
         void Reset()
         {
             events.Reset();
@@ -120,42 +120,42 @@ public:
             pInstance->SetData(DATA_KAELTHAS_EVENT, NOT_STARTED);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
         }
-    
+
         void JustSummoned(Creature* summon)
         {
             for (SummonList::const_iterator itr = summons.begin(); itr != summons.end(); ++itr)
                 if (*itr == summon->GetGUID())
                     return;
             summons.Summon(summon);
-    
+
             summon->SetInCombatWithZone();
         }
-    
+
         void InitializeAI()
         {
             ScriptedAI::InitializeAI();
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             pInstance->SetData(DATA_KAELTHAS_EVENT, DONE);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             pInstance->SetData(DATA_KAELTHAS_EVENT, IN_PROGRESS);
             me->SetInCombatWithZone();
-    
+
             events.ScheduleEvent(EVENT_SPELL_FIREBALL, 0);
             events.ScheduleEvent(EVENT_SPELL_PHOENIX, 15000);
             events.ScheduleEvent(EVENT_SPELL_FLAMESTRIKE, 22000);
             events.ScheduleEvent(EVENT_CHECK_HEALTH, 1000);
-    
+
             if (me->GetMap()->IsHeroic())
                 events.ScheduleEvent(EVENT_SPELL_SHOCK_BARRIER, 50000);
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!introSpeak && me->IsWithinDistInMap(who, 40.0f) && who->GetTypeId() == TYPEID_PLAYER)
@@ -164,10 +164,10 @@ public:
                 introSpeak = true;
                 events2.ScheduleEvent(EVENT_INIT_COMBAT, 35000);
             }
-    
+
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
+
         void DamageTaken(Unit*, uint32& damage, DamageEffectType, SpellSchoolMask)
         {
             if (damage >= me->GetHealth())
@@ -186,7 +186,7 @@ public:
                 }
             }
         }
-    
+
         void LapseAction(uint8 action)
         {
             uint8 counter = 0;
@@ -209,11 +209,11 @@ public:
                     }
                 }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             events2.Update(diff);
-    
+
             switch (events2.ExecuteEvent())
             {
             case EVENT_INIT_COMBAT:
@@ -225,15 +225,15 @@ public:
                 me->Kill(me, false);
                 return;
             }
-    
+
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
-    
+
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
-    
+
             switch (uint32 eventId = events.ExecuteEvent())
             {
             case EVENT_SPELL_FIREBALL:
@@ -264,11 +264,11 @@ public:
                     me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, true);
                     me->CastSpell(me, SPELL_TELEPORT_CENTER, true);
                     events.Reset();
-    
+
                     me->StopMoving();
                     me->GetMotionMaster()->Clear();
                     me->GetMotionMaster()->MoveIdle();
-    
+
                     events.SetPhase(1);
                     events.ScheduleEvent(EVENT_GRAVITY_LAPSE_1_1, 0);
                     break;
@@ -293,7 +293,7 @@ public:
                 LapseAction(ACTION_ALLOW_FLY);
                 for (uint8 i = 0; i < 3; ++i)
                     me->CastSpell(me, SPELL_SUMMON_ARCANE_SPHERE, true);
-    
+
                 me->CastSpell(me, SPELL_GRAVITY_LAPSE_CHANNEL, false);
                 events.ScheduleEvent(EVENT_GRAVITY_LAPSE_5, 30000);
                 break;
@@ -305,60 +305,59 @@ public:
                 events.ScheduleEvent(EVENT_GRAVITY_LAPSE_1_2, 10000);
                 break;
             }
-    
+
             if (events.GetPhaseMask() == 0)
                 DoMeleeAttackIfReady();
-    
+
         }
     };
 
-     CreatureAI* GetAI(Creature* c) const
+    CreatureAI* GetAI(Creature* c) const
     {
         return GetInstanceAI<boss_felblood_kaelthasAI>(c);
     }
-
-
 };
 
 class mob_arcane_sphere : public CreatureScript
 {
-public: 
+public:
     mob_arcane_sphere() : CreatureScript("mob_arcane_sphere") { }
+
     struct mob_arcane_sphereAI : public ScriptedAI
     {
         mob_arcane_sphereAI(Creature* c) : ScriptedAI(c)
         {
             Reset();
         }
-    
+
         uint32 DespawnTimer;
         uint32 ChangeTargetTimer;
-    
+
         void Reset()
         {
             DespawnTimer = 30000;
             ChangeTargetTimer = urand(6000, 12000);
-    
+
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             me->SetCanFly(true);
             me->SetFaction(14);
             DoCast(me, SPELL_ARCANE_SPHERE_PASSIVE, true);
             me->SetInCombatWithZone();
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (DespawnTimer <= diff)
                 me->Kill(me);
             else
                 DespawnTimer -= diff;
-    
+
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             if (ChangeTargetTimer <= diff)
             {
                 if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
@@ -367,38 +366,38 @@ public:
                     me->TauntApply(pTarget);
                     AttackStart(pTarget);
                 }
-    
+
                 ChangeTargetTimer = urand(5000, 15000);
             }
             else ChangeTargetTimer -= diff;
         }
     };
 
-     CreatureAI* GetAI(Creature* c) const
+    CreatureAI* GetAI(Creature* c) const
     {
         return new mob_arcane_sphereAI(c);
     }
 
-    
 };
 
 class mob_felkael_phoenix : public CreatureScript
 {
-public: 
+public:
     mob_felkael_phoenix() : CreatureScript("mob_felkael_phoenix") { }
+
     struct mob_felkael_phoenixAI : public ScriptedAI
     {
         mob_felkael_phoenixAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
         uint32 BurnTimer;
         uint32 Death_Timer;
         bool Rebirth;
         bool FakeDeath;
-    
+
         void Reset()
         {
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE + UNIT_FLAG_NON_ATTACKABLE);
@@ -409,20 +408,20 @@ public:
             Rebirth = false;
             FakeDeath = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void DamageTaken(Unit* /*pKiller*/, uint32& damage)
         {
             if (damage < me->GetHealth())
                 return;
-    
+
             //Prevent glitch if in fake death
             if (FakeDeath)
             {
                 damage = 0;
                 return;
-    
+
             }
             //Don't really die in all phases of Kael'Thas
             if (pInstance && pInstance->GetData(DATA_KAELTHAS_EVENT) == 0)
@@ -430,7 +429,7 @@ public:
                 //prevent death
                 damage = 0;
                 FakeDeath = true;
-    
+
                 me->InterruptNonMeleeSpells(false);
                 me->SetHealth(0);
                 me->StopMoving();
@@ -446,16 +445,16 @@ public:
                 me->SetStandState(UNIT_STAND_STATE_DEAD);
             }
         }
-    
+
         void JustDied(Unit* /*slayer*/)
         {
             Position pos;
             me->GetPosition(&pos);
-    
+
             me->SummonCreature(CREATURE_PHOENIX_EGG, pos, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 45000);
             me->DisappearAndDie(true);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //If we are fake death, we cast revbirth and after that we kill the phoenix to spawn the egg.
@@ -466,10 +465,10 @@ public:
                     DoCast(me, SPELL_REBIRTH_DMG);
                     Rebirth = true;
                 }
-    
+
                 if (Rebirth)
                 {
-    
+
                     if (Death_Timer <= diff)
                     {
                         me->SummonCreature(CREATURE_PHOENIX_EGG, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 45000);
@@ -479,10 +478,10 @@ public:
                     else Death_Timer -= diff;
                 }
             }
-    
+
             if (!UpdateVictim())
                 return;
-    
+
             if (BurnTimer <= diff)
             {
                 //spell Burn should possible do this, but it doesn't, so do this for now.
@@ -491,12 +490,12 @@ public:
                 BurnTimer += 2000;
             }
             BurnTimer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* c) const
+    CreatureAI* GetAI(Creature* c) const
     {
         return GetInstanceAI<mob_felkael_phoenixAI>(c);
     }
@@ -505,22 +504,22 @@ public:
 
 class mob_felkael_phoenix_egg : public CreatureScript
 {
-public: 
+public:
     mob_felkael_phoenix_egg() : CreatureScript("mob_felkael_phoenix_egg") { }
     struct mob_felkael_phoenix_eggAI : public ScriptedAI
     {
         mob_felkael_phoenix_eggAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 HatchTimer;
-    
+
         void Reset()
         {
             HatchTimer = 10000;
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
         void MoveInLineOfSight(Unit* /*who*/) {}
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (HatchTimer <= diff)
@@ -532,17 +531,15 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* c) const
+    CreatureAI* GetAI(Creature* c) const
     {
         return new mob_felkael_phoenix_eggAI(c);
     }
-
-    
 };
 
 class mob_felkael_flamestrike : public CreatureScript
 {
-public: 
+public:
     mob_felkael_flamestrike() : CreatureScript("mob_felkael_flamestrike") { }
     struct mob_felkael_flamestrikeAI : public ScriptedAI
     {
@@ -550,20 +547,20 @@ public:
         {
             Heroic = c->GetMap()->IsHeroic();
         }
-    
+
         uint32 FlameStrikeTimer;
         bool Heroic;
-    
+
         void Reset()
         {
             FlameStrikeTimer = 5000;
-    
+
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             me->SetFaction(14);
-    
+
             DoCast(me, SPELL_FLAMESTRIKE2, true);
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
         void MoveInLineOfSight(Unit* /*who*/) {}
         void UpdateAI(const uint32 diff)
@@ -577,14 +574,11 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* c) const
+    CreatureAI* GetAI(Creature* c) const
     {
         return new mob_felkael_flamestrikeAI(c);
     }
-
-
 };
-
 
 void AddSC_boss_felblood_kaelthas()
 {
@@ -593,6 +587,4 @@ void AddSC_boss_felblood_kaelthas()
     new mob_felkael_phoenix();
     new mob_felkael_phoenix_egg();
     new mob_felkael_flamestrike();
-
 }
-

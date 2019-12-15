@@ -15,40 +15,41 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Moira_Bronzbeard
-SD%Complete: 90
-SDComment: Healing of Emperor NYI
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Moira_Bronzbeard
+ SD%Complete: 90
+ SDComment: Healing of Emperor NYI
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_HEAL                                             = 10917,
-    SPELL_RENEW                                            = 10929,
-    SPELL_SHIELD                                           = 10901,
-    SPELL_MINDBLAST                                        = 10947,
-    SPELL_SHADOWWORDPAIN                                   = 10894,
-    SPELL_SMITE                                            = 10934
+    SPELL_HEAL = 10917,
+    SPELL_RENEW = 10929,
+    SPELL_SHIELD = 10901,
+    SPELL_MINDBLAST = 10947,
+    SPELL_SHADOWWORDPAIN = 10894,
+    SPELL_SMITE = 10934
 };
 
 
 class boss_moira_bronzebeard : public CreatureScript
 {
-public: 
+public:
     boss_moira_bronzebeard() : CreatureScript("boss_moira_bronzebeard") { }
+
     struct boss_moira_bronzebeardAI : public ScriptedAI
     {
         boss_moira_bronzebeardAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Heal_Timer;
         uint32 MindBlast_Timer;
         uint32 ShadowWordPain_Timer;
         uint32 Smite_Timer;
-    
+
         void Reset()
         {
             Heal_Timer = 12000;                                 //These times are probably wrong
@@ -56,50 +57,50 @@ public:
             ShadowWordPain_Timer = 2000;
             Smite_Timer = 8000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //MindBlast_Timer
             if (MindBlast_Timer <= diff)
             {
-                DoCastVictim( SPELL_MINDBLAST);
+                DoCastVictim(SPELL_MINDBLAST);
                 MindBlast_Timer = 14000;
             }
             else MindBlast_Timer -= diff;
-    
+
             //ShadowWordPain_Timer
             if (ShadowWordPain_Timer <= diff)
             {
-                DoCastVictim( SPELL_SHADOWWORDPAIN);
+                DoCastVictim(SPELL_SHADOWWORDPAIN);
                 ShadowWordPain_Timer = 18000;
             }
             else ShadowWordPain_Timer -= diff;
-    
+
             //Smite_Timer
             if (Smite_Timer <= diff)
             {
-                DoCastVictim( SPELL_SMITE);
+                DoCastVictim(SPELL_SMITE);
                 Smite_Timer = 10000;
             }
             else Smite_Timer -= diff;
-    
+
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_moira_bronzebeardAI (pCreature);
+        return new boss_moira_bronzebeardAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_moira_bronzebeard()
 {
     new boss_moira_bronzebeard();

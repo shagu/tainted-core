@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Azuregos
-SD%Complete: 90
-SDComment: Teleport not included, spell reflect not effecting dots (Core problem)
-SDCategory: Azshara
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Azuregos
+ SD%Complete: 90
+ SDComment: Teleport not included, spell reflect not effecting dots (Core problem)
+ SDCategory: Azshara
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -38,12 +38,13 @@ EndScriptData */
 
 class boss_azuregos : public CreatureScript
 {
-public: 
+public:
     boss_azuregos() : CreatureScript("boss_azuregos") { }
+
     struct boss_azuregosAI : public ScriptedAI
     {
         boss_azuregosAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 MarkOfFrost_Timer;
         uint32 ManaStorm_Timer;
         uint32 Chill_Timer;
@@ -53,7 +54,7 @@ public:
         uint32 Cleave_Timer;
         uint32 Enrage_Timer;
         bool Enraged;
-    
+
         void Reset()
         {
             MarkOfFrost_Timer = 35000;
@@ -66,15 +67,15 @@ public:
             Enrage_Timer = 0;
             Enraged = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             if (Teleport_Timer <= diff)
             {
                 DoScriptText(SAY_TELEPORT, me);
@@ -86,19 +87,12 @@ public:
                     if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
                         DoTeleportPlayer(pUnit, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ() + 3, pUnit->GetOrientation());
                 }
-    
+
                 DoResetThreat();
                 Teleport_Timer = 30000;
             }
             else Teleport_Timer -= diff;
-    
-            //        //MarkOfFrost_Timer
-            //        if (MarkOfFrost_Timer <= diff)
-            //        {
-            //            DoCastVictim(SPELL_MARKOFFROST);
-            //            MarkOfFrost_Timer = 25000;
-            //        } else MarkOfFrost_Timer -= diff;
-    
+
             //Chill_Timer
             if (Chill_Timer <= diff)
             {
@@ -106,7 +100,7 @@ public:
                 Chill_Timer = 13000 + rand() % 12000;
             }
             else Chill_Timer -= diff;
-    
+
             //Breath_Timer
             if (Breath_Timer <= diff)
             {
@@ -114,7 +108,7 @@ public:
                 Breath_Timer = 10000 + rand() % 5000;
             }
             else Breath_Timer -= diff;
-    
+
             //ManaStorm_Timer
             if (ManaStorm_Timer <= diff)
             {
@@ -123,7 +117,7 @@ public:
                 ManaStorm_Timer = 7500 + rand() % 5000;
             }
             else ManaStorm_Timer -= diff;
-    
+
             //Reflect_Timer
             if (Reflect_Timer <= diff)
             {
@@ -131,7 +125,7 @@ public:
                 Reflect_Timer = 20000 + rand() % 15000;
             }
             else Reflect_Timer -= diff;
-    
+
             //Cleave_Timer
             if (Cleave_Timer <= diff)
             {
@@ -139,24 +133,24 @@ public:
                 Cleave_Timer = 7000;
             }
             else Cleave_Timer -= diff;
-    
+
             //Enrage_Timer
             if (HealthBelowPct(25) && !Enraged)
             {
                 DoCast(me, SPELL_ENRAGE);
                 Enraged = true;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_azuregosAI (pCreature);
+        return new boss_azuregosAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_azuregos()
 {
     new boss_azuregos();

@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Ambassador_Hellmaw
-SD%Complete: 75
-SDComment: Waypoints after Intro not implemented. Enrage spell missing/not known
-SDCategory: Auchindoun, Shadow Labyrinth
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Ambassador_Hellmaw
+ SD%Complete: 75
+ SDComment: Waypoints after Intro not implemented. Enrage spell missing/not known
+ SDCategory: Auchindoun, Shadow Labyrinth
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -50,8 +50,9 @@ EndScriptData */
 
 class boss_ambassador_hellmaw : public CreatureScript
 {
-public: 
+public:
     boss_ambassador_hellmaw() : CreatureScript("boss_ambassador_hellmaw") { }
+
     struct boss_ambassador_hellmawAI : public ScriptedAI
     {
         boss_ambassador_hellmawAI(Creature* c) : ScriptedAI(c)
@@ -59,10 +60,10 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
         bool HeroicMode;
-    
+
         uint32 EventCheck_Timer;
         uint32 Banish_Timer;
         uint32 CorrosiveAcid_Timer;
@@ -72,7 +73,7 @@ public:
         bool Intro;
         bool IsBanished;
         bool patrol;
-    
+
         void Reset()
         {
             EventCheck_Timer = 5000;
@@ -82,7 +83,7 @@ public:
             Enrage_Timer = 180000;
             IsBanished = false;
             Intro = false;
-    
+
             if (pInstance)
             {
                 if (pInstance->GetData(TYPE_HELLMAW) == NOT_STARTED)
@@ -92,35 +93,35 @@ public:
                 }
             }
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (me->HasAura(SPELL_BANISH, 0))
                 return;
-    
+
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
+
         void MovementInform(uint32 type, uint32 /*id*/)
         {
             if (type != POINT_MOTION_TYPE)
                 return;
         }
-    
+
         void DoIntro()
         {
             DoScriptText(SAY_INTRO, me);
-    
+
             if (me->HasAura(SPELL_BANISH, 0))
                 me->RemoveAurasDueToSpell(SPELL_BANISH);
-    
+
             IsBanished = false;
             Intro = true;
-    
+
             if (pInstance)
                 pInstance->SetData(TYPE_HELLMAW, IN_PROGRESS);
         }
-    
+
         void EnterCombat(Unit*)
         {
             if (me->HasAura(SPELL_BANISH))
@@ -128,28 +129,28 @@ public:
                 EnterEvadeMode();
                 return;
             }
-    
+
             DoScriptText(RAND(SAY_AGGRO1, SAY_AGGRO2, SAY_AGGRO3), me);
         }
-    
+
         void KilledUnit(Unit*)
         {
             DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), me);
         }
-    
+
         void JustDied(Unit*)
         {
             DoScriptText(SAY_DEATH, me);
-    
+
             if (pInstance)
                 pInstance->SetData(TYPE_HELLMAW, DONE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!pInstance)
                 return;
-    
+
             if (IsBanished)
             {
                 if (Banish_Timer < diff)
@@ -160,7 +161,7 @@ public:
                 else
                     Banish_Timer -= diff;
             }
-    
+
             if (!Intro)
             {
                 if (EventCheck_Timer <= diff)
@@ -177,14 +178,14 @@ public:
                 }
                 else EventCheck_Timer -= diff;
             }
-    
+
             if (!me->IsInCombat() && !IsBanished && !OnPath_Delay)
             {
                 me->GetMotionMaster()->MovePath(PATH_PATROL, false);
                 OnPath_Delay = 55000;
                 patrol = false;
             }
-    
+
             if (!me->IsInCombat() && !patrol && OnPath_Delay < diff)
             {
                 me->GetMotionMaster()->MovePath(PATH_FINAL, true);
@@ -192,33 +193,34 @@ public:
             }
             else
                 OnPath_Delay -= diff;
-    
+
             if (!UpdateVictim())
                 return;
-    
+
             if (CorrosiveAcid_Timer <= diff)
             {
                 DoCast(me, SPELL_CORROSIVE_ACID);
                 CorrosiveAcid_Timer = 25000;
             }
             else CorrosiveAcid_Timer -= diff;
-    
+
             if (Fear_Timer <= diff)
             {
                 DoCast(me, SPELL_FEAR);
                 Fear_Timer = 35000;
             }
             else Fear_Timer -= diff;
-    
+
             if (HeroicMode)
             {
                 if (Enrage_Timer <= diff)
                 {
-                    DoCast(me,SPELL_ENRAGE);
-                    Enrage_Timer = 5*MINUTE*1000;
-                } else Enrage_Timer -= diff;
+                    DoCast(me, SPELL_ENRAGE);
+                    Enrage_Timer = 5 * MINUTE * 1000;
+                }
+                else Enrage_Timer -= diff;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };

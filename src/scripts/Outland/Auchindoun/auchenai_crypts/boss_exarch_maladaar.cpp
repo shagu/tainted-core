@@ -15,42 +15,42 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Exarch_Maladaar
-SD%Complete: 95
-SDComment: Most of event implemented, some adjustments to timers remain and possibly make some better code for switching his dark side in to better "images" of player.
-SDCategory: Auchindoun, Auchenai Crypts
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Exarch_Maladaar
+ SD%Complete: 95
+ SDComment: Most of event implemented, some adjustments to timers remain and possibly make some better code for switching his dark side in to better "images" of player.
+ SDCategory: Auchindoun, Auchenai Crypts
+ EndScriptData */
 
-/* ContentData
-mob_stolen_soul
-boss_exarch_maladaar
-mob_avatar_of_martyred
-EndContentData */
+ /* ContentData
+ mob_stolen_soul
+ boss_exarch_maladaar
+ mob_avatar_of_martyred
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum ExarchMaladaar
 {
-    SAY_INTRO                   = -1558000,
-    SAY_SUMMON                  = -1558001,
-    SAY_AGGRO_1                 = -1558002,
-    SAY_AGGRO_2                 = -1558003,
-    SAY_AGGRO_3                 = -1558004,
-    SAY_ROAR                    = -1558005,
-    SAY_SOUL_CLEAVE             = -1558006,
-    SAY_SLAY_1                  = -1558007,
-    SAY_SLAY_2                  = -1558008,
-    SAY_DEATH                   = -1558009,
+    SAY_INTRO = -1558000,
+    SAY_SUMMON = -1558001,
+    SAY_AGGRO_1 = -1558002,
+    SAY_AGGRO_2 = -1558003,
+    SAY_AGGRO_3 = -1558004,
+    SAY_ROAR = -1558005,
+    SAY_SOUL_CLEAVE = -1558006,
+    SAY_SLAY_1 = -1558007,
+    SAY_SLAY_2 = -1558008,
+    SAY_DEATH = -1558009,
 
-    SPELL_RIBBON_OF_SOULS       = 32422,
-    SPELL_SOUL_SCREAM           = 32421,
-    SPELL_STOLEN_SOUL           = 32346,
-    SPELL_STOLEN_SOUL_VISUAL    = 32395,
-    SPELL_SUMMON_AVATAR         = 32424,
+    SPELL_RIBBON_OF_SOULS = 32422,
+    SPELL_SOUL_SCREAM = 32421,
+    SPELL_STOLEN_SOUL = 32346,
+    SPELL_STOLEN_SOUL_VISUAL = 32395,
+    SPELL_SUMMON_AVATAR = 32424,
 
-    ENTRY_STOLEN_SOUL           = 18441,
+    ENTRY_STOLEN_SOUL = 18441,
 
     EVENT_SPELL_FEAR = 1,
     EVENT_SPELL_RIBBON = 2,
@@ -59,42 +59,9 @@ enum ExarchMaladaar
     EVENT_MORTALSTRIKE = 5
 };
 
-
-
-
-
-#define SPELL_AV_MORTAL_STRIKE          16856
-#define SPELL_AV_MORTAL_STRIKE          16856
-
-
-
-
-
-enum stolenSoul
-{
-    SPELL_MOONFIRE = 37328,
-    SPELL_FIREBALL = 37329,
-    SPELL_MIND_FLAY = 37330,
-    SPELL_HEMORRHAGE = 37331,
-    SPELL_FROSTSHOCK = 37332,
-    SPELL_CURSE_OF_AGONY = 37334,
-    SPELL_MORTAL_STRIKE = 37335,
-    SPELL_FREEZING_TRAP = 37368,
-    SPELL_HAMMER_OF_JUSTICE = 37369,
-
-    EVENT_STOLEN_SOUL_SPELL = 1,
-};
-
-
-
-
-
-
-
-
 class boss_exarch_maladaar : public CreatureScript
 {
-public: 
+public:
     boss_exarch_maladaar() : CreatureScript("boss_exarch_maladaar") { }
     struct boss_exarch_maladaarAI : public ScriptedAI
     {
@@ -102,15 +69,15 @@ public:
         {
             HasTaunted = false;
         }
-    
+
         bool HasTaunted;
         EventMap events;
-    
+
         void Reset()
         {
             events.Reset();
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!HasTaunted && me->IsWithinDistInMap(who, 150.0f) && who->GetTypeId() == TYPEID_PLAYER)
@@ -118,47 +85,47 @@ public:
                 DoScriptText(SAY_INTRO, me);
                 HasTaunted = true;
             }
-    
+
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
-    
+
+
         void EnterCombat(Unit*)
         {
-    
+
             DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
-    
+
             events.ScheduleEvent(EVENT_SPELL_FEAR, 15000);
             events.ScheduleEvent(EVENT_SPELL_RIBBON, 5000);
             events.ScheduleEvent(EVENT_SPELL_SOUL, 25000);
             events.ScheduleEvent(EVENT_CHECK_HEALTH, 5000);
-    
+
         }
-    
+
         void KilledUnit(Unit*)
         {
-    
+
             DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
             if (rand() % 2)
                 return;
         }
-    
+
         void JustDied(Unit*)
         {
             DoScriptText(SAY_DEATH, me);
             //When Exarch Maladar is defeated D'ore appear.
             DoSpawnCreature(19412, 0, 0, 0, 0, TEMPSUMMON_TIMED_DESPAWN, 600000);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_CHECK_HEALTH:
@@ -195,48 +162,47 @@ public:
                 events.Repeat(urand(15000, 25000));
                 break;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_exarch_maladaarAI (pCreature);
+        return new boss_exarch_maladaarAI(pCreature);
     }
 
-    
-
-    
-
-    
 };
+
+#define SPELL_AV_MORTAL_STRIKE          16856
+#define SPELL_AV_MORTAL_STRIKE          16856
 
 class mob_avatar_of_martyred : public CreatureScript
 {
-public: 
+public:
     mob_avatar_of_martyred() : CreatureScript("mob_avatar_of_martyred") { }
+
     struct mob_avatar_of_martyredAI : public ScriptedAI
     {
         mob_avatar_of_martyredAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Mortal_Strike_timer;
         EventMap events;
-    
+
         void Reset() {}
-    
+
         void EnterCombat(Unit*)
         {
             Mortal_Strike_timer = 10000;
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_MORTALSTRIKE:
@@ -248,47 +214,60 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new mob_avatar_of_martyredAI (pCreature);
+        return new mob_avatar_of_martyredAI(pCreature);
     }
 
-    
 
-    
-
-    
 };
+
+enum stolenSoul
+{
+    SPELL_MOONFIRE = 37328,
+    SPELL_FIREBALL = 37329,
+    SPELL_MIND_FLAY = 37330,
+    SPELL_HEMORRHAGE = 37331,
+    SPELL_FROSTSHOCK = 37332,
+    SPELL_CURSE_OF_AGONY = 37334,
+    SPELL_MORTAL_STRIKE = 37335,
+    SPELL_FREEZING_TRAP = 37368,
+    SPELL_HAMMER_OF_JUSTICE = 37369,
+
+    EVENT_STOLEN_SOUL_SPELL = 1,
+};
+
 
 class mob_stolen_soul : public CreatureScript
 {
-public: 
+public:
     mob_stolen_soul() : CreatureScript("mob_stolen_soul") { }
+
     struct mob_stolen_soulAI : public ScriptedAI
     {
         mob_stolen_soulAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint8 myClass;
         EventMap events;
-    
+
         void Reset()
         {
             myClass = CLASS_WARRIOR;
             events.ScheduleEvent(EVENT_STOLEN_SOUL_SPELL, 1000);
         }
-    
+
         void EnterCombat(Unit*) { }
-    
+
         void SetMyClass(uint8 myclass)
         {
             myClass = myclass;
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (events.ExecuteEvent() == EVENT_STOLEN_SOUL_SPELL)
             {
                 switch (myClass)
@@ -331,21 +310,15 @@ public:
                     break;
                 }
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new mob_stolen_soulAI (pCreature);
+        return new mob_stolen_soulAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 
@@ -354,6 +327,5 @@ void AddSC_boss_exarch_maladaar()
     new boss_exarch_maladaar();
     new mob_avatar_of_martyred();
     new mob_stolen_soul();
-
 }
 

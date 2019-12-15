@@ -15,24 +15,24 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Azuremyst_Isle
-SD%Complete: 75
-SDComment: Quest support: 9283, 9537, 9582, 9554, 9531, 9303(special flight path, proper model for mount missing). Injured Draenei cosmetic only, 9582.
-SDCategory: Azuremyst Isle
-EndScriptData */
+ /* ScriptData
+ SDName: Azuremyst_Isle
+ SD%Complete: 75
+ SDComment: Quest support: 9283, 9537, 9582, 9554, 9531, 9303(special flight path, proper model for mount missing). Injured Draenei cosmetic only, 9582.
+ SDCategory: Azuremyst Isle
+ EndScriptData */
 
-/* ContentData
-npc_draenei_survivor
-npc_tavara
-npc_engineer_spark_overgrind
-npc_injured_draenei
-npc_magwin
-npc_geezle
-mob_nestlewood_owlkin
-go_ravager_cage
-npc_death_ravager
-EndContentData */
+ /* ContentData
+ npc_draenei_survivor
+ npc_tavara
+ npc_engineer_spark_overgrind
+ npc_injured_draenei
+ npc_magwin
+ npc_geezle
+ mob_nestlewood_owlkin
+ go_ravager_cage
+ npc_death_ravager
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -42,21 +42,21 @@ EndContentData */
 #include "Cell.h"
 #include "CellImpl.h"
 
-/*######
-## npc_draenei_survivor
-######*/
+ /*######
+ ## npc_draenei_survivor
+ ######*/
 
 enum eSurv
 {
-    HEAL1           = -1000176,
-    HEAL2           = -1000177,
-    HEAL3           = -1000178,
-    HEAL4           = -1000179,
+    HEAL1 = -1000176,
+    HEAL2 = -1000177,
+    HEAL3 = -1000178,
+    HEAL4 = -1000179,
 
-    HELP1           = -1000180,
-    HELP2           = -1000181,
-    HELP3           = -1000182,
-    HELP4           = -1000183
+    HELP1 = -1000180,
+    HELP2 = -1000181,
+    HELP3 = -1000182,
+    HELP4 = -1000183
 };
 
 class npc_draenei_survivor : CreatureScript
@@ -228,13 +228,13 @@ public:
 enum eTavara
 {
     // NPCs
-    NPC_TAVARA                  = 17551,
+    NPC_TAVARA = 17551,
 
     // Spells
-    SPELL_GIFT_OF_THE_NARUU     = 28880,
-    SPELL_LESSER_HEAL_R1        = 2050,
-    SPELL_LESSER_HEAL_R2        = 2052,
-    SPELL_RENEW_R1              = 139
+    SPELL_GIFT_OF_THE_NARUU = 28880,
+    SPELL_LESSER_HEAL_R1 = 2050,
+    SPELL_LESSER_HEAL_R2 = 2052,
+    SPELL_RENEW_R1 = 139
 };
 
 class npc_tavara : CreatureScript
@@ -279,11 +279,11 @@ public:
 
 enum eSpark
 {
-    SAY_TEXT                = -1000184,
-    SAY_EMOTE               = -1000185,
-    ATTACK_YELL             = -1000186,
+    SAY_TEXT = -1000184,
+    SAY_EMOTE = -1000185,
+    ATTACK_YELL = -1000186,
 
-    SPELL_DYNAMITE          = 7978
+    SPELL_DYNAMITE = 7978
 };
 
 #define GOSSIP_FIGHT    "Traitor! You will be brought to justice!"
@@ -416,14 +416,14 @@ public:
 
 enum eMagwin
 {
-    SAY_START                   = -1000111,
-    SAY_AGGRO                   = -1000112,
-    SAY_PROGRESS                = -1000113,
-    SAY_END1                    = -1000114,
-    SAY_END2                    = -1000115,
-    EMOTE_HUG                   = -1000116,
+    SAY_START = -1000111,
+    SAY_AGGRO = -1000112,
+    SAY_PROGRESS = -1000113,
+    SAY_END1 = -1000114,
+    SAY_END2 = -1000115,
+    EMOTE_HUG = -1000116,
 
-    QUEST_A_CRY_FOR_SAY_HELP    = 9528
+    QUEST_A_CRY_FOR_SAY_HELP = 9528
 };
 
 class npc_magwin : CreatureScript
@@ -498,25 +498,25 @@ enum Geezle
     SPELL_TREE_DISGUISE = 30298,
 
     // Texts
-    GEEZLE_SAY_1   = -1000728,
-    SPARK_SAY_2    = -1000729,
-    SPARK_SAY_3    = -1000730,
-    GEEZLE_SAY_4   = -1000731,
-    SPARK_SAY_5    = -1000732,
-    SPARK_SAY_6    = -1000733,
-    GEEZLE_SAY_7   = -1000734,
+    GEEZLE_SAY_1 = -1000728,
+    SPARK_SAY_2 = -1000729,
+    SPARK_SAY_3 = -1000730,
+    GEEZLE_SAY_4 = -1000731,
+    SPARK_SAY_5 = -1000732,
+    SPARK_SAY_6 = -1000733,
+    GEEZLE_SAY_7 = -1000734,
 
     // Emotes
-    EMOTE_SPARK     = -1000735,
+    EMOTE_SPARK = -1000735,
 
     // NPCs
-    NPC_SPARK       = 17243,
+    NPC_SPARK = 17243,
 
     // Gameobjects
-    GO_NAGA_FLAG    = 181694
+    GO_NAGA_FLAG = 181694
 };
 
-static float SparkPos[3] = { -5030.95f, -11291.99f, 7.97f};
+static float SparkPos[3] = { -5030.95f, -11291.99f, 7.97f };
 
 class npc_geezle : CreatureScript
 {
@@ -725,18 +725,18 @@ public:
 
 enum eRavegerCage
 {
-    NPC_DEATH_RAVAGER       = 17556,
+    NPC_DEATH_RAVAGER = 17556,
 
-    SPELL_REND              = 13443,
-    SPELL_ENRAGING_BITE     = 30736,
+    SPELL_REND = 13443,
+    SPELL_ENRAGING_BITE = 30736,
 
-    QUEST_STRENGTH_ONE      = 9582
+    QUEST_STRENGTH_ONE = 9582
 };
 
 class go_ravager_cage : GameObjectScript
 {
 public:
-    go_ravager_cage() : GameObjectScript("go_ravager_cage"){}
+    go_ravager_cage() : GameObjectScript("go_ravager_cage") {}
 
     bool OnGossipHello(Player* player, GameObject* go)
     {
@@ -812,13 +812,13 @@ public:
 
 enum BristlelimbCage
 {
-    CAPITIVE_SAY_1                      = -1000602,
-    CAPITIVE_SAY_2                      = -1000603,
-    CAPITIVE_SAY_3                      = -1000604,
+    CAPITIVE_SAY_1 = -1000602,
+    CAPITIVE_SAY_2 = -1000603,
+    CAPITIVE_SAY_3 = -1000604,
 
-    QUEST_THE_PROPHECY_OF_AKIDA         = 9544,
-    NPC_STILLPINE_CAPITIVE              = 17375,
-    GO_BRISTELIMB_CAGE                  = 181714
+    QUEST_THE_PROPHECY_OF_AKIDA = 9544,
+    NPC_STILLPINE_CAPITIVE = 17375,
+    GO_BRISTELIMB_CAGE = 181714
 
 };
 

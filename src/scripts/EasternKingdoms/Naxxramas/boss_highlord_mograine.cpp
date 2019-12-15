@@ -15,17 +15,17 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Highlord_Mograine
-SD%Complete: 100
-SDComment: SCRIPT OBSOLETE
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Highlord_Mograine
+ SD%Complete: 100
+ SDComment: SCRIPT OBSOLETE
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-//All horsemen
+ //All horsemen
 #define SPELL_SHIELDWALL           29061
 #define SPELL_BESERK               26662
 
@@ -60,17 +60,18 @@ EndScriptData */
 
 class boss_highlord_mograine : public CreatureScript
 {
-public: 
+public:
     boss_highlord_mograine() : CreatureScript("boss_highlord_mograine") { }
+
     struct boss_highlord_mograineAI : public ScriptedAI
     {
         boss_highlord_mograineAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Mark_Timer;
         uint32 RighteousFire_Timer;
         bool ShieldWall1;
         bool ShieldWall2;
-    
+
         void Reset()
         {
             Mark_Timer = 20000;                                 // First Horsemen Mark is applied at 20 sec.
@@ -78,7 +79,7 @@ public:
             ShieldWall1 = true;
             ShieldWall2 = true;
         }
-    
+
         void InitialYell()
         {
             if (!me->IsInCombat())
@@ -100,7 +101,7 @@ public:
                 }
             }
         }
-    
+
         void KilledUnit()
         {
             switch (rand() % 2)
@@ -115,23 +116,23 @@ public:
                 break;
             }
         }
-    
+
         void JustDied(Unit*)
         {
             me->MonsterYell(SAY_DEATH, LANG_UNIVERSAL, 0);
             DoPlaySoundToSet(me, SOUND_DEATH);
         }
-    
+
         void EnterCombat(Unit*)
         {
             InitialYell();
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             // Mark of Mograine
             if (Mark_Timer <= diff)
             {
@@ -139,7 +140,7 @@ public:
                 Mark_Timer = 12000;
             }
             else Mark_Timer -= diff;
-    
+
             // Shield Wall - All 4 horsemen will shield wall at 50% hp and 20% hp for 20 seconds
             if (ShieldWall1 && HealthBelowPct(50))
             {
@@ -157,7 +158,7 @@ public:
                     ShieldWall2 = false;
                 }
             }
-    
+
             // Righteous Fire
             if (RighteousFire_Timer <= diff)
             {
@@ -166,17 +167,17 @@ public:
                 RighteousFire_Timer = 2000;
             }
             else RighteousFire_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_highlord_mograineAI (pCreature);
+        return new boss_highlord_mograineAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_highlord_mograine()
 {
     new boss_highlord_mograine();

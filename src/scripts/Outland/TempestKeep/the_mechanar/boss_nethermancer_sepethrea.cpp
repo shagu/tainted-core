@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Nethermancer_Sepethrea
-SD%Complete: 90
-SDComment: Need adjustments to initial summons
-SDCategory: Tempest Keep, The Mechanar
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Nethermancer_Sepethrea
+ SD%Complete: 90
+ SDComment: Need adjustments to initial summons
+ SDCategory: Tempest Keep, The Mechanar
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -43,26 +43,22 @@ EndScriptData */
 #define SPELL_KNOCKBACK                 37317
 #define SPELL_SOLARBURN                 35267
 
-enum NetherMancerSepthrea
-{
-    //npcs
-    NPC_RAGING_FLAMES               = 20481,
-
-    //events
-    EVENT_FROST_ATTACK              = 1,
-    EVENT_ARCANE_BLAST              = 2,
-    EVENT_DRAGONS_BREATH            = 3,
-    EVENT_KNOCK_BACK                = 4,
-    EVENT_SOLAR_BURN                = 5
-};
-
-
-
-
-
 #define SPELL_INFERNO                   35268
 #define SPELL_FIRE_TAIL                 35278
 #define H_SPELL_INFERNO                 39346
+
+enum NetherMancerSepthrea
+{
+    //npcs
+    NPC_RAGING_FLAMES = 20481,
+
+    //events
+    EVENT_FROST_ATTACK = 1,
+    EVENT_ARCANE_BLAST = 2,
+    EVENT_DRAGONS_BREATH = 3,
+    EVENT_KNOCK_BACK = 4,
+    EVENT_SOLAR_BURN = 5
+};
 
 enum raginFlames
 {
@@ -71,32 +67,27 @@ enum raginFlames
 };
 
 
-
-
-
-
-
-
 class boss_nethermancer_sepethrea : public CreatureScript
 {
-public: 
+public:
     boss_nethermancer_sepethrea() : CreatureScript("boss_nethermancer_sepethrea") { }
+
     struct boss_nethermancer_sepethreaAI : public BossAI
     {
         boss_nethermancer_sepethreaAI(Creature* c) : BossAI(c, DATA_NETHERMANCER_SEPRETHREA) {}
-    
+
         bool isHeroic = me->GetMap()->IsHeroic();
-    
+
         void EnterCombat(Unit* who)
         {
             _EnterCombat();
-            
+
             events.ScheduleEvent(EVENT_FROST_ATTACK, 6000);
             events.ScheduleEvent(EVENT_ARCANE_BLAST, 14000);
             events.ScheduleEvent(EVENT_DRAGONS_BREATH, 18000);
-    
+
             DoScriptText(SAY_AGGRO, me);
-    
+
             if (isHeroic)
             {
                 DoCast(H_SPELL_SUMMON_RAGIN_FLAMES);
@@ -104,10 +95,10 @@ public:
             }
             else
                 DoCast(SPELL_SUMMON_RAGIN_FLAMES);
-    
+
             DoScriptText(SAY_SUMMON, me);
         }
-    
+
         void JustSummoned(Creature* summon)
         {
             summons.Summon(summon);
@@ -118,7 +109,7 @@ public:
                 summon->SetInCombatWithZone();
             }
         }
-    
+
         void KilledUnit(Unit* victim)
         {
             if (victim->GetTypeId() == TYPEID_PLAYER)
@@ -126,31 +117,31 @@ public:
                 DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), me);
             }
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             events.Reset();
             DoScriptText(SAY_DEATH, me);
-    
+
             if (instance)
                 instance->SetData(DATA_NETHERMANCER_SEPRETHREA, DONE);
-    
+
             for (SummonList::const_iterator itr = summons.begin(); itr != summons.end(); ++itr)
                 if (Creature* summon = ObjectAccessor::GetCreature(*me, *itr))
                     me->DealDamage(summon, summon->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
-    
-    
+
+
             switch (events.ExecuteEvent())
             {
             case EVENT_FROST_ATTACK:
@@ -176,12 +167,12 @@ public:
                 events.ScheduleEvent(EVENT_SOLAR_BURN, 30000);
                 break;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_nethermancer_sepethreaAI>(pCreature);
     }
@@ -189,36 +180,37 @@ public:
 
 class mob_ragin_flames : public CreatureScript
 {
-public: 
+public:
     mob_ragin_flames() : CreatureScript("mob_ragin_flames") { }
+
     struct mob_ragin_flamesAI : public ScriptedAI
     {
         mob_ragin_flamesAI(Creature* c) : ScriptedAI(c)
         {
         }
-        
+
         EventMap events;
         bool isHeroic = me->GetMap()->IsHeroic();
-    
+
         void Reset()
         {
             me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_ALL, true);
             me->SetSpeed(MOVE_RUN, HeroicMode ? 0.7f : 0.5f);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             events.ScheduleEvent(EVENT_SPELL_FIRE_TAIL, 500);
             events.ScheduleEvent(EVENT_SPELL_INFERNO, urand(10000, 20000));
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_SPELL_INFERNO:
@@ -237,15 +229,14 @@ public:
             }
             DoMeleeAttackIfReady();
         }
-    
+
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_ragin_flamesAI>(pCreature);
     }
 };
-
 
 void AddSC_boss_nethermancer_sepethrea()
 {

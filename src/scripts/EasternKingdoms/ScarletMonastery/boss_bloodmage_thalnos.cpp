@@ -42,6 +42,7 @@ class boss_bloodmage_thalnos : public CreatureScript
 {
 public: 
     boss_bloodmage_thalnos() : CreatureScript("boss_bloodmage_thalnos") { }
+
     struct boss_bloodmage_thalnosAI : public ScriptedAI
     {
         boss_bloodmage_thalnosAI(Creature* c) : ScriptedAI(c) {}
@@ -125,13 +126,12 @@ public:
         }
     };
     
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_bloodmage_thalnosAI (pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_bloodmage_thalnos()
 {
     new boss_bloodmage_thalnos();

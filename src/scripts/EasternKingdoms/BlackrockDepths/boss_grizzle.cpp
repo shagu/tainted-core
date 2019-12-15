@@ -15,25 +15,25 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Grizzle
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Grizzle
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Yells
 {
-    EMOTE_GENERIC_FRENZY_KILL                              = -1000001
+    EMOTE_GENERIC_FRENZY_KILL = -1000001
 };
 
 enum Spells
 {
-    SPELL_GROUNDTREMOR                                     = 6524,
-    SPELL_FRENZY                                           = 28371
+    SPELL_GROUNDTREMOR = 6524,
+    SPELL_FRENZY = 28371
 };
 
 class boss_grizzle : public CreatureScript
@@ -88,7 +88,8 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_grizzleAI(pCreature);
     }

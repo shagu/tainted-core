@@ -15,18 +15,18 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Bloodboil
-SD%Complete: 80
-SDComment: Bloodboil not working correctly, missing enrage
-SDCategory: Black Temple
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Bloodboil
+ SD%Complete: 80
+ SDComment: Bloodboil not working correctly, missing enrage
+ SDCategory: Black Temple
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "black_temple.h"
 
-//Speech'n'Sound
+ //Speech'n'Sound
 #define SAY_AGGRO               -1564029
 #define SAY_SLAY1               -1564030
 #define SAY_SLAY2               -1564031
@@ -67,74 +67,74 @@ EndScriptData */
 
 //This is used to sort the players by distance in preparation for the Bloodboil cast.
 
-
 class boss_gurtogg_bloodboil : public CreatureScript
 {
-public: 
+public:
     boss_gurtogg_bloodboil() : CreatureScript("boss_gurtogg_bloodboil") { }
+
     struct boss_gurtogg_bloodboilAI : public ScriptedAI
     {
         boss_gurtogg_bloodboilAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint64 TargetGUID;
-    
+
         float TargetThreat;
-    
+
         uint32 BloodboilTimer;
         uint32 BloodboilCount;
-    
+
         uint32 FelGeyserTimer;
         uint32 BewilderingStrikeTimer;
-    
+
         uint32 ArcingSmashTimer;
         uint32 FelBreathTimer;
         uint32 EjectTimer;
-    
+
         uint32 PhaseChangeTimer;
-    
+
         uint32 EnrageTimer;
-    
+
         uint32 Charge_Timer;
-    
+
         bool Phase1;
-    
+
         void Reset()
         {
             if (pInstance)
                 pInstance->SetData(DATA_GURTOGGBLOODBOILEVENT, NOT_STARTED);
-    
+
             TargetGUID = 0;
-    
+
             TargetThreat = 0;
-    
+
             BloodboilTimer = 10000;
             BloodboilCount = 0;
-    
+
             FelGeyserTimer = 1000;
             BewilderingStrikeTimer = 15000;
-    
+
             ArcingSmashTimer = 19000;
             FelBreathTimer = 25000;
             EjectTimer = 10000;
-    
+
             PhaseChangeTimer = 65000;
             EnrageTimer = 600000;
-    
+
             Phase1 = true;
-    
+
             Charge_Timer = 30000;
-    
+
             DoCast(me, SPELL_ACIDIC_WOUND, true);
-    
+
             me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
             me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoZoneInCombat();
@@ -142,20 +142,20 @@ public:
             if (pInstance)
                 pInstance->SetData(DATA_GURTOGGBLOODBOILEVENT, IN_PROGRESS);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), me);
         }
-    
+
         void JustDied(Unit* /*victim*/)
         {
             if (pInstance)
                 pInstance->SetData(DATA_GURTOGGBLOODBOILEVENT, DONE);
-    
+
             DoScriptText(SAY_DEATH, me);
         }
-    
+
         // Note: This seems like a very complicated fix. The fix needs to be handled by the core, as implementation of limited-target AoE spells are still not limited.
         void CastBloodboil()
         {
@@ -173,12 +173,12 @@ public:
                     }
                 }
             }
-    
+
             //Sort the list of players
             targets.sort(Oregon::ObjectDistanceOrderPred(me, false));
             //Resize so we only get top 5
             targets.resize(5);
-    
+
             //Aura each player in the targets list with Bloodboil.
             for (std::list<Unit* >::iterator itr = targets.begin(); itr != targets.end(); ++itr)
             {
@@ -188,7 +188,7 @@ public:
             }
             targets.clear();
         }
-    
+
         void RevertThreatOnTarget(uint64 guid)
         {
             Unit* pUnit = NULL;
@@ -201,12 +201,12 @@ public:
                     me->AddThreat(pUnit, TargetThreat);
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (!me->HasAura(SPELL_BERSERK, 0))
             {
                 if (EnrageTimer <= diff)
@@ -224,29 +224,29 @@ public:
                 }
                 else EnrageTimer -= diff;
             }
-    
+
             if (ArcingSmashTimer <= diff)
             {
                 DoCastVictim(Phase1 ? SPELL_ARCING_SMASH_1 : SPELL_ARCING_SMASH_2);
                 ArcingSmashTimer = 10000;
             }
             else ArcingSmashTimer -= diff;
-    
+
             if (FelBreathTimer <= diff)
             {
                 DoCastVictim(Phase1 ? SPELL_FELBREATH_1 : SPELL_FELBREATH_2);
                 FelBreathTimer = 25000;
             }
             else FelBreathTimer -= diff;
-    
+
             if (EjectTimer <= diff)
             {
                 DoCastVictim(Phase1 ? SPELL_EJECT_1 : SPELL_EJECT_2);
                 EjectTimer = 15000;
             }
             else EjectTimer -= diff;
-    
-    
+
+
             if (Charge_Timer <= diff)
             {
                 if (me->GetDistance2d(me->GetVictim()) > 15)
@@ -254,16 +254,16 @@ public:
                 Charge_Timer = 10000;
             }
             else Charge_Timer -= diff;
-    
+
             if (Phase1)
             {
                 if (BewilderingStrikeTimer <= diff)
                 {
-                    DoCastVictim( SPELL_BEWILDERING_STRIKE);
+                    DoCastVictim(SPELL_BEWILDERING_STRIKE);
                     BewilderingStrikeTimer = 20000;
                 }
                 else BewilderingStrikeTimer -= diff;
-    
+
                 if (BloodboilTimer <= diff)
                 {
                     if (BloodboilCount < 5)                      // Only cast it five times.
@@ -276,20 +276,20 @@ public:
                 }
                 else BloodboilTimer -= diff;
             }
-    
+
             if (!Phase1)
             {
                 if (FelGeyserTimer <= diff)
                 {
-                    DoCastVictim( SPELL_FEL_GEYSER);
+                    DoCastVictim(SPELL_FEL_GEYSER);
                     FelGeyserTimer = 30000;
                 }
                 else FelGeyserTimer -= diff;
-    
+
                 if (me->GetVictim() && me->GetVictim()->IsImmunedToDamage(SPELL_SCHOOL_MASK_ALL, true))
                     me->getThreatManager().modifyThreatPercent(me->GetVictim(), -100);
             }
-    
+
             if (PhaseChangeTimer <= diff)
             {
                 if (Phase1)
@@ -298,7 +298,7 @@ public:
                     if (pTarget && pTarget->IsAlive())
                     {
                         Phase1 = false;
-    
+
                         TargetThreat = DoGetThreat(pTarget);
                         TargetGUID = pTarget->GetGUID();
                         if (DoGetThreat(pTarget))
@@ -307,19 +307,19 @@ public:
                         pTarget->CastSpell(me, SPELL_TAUNT_GURTOGG, true);
                         me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
                         me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
-    
+
                         // If VMaps are disabled, this spell can call the whole instance
                         DoCast(me, SPELL_INSIGNIFIGANCE, true);
                         DoCast(pTarget, SPELL_FEL_RAGE_1, true);
                         DoCast(pTarget, SPELL_FEL_RAGE_2, true);
                         DoCast(pTarget, SPELL_FEL_RAGE_3, true);
                         DoCast(pTarget, SPELL_FEL_RAGE_SCALE, true);
-    
+
                         //Cast this without triggered so that it appears in combat logs and shows visual.
                         DoCast(me, SPELL_FEL_RAGE_SELF);
-    
+
                         DoScriptText(RAND(SAY_SPECIAL1, SAY_SPECIAL2), me);
-    
+
                         FelGeyserTimer = 1000;
                         PhaseChangeTimer = 30000;
                     }
@@ -341,18 +341,17 @@ public:
                 }
             }
             else PhaseChangeTimer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_gurtogg_bloodboilAI>(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_gurtogg_bloodboil()
 {
     new boss_gurtogg_bloodboil();

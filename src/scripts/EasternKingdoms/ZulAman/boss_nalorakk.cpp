@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Nalorakk
-SD%Complete: 100
-SDComment:
-SDCategory: Zul'Aman
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Nalorakk
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Zul'Aman
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -28,7 +28,7 @@ EndScriptData */
 #include "GridNotifiers.h"
 #include "CellImpl.h"
 
-// Trash Waves
+ // Trash Waves
 float NalorakkWay[8][3] =
 {
     { 18.569f, 1414.512f, 11.42f},// waypoint 1
@@ -48,15 +48,15 @@ enum // Sounds
     SOUND_NALORAKK_WAVE3 = 12068,
     SOUND_NALORAKK_WAVE4 = 12069,
 
-    SOUND_YELL_AGGRO     = 12070,
-    SOUND_YELL_KILL_ONE  = 12075,
-    SOUND_YELL_KILL_TWO  = 12076,
-    SOUND_YELL_DEATH     = 12077,
-    SOUND_YELL_BERSERK   = 12074,
+    SOUND_YELL_AGGRO = 12070,
+    SOUND_YELL_KILL_ONE = 12075,
+    SOUND_YELL_KILL_TWO = 12076,
+    SOUND_YELL_DEATH = 12077,
+    SOUND_YELL_BERSERK = 12074,
 
-    SOUND_YELL_TOBEAR    = 12072,
-    SOUND_YELL_SURGE     = 12071,
-    SOUND_YELL_TOTROLL   = 12073,
+    SOUND_YELL_TOBEAR = 12072,
+    SOUND_YELL_SURGE = 12071,
+    SOUND_YELL_TOTROLL = 12073,
 
     // UnImplemented SoundIDs
     SOUND_NALORAKK_EVENT1 = 12078, // "What could be better than servin' da bear spirit for eternity? Come closer now. Bring your souls to me!"
@@ -68,38 +68,39 @@ static const char YELL_NALORAKK_WAVE2[] = "Guards, go already! Who you more afra
 static const char YELL_NALORAKK_WAVE3[] = "Ride now! Ride out dere and bring me back some heads!";
 static const char YELL_NALORAKK_WAVE4[] = "I be losin' me patience! Go on: make dem wish dey was never born!";
 
-static const char YELL_AGGRO[]          = "You be dead soon enough!";
-static const char YELL_KILL_ONE[]       = "Mua-ha-ha! Now whatchoo got to say?";
-static const char YELL_KILL_TWO[]       = "Da Amani gonna rule again!";
-static const char YELL_DEATH[]          = "I... be waitin' on da udda side....";
-static const char YELL_BERSERK[]        = "You had your chance, now it be too late!"; //Never seen this being used, so just guessing from what I hear.
+static const char YELL_AGGRO[] = "You be dead soon enough!";
+static const char YELL_KILL_ONE[] = "Mua-ha-ha! Now whatchoo got to say?";
+static const char YELL_KILL_TWO[] = "Da Amani gonna rule again!";
+static const char YELL_DEATH[] = "I... be waitin' on da udda side....";
+static const char YELL_BERSERK[] = "You had your chance, now it be too late!"; //Never seen this being used, so just guessing from what I hear.
 
-static const char YELL_SURGE[]          = "I bring da pain!";
+static const char YELL_SURGE[] = "I bring da pain!";
 static const char YELL_SHIFTEDTOTROLL[] = "Make way for Nalorakk!";
-static const char YELL_SHIFTEDTOBEAR[]  = "You call on da beast, you gonna get more dan you bargain for!";
+static const char YELL_SHIFTEDTOBEAR[] = "You call on da beast, you gonna get more dan you bargain for!";
 
 enum // Spells
 {
-    SPELL_BERSERK         = 45078,
+    SPELL_BERSERK = 45078,
 
     // Spells for Troll form
-    SPELL_BRUTALSWIPE     = 42384,
-    SPELL_MANGLE          = 42389,
-    SPELL_MANGLEEFFECT    = 44955,
-    SPELL_SURGE           = 42402,
-    SPELL_BEARFORM        = 42377,
+    SPELL_BRUTALSWIPE = 42384,
+    SPELL_MANGLE = 42389,
+    SPELL_MANGLEEFFECT = 44955,
+    SPELL_SURGE = 42402,
+    SPELL_BEARFORM = 42377,
 
     // Spells for Bear form
     SPELL_LACERATINGSLASH = 42395,
-    SPELL_RENDFLESH       = 42397,
-    SPELL_DEAFENINGROAR   = 42398
+    SPELL_RENDFLESH = 42397,
+    SPELL_DEAFENINGROAR = 42398
 };
 
 
 class boss_nalorakk : public CreatureScript
 {
-public: 
+public:
     boss_nalorakk() : CreatureScript("boss_nalorakk") { }
+
     struct boss_nalorakkAI : public ScriptedAI
     {
         boss_nalorakkAI(Creature* c) : ScriptedAI(c)
@@ -108,26 +109,26 @@ public:
             MovePhase = 0;
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 BrutalSwipe_Timer;
         uint32 Mangle_Timer;
         uint32 Surge_Timer;
-    
+
         uint32 LaceratingSlash_Timer;
         uint32 RendFlesh_Timer;
         uint32 DeafeningRoar_Timer;
-    
+
         uint32 ShapeShift_Timer;
         uint32 Berserk_Timer;
-    
+
         bool inBearForm;
         bool MoveEvent;
         bool inMove;
         uint32 MovePhase;
         uint32 waitTimer;
-    
+
         void Reset()
         {
             if (MoveEvent)
@@ -141,41 +142,41 @@ public:
             }
             else
                 (*me).GetMotionMaster()->MovePoint(0, NalorakkWay[7][0], NalorakkWay[7][1], NalorakkWay[7][2]);
-    
+
             if (pInstance)
                 pInstance->SetData(ENCOUNTER_NALORAKK, NOT_STARTED);
-    
+
             Surge_Timer = 15000 + rand() % 5000;
             BrutalSwipe_Timer = 7000 + rand() % 5000;
             Mangle_Timer = 10000 + rand() % 5000;
             ShapeShift_Timer = 45000 + rand() % 5000;
             Berserk_Timer = 600000;
-    
+
             inBearForm = false;
             me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, 5122);
         }
-    
+
         void SendAttacker(Unit* pTarget)
         {
             std::list<Creature*> templist;
             float x, y, z;
             me->GetPosition(x, y, z);
-    
+
             {
                 CellCoord pair(Oregon::ComputeCellCoord(x, y));
                 Cell cell(pair);
                 cell.SetNoCreate();
-    
+
                 Oregon::AllFriendlyCreaturesInGrid check(me);
                 Oregon::CreatureListSearcher<Oregon::AllFriendlyCreaturesInGrid> searcher(templist, check);
                 TypeContainerVisitor<Oregon::CreatureListSearcher<Oregon::AllFriendlyCreaturesInGrid>, GridTypeMapContainer> cSearcher(searcher);
                 cell.Visit(pair, cSearcher, *(me->GetMap()), *me, me->GetGridActivationRange());
-    
+
             }
-    
+
             if (!templist.size())
                 return;
-    
+
             for (std::list<Creature*>::const_iterator i = templist.begin(); i != templist.end(); ++i)
             {
                 if ((*i) && me->IsWithinDistInMap((*i), 25))
@@ -185,13 +186,13 @@ public:
                 }
             }
         }
-    
+
         void AttackStart(Unit* who)
         {
             if (!MoveEvent)
                 ScriptedAI::AttackStart(who);
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!MoveEvent)
@@ -209,11 +210,11 @@ public:
                             {
                                 me->MonsterYell(YELL_NALORAKK_WAVE1, LANG_UNIVERSAL, 0);
                                 DoPlaySoundToSet(me, SOUND_NALORAKK_WAVE1);
-    
+
                                 (*me).GetMotionMaster()->MovePoint(1, NalorakkWay[1][0], NalorakkWay[1][1], NalorakkWay[1][2]);
-                                MovePhase ++;
+                                MovePhase++;
                                 inMove = true;
-    
+
                                 SendAttacker(who);
                             }
                             break;
@@ -222,11 +223,11 @@ public:
                             {
                                 me->MonsterYell(YELL_NALORAKK_WAVE2, LANG_UNIVERSAL, 0);
                                 DoPlaySoundToSet(me, SOUND_NALORAKK_WAVE2);
-    
+
                                 (*me).GetMotionMaster()->MovePoint(3, NalorakkWay[3][0], NalorakkWay[3][1], NalorakkWay[3][2]);
-                                MovePhase ++;
+                                MovePhase++;
                                 inMove = true;
-    
+
                                 SendAttacker(who);
                             }
                             break;
@@ -235,11 +236,11 @@ public:
                             {
                                 me->MonsterYell(YELL_NALORAKK_WAVE3, LANG_UNIVERSAL, 0);
                                 DoPlaySoundToSet(me, SOUND_NALORAKK_WAVE3);
-    
+
                                 (*me).GetMotionMaster()->MovePoint(6, NalorakkWay[6][0], NalorakkWay[6][1], NalorakkWay[6][2]);
-                                MovePhase ++;
+                                MovePhase++;
                                 inMove = true;
-    
+
                                 SendAttacker(who);
                             }
                             break;
@@ -247,13 +248,13 @@ public:
                             if (me->IsWithinDistInMap(who, 50))
                             {
                                 SendAttacker(who);
-    
+
                                 me->MonsterYell(YELL_NALORAKK_WAVE4, LANG_UNIVERSAL, 0);
                                 DoPlaySoundToSet(me, SOUND_NALORAKK_WAVE4);
-    
+
                                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-    
+
                                 MoveEvent = false;
                             }
                             break;
@@ -262,26 +263,26 @@ public:
                 }
             }
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             if (pInstance)
                 pInstance->SetData(ENCOUNTER_NALORAKK, IN_PROGRESS);
-    
+
             me->MonsterYell(YELL_AGGRO, LANG_UNIVERSAL, 0);
             DoPlaySoundToSet(me, SOUND_YELL_AGGRO);
             DoZoneInCombat();
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             if (pInstance)
                 pInstance->SetData(ENCOUNTER_NALORAKK, DONE);
-    
+
             me->MonsterYell(YELL_DEATH, LANG_UNIVERSAL, 0);
             DoPlaySoundToSet(me, SOUND_YELL_DEATH);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             switch (urand(0, 1))
@@ -296,20 +297,20 @@ public:
                 break;
             }
         }
-    
+
         void MovementInform(uint32 type, uint32 id)
         {
             if (MoveEvent)
             {
                 if (type != POINT_MOTION_TYPE)
                     return;
-    
+
                 if (!inMove)
                     return;
-    
+
                 if (MovePhase != id)
                     return;
-    
+
                 switch (MovePhase)
                 {
                 case 2:
@@ -320,7 +321,7 @@ public:
                 case 3:
                 case 4:
                 case 6:
-                    MovePhase ++;
+                    MovePhase++;
                     waitTimer = 1;
                     inMove = true;
                     return;
@@ -333,10 +334,10 @@ public:
                     inMove = false;
                     return;
                 }
-    
+
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (waitTimer)
@@ -352,10 +353,10 @@ public:
                     else waitTimer -= diff;
                 }
             }
-    
+
             if (!UpdateVictim())
                 return;
-    
+
             if (Berserk_Timer <= diff)
             {
                 DoCast(me, SPELL_BERSERK, true);
@@ -365,7 +366,7 @@ public:
             }
             else
                 Berserk_Timer -= diff;
-    
+
             if (ShapeShift_Timer <= diff)
             {
                 if (inBearForm)
@@ -395,29 +396,29 @@ public:
             }
             else
                 ShapeShift_Timer -= diff;
-    
+
             if (!inBearForm)
             {
                 if (BrutalSwipe_Timer <= diff)
                 {
-                    DoCastVictim( SPELL_BRUTALSWIPE);
+                    DoCastVictim(SPELL_BRUTALSWIPE);
                     BrutalSwipe_Timer = 7000 + rand() % 5000;
                 }
                 else
                     BrutalSwipe_Timer -= diff;
-    
+
                 if (Mangle_Timer <= diff)
                 {
                     if (me->GetVictim() && !me->GetVictim()->HasAura(SPELL_MANGLEEFFECT, 0))
                     {
-                        DoCastVictim( SPELL_MANGLE);
+                        DoCastVictim(SPELL_MANGLE);
                         Mangle_Timer = 1000;
                     }
                     else Mangle_Timer = 10000 + rand() % 5000;
                 }
                 else
                     Mangle_Timer -= diff;
-    
+
                 if (Surge_Timer <= diff)
                 {
                     me->MonsterYell(YELL_SURGE, LANG_UNIVERSAL, 0);
@@ -434,40 +435,40 @@ public:
             {
                 if (LaceratingSlash_Timer <= diff)
                 {
-                    DoCastVictim( SPELL_LACERATINGSLASH);
+                    DoCastVictim(SPELL_LACERATINGSLASH);
                     LaceratingSlash_Timer = 18000 + rand() % 5000;
                 }
                 else
                     LaceratingSlash_Timer -= diff;
-    
+
                 if (RendFlesh_Timer <= diff)
                 {
-                    DoCastVictim( SPELL_RENDFLESH);
+                    DoCastVictim(SPELL_RENDFLESH);
                     RendFlesh_Timer = 5000 + rand() % 5000;
                 }
                 else
                     RendFlesh_Timer -= diff;
-    
+
                 if (DeafeningRoar_Timer <= diff)
                 {
-                    DoCastVictim( SPELL_DEAFENINGROAR);
+                    DoCastVictim(SPELL_DEAFENINGROAR);
                     DeafeningRoar_Timer = 15000 + rand() % 5000;
                 }
                 else
                     DeafeningRoar_Timer -= diff;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_nalorakkAI (pCreature);
+        return new boss_nalorakkAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_nalorakk()
 {
     new boss_nalorakk();

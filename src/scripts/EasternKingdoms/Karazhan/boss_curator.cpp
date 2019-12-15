@@ -15,68 +15,69 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Curator
-SD%Complete: 100
-SDComment:
-SDCategory: Karazhan
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Curator
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Karazhan
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum CuratorInfo
 {
-    SAY_AGGRO   = -1532057,
+    SAY_AGGRO = -1532057,
     SAY_SUMMON1 = -1532058,
     SAY_SUMMON2 = -1532059,
     SAY_EVOCATE = -1532060,
-    SAY_ENRAGE  = -1532061,
-    SAY_KILL1   = -1532062,
-    SAY_KILL2   = -1532063,
-    SAY_DEATH   = -1532064,
+    SAY_ENRAGE = -1532061,
+    SAY_KILL1 = -1532062,
+    SAY_KILL2 = -1532063,
+    SAY_DEATH = -1532064,
 
-    SPELL_HATEFUL_BOLT          = 30383,
-    SPELL_EVOCATION             = 30254,
-    SPELL_ARCANE_INFUSION       = 30403,
+    SPELL_HATEFUL_BOLT = 30383,
+    SPELL_EVOCATION = 30254,
+    SPELL_ARCANE_INFUSION = 30403,
     SPELL_ASTRAL_DECONSTRUCTION = 30407,
 
-    EVENT_SPELL_HATEFUL_BOLT    = 1,
-    EVENT_SPELL_EVOCATION       = 2,
-    EVENT_SPELL_ASTRAL_FLARE    = 3,
-    EVENT_SPELL_BERSERK         = 4,
-    EVENT_CHECK_HEALTH          = 5
+    EVENT_SPELL_HATEFUL_BOLT = 1,
+    EVENT_SPELL_EVOCATION = 2,
+    EVENT_SPELL_ASTRAL_FLARE = 3,
+    EVENT_SPELL_BERSERK = 4,
+    EVENT_CHECK_HEALTH = 5
 
 };
 
 
 class boss_curator : public CreatureScript
 {
-public: 
+public:
     boss_curator() : CreatureScript("boss_curator") { }
+
     struct boss_curatorAI : public ScriptedAI
     {
         boss_curatorAI(Creature* c) : ScriptedAI(c), summons(me) {}
-    
+
         SummonList summons;
         EventMap events;
-    
+
         void Reset()
         {
             me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_ARCANE, true);
             summons.DespawnAll();
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             DoScriptText(RAND(SAY_KILL1, SAY_KILL2), me);
         }
-    
+
         void JustDied(Unit* /*victim*/)
         {
             DoScriptText(SAY_DEATH, me);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(SAY_AGGRO, me);
@@ -86,7 +87,7 @@ public:
             events.ScheduleEvent(EVENT_CHECK_HEALTH, 1000);
             DoZoneInCombat();
         }
-    
+
         void JustSummoned(Creature* summon)
         {
             summons.Summon(summon);
@@ -97,20 +98,20 @@ public:
             }
             summon->SetInCombatWithZone();
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
-    
+
             if (me->HasAura(SPELL_EVOCATION, 0))
                 return;
-    
+
             events.Update(diff);
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_CHECK_HEALTH:
@@ -151,22 +152,21 @@ public:
                     Creature* AstralFlare = DoSpawnCreature(17096, rand() % 37, rand() % 37, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
                     events.ScheduleEvent(EVENT_SPELL_ASTRAL_FLARE, 10000);
                 }
-    
+
                 break;
             }
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_curatorAI (pCreature);
+        return new boss_curatorAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_curator()
 {
     new boss_curator();

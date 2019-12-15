@@ -15,19 +15,19 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Azshara
-SD%Complete: 90
-SDComment: Quest support: 2744, 3141, 9364, 10994
-SDCategory: Azshara
-EndScriptData */
+ /* ScriptData
+ SDName: Azshara
+ SD%Complete: 90
+ SDComment: Quest support: 2744, 3141, 9364, 10994
+ SDCategory: Azshara
+ EndScriptData */
 
-/* ContentData
-mobs_spitelashes
-npc_loramus_thalipedes
-mob_rizzle_sprysprocket
-mob_depth_charge
-EndContentData */
+ /* ContentData
+ mobs_spitelashes
+ npc_loramus_thalipedes
+ mob_rizzle_sprysprocket
+ mob_depth_charge
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -35,9 +35,9 @@ EndContentData */
 #include "WorldPacket.h"
 #include "ScriptedGossip.h"
 
-/*######
-## mobs_spitelashes
-######*/
+ /*######
+ ## mobs_spitelashes
+ ######*/
 class mob_spitelashes : CreatureScript
 {
 public:
@@ -182,18 +182,18 @@ public:
 
 enum eRizzle
 {
-    MOB_DEPTH_CHARGE               = 23025,
-    SPELL_RIZZLE_BLACKJACK         = 39865,
-    SPELL_RIZZLE_ESCAPE            = 39871,
-    SPELL_RIZZLE_FROST_GRENADE     = 40525,
-    SPELL_DEPTH_CHARGE_TRAP        = 38576,
-    SPELL_PERIODIC_DEPTH_CHARGE    = 39912,
+    MOB_DEPTH_CHARGE = 23025,
+    SPELL_RIZZLE_BLACKJACK = 39865,
+    SPELL_RIZZLE_ESCAPE = 39871,
+    SPELL_RIZZLE_FROST_GRENADE = 40525,
+    SPELL_DEPTH_CHARGE_TRAP = 38576,
+    SPELL_PERIODIC_DEPTH_CHARGE = 39912,
     SPELL_GIVE_SOUTHFURY_MOONSTONE = 39886,
 
-    SAY_RIZZLE_START            = -1000351,
-    EMOTE_START                 = -1000352,
-    SAY_RIZZLE_GRENADE          = -1000354,
-    SAY_RIZZLE_FINAL            = -1000355
+    SAY_RIZZLE_START = -1000351,
+    EMOTE_START = -1000352,
+    SAY_RIZZLE_GRENADE = -1000354,
+    SAY_RIZZLE_FINAL = -1000355
 };
 
 #define GOSSIP_GET_MOONSTONE "Hand over the Southfury moonstone and I'll let you go."

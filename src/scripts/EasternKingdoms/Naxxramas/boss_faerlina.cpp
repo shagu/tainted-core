@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Faerlina
-SD%Complete: 50
-SDComment: Without Mindcontrol boss cannot be defeated
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Faerlina
+ SD%Complete: 50
+ SDComment: Without Mindcontrol boss cannot be defeated
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -43,17 +43,18 @@ EndScriptData */
 
 class boss_faerlina : public CreatureScript
 {
-public: 
+public:
     boss_faerlina() : CreatureScript("boss_faerlina") { }
+
     struct boss_faerlinaAI : public ScriptedAI
     {
         boss_faerlinaAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 PoisonBoltVolley_Timer;
         uint32 RainOfFire_Timer;
         uint32 Enrage_Timer;
         bool HasTaunted;
-    
+
         void Reset()
         {
             PoisonBoltVolley_Timer = 8000;
@@ -61,7 +62,7 @@ public:
             Enrage_Timer = 60000;
             HasTaunted = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             switch (rand() % 4)
@@ -80,18 +81,18 @@ public:
                 break;
             }
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!HasTaunted && me->IsWithinDistInMap(who, 60.0f))
             {
                 DoScriptText(SAY_GREET, me);
                 HasTaunted = true;
-    
+
             }
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             switch (rand() % 2)
@@ -104,17 +105,17 @@ public:
                 break;
             }
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //PoisonBoltVolley_Timer
             if (PoisonBoltVolley_Timer <= diff)
             {
@@ -122,7 +123,7 @@ public:
                 PoisonBoltVolley_Timer = 11000;
             }
             else PoisonBoltVolley_Timer -= diff;
-    
+
             //RainOfFire_Timer
             if (RainOfFire_Timer <= diff)
             {
@@ -131,7 +132,7 @@ public:
                 RainOfFire_Timer = 16000;
             }
             else RainOfFire_Timer -= diff;
-    
+
             //Enrage_Timer
             if (Enrage_Timer <= diff)
             {
@@ -139,17 +140,17 @@ public:
                 Enrage_Timer = 61000;
             }
             else Enrage_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_faerlinaAI (pCreature);
+        return new boss_faerlinaAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_faerlina()
 {
     new boss_faerlina();

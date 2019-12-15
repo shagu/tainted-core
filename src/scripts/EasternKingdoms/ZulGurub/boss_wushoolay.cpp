@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Wushoolay
-SD%Complete: 100
-SDComment:
-SDCategory: Zul'Gurub
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Wushoolay
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Zul'Gurub
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -32,59 +32,60 @@ EndScriptData */
 
 class boss_wushoolay : public CreatureScript
 {
-public: 
+public:
     boss_wushoolay() : CreatureScript("boss_wushoolay") { }
+
     struct boss_wushoolayAI : public ScriptedAI
     {
         boss_wushoolayAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 LightningCloud_Timer;
         uint32 LightningWave_Timer;
-    
+
         void Reset()
         {
             LightningCloud_Timer = 5000 + rand() % 5000;
             LightningWave_Timer = 8000 + rand() % 8000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //LightningCloud_Timer
             if (LightningCloud_Timer <= diff)
             {
-                DoCastVictim( SPELL_LIGHTNINGCLOUD);
+                DoCastVictim(SPELL_LIGHTNINGCLOUD);
                 LightningCloud_Timer = 15000 + rand() % 5000;
             }
             else LightningCloud_Timer -= diff;
-    
+
             //LightningWave_Timer
             if (LightningWave_Timer <= diff)
             {
                 Unit* pTarget = NULL;
                 pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0);
                 if (pTarget) DoCast(pTarget, SPELL_LIGHTNINGWAVE);
-    
+
                 LightningWave_Timer = 12000 + rand() % 4000;
             }
             else LightningWave_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_wushoolayAI (pCreature);
+        return new boss_wushoolayAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_wushoolay()
 {
     new boss_wushoolay();

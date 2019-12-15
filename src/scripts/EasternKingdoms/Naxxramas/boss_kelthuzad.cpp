@@ -15,19 +15,19 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_KelThuzud
-SD%Complete: 0
-SDComment: VERIFY SCRIPT
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_KelThuzud
+ SD%Complete: 0
+ SDComment: VERIFY SCRIPT
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "MoveSplineInit.h"
 #include "MoveSpline.h"
 
-//when shappiron dies. dialog between kel and lich king (in this order)
+ //when shappiron dies. dialog between kel and lich king (in this order)
 #define SAY_SAPP_DIALOG1            -1533084
 #define SAY_SAPP_DIALOG2_LICH       -1533085
 #define SAY_SAPP_DIALOG3            -1533086
@@ -156,8 +156,9 @@ I also don't know the emotes
 
 class boss_kelthuzad : public CreatureScript
 {
-public: 
+public:
     boss_kelthuzad() : CreatureScript("boss_kelthuzad") { }
+
     struct boss_kelthuzadAI : public ScriptedAI
     {
         boss_kelthuzadAI(Creature* c) : ScriptedAI(c)
@@ -169,7 +170,7 @@ public:
             GuardiansOfIcecrown[4] = 0;
             GuardiansOfIcecrown_Count = 0;
         }
-    
+
         uint64 GuardiansOfIcecrown[5];
         uint32 GuardiansOfIcecrown_Count;
         uint32 GuardiansOfIcecrown_Timer;
@@ -183,7 +184,7 @@ public:
         uint32 Phase1_Timer;
         bool Phase2;
         bool Phase3;
-    
+
         void Reset()
         {
             FrostBolt_Timer = (rand() % 60) * 1000;             //It won't be more than a minute without cast it
@@ -193,7 +194,7 @@ public:
             ShadowFisure_Timer = 25000;                         //25 seconds
             FrostBlast_Timer = (rand() % 30 + 30) * 1000;       //Random time between 30-60 seconds
             GuardiansOfIcecrown_Timer = 5000;                   //5 seconds for summoning each Guardian of Icecrown in phase 3
-    
+
             for (int i = 0; i < 5; i++)
             {
                 if (GuardiansOfIcecrown[i])
@@ -205,12 +206,12 @@ public:
                     GuardiansOfIcecrown[i] = 0;
                 }
             }
-    
+
             Phase1_Timer = 310000;                              //Phase 1 lasts 5 minutes and 10 seconds
             Phase2 = false;
             Phase3 = false;
         }
-    
+
         void KilledUnit()
         {
             if (rand() % 2)
@@ -218,7 +219,7 @@ public:
             else
                 DoScriptText(SAY_SLAY2, me);
         }
-    
+
         void JustDied(Unit*)
         {
             DoScriptText(SAY_DEATH, me);
@@ -228,7 +229,7 @@ public:
                     Unit* pUnit = Unit::GetUnit((*me), GuardiansOfIcecrown[i]);
                     if (!pUnit || !pUnit->IsAlive())
                         continue;
-    
+
                     pUnit->CombatStop();
                     float Walk_Pos_X = 0;
                     float Walk_Pos_Y = 0;
@@ -272,7 +273,7 @@ public:
                     init.Launch();
                 }
         }
-    
+
         void EnterCombat(Unit*)
         {
             switch (rand() % 3)
@@ -288,12 +289,12 @@ public:
                 break;
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (me->GetVictim() && me->IsAlive())
             {
                 //Check for Frost Bolt
@@ -304,7 +305,7 @@ public:
                     FrostBolt_Timer = (rand() % 60) * 1000;
                 }
                 else FrostBolt_Timer -= diff;
-    
+
                 //Check for Frost Bolt Nova
                 if (FrostBoltNova_Timer <= diff)
                 {
@@ -312,12 +313,12 @@ public:
                     FrostBoltNova_Timer = 15000;
                 }
                 else FrostBoltNova_Timer -= diff;
-    
+
                 //Check for Chains Of Kelthuzad
                 if (ChainsOfKelthuzad_Timer <= diff)
                 {
                     //DoCastVictim(SPELL_CHAINS_OF_KELTHUZAD);
-    
+
                     //if (rand()%2 == 0)
                     //DoScriptText(SAY_CHAIN1, me);
                     //else
@@ -325,42 +326,42 @@ public:
                     ChainsOfKelthuzad_Timer = (rand() % 30 + 30) * 1000;
                 }
                 else ChainsOfKelthuzad_Timer -= diff;
-    
+
                 //Check for Mana Detonation
                 if (ManaDetonation_Timer <= diff)
                 {
                     //time to cast
                     DoCastVictim(SPELL_MANA_DETONATION);
-    
+
                     if (rand() % 2)
                         DoScriptText(SAY_SPECIAL1_MANA_DET, me);
                     ManaDetonation_Timer = 20000;
                 }
                 else ManaDetonation_Timer -= diff;
-    
+
                 //Check for Shadow Fissure
                 if (ShadowFisure_Timer <= diff)
                 {
                     DoCastVictim(SPELL_SHADOW_FISURE);
-    
+
                     if (rand() % 2)
                         DoScriptText(SAY_SPECIAL3_MANA_DET, me);
                     ShadowFisure_Timer = 25000;
                 }
                 else ShadowFisure_Timer -= diff;
-    
+
                 //Check for Frost Blast
                 if (FrostBlast_Timer <= diff)
                 {
                     //time to cast
                     DoCastVictim(SPELL_FROST_BLAST);
-    
+
                     if (rand() % 2 == 0)
                         DoScriptText(SAY_FROST_BLAST, me);
                     FrostBlast_Timer = (rand() % 30 + 30) * 1000;
                 }
                 else FrostBlast_Timer -= diff;
-    
+
                 //start phase 3 when we are 40% health
                 if (!Phase3 && HealthBelowPct(40))
                 {
@@ -370,7 +371,7 @@ public:
                     //so for now just make Kelthuzad says it.
                     DoScriptText(SAY_ANSWER_REQUEST, me);
                 }
-    
+
                 if (Phase3 && (GuardiansOfIcecrown_Count < 5))
                 {
                     if (GuardiansOfIcecrown_Timer <= diff)
@@ -405,7 +406,7 @@ public:
                             Walk_Pos_Z = WALKZ_LEFT_NEAR;
                             break;
                         case 3:
-    
+
                             pUnit = me->SummonCreature(16441, ADDX_RIGHT_FAR, ADDY_RIGHT_FAR, ADDZ_RIGHT_FAR, ADDO_RIGHT_FAR, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1000);
                             //Start moving guardian towards the center of the room
                             Walk_Pos_X = WALKX_RIGHT_FAR;
@@ -427,7 +428,7 @@ public:
                             Walk_Pos_Z = WALKZ_RIGHT_NEAR;
                             break;
                         }
-    
+
                         if (pUnit)
                         {
                             //if we find no one to figth walk to the center
@@ -438,32 +439,32 @@ public:
                                 init.MoveTo(Walk_Pos_X, Walk_Pos_Y, Walk_Pos_Z, true);
                                 init.Launch();
                             }
-    
+
                             //Safe storing of creatures
                             GuardiansOfIcecrown[GuardiansOfIcecrown_Count] = pUnit->GetGUID();
-    
+
                             //Update guardian count
                             GuardiansOfIcecrown_Count++;
-    
+
                         }
                         //5 seconds until summoning next guardian
                         GuardiansOfIcecrown_Timer = 5000;
                     }
                     else GuardiansOfIcecrown_Timer -= diff;
                 }
-    
+
                 DoMeleeAttackIfReady();
             }
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_kelthuzadAI (pCreature);
+        return new boss_kelthuzadAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_kelthuzad()
 {
     new boss_kelthuzad();

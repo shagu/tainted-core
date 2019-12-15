@@ -15,28 +15,29 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_High_Interrogator_Gerstahn
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_High_Interrogator_Gerstahn
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_SHADOWWORDPAIN                                   = 10894,
-    SPELL_MANABURN                                         = 10876,
-    SPELL_PSYCHICSCREAM                                    = 8122,
-    SPELL_SHADOWSHIELD                                     = 22417
+    SPELL_SHADOWWORDPAIN = 10894,
+    SPELL_MANABURN = 10876,
+    SPELL_PSYCHICSCREAM = 8122,
+    SPELL_SHADOWSHIELD = 22417
 };
 
 class boss_high_interrogator_gerstahn : public CreatureScript
 {
 public:
     boss_high_interrogator_gerstahn() : CreatureScript("boss_high_interrogator_gerstahn") { }
+
     struct boss_high_interrogator_gerstahnAI : public ScriptedAI
     {
         boss_high_interrogator_gerstahnAI(Creature* c) : ScriptedAI(c) {}
@@ -101,11 +102,11 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_high_interrogator_gerstahnAI(pCreature);
     }
-
 };
 
 void AddSC_boss_high_interrogator_gerstahn()

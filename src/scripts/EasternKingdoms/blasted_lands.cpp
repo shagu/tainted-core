@@ -15,25 +15,25 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Blasted_Lands
-SD%Complete: 90
-SDComment: Quest support: 2784, 2801, 3628. Missing some texts for Fallen Hero. Teleporter to Rise of the Defiler missing group support.
-SDCategory: Blasted Lands
-EndScriptData */
+ /* ScriptData
+ SDName: Blasted_Lands
+ SD%Complete: 90
+ SDComment: Quest support: 2784, 2801, 3628. Missing some texts for Fallen Hero. Teleporter to Rise of the Defiler missing group support.
+ SDCategory: Blasted Lands
+ EndScriptData */
 
-/* ContentData
-npc_deathly_usher
-npc_fallen_hero_of_horde
-EndContentData */
+ /* ContentData
+ npc_deathly_usher
+ npc_fallen_hero_of_horde
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 
-/*######
-## npc_deathly_usher
-######*/
+ /*######
+ ## npc_deathly_usher
+ ######*/
 
 #define GOSSIP_ITEM_USHER "I wish to to visit the Rise of the Defiler."
 
@@ -42,9 +42,9 @@ EndContentData */
 #define SPELL_TELEPORT_GROUP            27686
 
 
-/*######
-## npc_fallen_hero_of_horde
-######*/
+ /*######
+ ## npc_fallen_hero_of_horde
+ ######*/
 #define GOSSIP_H_F1 "Why are you here?"
 #define GOSSIP_H_F2 "Continue story..."
 
@@ -61,7 +61,7 @@ class npc_fallen_hero_of_horde : public CreatureScript
 public:
     npc_fallen_hero_of_horde() : CreatureScript("npc_fallen_hero_of_horde") { }
 
-    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override 
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
     {
         if (pCreature->IsQuestGiver())
             pPlayer->PrepareQuestMenu(pCreature->GetGUID());
@@ -76,7 +76,7 @@ public:
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_H_F1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-            return true;
+        return true;
     }
 
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override

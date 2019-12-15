@@ -15,17 +15,17 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Mekgineer_Steamrigger
-SD%Complete: 60
-SDComment: Mechanics' interrrupt heal doesn't work very well, also a proper movement needs to be implemented -> summon further away and move towards pTarget to repair.
-SDCategory: Coilfang Resevoir, The Steamvault
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Mekgineer_Steamrigger
+ SD%Complete: 60
+ SDComment: Mechanics' interrrupt heal doesn't work very well, also a proper movement needs to be implemented -> summon further away and move towards pTarget to repair.
+ SDCategory: Coilfang Resevoir, The Steamvault
+ EndScriptData */
 
-/* ContentData
-boss_mekgineer_steamrigger
-mob_steamrigger_mechanic
-EndContentData */
+ /* ContentData
+ boss_mekgineer_steamrigger
+ mob_steamrigger_mechanic
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -33,30 +33,30 @@ EndContentData */
 
 enum MekgineerSteamrigger
 {
-    SAY_MECHANICS               = - 1545007,
-    SAY_AGGRO_1                 = - 1545008,
-    SAY_AGGRO_2                 = - 1545009,
-    SAY_AGGRO_3                 = - 1545010,
-    SAY_AGGRO_4                 = - 1545011,
-    SAY_SLAY_1                  = - 1545012,
-    SAY_SLAY_2                  = - 1545013,
-    SAY_SLAY_3                  = - 1545014,
-    SAY_DEATH                   = - 1545015,
+    SAY_MECHANICS = -1545007,
+    SAY_AGGRO_1 = -1545008,
+    SAY_AGGRO_2 = -1545009,
+    SAY_AGGRO_3 = -1545010,
+    SAY_AGGRO_4 = -1545011,
+    SAY_SLAY_1 = -1545012,
+    SAY_SLAY_2 = -1545013,
+    SAY_SLAY_3 = -1545014,
+    SAY_DEATH = -1545015,
 
-    SPELL_SUPER_SHRINK_RAY      = 31485,
-    SPELL_SAW_BLADE             = 31486,
-    SPELL_ELECTRIFIED_NET       = 35107,
-    SPELL_REPAIR_N              = 31532,
-    SPELL_REPAIR_H              = 37936,
+    SPELL_SUPER_SHRINK_RAY = 31485,
+    SPELL_SAW_BLADE = 31486,
+    SPELL_ELECTRIFIED_NET = 35107,
+    SPELL_REPAIR_N = 31532,
+    SPELL_REPAIR_H = 37936,
 
-    NPC_STREAMRIGGER_MECHANIC   = 17951,
+    NPC_STREAMRIGGER_MECHANIC = 17951,
 
-    EVENT_CHECK_HP25            = 1,
-    EVENT_CHECK_HP50            = 2,
-    EVENT_CHECK_HP75            = 3,
-    EVENT_SPELL_SHRINK          = 4,
-    EVENT_SPELL_SAW             = 5,
-    EVENT_SPELL_NET             = 6
+    EVENT_CHECK_HP25 = 1,
+    EVENT_CHECK_HP50 = 2,
+    EVENT_CHECK_HP75 = 3,
+    EVENT_SPELL_SHRINK = 4,
+    EVENT_SPELL_SAW = 5,
+    EVENT_SPELL_NET = 6
 };
 
 
@@ -69,84 +69,85 @@ enum MekgineerSteamrigger
 
 class boss_mekgineer_steamrigger : public CreatureScript
 {
-public: 
+public:
     boss_mekgineer_steamrigger() : CreatureScript("boss_mekgineer_steamrigger") { }
+
     struct boss_mekgineer_steamriggerAI : public ScriptedAI
     {
         boss_mekgineer_steamriggerAI(Creature* c) : ScriptedAI(c), summons(me)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
         EventMap events;
         SummonList summons;
-    
+
         void Reset()
         {
             events.Reset();
             if (pInstance && me->IsAlive())
                 pInstance->SetData(TYPE_MEKGINEER_STEAMRIGGER, NOT_STARTED);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
-    
+
             summons.DespawnAll();
-    
+
             if (pInstance)
                 pInstance->SetData(TYPE_MEKGINEER_STEAMRIGGER, DONE);
         }
-    
+
         void KilledUnit(Unit* victim)
         {
             DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2, SAY_SLAY_3), me);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
-    
+
             events.ScheduleEvent(EVENT_SPELL_SHRINK, 20000);
             events.ScheduleEvent(EVENT_SPELL_SAW, 15000);
             events.ScheduleEvent(EVENT_SPELL_NET, 10000);
             events.ScheduleEvent(EVENT_CHECK_HP75, 5000);
             events.ScheduleEvent(EVENT_CHECK_HP50, 5000);
             events.ScheduleEvent(EVENT_CHECK_HP25, 5000);
-    
+
             if (pInstance)
                 pInstance->SetData(TYPE_MEKGINEER_STEAMRIGGER, IN_PROGRESS);
         }
-    
+
         //no known summon spells exist
         void SummonMechanichs()
         {
             DoScriptText(SAY_MECHANICS, me);
-    
+
             me->SummonCreature(NPC_STREAMRIGGER_MECHANIC, me->GetPositionX() + 15.0f, me->GetPositionY() + 15.0f, me->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
             me->SummonCreature(NPC_STREAMRIGGER_MECHANIC, me->GetPositionX() - 15.0f, me->GetPositionY() + 15.0f, me->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
             me->SummonCreature(NPC_STREAMRIGGER_MECHANIC, me->GetPositionX() - 15.0f, me->GetPositionY() - 15.0f, me->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
             if (urand(0, 1))
                 me->SummonCreature(NPC_STREAMRIGGER_MECHANIC, me->GetPositionX() + 15.0f, me->GetPositionY() - 15.0f, me->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
-    
+
         }
-    
-    
+
+
         void JustSummoned(Creature* cr)
         {
             cr->GetMotionMaster()->MoveFollow(me, 0.0f, 0.0f);
-    
+
             summons.Summon(cr);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
-    
+
             switch (uint32 eventId = events.ExecuteEvent())
             {
             case EVENT_SPELL_SHRINK:
@@ -177,12 +178,12 @@ public:
                 events.Repeat(2000);
                 break;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_mekgineer_steamriggerAI>(pCreature);
     }
@@ -190,8 +191,9 @@ public:
 
 class mob_steamrigger_mechanic : public CreatureScript
 {
-public: 
+public:
     mob_steamrigger_mechanic() : CreatureScript("mob_steamrigger_mechanic") { }
+
     struct mob_steamrigger_mechanicAI : public ScriptedAI
     {
         mob_steamrigger_mechanicAI(Creature* c) : ScriptedAI(c)
@@ -199,28 +201,28 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
         bool HeroicMode;
         uint32 repairTimer;
         uint64 bossGUID;
-    
+
         void Reset()
         {
             repairTimer = 0;
             bossGUID = 0;
             if (pInstance)
-                    bossGUID = pInstance->GetData64(DATA_MEKGINEERSTEAMRIGGER);
+                bossGUID = pInstance->GetData64(DATA_MEKGINEERSTEAMRIGGER);
         }
-    
-        void MoveInLineOfSight(Unit* /*who*/){}
-    
+
+        void MoveInLineOfSight(Unit* /*who*/) {}
+
         void EnterCombat(Unit* /*who*/) { }
-    
+
         void UpdateAI(const uint32 diff)
         {
             repairTimer += diff;
-    
+
             if (repairTimer >= 2000)
             {
                 repairTimer = 0;
@@ -232,20 +234,19 @@ public:
                 }
                 return;
             }
-    
+
             if (!UpdateVictim())
                 return;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_steamrigger_mechanicAI>(pCreature);
     }
 };
-
 
 void AddSC_boss_mekgineer_steamrigger()
 {
@@ -253,4 +254,3 @@ void AddSC_boss_mekgineer_steamrigger()
     new mob_steamrigger_mechanic();
 
 }
-

@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Fankriss
-SD%Complete: 100
-SDComment: sound not implemented
-SDCategory: Temple of Ahn'Qiraj
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Fankriss
+ SD%Complete: 100
+ SDComment: sound not implemented
+ SDCategory: Temple of Ahn'Qiraj
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -34,40 +34,41 @@ EndScriptData */
 #define SPELL_MORTAL_WOUND 28467
 #define SPELL_ROOT         28858
 
-// Enrage for his spawns
+ // Enrage for his spawns
 #define SPELL_ENRAGE       28798
 
 
 class boss_fankriss : public CreatureScript
 {
-public: 
+public:
     boss_fankriss() : CreatureScript("boss_fankriss") { }
+
     struct boss_fankrissAI : public ScriptedAI
     {
         boss_fankrissAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 MortalWound_Timer;
         uint32 SpawnHatchlings_Timer;
         uint32 SpawnSpawns_Timer;
         int Rand;
         int RandX;
         int RandY;
-    
+
         Creature* Hatchling;
         Creature* Spawn;
-    
+
         void Reset()
         {
             MortalWound_Timer = 10000 + rand() % 5000;
             SpawnHatchlings_Timer = 6000 + rand() % 6000;
             SpawnSpawns_Timer = 15000 + rand() % 30000;
         }
-    
+
         void SummonSpawn(Unit* victim)
         {
             if (!victim)
                 return;
-    
+
             Rand = 10 + (rand() % 10);
             switch (rand() % 2)
             {
@@ -79,7 +80,7 @@ public:
                 break;
             }
             Rand = 0;
-            Rand =  10 + (rand() % 10);
+            Rand = 10 + (rand() % 10);
             switch (rand() % 2)
             {
             case 0:
@@ -94,17 +95,17 @@ public:
             if (Spawn)
                 ((CreatureAI*)Spawn->AI())->AttackStart(victim);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //MortalWound_Timer
             if (MortalWound_Timer <= diff)
             {
@@ -112,7 +113,7 @@ public:
                 MortalWound_Timer = 10000 + rand() % 10000;
             }
             else MortalWound_Timer -= diff;
-    
+
             //Summon 1-3 Spawns of Fankriss at random time.
             if (SpawnSpawns_Timer <= diff)
             {
@@ -134,7 +135,7 @@ public:
                 SpawnSpawns_Timer = 30000 + rand() % 30000;
             }
             else SpawnSpawns_Timer -= diff;
-    
+
             // Teleporting Random Target to one of the three tunnels and spawn 4 hatchlings near the gamer.
             //We will only telport if fankriss has more than 3% of hp so teleported gamers can always loot.
             if (HealthAbovePct(3))
@@ -146,10 +147,10 @@ public:
                     if (pTarget && pTarget->GetTypeId() == TYPEID_PLAYER)
                     {
                         DoCast(pTarget, SPELL_ROOT);
-    
+
                         if (DoGetThreat(pTarget))
                             DoModifyThreatPercent(pTarget, -100);
-    
+
                         switch (rand() % 3)
                         {
                         case 0:
@@ -203,18 +204,17 @@ public:
                 }
                 else SpawnHatchlings_Timer -= diff;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_fankrissAI (pCreature);
+        return new boss_fankrissAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_fankriss()
 {
     new boss_fankriss();

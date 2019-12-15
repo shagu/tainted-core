@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Herod
-SD%Complete: 95
-SDComment: Should in addition spawn Myrmidons in the hallway outside
-SDCategory: Scarlet Monastery
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Herod
+ SD%Complete: 95
+ SDComment: Should in addition spawn Myrmidons in the hallway outside
+ SDCategory: Scarlet Monastery
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -42,49 +42,50 @@ EndScriptData */
 
 class boss_herod : public CreatureScript
 {
-public: 
+public:
     boss_herod() : CreatureScript("boss_herod") { }
+
     struct boss_herodAI : public ScriptedAI
     {
         boss_herodAI(Creature* c) : ScriptedAI(c) {}
-    
+
         bool Enrage;
-    
+
         uint32 Cleave_Timer;
         uint32 Whirlwind_Timer;
-    
+
         void Reset()
         {
             Enrage = false;
-            Cleave_Timer  = 7500;
+            Cleave_Timer = 7500;
             Whirlwind_Timer = 14500;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(SAY_AGGRO, me);
             DoCast(me, SPELL_RUSHINGCHARGE);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             DoScriptText(SAY_KILL, me);
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             for (uint8 i = 0; i < 20; ++i)
-                me->SummonCreature(ENTRY_SCARLET_TRAINEE, 1939.18f, -431.58f, 17.09f, 6.22f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 600000 +i);
+                me->SummonCreature(ENTRY_SCARLET_TRAINEE, 1939.18f, -431.58f, 17.09f, 6.22f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 600000 + i);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (me->IsNonMeleeSpellCast(false)) //Checks if spell NPC is already casting a spell
                 return;
-    
+
             //If we are <30% hp goes Enraged
             if (!Enrage && HealthBelowPct(30) && !me->IsNonMeleeSpellCast(false))
             {
@@ -93,17 +94,17 @@ public:
                 DoCast(me, SPELL_FRENZY);
                 Enrage = true;
             }
-    
+
             //Cleave_Timer
             if (Cleave_Timer <= diff)
             {
-                DoCastVictim( SPELL_CLEAVE);
+                DoCastVictim(SPELL_CLEAVE);
                 Cleave_Timer = 12000;
             }
             else Cleave_Timer -= diff;
-    
+
             // Whirlwind_Timer
-    
+
             if (Whirlwind_Timer < diff)
             {
                 DoCast(me->GetVictim(), SPELL_WHIRLWIND);
@@ -114,7 +115,7 @@ public:
             }
             else
                 Whirlwind_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
@@ -128,21 +129,22 @@ public:
 
 class mob_scarlet_trainee : public CreatureScript
 {
-public: 
+public:
     mob_scarlet_trainee() : CreatureScript("mob_scarlet_trainee") { }
+
     struct mob_scarlet_traineeAI : public npc_escortAI
     {
         mob_scarlet_traineeAI(Creature* c) : npc_escortAI(c)
         {
             Start_Timer = urand(1000, 6000);
         }
-    
+
         uint32 Start_Timer;
-    
+
         void Reset() {}
         void WaypointReached(uint32 /*uiPoint*/) {}
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (Start_Timer)
@@ -154,7 +156,7 @@ public:
                 }
                 else Start_Timer -= diff;
             }
-    
+
             npc_escortAI::UpdateAI(diff);
         }
     };
@@ -170,6 +172,5 @@ void AddSC_boss_herod()
 {
     new boss_herod();
     new mob_scarlet_trainee();
-
 }
 

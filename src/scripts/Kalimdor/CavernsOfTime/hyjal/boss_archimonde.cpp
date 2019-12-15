@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Archimonde
-SD%Complete: 85
-SDComment: Doomfires not completely offlike due to core limitations for random moving. Tyrande and second phase not fully implemented.
-SDCategory: Caverns of Time, Mount Hyjal
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Archimonde
+ SD%Complete: 85
+ SDComment: Doomfires not completely offlike due to core limitations for random moving. Tyrande and second phase not fully implemented.
+ SDCategory: Caverns of Time, Mount Hyjal
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -28,7 +28,7 @@ EndScriptData */
 #include "SpellAuras.h"
 #include "hyjal_trash.h"
 
-//text id -1534018 are the text used when previous events complete. Not part of this script.
+ //text id -1534018 are the text used when previous events complete. Not part of this script.
 #define SAY_AGGRO                   -1534019
 #define SAY_DOOMFIRE1               -1534020
 #define SAY_DOOMFIRE2               -1534021
@@ -75,28 +75,11 @@ EndScriptData */
 #define NORDRASSIL_Y       -3523.436f
 #define NORDRASSIL_Z        1608.781f
 
-
-
-/* This script controls the Doomfire mob. Unlike the other Doomfire mob, this one does not stalk players.
-   Instead, this doomfire will simply stand in one place after spawning and deal damage to any players that
-   are within 3 yards. Another creature called Doomfire Targetting spawns this creature as well as stalks. */
-
-
-/* This is the script for the Doomfire Targetting Mob. This mob simply follows players and/or travels in random directions and spawns the actual Doomfire which does damage to anyone that moves close.  */
-
-
-/* Finally, Archimonde's script. His script isn't extremely complex, most are simply spells on timers.
-   The only complicated aspect of the battle is Finger of Death and Doomfire, with Doomfire being the
-   hardest bit to code. Finger of Death is simply a distance check - if no one is in melee range, then
-   select a random pTarget and cast the spell on them. However, if someone IS in melee range, and this
-   is NOT the main tank (creature's victim), then we aggro that player and they become the new victim.
-   For Doomfire, we summon a mob (Doomfire Targetting) that summons another mob (Doomfire every second)
-   Doomfire Targetting 'stalks' players whilst Doomfire damages player that are within range. */
-
 class mob_doomfire : public CreatureScript
 {
 public:
     mob_doomfire() : CreatureScript("mob_doomfire") { }
+
     struct mob_doomfireAI : public ScriptedAI
     {
         mob_doomfireAI(Creature* c) : ScriptedAI(c) {}
@@ -202,6 +185,7 @@ class mob_doomfire_targetting : public CreatureScript
 {
 public:
     mob_doomfire_targetting() : CreatureScript("mob_doomfire_targetting") { }
+
     struct mob_doomfire_targettingAI : public ScriptedAI
     {
         mob_doomfire_targettingAI(Creature* c) : ScriptedAI(c) {}
@@ -301,6 +285,7 @@ class mob_ancient_wisp : public CreatureScript
 {
 public:
     mob_ancient_wisp() : CreatureScript("mob_ancient_wisp") { }
+
     struct mob_ancient_wispAI : public ScriptedAI
     {
         mob_ancient_wispAI(Creature* c) : ScriptedAI(c)
@@ -362,17 +347,18 @@ public:
 
 class boss_archimonde : public CreatureScript
 {
-public: 
+public:
     boss_archimonde() : CreatureScript("boss_archimonde") { }
+
     struct boss_archimondeAI : public hyjal_trashAI
     {
         boss_archimondeAI(Creature* c) : hyjal_trashAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 DrainNordrassilTimer;
         uint32 FearTimer;
         uint32 AirBurstTimer;
@@ -386,17 +372,17 @@ public:
         uint32 WispCount;
         uint32 EnrageTimer;
         uint32 CheckDistanceTimer;
-    
+
         bool Enraged;
         bool BelowTenPercent;
         bool HasProtected;
         bool IsChanneling;
-    
+
         void Reset()
         {
             if (pInstance)
                 pInstance->SetData(DATA_ARCHIMONDEEVENT, NOT_STARTED);
-    
+
             damageTaken = 0;
             DrainNordrassilTimer = 0;
             FearTimer = 42000;
@@ -411,31 +397,31 @@ public:
             EnrageTimer = 600000;                               // 10 minutes
             CheckDistanceTimer = 30000;                         // This checks if he's too close to the World Tree (75 yards from a point on the tree), if true then he will enrage
             SummonWispTimer = 0;
-    
+
             Enraged = false;
             BelowTenPercent = false;
             HasProtected = false;
             IsChanneling = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             me->InterruptSpell(CURRENT_CHANNELED_SPELL);
             DoScriptText(SAY_AGGRO, me);
             DoZoneInCombat();
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_ARCHIMONDEEVENT, IN_PROGRESS);
         }
-    
+
         void KilledUnit(Unit* victim)
         {
             DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2, SAY_SLAY3), me);
-    
+
             if (victim && (victim->GetTypeId() == TYPEID_PLAYER))
                 GainSoulCharge(CAST_PLR(victim));
         }
-    
+
         void GainSoulCharge(Player* victim)
         {
             switch (victim->getClass())
@@ -456,31 +442,31 @@ public:
                 victim->CastSpell(me, SPELL_SOUL_CHARGE_GREEN, true);
                 break;
             }
-    
+
             SoulChargeTimer = urand(2000, 30000);
             ++SoulChargeCount;
         }
-    
+
         void JustDied(Unit* victim)
         {
             hyjal_trashAI::JustDied(victim);
             DoScriptText(SAY_DEATH, me);
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_ARCHIMONDEEVENT, DONE);
         }
-    
+
         bool CanUseFingerOfDeath()
         {
             // First we check if our current victim is in melee range or not.
             Unit* victim = me->GetVictim();
             if (victim && me->IsWithinDistInMap(victim, me->GetAttackDistance(victim)))
                 return false;
-    
+
             ThreatContainer::StorageType const &threatlist = me->getThreatManager().getThreatList();
             if (threatlist.empty())
                 return false;
-    
+
             std::list<Unit*> targets;
             ThreatContainer::StorageType::const_iterator itr = threatlist.begin();
             for (; itr != threatlist.end(); ++itr)
@@ -489,10 +475,10 @@ public:
                 if (pUnit && pUnit->IsAlive())
                     targets.push_back(pUnit);
             }
-    
+
             if (targets.empty())
                 return false;
-    
+
             targets.sort(Oregon::ObjectDistanceOrderPred(me));
             Unit* pTarget = targets.front();
             if (pTarget)
@@ -502,10 +488,10 @@ public:
                 else                                            // This target is closest, he is our new tank
                     me->AddThreat(pTarget, DoGetThreat(me->GetVictim()));
             }
-    
+
             return false;
         }
-    
+
         void SummonDoomfire(Unit* pTarget)
         {
             Creature* Doomfire = DoSpawnCreature(CREATURE_DOOMFIRE_TARGETING, float(rand() % 30), float(rand() % 30), 0, 0, TEMPSUMMON_TIMED_DESPAWN, 30000);
@@ -522,22 +508,22 @@ public:
                 Doomfire->CastSpell(Doomfire, SPELL_DOOMFIRE_VISUAL, true);
                 if (pTarget)
                     Doomfire->AI()->AttackStart(pTarget);
-    
+
                 if (rand() % 2 == 0)
                     DoScriptText(SAY_DOOMFIRE1, me);
                 else
                     DoScriptText(SAY_DOOMFIRE2, me);
             }
         }
-    
+
         void UnleashSoulCharge()
         {
             me->InterruptNonMeleeSpells(false);
-    
+
             bool HasCast = false;
             uint32 chargeSpell = 0;
             uint32 unleashSpell = 0;
-    
+
             switch (urand(0, 2))
             {
             case 0:
@@ -553,19 +539,19 @@ public:
                 unleashSpell = SPELL_UNLEASH_SOUL_GREEN;
                 break;
             }
-    
+
             if (me->HasAura(chargeSpell, 0))
             {
                 me->RemoveSingleAuraFromStack(chargeSpell, 0);
-                DoCastVictim( unleashSpell);
+                DoCastVictim(unleashSpell);
                 HasCast = true;
                 SoulChargeCount--;
             }
-    
+
             if (HasCast)
                 SoulChargeTimer = urand(2000, 30000);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!me->IsInCombat())
@@ -584,7 +570,7 @@ public:
                         me->SetVisible(true);
                     }
                 }
-    
+
                 if (DrainNordrassilTimer <= diff)
                 {
                     if (!IsChanneling)
@@ -609,13 +595,13 @@ public:
                 }
                 else DrainNordrassilTimer -= diff;
             }
-    
+
             if (!UpdateVictim())
                 return;
-    
+
             if (HealthBelowPct(10) && !BelowTenPercent && !Enraged)
                 BelowTenPercent = true;
-    
+
             if (!Enraged)
             {
                 if (EnrageTimer <= diff)
@@ -629,7 +615,7 @@ public:
                     }
                 }
                 else EnrageTimer -= diff;
-    
+
                 if (CheckDistanceTimer <= diff)
                 {
                     // To simplify the check, we simply summon a creature in the location and then check how far we are from the creature
@@ -637,7 +623,7 @@ public:
                     if (Check)
                     {
                         Check->SetVisible(false);
-    
+
                         if (me->IsWithinDistInMap(Check, 75))
                         {
                             me->GetMotionMaster()->Clear(false);
@@ -650,20 +636,20 @@ public:
                 }
                 else CheckDistanceTimer -= diff;
             }
-    
+
             if (BelowTenPercent)
             {
                 if (!HasProtected)
                 {
                     me->GetMotionMaster()->Clear(false);
                     me->GetMotionMaster()->MoveIdle();
-    
+
                     //all members of raid must get this buff
-                    DoCastVictim( SPELL_PROTECTION_OF_ELUNE);
+                    DoCastVictim(SPELL_PROTECTION_OF_ELUNE);
                     HasProtected = true;
                     Enraged = true;
                 }
-    
+
                 if (SummonWispTimer <= diff)
                 {
                     Creature* Wisp = DoSpawnCreature(CREATURE_ANCIENT_WISP, rand() % 40, rand() % 40, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000);
@@ -676,62 +662,62 @@ public:
                     ++WispCount;
                 }
                 else SummonWispTimer -= diff;
-    
+
                 if (WispCount >= 30)
                     me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             }
-    
+
             if (Enraged)
             {
                 if (HandOfDeathTimer <= diff)
                 {
-                    DoCastVictim( SPELL_HAND_OF_DEATH);
+                    DoCastVictim(SPELL_HAND_OF_DEATH);
                     HandOfDeathTimer = 2000;
                 }
                 else HandOfDeathTimer -= diff;
                 return;                                         // Don't do anything after this point.
             }
-    
+
             if (SoulChargeCount)
             {
                 if (SoulChargeTimer <= diff)
                     UnleashSoulCharge();
                 else SoulChargeTimer -= diff;
             }
-    
+
             if (GripOfTheLegionTimer <= diff)
             {
                 DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_GRIP_OF_THE_LEGION);
                 GripOfTheLegionTimer = urand(5000, 25000);
             }
             else GripOfTheLegionTimer -= diff;
-    
+
             if (AirBurstTimer <= diff)
             {
                 if (urand(0, 1))
                     DoScriptText(SAY_AIR_BURST1, me);
                 else
                     DoScriptText(SAY_AIR_BURST2, me);
-    
+
                 DoCast(SelectUnit(SELECT_TARGET_RANDOM, 1), SPELL_AIR_BURST);//not on tank
                 AirBurstTimer = urand(25000, 40000);
             }
             else AirBurstTimer -= diff;
-    
+
             if (FearTimer <= diff)
             {
-                DoCastVictim( SPELL_FEAR);
+                DoCastVictim(SPELL_FEAR);
                 FearTimer = 42000;
             }
             else FearTimer -= diff;
-    
+
             if (DoomfireTimer <= diff)
             {
                 SummonDoomfire(SelectUnit(SELECT_TARGET_RANDOM, 1));
                 DoomfireTimer = 40000;
             }
             else DoomfireTimer -= diff;
-    
+
             if (MeleeRangeCheckTimer <= diff)
             {
                 if (CanUseFingerOfDeath())
@@ -739,11 +725,11 @@ public:
                     DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_FINGER_OF_DEATH);
                     MeleeRangeCheckTimer = 1000;
                 }
-    
+
                 MeleeRangeCheckTimer = 5000;
             }
             else MeleeRangeCheckTimer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
         void WaypointReached(uint32 /*i*/) {}
@@ -751,17 +737,10 @@ public:
 
     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_archimondeAI (pCreature);
+        return new boss_archimondeAI(pCreature);
     }
 
 };
-
-
-
-
-
-
-
 
 void AddSC_boss_archimonde()
 {
@@ -769,6 +748,5 @@ void AddSC_boss_archimonde()
     new mob_doomfire();
     new mob_doomfire_targetting();
     new mob_ancient_wisp();
-
 }
 

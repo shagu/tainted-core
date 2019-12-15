@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Lucifron
-SD%Complete: 100
-SDComment:
-SDCategory: Molten Core
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Lucifron
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Molten Core
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -85,7 +85,8 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_lucifronAI(pCreature);
     }

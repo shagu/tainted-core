@@ -15,40 +15,42 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Vanndar
-SD%Complete:
-SDComment:
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Vanndar
+ SD%Complete:
+ SDComment:
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Yells
 {
-    YELL_AGGRO                                    = -1810008,
-    YELL_EVADE                                    = -1810009,
-    YELL_RESPAWN1                                 = -1810010,
-    YELL_RESPAWN2                                 = -1810011,
-    YELL_RANDOM1                                  = -1810012,
-    YELL_RANDOM2                                  = -1810013,
-    YELL_RANDOM3                                  = -1810014,
-    YELL_RANDOM4                                  = -1810015,
-    YELL_RANDOM5                                  = -1810016,
-    YELL_RANDOM6                                  = -1810017,
-    YELL_RANDOM7                                  = -1810018
+    YELL_AGGRO = -1810008,
+    YELL_EVADE = -1810009,
+    YELL_RESPAWN1 = -1810010,
+    YELL_RESPAWN2 = -1810011,
+    YELL_RANDOM1 = -1810012,
+    YELL_RANDOM2 = -1810013,
+    YELL_RANDOM3 = -1810014,
+    YELL_RANDOM4 = -1810015,
+    YELL_RANDOM5 = -1810016,
+    YELL_RANDOM6 = -1810017,
+    YELL_RANDOM7 = -1810018
 };
 
 enum Spells
 {
-    SPELL_AVATAR                                  = 19135,
-    SPELL_THUNDERCLAP                             = 15588,
-    SPELL_STORMBOLT                               = 20685 // not sure
+    SPELL_AVATAR = 19135,
+    SPELL_THUNDERCLAP = 15588,
+    SPELL_STORMBOLT = 20685 // not sure
 };
+
 class boss_vanndar : public CreatureScript
 {
 public:
     boss_vanndar() : CreatureScript("boss_vanndar") { }
+
     struct boss_vanndarAI : public ScriptedAI
     {
         boss_vanndarAI(Creature* c) : ScriptedAI(c) {}
@@ -130,12 +132,10 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_vanndarAI(pCreature);
     }
-
-
 };
 
 void AddSC_boss_vanndar()

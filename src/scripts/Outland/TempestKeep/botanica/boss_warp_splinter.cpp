@@ -15,49 +15,40 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Warp_Splinter
-SD%Complete: 80
-SDComment: Includes Sapling (need some better control with these).
-SDCategory: Tempest Keep, The Botanica
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Warp_Splinter
+ SD%Complete: 80
+ SDComment: Includes Sapling (need some better control with these).
+ SDCategory: Tempest Keep, The Botanica
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-/*#####
-# mob_treant (Sapling)
-#####*/
 
 #define SPELL_HEAL_FATHER   6262
-
-
-/*#####
-# boss_warp_splinter
-#####*/
-
 #define TREANT_SPAWN_DIST   50                              //50 yards from Warp Splinter's spawn point
 
 enum Splinter
 {
-    SAY_AGGRO               = -1553007,
-    SAY_SLAY_1              = -1553008,
-    SAY_SLAY_2              = -1553009,
-    SAY_SUMMON_1            = -1553010,
-    SAY_SUMMON_2            = -1553011,
-    SAY_DEATH               = -1553012,
+    SAY_AGGRO = -1553007,
+    SAY_SLAY_1 = -1553008,
+    SAY_SLAY_2 = -1553009,
+    SAY_SUMMON_1 = -1553010,
+    SAY_SUMMON_2 = -1553011,
+    SAY_DEATH = -1553012,
 
-    SPELL_WAR_STOMP         = 34716,
-    SPELL_SUMMON_TREANTS    = 34727,
-    SPELL_ARCANE_VOLLEY_H   = 39133,
-    SPELL_ARCANE_VOLLEY_N   = 36705,
+    SPELL_WAR_STOMP = 34716,
+    SPELL_SUMMON_TREANTS = 34727,
+    SPELL_ARCANE_VOLLEY_H = 39133,
+    SPELL_ARCANE_VOLLEY_N = 36705,
 
 
-    EVENT_WAR_STOMP         = 1,
-    EVENT_SUMMON_TREANT     = 2,
-    EVENT_ARCANE_VOLLEY     = 3,
+    EVENT_WAR_STOMP = 1,
+    EVENT_SUMMON_TREANT = 2,
+    EVENT_ARCANE_VOLLEY = 3,
 
-    CREATURE_TREANT         = 19949
+    CREATURE_TREANT = 19949
 };
 
 float treant_pos[6][3] =
@@ -69,10 +60,6 @@ float treant_pos[6][3] =
     {109.861877f, 423.201630f, -27.356019f},
     {106.780159f, 355.582581f, -27.593357f}
 };
-
-
-
-
 
 class mob_warp_splinter_treant : public CreatureScript
 {
@@ -126,23 +113,17 @@ public:
         }
     };
 
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_warp_splinter_treantAI(pCreature);
     }
-
-
-
 };
-
-
-
 
 class boss_warp_splinter : public CreatureScript
 {
-public: 
+public:
     boss_warp_splinter() : CreatureScript("boss_warp_splinter") { }
+
     struct boss_warp_splinterAI : public ScriptedAI
     {
         boss_warp_splinterAI(Creature* c) : ScriptedAI(c), summons(me)
@@ -151,62 +132,62 @@ public:
             Treant_Spawn_Pos_X = c->GetPositionX();
             Treant_Spawn_Pos_Y = c->GetPositionY();
         }
-    
+
         EventMap events;
         SummonList summons;
-    
+
         float Treant_Spawn_Pos_X;
         float Treant_Spawn_Pos_Y;
-    
+
         void Reset()
         {
             events.Reset();
             me->SetSpeed(MOVE_RUN, 0.7f, true);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(SAY_AGGRO, me);
-    
+
             events.ScheduleEvent(EVENT_WAR_STOMP, 25000 + rand() % 15000);
             events.ScheduleEvent(EVENT_SUMMON_TREANT, 45000);
             events.ScheduleEvent(EVENT_ARCANE_VOLLEY, 8000 + rand() % 12000);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
         }
-    
+
         void SummonTreants()
         {
             for (int i = 0; i < 6; ++i)
             {
                 float angle = (M_PI / 3) * i;
-    
+
                 float X = Treant_Spawn_Pos_X + TREANT_SPAWN_DIST * cos(angle);
                 float Y = Treant_Spawn_Pos_Y + TREANT_SPAWN_DIST * sin(angle);
-                float O = - me->GetAngle(X, Y);
-    
+                float O = -me->GetAngle(X, Y);
+
                 if (Creature* pTreant = me->SummonCreature(CREATURE_TREANT, treant_pos[i][0], treant_pos[i][1], treant_pos[i][2], O, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 25000))
                     ((mob_warp_splinter_treant::mob_warp_splinter_treantAI*)pTreant->AI())->WarpGuid = me->GetGUID();
             }
-    
+
             DoScriptText(RAND(SAY_SUMMON_1, SAY_SUMMON_2), me);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_WAR_STOMP:
@@ -222,16 +203,14 @@ public:
                 events.Repeat(45000);
                 break;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-    
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_warp_splinterAI (pCreature);
+        return new boss_warp_splinterAI(pCreature);
     }
 };
 

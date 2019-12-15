@@ -53,60 +53,59 @@ enum Misc
     EVENT_RESTORE_COMBAT = 4
 };
 
-
-
 class boss_high_botanist_freywinn : public CreatureScript
 {
-public: 
+public:
     boss_high_botanist_freywinn() : CreatureScript("boss_high_botanist_freywinn") { }
+
     struct boss_high_botanist_freywinnAI : public ScriptedAI
     {
         boss_high_botanist_freywinnAI(Creature* c) : ScriptedAI(c), summons(me) {}
-    
+
         SummonList summons;
         EventMap events;
-    
+
         void Reset() {}
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(SAY_AGGRO, me);
             events.ScheduleEvent(EVENT_SUMMON_SEEDLING, 6000);
             events.ScheduleEvent(EVENT_TREE_FORM, 30000);
         }
-    
+
         void JustSummoned(Creature* summoned)
         {
             //  Forced Summon Frayers to Attack players
             if (me->GetVictim())
                 summoned->AI()->AttackStart(me->GetVictim());
-    
+
             summons.Summon(summoned);
         }
-    
+
         void KilledUnit(Unit* victim)
         {
             if (victim->GetTypeId() == TYPEID_PLAYER)
-                DoScriptText(RAND( SAY_KILL_1, SAY_KILL_2), me);
+                DoScriptText(RAND(SAY_KILL_1, SAY_KILL_2), me);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
         }
-    
+
         void SummonedCreatureDies(Creature* summon, Unit*)
         {
             summons.Despawn(summon);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_SUMMON_SEEDLING:
@@ -119,15 +118,15 @@ public:
                 events.ScheduleEvent(EVENT_CHECK_FRAYERS, 1000);
                 events.ScheduleEvent(EVENT_TREE_FORM, 75000);
                 events.ScheduleEvent(EVENT_RESTORE_COMBAT, 46000);
-    
+
                 DoScriptText(RAND(SAY_TREE_1, SAY_TREE_2), me);
                 me->RemoveAllAuras();
                 me->GetMotionMaster()->MoveIdle();
                 me->GetMotionMaster()->Clear(false);
-    
+
                 for (int i = 0; i < 3; ++i)
                     me->SummonCreature(ENTRY_FRAYER, me->GetPosition(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 60000) + i;
-    
+
                 me->CastSpell(me, SPELL_TRANQUILITY, true);
                 me->CastSpell(me, SPELL_TREE_FORM, true);
                 break;
@@ -136,7 +135,7 @@ public:
                 events.ScheduleEvent(EVENT_SUMMON_SEEDLING, 6000);
                 me->GetMotionMaster()->MoveChase(me->GetVictim());
                 break;
-    
+
             case EVENT_CHECK_FRAYERS:
                 if (!summons.HasEntry(NPC_FRAYER))
                 {
@@ -149,19 +148,19 @@ public:
                 events.ScheduleEvent(EVENT_CHECK_FRAYERS, 500);
                 break;
             }
-    
+
             if (!events.IsInPhase(1))
                 DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_high_botanist_freywinnAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_high_botanist_freywinn()
 {
     new boss_high_botanist_freywinn();

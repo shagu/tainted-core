@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_the_black_stalker
-SD%Complete: 95
-SDComment: Timers may be incorrect
-SDCategory: Coilfang Resevoir, Underbog
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_the_black_stalker
+ SD%Complete: 95
+ SDComment: Timers may be incorrect
+ SDCategory: Coilfang Resevoir, Underbog
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -35,18 +35,18 @@ EndScriptData */
 
 #define ENTRY_SPORE_STRIDER        22299
 
-
 class boss_the_black_stalker : public CreatureScript
 {
-public: 
+public:
     boss_the_black_stalker() : CreatureScript("boss_the_black_stalker") { }
+
     struct boss_the_black_stalkerAI : public ScriptedAI
     {
         boss_the_black_stalkerAI(Creature* c) : ScriptedAI(c)
         {
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         bool HeroicMode;
         uint32 SporeStriders_Timer;
         uint32 Levitate_Timer;
@@ -57,7 +57,7 @@ public:
         bool InAir;
         uint32 check_Timer;
         std::list<uint64> Striders;
-    
+
         void Reset()
         {
             Levitate_Timer = 12000;
@@ -69,9 +69,9 @@ public:
             LevitatedTarget_Timer = 0;
             Striders.clear();
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void JustSummoned(Creature* summon)
         {
             if (summon && summon->GetEntry() == ENTRY_SPORE_STRIDER)
@@ -83,7 +83,7 @@ public:
                     summon->AI()->AttackStart(me->GetVictim());
             }
         }
-    
+
         void JustDied(Unit* /*who*/)
         {
             for (std::list<uint64>::iterator i = Striders.begin(); i != Striders.end(); ++i)
@@ -94,12 +94,12 @@ public:
                     strider->RemoveCorpse();
                 }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             // Evade if too far
             if (check_Timer <= diff)
             {
@@ -113,7 +113,7 @@ public:
                 check_Timer = 1000;
             }
             else check_Timer -= diff;
-    
+
             // Spore Striders
             if (HeroicMode && SporeStriders_Timer <= diff)
             {
@@ -121,7 +121,7 @@ public:
                 SporeStriders_Timer = 10000 + rand() % 5000;
             }
             else SporeStriders_Timer -= diff;
-    
+
             // Levitate
             if (LevitatedTarget)
             {
@@ -163,7 +163,7 @@ public:
                 Levitate_Timer = 12000 + rand() % 3000;
             }
             else Levitate_Timer -= diff;
-    
+
             // Chain Lightning
             if (ChainLightning_Timer <= diff)
             {
@@ -172,7 +172,7 @@ public:
                 ChainLightning_Timer = 7000;
             }
             else ChainLightning_Timer -= diff;
-    
+
             // Static Charge
             if (StaticCharge_Timer <= diff)
             {
@@ -181,18 +181,18 @@ public:
                 StaticCharge_Timer = 10000;
             }
             else StaticCharge_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_the_black_stalkerAI (pCreature);
+        return new boss_the_black_stalkerAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_the_black_stalker()
 {
     new boss_the_black_stalker();

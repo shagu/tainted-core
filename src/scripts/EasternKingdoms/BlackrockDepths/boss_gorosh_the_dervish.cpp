@@ -15,20 +15,20 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Gorosh_the_Dervish
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Gorosh_the_Dervish
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_WHIRLWIND                                        = 15589,
-    SPELL_MORTALSTRIKE                                     = 24573
+    SPELL_WHIRLWIND = 15589,
+    SPELL_MORTALSTRIKE = 24573
 };
 
 class boss_gorosh_the_dervish : public CreatureScript
@@ -78,7 +78,8 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_gorosh_the_dervishAI(pCreature);
     }

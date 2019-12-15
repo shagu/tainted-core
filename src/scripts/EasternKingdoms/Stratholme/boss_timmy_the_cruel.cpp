@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: boss_timmy_the_cruel
-SD%Complete: 100
-SDComment:
-SDCategory: Stratholme
-EndScriptData */
+ /* ScriptData
+ SDName: boss_timmy_the_cruel
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Stratholme
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -29,24 +29,24 @@ EndScriptData */
 
 #define SPELL_RAVENOUSCLAW    17470
 
-
 class boss_timmy_the_cruel : public CreatureScript
 {
-public: 
+public:
     boss_timmy_the_cruel() : CreatureScript("boss_timmy_the_cruel") { }
+
     struct boss_timmy_the_cruelAI : public ScriptedAI
     {
         boss_timmy_the_cruelAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 RavenousClaw_Timer;
         bool HasYelled;
-    
+
         void Reset()
         {
             RavenousClaw_Timer = 10000;
             HasYelled = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             if (!HasYelled)
@@ -55,33 +55,34 @@ public:
                 HasYelled = true;
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //RavenousClaw
             if (RavenousClaw_Timer <= diff)
             {
                 //Cast
-                DoCastVictim( SPELL_RAVENOUSCLAW);
+                DoCastVictim(SPELL_RAVENOUSCLAW);
                 //15 seconds until we should cast this again
                 RavenousClaw_Timer = 15000;
             }
             else RavenousClaw_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_timmy_the_cruelAI (pCreature);
+        return new boss_timmy_the_cruelAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_timmy_the_cruel()
 {
     new boss_timmy_the_cruel();

@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Magistrate_Barthilas
-SD%Complete: 70
-SDComment:
-SDCategory: Stratholme
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Magistrate_Barthilas
+ SD%Complete: 70
+ SDComment:
+ SDCategory: Stratholme
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -37,18 +37,19 @@ EndScriptData */
 
 class boss_magistrate_barthilas : public CreatureScript
 {
-public: 
+public:
     boss_magistrate_barthilas() : CreatureScript("boss_magistrate_barthilas") { }
+
     struct boss_magistrate_barthilasAI : public ScriptedAI
     {
         boss_magistrate_barthilasAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 DrainingBlow_Timer;
         uint32 CrowdPummel_Timer;
         uint32 MightyBlow_Timer;
         uint32 FuriousAnger_Timer;
         uint32 AngerCount;
-    
+
         void Reset()
         {
             DrainingBlow_Timer = 20000;
@@ -56,80 +57,81 @@ public:
             MightyBlow_Timer = 10000;
             FuriousAnger_Timer = 5000;
             AngerCount = 0;
-    
+
             if (me->IsAlive())
                 me->SetDisplayId(MODEL_NORMAL);
             else
                 me->SetDisplayId(MODEL_HUMAN);
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             //nothing to see here yet
-    
+
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             me->SetDisplayId(MODEL_HUMAN);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             if (FuriousAnger_Timer <= diff)
             {
                 FuriousAnger_Timer = 4000;
                 if (AngerCount > 25)
                     return;
-    
+
                 ++AngerCount;
                 DoCast(me, SPELL_FURIOUS_ANGER, false);
             }
             else FuriousAnger_Timer -= diff;
-    
+
             //DrainingBlow
             if (DrainingBlow_Timer <= diff)
             {
-                DoCastVictim( SPELL_DRAININGBLOW);
+                DoCastVictim(SPELL_DRAININGBLOW);
                 DrainingBlow_Timer = 15000;
             }
             else DrainingBlow_Timer -= diff;
-    
+
             //CrowdPummel
             if (CrowdPummel_Timer <= diff)
             {
-                DoCastVictim( SPELL_CROWDPUMMEL);
+                DoCastVictim(SPELL_CROWDPUMMEL);
                 CrowdPummel_Timer = 15000;
             }
             else CrowdPummel_Timer -= diff;
-    
+
             //MightyBlow
             if (MightyBlow_Timer <= diff)
             {
-                DoCastVictim( SPELL_MIGHTYBLOW);
+                DoCastVictim(SPELL_MIGHTYBLOW);
                 MightyBlow_Timer = 20000;
             }
             else MightyBlow_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_magistrate_barthilasAI (pCreature);
+        return new boss_magistrate_barthilasAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_magistrate_barthilas()
 {
     new boss_magistrate_barthilas();

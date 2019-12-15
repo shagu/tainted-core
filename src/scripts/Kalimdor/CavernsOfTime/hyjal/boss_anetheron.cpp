@@ -53,22 +53,9 @@
 #define SAY_ONAGGRO "You are defenders of a doomed world! Flee here, and perhaps you will prolong your pathetic lives!"
 #define SOUND_ONAGGRO 10977
 
-
-
-
-
-#define SPELL_IMMOLATION     31303
-#define SPELL_INFERNO_EFFECT 31302
-
-
-
-
-
-
-
 class boss_anetheron : public CreatureScript
 {
-public: 
+public:
     boss_anetheron() : CreatureScript("boss_anetheron") { }
     struct boss_anetheronAI : public hyjal_trashAI
     {
@@ -84,14 +71,14 @@ public:
                 TempSpell->EffectImplicitTargetB[0] = 0;
             }
         }
-    
+
         uint32 SwarmTimer;
         uint32 SleepTimer;
         uint32 AuraTimer;
         uint32 InfernoTimer;
         bool pGo;
         uint32 pos;
-    
+
         void Reset()
         {
             damageTaken = 0;
@@ -99,11 +86,11 @@ public:
             SleepTimer = 60000;
             AuraTimer = 5000;
             InfernoTimer = 45000;
-    
+
             if (pInstance && IsEvent)
                 pInstance->SetData(DATA_ANETHERONEVENT, NOT_STARTED);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             if (pInstance && IsEvent)
@@ -111,7 +98,7 @@ public:
             DoPlaySoundToSet(me, SOUND_ONAGGRO);
             me->MonsterYell(SAY_ONAGGRO, LANG_UNIVERSAL, 0);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             switch (urand(0, 2))
@@ -130,7 +117,7 @@ public:
                 break;
             }
         }
-    
+
         void WaypointReached(uint32 i)
         {
             pos = i;
@@ -141,7 +128,7 @@ public:
                     me->AddThreat(pTarget, 0.0f);
             }
         }
-    
+
         void JustDied(Unit* victim)
         {
             hyjal_trashAI::JustDied(victim);
@@ -150,7 +137,7 @@ public:
             DoPlaySoundToSet(me, SOUND_ONDEATH);
             me->MonsterYell(SAY_ONDEATH, LANG_UNIVERSAL, 0);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (IsEvent)
@@ -162,29 +149,29 @@ public:
                     pGo = true;
                     if (pInstance)
                     {
-                        AddWaypoint(0, 4896.08f,    -1576.35f,    1333.65f);
-                        AddWaypoint(1, 4898.68f,    -1615.02f,    1329.48f);
-                        AddWaypoint(2, 4907.12f,    -1667.08f,    1321.00f);
-                        AddWaypoint(3, 4963.18f,    -1699.35f,    1340.51f);
-                        AddWaypoint(4, 4989.16f,    -1716.67f,    1335.74f);
-                        AddWaypoint(5, 5026.27f,    -1736.89f,    1323.02f);
-                        AddWaypoint(6, 5037.77f,    -1770.56f,    1324.36f);
-                        AddWaypoint(7, 5067.23f,    -1789.95f,    1321.17f);
+                        AddWaypoint(0, 4896.08f, -1576.35f, 1333.65f);
+                        AddWaypoint(1, 4898.68f, -1615.02f, 1329.48f);
+                        AddWaypoint(2, 4907.12f, -1667.08f, 1321.00f);
+                        AddWaypoint(3, 4963.18f, -1699.35f, 1340.51f);
+                        AddWaypoint(4, 4989.16f, -1716.67f, 1335.74f);
+                        AddWaypoint(5, 5026.27f, -1736.89f, 1323.02f);
+                        AddWaypoint(6, 5037.77f, -1770.56f, 1324.36f);
+                        AddWaypoint(7, 5067.23f, -1789.95f, 1321.17f);
                         Start(false, true);
                         SetDespawnAtEnd(false);
                     }
                 }
             }
-    
+
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             if (SwarmTimer <= diff)
             {
                 if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
                     DoCast(pTarget, SPELL_CARRION_SWARM);
-    
+
                 SwarmTimer = urand(45000, 60000);
                 switch (urand(0, 1))
                 {
@@ -199,7 +186,7 @@ public:
                 }
             }
             else SwarmTimer -= diff;
-    
+
             if (SleepTimer <= diff)
             {
                 for (uint8 i = 0; i < 3; ++i)
@@ -244,21 +231,24 @@ public:
                 }
             }
             else InfernoTimer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_anetheronAI (pCreature);
+        return new boss_anetheronAI(pCreature);
     }
 
 };
 
+#define SPELL_IMMOLATION     31303
+#define SPELL_INFERNO_EFFECT 31302
+
 class mob_towering_infernal : public CreatureScript
 {
-public: 
+public:
     mob_towering_infernal() : CreatureScript("mob_towering_infernal") { }
     struct mob_towering_infernalAI : public ScriptedAI
     {
@@ -268,37 +258,37 @@ public:
             if (pInstance)
                 AnetheronGUID = pInstance->GetData64(DATA_ANETHERON);
         }
-    
+
         uint32 ImmolationTimer;
         uint32 CheckTimer;
         uint64 AnetheronGUID;
         ScriptedInstance* pInstance;
-    
+
         void Reset()
         {
             DoCast(me, SPELL_INFERNO_EFFECT);
             ImmolationTimer = 5000;
             CheckTimer = 5000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
         }
-    
+
         void JustDied(Unit* /*victim*/)
         {
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (me->IsWithinDist(who, 50) && !me->IsInCombat() && me->IsHostileTo(who))
                 me->Attack(who, false);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (CheckTimer <= diff)
@@ -316,25 +306,25 @@ public:
                 CheckTimer = 5000;
             }
             else CheckTimer -= diff;
-    
+
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             if (ImmolationTimer <= diff)
             {
                 DoCast(me, SPELL_IMMOLATION);
                 ImmolationTimer = 5000;
             }
             else ImmolationTimer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new mob_towering_infernalAI (pCreature);
+        return new mob_towering_infernalAI(pCreature);
     }
 
 };

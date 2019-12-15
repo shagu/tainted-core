@@ -1,6 +1,6 @@
-/* Script Created by Lee 
+/* Script Created by Lee
 
-Comments: Not sure on the timers. 
+Comments: Not sure on the timers.
 Scripted: 95%
 Creature Scripted: Archmage Arugal
 
@@ -11,65 +11,64 @@ Creature Scripted: Archmage Arugal
 
 enum eEnums
 {
-    SPELL_SHADOWBOLT   = 7588,
-    SPELL_SHADOWPORT1  = 7587,
-    SPELL_SHADOWPORT2  = 7586,
-    SPELL_SHADOWPORT3  = 7136,
+    SPELL_SHADOWBOLT = 7588,
+    SPELL_SHADOWPORT1 = 7587,
+    SPELL_SHADOWPORT2 = 7586,
+    SPELL_SHADOWPORT3 = 7136,
     SPELL_THUNDERSHOCK = 7803,
-    SPELL_TRANSFORM    = 7621,
+    SPELL_TRANSFORM = 7621,
 
-    SAY_TRANSFORM      = -1527522,
-    SAY_AGGRO          = -1542750,
-    SAY_KILL           = -1542751
+    SAY_TRANSFORM = -1527522,
+    SAY_AGGRO = -1542750,
+    SAY_KILL = -1542751
 };
-
-
 
 class boss_archmage_arugal : public CreatureScript
 {
-public: 
+public:
     boss_archmage_arugal() : CreatureScript("boss_archmage_arugal") { }
+
     struct boss_archmage_arugalAI : public ScriptedAI
     {
         boss_archmage_arugalAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Wait_timer;
         uint32 ShadowBolt_Timer;
         uint32 Shadowport_Timer;
         uint32 Thundershock_Timer;
         uint32 Transform_Timer;
-    
+
         void Reset()
         {
-            ShadowBolt_Timer   = 1000;
-            Shadowport_Timer   = 20000;
+            ShadowBolt_Timer = 1000;
+            Shadowport_Timer = 20000;
             Thundershock_Timer = 15000;
-            Transform_Timer    = 25000;
-    
+            Transform_Timer = 25000;
+
             me->NearTeleportTo(me->GetHomePosition().GetPositionX(), me->GetHomePosition().GetPositionY(), me->GetHomePosition().GetPositionZ(), me->GetHomePosition().GetOrientation());
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(SAY_AGGRO, me);
             DoZoneInCombat();
         }
-    
+
         void KilledUnit(Unit* /*Victim*/)
         {
             DoScriptText(SAY_KILL, me);
             me->SetPower(POWER_MANA, (me->GetMaxPower(POWER_MANA) / 2));
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //Checks if spell NPC is already casting a spell
             if (me->IsNonMeleeSpellCast(false))
                 return;
-    
+
             // Casts Shadow bolt
             if (ShadowBolt_Timer <= diff)
             {
@@ -77,7 +76,7 @@ public:
                 ShadowBolt_Timer = 1000;
             }
             else ShadowBolt_Timer -= diff;
-    
+
             //Casts ThunderShock
             if (Thundershock_Timer <= diff)
             {
@@ -85,57 +84,56 @@ public:
                 Thundershock_Timer = 15000;
             }
             else Thundershock_Timer -= diff;
-    
+
             // Casts Transmorm Spells
             if (Transform_Timer <= diff)
             {
                 if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                DoScriptText(SAY_TRANSFORM, me);
+                    DoScriptText(SAY_TRANSFORM, me);
                 DoCastVictim(SPELL_TRANSFORM);
                 Transform_Timer = 25000;
             }
             else Transform_Timer -= diff;
-    
+
             //Casts teleport
             if (Shadowport_Timer <= diff)
             {
                 if (me->IsNonMeleeSpellCast(false))
-                me->InterruptNonMeleeSpells(false);
-    
+                    me->InterruptNonMeleeSpells(false);
+
                 Wait_timer = 8000;
                 switch (urand(1, 2))
                 {
-                    case 1:
-                        DoCast(me, SPELL_SHADOWPORT1);
-                        break;
-                    case 2:
-                        DoCast(me, SPELL_SHADOWPORT2);
-                        break;
+                case 1:
+                    DoCast(me, SPELL_SHADOWPORT1);
+                    break;
+                case 2:
+                    DoCast(me, SPELL_SHADOWPORT2);
+                    break;
                 }
-    
+
                 Shadowport_Timer = 20000;
             }
-            else Shadowport_Timer  -= diff;
-    
+            else Shadowport_Timer -= diff;
+
             if (Wait_timer <= diff)
             {
                 if (me->IsNonMeleeSpellCast(false))
-                me->InterruptNonMeleeSpells(false);
+                    me->InterruptNonMeleeSpells(false);
                 DoCast(me, SPELL_SHADOWPORT3);
             }
             Wait_timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_archmage_arugalAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_archmage_arugal()
 {
     new boss_archmage_arugal();

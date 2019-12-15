@@ -15,17 +15,17 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Kelidan_The_Breaker
-SD%Complete: 100
-SDComment:
-SDCategory: Hellfire Citadel, Blood Furnace
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Kelidan_The_Breaker
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Hellfire Citadel, Blood Furnace
+ EndScriptData */
 
-/* ContentData
-boss_kelidan_the_breaker
-mob_shadowmoon_channeler
-EndContentData */
+ /* ContentData
+ boss_kelidan_the_breaker
+ mob_shadowmoon_channeler
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -34,49 +34,49 @@ EndContentData */
 
 enum eKelidan
 {
-    SAY_WAKE                    = -1542000,
-    SAY_ADD_AGGRO_1             = -1542001,
-    SAY_ADD_AGGRO_2             = -1542002,
-    SAY_ADD_AGGRO_3             = -1542003,
-    SAY_KILL_1                  = -1542004,
-    SAY_KILL_2                  = -1542005,
-    SAY_NOVA                    = -1542006,
-    SAY_DIE                     = -1542007,
+    SAY_WAKE = -1542000,
+    SAY_ADD_AGGRO_1 = -1542001,
+    SAY_ADD_AGGRO_2 = -1542002,
+    SAY_ADD_AGGRO_3 = -1542003,
+    SAY_KILL_1 = -1542004,
+    SAY_KILL_2 = -1542005,
+    SAY_NOVA = -1542006,
+    SAY_DIE = -1542007,
 
-    SPELL_CORRUPTION            = 30938,
-    SPELL_EVOCATION             = 30935,
-    SPELL_FIRE_NOVA             = 33132,
-    H_SPELL_FIRE_NOVA           = 37371,
-    SPELL_SHADOW_BOLT_VOLLEY    = 28599,
-    H_SPELL_SHADOW_BOLT_VOLLEY  = 40070,
-    SPELL_BURNING_NOVA          = 30940,
-    SPELL_VORTEX                = 37370,
+    SPELL_CORRUPTION = 30938,
+    SPELL_EVOCATION = 30935,
+    SPELL_FIRE_NOVA = 33132,
+    H_SPELL_FIRE_NOVA = 37371,
+    SPELL_SHADOW_BOLT_VOLLEY = 28599,
+    H_SPELL_SHADOW_BOLT_VOLLEY = 40070,
+    SPELL_BURNING_NOVA = 30940,
+    SPELL_VORTEX = 37370,
 
-    ENTRY_KELIDAN               = 17377,
-    ENTRY_CHANNELER             = 17653,
+    ENTRY_KELIDAN = 17377,
+    ENTRY_CHANNELER = 17653,
 
-    SPELL_SHADOW_BOLT           = 12739,
-    H_SPELL_SHADOW_BOLT         = 15472,
+    SPELL_SHADOW_BOLT = 12739,
+    H_SPELL_SHADOW_BOLT = 15472,
 
     SPELL_MARK_OF_SHADOW = 30937,
     SPELL_CHANNELING = 39123,
 
 
     //events
-    EVENT_SPELL_VOLLEY          = 1,
-    EVENT_SPELL_CORRUPTION      = 2,
-    EVENT_SPELL_BURNING_NOVA    = 3,
-    EVENT_SPELL_FIRE_NOVA       = 4,
-    EVENT_SPELL_SHADOW_BOLT     = 5,
-    EVENT_SPELL_MARK            = 6,
+    EVENT_SPELL_VOLLEY = 1,
+    EVENT_SPELL_CORRUPTION = 2,
+    EVENT_SPELL_BURNING_NOVA = 3,
+    EVENT_SPELL_FIRE_NOVA = 4,
+    EVENT_SPELL_SHADOW_BOLT = 5,
+    EVENT_SPELL_MARK = 6,
 
     // Actions
-    ACTION_CHANNELER_ENGAGED    = 1,
-    ACTION_CHANNELER_DIED       = 2,
+    ACTION_CHANNELER_ENGAGED = 1,
+    ACTION_CHANNELER_DIED = 2,
 
-    ACTION_ACTIVATE_ADDS        = 92,
-	
-    SPELL_BUFF					             = 30939
+    ACTION_ACTIVATE_ADDS = 92,
+
+    SPELL_BUFF = 30939
 };
 
 const float ShadowmoonChannelers[5][4] =
@@ -90,39 +90,31 @@ const float ShadowmoonChannelers[5][4] =
 
 class BurningNovaAura : public Aura
 {
-    public:
-        BurningNovaAura(SpellEntry* spell, uint32 eff, Unit* pTarget, Unit* caster) : Aura(spell, eff, NULL, pTarget, caster, NULL) {}
+public:
+    BurningNovaAura(SpellEntry* spell, uint32 eff, Unit* pTarget, Unit* caster) : Aura(spell, eff, NULL, pTarget, caster, NULL) {}
 };
-
-
-
-
-
-/*######
-## mob_shadowmoon_channeler
-######*/
 
 class boss_kelidan_the_breaker : public CreatureScript
 {
-public: 
+public:
     boss_kelidan_the_breaker() : CreatureScript("boss_kelidan_the_breaker") { }
     struct boss_kelidan_the_breakerAI : public ScriptedAI
     {
         boss_kelidan_the_breakerAI(Creature* creature) : ScriptedAI(creature)
         {
             instance = (ScriptedInstance*)creature->GetInstanceData();
-    
+
             for (uint8 i = 0; i < 5; ++i)
                 Channelers[i] = 0;
         }
-    
+
         ScriptedInstance* instance;
         EventMap events;
         uint32 check_Timer;
         bool Firenova;
         bool addYell;
         uint64 Channelers[5];
-    
+
         void Reset()
         {
             check_Timer = 0;
@@ -135,7 +127,7 @@ public:
             if (instance)
                 instance->SetData(DATA_KELIDANEVENT, NOT_STARTED);
         }
-    
+
         void ApplyImunities(bool apply)
         {
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_CHARM, apply);
@@ -157,27 +149,27 @@ public:
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_DAZE, apply);
             me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_SAPPED, apply);
         }
-    
+
         void EnterCombat(Unit* who)
         {
             events.ScheduleEvent(EVENT_SPELL_VOLLEY, 1000);
             events.ScheduleEvent(EVENT_SPELL_CORRUPTION, 5000);
             events.ScheduleEvent(EVENT_SPELL_BURNING_NOVA, 15000);
-    
+
             DoScriptText(SAY_WAKE, me);
             me->InterruptNonMeleeSpells(true);
             if (instance)
                 instance->SetData(DATA_KELIDANEVENT, IN_PROGRESS);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             if (rand() % 2)
                 return;
-    
+
             DoScriptText(RAND(SAY_KILL_1, SAY_KILL_2), me);
         }
-    
+
         void DoAction(int32 param)
         {
             if (param == ACTION_CHANNELER_ENGAGED)
@@ -186,7 +178,7 @@ public:
                 {
                     addYell = true;
                     DoScriptText(RAND(SAY_ADD_AGGRO_1, SAY_ADD_AGGRO_2, SAY_ADD_AGGRO_3), me);
-    
+
                     for (uint8 i = 0; i < 5; ++i)
                     {
                         Creature* channeler = ObjectAccessor::GetCreature(*me, Channelers[i]);
@@ -209,7 +201,7 @@ public:
                     AttackStart(target);
             }
         }
-    
+
         void CheckChannelers()
         {
             if (addYell)
@@ -218,7 +210,7 @@ public:
                     EnterEvadeMode();
                 return;
             }
-    
+
             SummonChannelers();
             for (uint8 i = 0; i < 5; ++i)
             {
@@ -231,7 +223,7 @@ public:
                 }
             }
         }
-    
+
         void SummonChannelers()
         {
             for (uint8 i = 0; i < 5; ++i)
@@ -244,19 +236,19 @@ public:
                 }
                 if (!channeler)
                     channeler = me->SummonCreature(NPC_CHANNELER, ShadowmoonChannelers[i][0], ShadowmoonChannelers[i][1], ShadowmoonChannelers[i][2], ShadowmoonChannelers[i][3], TEMPSUMMON_CORPSE_TIMED_DESPAWN, 300000);
-    
+
                 Channelers[i] = channeler ? channeler->GetGUID() : 0;
             }
         }
-    
-    
+
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DIE, me);
             if (instance)
                 instance->SetData(DATA_KELIDANEVENT, DONE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
@@ -271,11 +263,11 @@ public:
                 }
                 return;
             }
-    
+
             events.Update(diff);
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_SPELL_VOLLEY:
@@ -291,16 +283,16 @@ public:
                 ApplyImunities(false);
                 me->AddAura(SPELL_BURNING_NOVA, me);
                 ApplyImunities(true);
-    
+
                 if (me->GetMap()->IsHeroic())
                     DoTeleportAll(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
-    
+
                 events.DelayEvents(6000, 0);
                 events.ScheduleEvent(EVENT_SPELL_BURNING_NOVA, urand(25000, 32000));
                 events.ScheduleEvent(EVENT_SPELL_FIRE_NOVA, 5000);
                 Firenova = true;
                 break;
-    
+
             case EVENT_SPELL_FIRE_NOVA:
                 if (Firenova)
                 {
@@ -309,20 +301,25 @@ public:
                 }
                 break;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_kelidan_the_breakerAI (pCreature);
+        return new boss_kelidan_the_breakerAI(pCreature);
     }
 };
 
+/*######
+## mob_shadowmoon_channeler
+######*/
+
+
 class mob_shadowmoon_channeler : public CreatureScript
 {
-public: 
+public:
     mob_shadowmoon_channeler() : CreatureScript("mob_shadowmoon_channeler") { }
     struct mob_shadowmoon_channelerAI : public ScriptedAI
     {
@@ -330,91 +327,86 @@ public:
         {
             instance = (ScriptedInstance*)creature->GetInstanceData();
         }
-    
+
         ScriptedInstance* instance;
-    
+
         EventMap events;
-    
+
         void Reset()
         {
             events.Reset();
         }
-    
+
         void EnterCombat(Unit* who)
         {
             if (Creature* kelidan = me->FindNearestCreature(ENTRY_KELIDAN, 100))
                 kelidan->AI()->DoAction(ACTION_CHANNELER_ENGAGED);
-    
+
             me->InterruptNonMeleeSpells(false);
             events.ScheduleEvent(EVENT_SPELL_SHADOW_BOLT, urand(1500, 3500));
             events.ScheduleEvent(EVENT_SPELL_MARK, urand(5000, 6500));
         }
-    
+
         void JustDied(Unit* Killer)
         {
             if (Creature* Kelidan = me->FindNearestCreature(ENTRY_KELIDAN, 100))
                 CAST_AI(boss_kelidan_the_breaker::boss_kelidan_the_breakerAI, Kelidan->AI())->DoAction(ACTION_CHANNELER_DIED);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
-    
+
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
-    
+
             switch (events.ExecuteEvent())
             {
-                case EVENT_SPELL_SHADOW_BOLT:
-                    me->CastSpell(me->GetVictim(), me->GetMap()->IsHeroic() ? H_SPELL_SHADOW_BOLT : SPELL_SHADOW_BOLT, false);
-                    events.ScheduleEvent(EVENT_SPELL_SHADOW_BOLT, urand(6000, 7500));
-                    break;
-                case EVENT_SPELL_MARK:
-                    if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
-                        me->CastSpell(target, SPELL_MARK_OF_SHADOW, false);
-                    events.ScheduleEvent(EVENT_SPELL_MARK, urand(16000, 17500));
-                    break;
+            case EVENT_SPELL_SHADOW_BOLT:
+                me->CastSpell(me->GetVictim(), me->GetMap()->IsHeroic() ? H_SPELL_SHADOW_BOLT : SPELL_SHADOW_BOLT, false);
+                events.ScheduleEvent(EVENT_SPELL_SHADOW_BOLT, urand(6000, 7500));
+                break;
+            case EVENT_SPELL_MARK:
+                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
+                    me->CastSpell(target, SPELL_MARK_OF_SHADOW, false);
+                events.ScheduleEvent(EVENT_SPELL_MARK, urand(16000, 17500));
+                break;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new mob_shadowmoon_channelerAI (pCreature);
+        return new mob_shadowmoon_channelerAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class npc_kelridan_trigger : public CreatureScript
 {
-public: 
+public:
     npc_kelridan_trigger() : CreatureScript("npc_kelridan_trigger") { }
+
     struct npc_kelridan_triggerAI : public ScriptedAI
     {
         ScriptedInstance* pInstance;
-    
+
         uint32 buffTimer;
-    
+
         npc_kelridan_triggerAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         void Reset()
         {
             buffTimer = 5000;
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
@@ -429,18 +421,11 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-    	return new npc_kelridan_triggerAI(pCreature);
+        return new npc_kelridan_triggerAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
-
 
 void AddSC_boss_kelidan_the_breaker()
 {

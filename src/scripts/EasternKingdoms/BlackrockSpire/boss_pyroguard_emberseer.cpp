@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Pyroguard_Emberseer
-SD%Complete: 100
-SDComment: Event to activate Emberseer NYI
-SDCategory: Blackrock Spire
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Pyroguard_Emberseer
+ SD%Complete: 100
+ SDComment: Event to activate Emberseer NYI
+ SDCategory: Blackrock Spire
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -29,52 +29,52 @@ EndScriptData */
 #define SPELL_FLAMEBUFFET       23341
 #define SPELL_PYROBLAST         17274
 
-
 class boss_pyroguard_emberseer : public CreatureScript
 {
-public: 
+public:
     boss_pyroguard_emberseer() : CreatureScript("boss_pyroguard_emberseer") { }
+
     struct boss_pyroguard_emberseerAI : public ScriptedAI
     {
         boss_pyroguard_emberseerAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 FireNova_Timer;
         uint32 FlameBuffet_Timer;
         uint32 PyroBlast_Timer;
-    
+
         void Reset()
         {
             FireNova_Timer = 6000;
             FlameBuffet_Timer = 3000;
             PyroBlast_Timer = 14000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //FireNova_Timer
             if (FireNova_Timer <= diff)
             {
-                DoCastVictim( SPELL_FIRENOVA);
+                DoCastVictim(SPELL_FIRENOVA);
                 FireNova_Timer = 6000;
             }
             else FireNova_Timer -= diff;
-    
+
             //FlameBuffet_Timer
             if (FlameBuffet_Timer <= diff)
             {
-                DoCastVictim( SPELL_FLAMEBUFFET);
+                DoCastVictim(SPELL_FLAMEBUFFET);
                 FlameBuffet_Timer = 14000;
             }
             else FlameBuffet_Timer -= diff;
-    
+
             //PyroBlast_Timer
             if (PyroBlast_Timer <= diff)
             {
@@ -83,17 +83,18 @@ public:
                 PyroBlast_Timer = 15000;
             }
             else PyroBlast_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_pyroguard_emberseerAI (pCreature);
+        return new boss_pyroguard_emberseerAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_pyroguard_emberseer()
 {
     new boss_pyroguard_emberseer();

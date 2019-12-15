@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Drakkisath
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Spire
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Drakkisath
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Spire
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -33,17 +33,18 @@ EndScriptData */
 
 class boss_drakkisath : public CreatureScript
 {
-public: 
+public:
     boss_drakkisath() : CreatureScript("boss_drakkisath") { }
+
     struct boss_drakkisathAI : public ScriptedAI
     {
         boss_drakkisathAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 FireNova_Timer;
         uint32 Cleave_Timer;
         uint32 Confliguration_Timer;
         uint32 Thunderclap_Timer;
-    
+
         void Reset()
         {
             FireNova_Timer = 6000;
@@ -51,61 +52,60 @@ public:
             Confliguration_Timer = 15000;
             Thunderclap_Timer = 17000;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //FireNova_Timer
             if (FireNova_Timer <= diff)
             {
-                DoCastVictim( SPELL_FIRENOVA);
+                DoCastVictim(SPELL_FIRENOVA);
                 FireNova_Timer = 10000;
             }
             else FireNova_Timer -= diff;
-    
+
             //Cleave_Timer
             if (Cleave_Timer <= diff)
             {
-                DoCastVictim( SPELL_CLEAVE);
+                DoCastVictim(SPELL_CLEAVE);
                 Cleave_Timer = 8000;
             }
             else Cleave_Timer -= diff;
-    
+
             //Confliguration_Timer
             if (Confliguration_Timer <= diff)
             {
-                DoCastVictim( SPELL_CONFLIGURATION);
+                DoCastVictim(SPELL_CONFLIGURATION);
                 Confliguration_Timer = 18000;
             }
             else Confliguration_Timer -= diff;
-    
+
             //Thunderclap_Timer
             if (Thunderclap_Timer <= diff)
             {
-                DoCastVictim( SPELL_THUNDERCLAP);
+                DoCastVictim(SPELL_THUNDERCLAP);
                 Thunderclap_Timer = 20000;
             }
             else Thunderclap_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_drakkisathAI (pCreature);
+        return new boss_drakkisathAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_drakkisath()
 {
     new boss_drakkisath();
 }
-

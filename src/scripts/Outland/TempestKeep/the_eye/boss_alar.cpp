@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: boss_alar
-SD%Complete: 95
-SDComment:
-SDCategory: Tempest Keep, The Eye
-EndScriptData */
+ /* ScriptData
+ SDName: boss_alar
+ SD%Complete: 95
+ SDComment:
+ SDCategory: Tempest Keep, The Eye
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -54,23 +54,24 @@ static float waypoint[6][3] =
 
 enum WaitEventType
 {
-    WE_NONE     = 0,
-    WE_DUMMY    = 1,
+    WE_NONE = 0,
+    WE_DUMMY = 1,
     WE_PLATFORM = 2,
-    WE_QUILL    = 3,
-    WE_DIE      = 4,
-    WE_REVIVE   = 5,
-    WE_CHARGE   = 6,
-    WE_METEOR   = 7,
-    WE_DIVE     = 8,
-    WE_LAND     = 9,
-    WE_SUMMON   = 10
+    WE_QUILL = 3,
+    WE_DIE = 4,
+    WE_REVIVE = 5,
+    WE_CHARGE = 6,
+    WE_METEOR = 7,
+    WE_DIVE = 8,
+    WE_LAND = 9,
+    WE_SUMMON = 10
 };
 
 class boss_alar : public CreatureScript
 {
-public: 
+public:
     boss_alar() : CreatureScript("boss_alar") { }
+
     struct boss_alarAI : public ScriptedAI
     {
         boss_alarAI(Creature* c) : ScriptedAI(c)
@@ -78,46 +79,46 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             DefaultMoveSpeedRate = me->GetSpeedRate(MOVE_RUN);
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         WaitEventType WaitEvent;
         uint32 WaitTimer;
-    
+
         bool AfterMoving;
-    
+
         uint32 Platforms_Move_Timer;
         uint32 DiveBomb_Timer;
         uint32 MeltArmor_Timer;
         uint32 Charge_Timer;
         uint32 FlamePatch_Timer;
         uint32 Berserk_Timer;
-    
+
         float DefaultMoveSpeedRate;
-    
+
         bool Phase1;
         bool ForceMove;
         uint32 ForceTimer;
-    
+
         int8 cur_wp;
-    
+
         void Reset()
         {
             if (pInstance)
                 pInstance->SetData(DATA_ALAREVENT, NOT_STARTED);
-    
+
             Berserk_Timer = 1200000;
             Platforms_Move_Timer = 0;
-    
+
             Phase1 = true;
             WaitEvent = WE_NONE;
             WaitTimer = 0;
             AfterMoving = false;
             ForceMove = false;
             ForceTimer = 5000;
-    
+
             cur_wp = 4;
-    
+
             me->SetDisplayId(me->GetNativeDisplayId());
             me->SetSpeed(MOVE_RUN, DefaultMoveSpeedRate);
             //me->SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, 10);
@@ -128,33 +129,33 @@ public:
             me->setActive(false);
             me->AddUnitState(UNIT_STATE_IGNORE_PATHFINDING);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             if (pInstance)
                 pInstance->SetData(DATA_ALAREVENT, IN_PROGRESS);
-    
+
             me->SetLevitate(true); // after enterevademode will be set walk movement
-    		me->SetCanFly(true);
+            me->SetCanFly(true);
             DoZoneInCombat();
             me->setActive(true);
         }
-    
+
         void JustDied(Unit* /*victim*/)
         {
             if (pInstance)
                 pInstance->SetData(DATA_ALAREVENT, DONE);
         }
-    
+
         void JustSummoned(Creature* summon)
         {
             if (summon->GetEntry() == CREATURE_EMBER_OF_ALAR)
                 if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     summon->AI()->AttackStart(pTarget);
         }
-    
+
         void MoveInLineOfSight(Unit* /*who*/) {}
-    
+
         void DamageTaken(Unit* /*pKiller*/, uint32& damage)
         {
             if (damage >= me->GetHealth() && Phase1)
@@ -176,7 +177,7 @@ public:
                 }
             }
         }
-    
+
         void SpellHit(Unit*, const SpellEntry* spell)
         {
             if (spell->Id == SPELL_DIVE_BOMB_VISUAL)
@@ -186,7 +187,7 @@ public:
                 //me->SendUpdateObjectToAllExcept(NULL);
             }
         }
-    
+
         void MovementInform(uint32 type, uint32 /*id*/)
         {
             if (type == POINT_MOTION_TYPE)
@@ -196,19 +197,19 @@ public:
                 ForceMove = false;
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!me->IsInCombat()) // sometimes isincombat but !incombat, faction bug?
                 return;
-    
+
             if (Berserk_Timer <= diff)
             {
                 me->CastSpell(me, SPELL_BERSERK, true);
                 Berserk_Timer = 60000;
             }
             else Berserk_Timer -= diff;
-    
+
             if (ForceMove)
             {
                 if (ForceTimer <= diff)
@@ -217,7 +218,7 @@ public:
                     ForceTimer = 5000;
                 }
                 else ForceTimer -= diff;
-    
+
             }
             if (WaitEvent)
             {
@@ -230,7 +231,7 @@ public:
                             me->GetMotionMaster()->MoveIdle();
                             AfterMoving = false;
                         }
-    
+
                         switch (WaitEvent)
                         {
                         case WE_PLATFORM:
@@ -303,7 +304,7 @@ public:
                         default:
                             break;
                         }
-    
+
                         WaitEvent = WE_NONE;
                         WaitTimer = 0;
                     }
@@ -311,7 +312,7 @@ public:
                 }
                 return;
             }
-    
+
             if (Phase1)
             {
                 if (me->getThreatManager().getThreatList().empty())
@@ -319,7 +320,7 @@ public:
                     EnterEvadeMode();
                     return;
                 }
-    
+
                 if (Platforms_Move_Timer <= diff)
                 {
                     if (cur_wp == 4)
@@ -362,14 +363,14 @@ public:
                     Charge_Timer = 30000 + rand() % 20000;
                 }
                 else Charge_Timer -= diff;
-    
+
                 if (MeltArmor_Timer <= diff)
                 {
-                    DoCastVictim( SPELL_MELT_ARMOR);
+                    DoCastVictim(SPELL_MELT_ARMOR);
                     MeltArmor_Timer = 60000;
                 }
                 else MeltArmor_Timer -= diff;
-    
+
                 if (DiveBomb_Timer <= diff)
                 {
                     me->AttackStop();
@@ -382,7 +383,7 @@ public:
                     return;
                 }
                 else DiveBomb_Timer -= diff;
-    
+
                 if (FlamePatch_Timer <= diff)
                 {
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
@@ -402,10 +403,10 @@ public:
                 }
                 else FlamePatch_Timer -= diff;
             }
-    
+
             DoMeleeAttackIfReady();
         }
-    
+
         void DoMeleeAttackIfReady()
         {
             if (me->isAttackReady() && !me->IsNonMeleeSpellCast(false))
@@ -444,8 +445,9 @@ public:
 
 class mob_ember_of_alar : public CreatureScript
 {
-public: 
+public:
     mob_ember_of_alar() : CreatureScript("mob_ember_of_alar") { }
+
     struct mob_ember_of_alarAI : public ScriptedAI
     {
         mob_ember_of_alarAI(Creature* c) : ScriptedAI(c)
@@ -454,10 +456,10 @@ public:
             me->SetLevitate(true);
             me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
         }
-    
+
         ScriptedInstance* pInstance;
         bool toDie;
-    
+
         void Reset()
         {
             toDie = false;
@@ -470,7 +472,7 @@ public:
         {
             me->setDeathState(JUST_DIED);
         }
-    
+
         void DamageTaken(Unit* pKiller, uint32& damage)
         {
             if (damage >= me->GetHealth() && pKiller != me && !toDie)
@@ -494,21 +496,21 @@ public:
                 toDie = true;
             }
         }
-    
+
         void UpdateAI(const uint32 /*diff*/)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (toDie)
             {
                 me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 //me->SetVisible(false);
             }
-    
+
             DoMeleeAttackIfReady();
         }
-    
+
     };
 
     CreatureAI* GetAI(Creature* pCreature) const
@@ -519,8 +521,9 @@ public:
 
 class mob_flame_patch_alar : public CreatureScript
 {
-public: 
+public:
     mob_flame_patch_alar() : CreatureScript("mob_flame_patch_alar") { }
+
     struct mob_flame_patch_alarAI : public ScriptedAI
     {
         mob_flame_patch_alarAI(Creature* c) : ScriptedAI(c) {}

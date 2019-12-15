@@ -15,18 +15,18 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Cthun
-SD%Complete: 95
-SDComment: Darkglare tracking issue
-SDCategory: Temple of Ahn'Qiraj
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Cthun
+ SD%Complete: 95
+ SDComment: Darkglare tracking issue
+ SDCategory: Temple of Ahn'Qiraj
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "temple_of_ahnqiraj.h"
 
-//Text emote
+ //Text emote
 #define EMOTE_WEAKENED              -1531011
 
 #define PI                          3.14f
@@ -108,13 +108,11 @@ EndScriptData */
 #define KICK_Y                              1984.0f
 #define KICK_Z                              -96.0f
 
-
-
 class boss_eye_of_cthun : public CreatureScript
 {
-public: 
+public:
     boss_eye_of_cthun() : CreatureScript("boss_eye_of_cthun") { }
-    
+
     struct eye_of_cthunAI : public Scripted_NoMovementAI
     {
         eye_of_cthunAI(Creature* c) : Scripted_NoMovementAI(c)
@@ -423,85 +421,82 @@ public:
         }
     };
 
-
     //GetAIs
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new eye_of_cthunAI(pCreature);
     }
-   
-    
 };
 
 class mob_giant_flesh_tentacle : public CreatureScript
 {
 public:
-	mob_giant_flesh_tentacle() : CreatureScript("mob_giant_flesh_tentacle") { }
+    mob_giant_flesh_tentacle() : CreatureScript("mob_giant_flesh_tentacle") { }
 
-	struct mob_giant_flesh_tentacleAI : public Scripted_NoMovementAI
-	{
-		mob_giant_flesh_tentacleAI(Creature* c) : Scripted_NoMovementAI(c), Parent(0) {}
+    struct mob_giant_flesh_tentacleAI : public Scripted_NoMovementAI
+    {
+        mob_giant_flesh_tentacleAI(Creature* c) : Scripted_NoMovementAI(c), Parent(0) {}
 
-		uint64 Parent;
-		uint32 CheckTimer;
+        uint64 Parent;
+        uint32 CheckTimer;
 
-		void SpawnedByCthun(uint64 p)
-		{
-			Parent = p;
-		}
+        void SpawnedByCthun(uint64 p)
+        {
+            Parent = p;
+        }
 
-		void Reset()
-		{
-			CheckTimer = 1000;
-		}
+        void Reset()
+        {
+            CheckTimer = 1000;
+        }
 
-		void EnterCombat(Unit* /*who*/)
-		{
-		}
+        void EnterCombat(Unit* /*who*/)
+        {
+        }
 
-		//Flesh tentacle functions
-		void UpdateAI(const uint32 diff)
-		{
-			//Check if we have a target
-			if (!UpdateVictim())
-				return;
+        //Flesh tentacle functions
+        void UpdateAI(const uint32 diff)
+        {
+            //Check if we have a target
+            if (!UpdateVictim())
+                return;
 
-			if (Parent)
-			{
-				if (CheckTimer <= diff)
-				{
-					Unit* pUnit = Unit::GetUnit(*me, Parent);
+            if (Parent)
+            {
+                if (CheckTimer <= diff)
+                {
+                    Unit* pUnit = Unit::GetUnit(*me, Parent);
 
-					if (!pUnit || !pUnit->IsAlive() || !pUnit->IsInCombat())
-					{
-						Parent = 0;
-						me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
-						return;
-					}
+                    if (!pUnit || !pUnit->IsAlive() || !pUnit->IsInCombat())
+                    {
+                        Parent = 0;
+                        me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+                        return;
+                    }
 
-					CheckTimer = 1000;
-				}
-				else CheckTimer -= diff;
-			}
+                    CheckTimer = 1000;
+                }
+                else CheckTimer -= diff;
+            }
 
-			DoMeleeAttackIfReady();
-		}
+            DoMeleeAttackIfReady();
+        }
 
-		void JustDied(Unit* /*killer*/);// see below
+        void JustDied(Unit* /*killer*/);// see below
 
-	};
+    };
 
-	 CreatureAI* GetAI(Creature* pCreature) const
-	{
-		return new mob_giant_flesh_tentacleAI(pCreature);
-	}
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new mob_giant_flesh_tentacleAI(pCreature);
+    }
 };
 
 class boss_cthun : public CreatureScript
 {
-public: 
+public:
     boss_cthun() : CreatureScript("boss_cthun") { }
-    
+
     struct cthunAI : public Scripted_NoMovementAI
     {
         cthunAI(Creature* c) : Scripted_NoMovementAI(c)
@@ -990,22 +985,17 @@ public:
         }
     };
 
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new cthunAI(pCreature);
     }
-
-    
-
-    
 };
 
 class mob_eye_tentacle : public CreatureScript
 {
-public: 
+public:
     mob_eye_tentacle() : CreatureScript("mob_eye_tentacle") { }
-    
+
 
     struct eye_tentacleAI : public Scripted_NoMovementAI
     {
@@ -1071,19 +1061,17 @@ public:
         }
     };
 
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new eye_tentacleAI(pCreature);
     }
-    
 };
 
 class mob_claw_tentacle : public CreatureScript
 {
-public: 
+public:
     mob_claw_tentacle() : CreatureScript("mob_claw_tentacle") { }
-    
+
     struct claw_tentacleAI : public Scripted_NoMovementAI
     {
         claw_tentacleAI(Creature* c) : Scripted_NoMovementAI(c)
@@ -1183,22 +1171,17 @@ public:
         }
     };
 
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new claw_tentacleAI(pCreature);
     }
-
-    
-
-    
 };
 
 class mob_giant_claw_tentacle : public CreatureScript
 {
-public: 
+public:
     mob_giant_claw_tentacle() : CreatureScript("mob_giant_claw_tentacle") { }
-    
+
     struct giant_claw_tentacleAI : public Scripted_NoMovementAI
     {
         giant_claw_tentacleAI(Creature* c) : Scripted_NoMovementAI(c)
@@ -1309,22 +1292,17 @@ public:
         }
     };
 
-
-
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new giant_claw_tentacleAI(pCreature);
     }
-
-    
 };
 
 class mob_giant_eye_tentacle : public CreatureScript
 {
-public: 
+public:
     mob_giant_eye_tentacle() : CreatureScript("mob_giant_eye_tentacle") { }
-    
+
     struct giant_eye_tentacleAI : public Scripted_NoMovementAI
     {
         giant_eye_tentacleAI(Creature* c) : Scripted_NoMovementAI(c)
@@ -1376,22 +1354,21 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new giant_eye_tentacleAI(pCreature);
     }
-
 };
 
 void mob_giant_flesh_tentacle::mob_giant_flesh_tentacleAI::JustDied(Unit* /*killer*/)
 {
-	if (!Parent)
-		return;
+    if (!Parent)
+        return;
 
-	Creature* Cthun = Unit::GetCreature(*me, Parent);
+    Creature* Cthun = Unit::GetCreature(*me, Parent);
 
-	if (Cthun)
-		((boss_cthun::cthunAI*)(Cthun->AI()))->FleshTentcleKilled();
+    if (Cthun)
+        ((boss_cthun::cthunAI*)(Cthun->AI()))->FleshTentcleKilled();
 }
 
 void AddSC_boss_cthun()
@@ -1403,6 +1380,5 @@ void AddSC_boss_cthun()
     new mob_giant_claw_tentacle();
     new mob_giant_eye_tentacle();
     new mob_giant_flesh_tentacle();
-
 }
 

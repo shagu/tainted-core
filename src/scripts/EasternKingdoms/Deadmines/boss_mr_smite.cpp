@@ -15,11 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss Mr.Smite
-SD%Complete:
-SDComment: Timers and say taken from acid script
-EndScriptData */
+ /* ScriptData
+ SDName: Boss Mr.Smite
+ SD%Complete:
+ SDComment: Timers and say taken from acid script
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -27,27 +27,27 @@ EndScriptData */
 
 enum eSpels
 {
-    SPELL_TRASH             = 3391,
-    SPELL_SMITE_STOMP       = 6432,
-    SPELL_SMITE_SLAM        = 6435,
-    SPELL_NIMBLE_REFLEXES   = 6264,
+    SPELL_TRASH = 3391,
+    SPELL_SMITE_STOMP = 6432,
+    SPELL_SMITE_SLAM = 6435,
+    SPELL_NIMBLE_REFLEXES = 6264,
 
-    EQUIP_SWORD             = 5144,
-    EQUIP_AXE               = 13913,
-    EQUIP_MACE              = 19610,
-    SWORD_EQUIP_INFO        = 218169346,
-    AXE_EQUIP_INFO          = 218169346,
-    MACE_EQUIP_INFO         = 50267394,
+    EQUIP_SWORD = 5144,
+    EQUIP_AXE = 13913,
+    EQUIP_MACE = 19610,
+    SWORD_EQUIP_INFO = 218169346,
+    AXE_EQUIP_INFO = 218169346,
+    MACE_EQUIP_INFO = 50267394,
 
-    SAY_PHASE_1             = -1036002,
-    SAY_PHASE_2             = -1036003
+    SAY_PHASE_1 = -1036002,
+    SAY_PHASE_2 = -1036003
 };
-
 
 class boss_mr_smite : public CreatureScript
 {
-public: 
+public:
     boss_mr_smite() : CreatureScript("boss_mr_smite") { }
+
     struct boss_mr_smiteAI : public ScriptedAI
     {
         boss_mr_smiteAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -55,40 +55,40 @@ public:
             Initialize();
             pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         }
-    
-    
+
+
         void Initialize()
         {
             uiTrashTimer = urand(5000, 9000);
             uiSlamTimer = 9000;
             uiNimbleReflexesTimer = urand(15500, 31600);
-    
+
             uiHealth = 0;
-    
+
             uiPhase = 0;
             uiTimer = 0;
-    
+
             uiIsMoving = false;
         }
-    
-    
+
+
         ScriptedInstance* pInstance;
-    
+
         uint32 uiTrashTimer;
         uint32 uiSlamTimer;
         uint32 uiNimbleReflexesTimer;
-    
+
         uint8 uiHealth;
-    
+
         uint32 uiPhase;
         uint32 uiTimer;
-    
+
         bool uiIsMoving;
-    
+
         void Reset()
         {
             Initialize();
-    
+
             me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, EQUIP_SWORD);
             me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO, SWORD_EQUIP_INFO);
             me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, 0);
@@ -96,9 +96,9 @@ public:
             me->SetStandState(UNIT_STAND_STATE_STAND);
             me->SetReactState(REACT_AGGRESSIVE);
         }
-    
+
         void EnterCombat(Unit* /*pWho*/) {}
-    
+
         bool bCheckChances()
         {
             uint32 uiChances = urand(0, 99);
@@ -107,12 +107,12 @@ public:
             else
                 return true;
         }
-    
+
         void UpdateAI(const uint32 uiDiff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (!uiIsMoving) // halt abilities in between phases
             {
                 if (uiTrashTimer <= uiDiff)
@@ -122,7 +122,7 @@ public:
                     uiTrashTimer = urand(6000, 15500);
                 }
                 else uiTrashTimer -= uiDiff;
-    
+
                 if (uiSlamTimer <= uiDiff)
                 {
                     if (bCheckChances())
@@ -130,7 +130,7 @@ public:
                     uiSlamTimer = 11000;
                 }
                 else uiSlamTimer -= uiDiff;
-    
+
                 if (uiNimbleReflexesTimer <= uiDiff)
                 {
                     if (bCheckChances())
@@ -139,7 +139,7 @@ public:
                 }
                 else uiNimbleReflexesTimer -= uiDiff;
             }
-    
+
             if ((uiHealth == 0 && HealthBelowPct(66)) || (uiHealth == 1 && HealthBelowPct(33)))
             {
                 ++uiHealth;
@@ -152,88 +152,88 @@ public:
                 uiPhase = 1;
                 switch (uiHealth)
                 {
-                    case 1:
-                        DoScriptText(SAY_PHASE_1, me);
-                        break;
-                    case 2:
-                        DoScriptText(SAY_PHASE_2, me);
-                        break;
+                case 1:
+                    DoScriptText(SAY_PHASE_1, me);
+                    break;
+                case 2:
+                    DoScriptText(SAY_PHASE_2, me);
+                    break;
                 }
             }
-    
+
             if (uiPhase)
             {
                 if (uiTimer <= uiDiff)
                 {
                     switch (uiPhase)
                     {
-                        case 1:
-                        {
-                            if (uiIsMoving)
-                                break;
-    
-                            me->GetMotionMaster()->Clear();
-                            me->GetMotionMaster()->MovePoint(1, 1.37994f, -780.29f, 9.81929f);
-                            uiIsMoving = true;
+                    case 1:
+                    {
+                        if (uiIsMoving)
                             break;
-                        }
-                        case 2:
-                            if (uiHealth == 1)
-                            {
-                                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, EQUIP_AXE);
-                                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO, AXE_EQUIP_INFO);
-                                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, EQUIP_AXE);
-                                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + 2, AXE_EQUIP_INFO);
-                            }
-                            else
-                            {
-                                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, EQUIP_MACE);
-                                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO, MACE_EQUIP_INFO);
-                                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, 0);
-                                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + 2, 0);
-                            }
-                            uiTimer = 500;
-                            uiPhase = 3;
-                            break;
-                        case 3:
-                            me->SetStandState(UNIT_STAND_STATE_STAND);
-                            uiTimer = 750;
-                            uiPhase = 4;
-                            break;
-                        case 4:
-                            me->SetReactState(REACT_AGGRESSIVE);
-                            SetCombatMovement(true);
-                            me->GetMotionMaster()->MoveChase(me->GetVictim(), me->m_CombatDistance);
-                            uiIsMoving = false;
-                            uiPhase = 0;
-                            break;
+
+                        me->GetMotionMaster()->Clear();
+                        me->GetMotionMaster()->MovePoint(1, 1.37994f, -780.29f, 9.81929f);
+                        uiIsMoving = true;
+                        break;
                     }
-                } else uiTimer -= uiDiff;
+                    case 2:
+                        if (uiHealth == 1)
+                        {
+                            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, EQUIP_AXE);
+                            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO, AXE_EQUIP_INFO);
+                            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, EQUIP_AXE);
+                            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + 2, AXE_EQUIP_INFO);
+                        }
+                        else
+                        {
+                            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY, EQUIP_MACE);
+                            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO, MACE_EQUIP_INFO);
+                            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 1, 0);
+                            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + 2, 0);
+                        }
+                        uiTimer = 500;
+                        uiPhase = 3;
+                        break;
+                    case 3:
+                        me->SetStandState(UNIT_STAND_STATE_STAND);
+                        uiTimer = 750;
+                        uiPhase = 4;
+                        break;
+                    case 4:
+                        me->SetReactState(REACT_AGGRESSIVE);
+                        SetCombatMovement(true);
+                        me->GetMotionMaster()->MoveChase(me->GetVictim(), me->m_CombatDistance);
+                        uiIsMoving = false;
+                        uiPhase = 0;
+                        break;
+                    }
+                }
+                else uiTimer -= uiDiff;
             }
-    
+
             DoMeleeAttackIfReady();
         }
-    
-    
+
+
         void MovementInform(uint32 uiType, uint32 /*uiId*/)
         {
             if (uiType != POINT_MOTION_TYPE)
                 return;
-    
+
             me->SetFacingTo(5.47f);
             me->SetStandState(UNIT_STAND_STATE_KNEEL);
-    
+
             uiTimer = 2000;
             uiPhase = 2;
         }
-    
+
     };
-    
+
     CreatureAI* OnGetAI(Creature* pCreature)
     {
-        return new boss_mr_smiteAI (pCreature);
+        return new boss_mr_smiteAI(pCreature);
     }
-    
 };
 
 void AddSC_boss_mr_smite()

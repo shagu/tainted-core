@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Shade_of_Aran
-SD%Complete: 98
-SDComment: Elementals should die when Aran is killed.
-SDCategory: Karazhan
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Shade_of_Aran
+ SD%Complete: 98
+ SDComment: Elementals should die when Aran is killed.
+ SDCategory: Karazhan
+ EndScriptData */
 
 #include "WorldPacket.h"
 #include "ScriptMgr.h"
@@ -31,60 +31,60 @@ EndScriptData */
 
 enum Text
 {
-    SAY_AGGRO1                 = -1532073,
-    SAY_AGGRO2                 = -1532074,
-    SAY_AGGRO3                 = -1532075,
-    SAY_FLAMEWREATH1           = -1532076,
-    SAY_FLAMEWREATH2           = -1532077,
-    SAY_BLIZZARD1              = -1532078,
-    SAY_BLIZZARD2              = -1532079,
-    SAY_EXPLOSION1             = -1532080,
-    SAY_EXPLOSION2             = -1532081,
-    SAY_DRINK                  = -1532082,               //Low Mana / AoE Pyroblast
-    SAY_ELEMENTALS             = -1532083,
-    SAY_KILL1                  = -1532084,
-    SAY_KILL2                  = -1532085,
-    SAY_TIMEOVER               = -1532086,
-    SAY_DEATH                  = -1532087,
-    SAY_ATIESH                 = -1532088                //Atiesh is equipped by a raid member
+    SAY_AGGRO1 = -1532073,
+    SAY_AGGRO2 = -1532074,
+    SAY_AGGRO3 = -1532075,
+    SAY_FLAMEWREATH1 = -1532076,
+    SAY_FLAMEWREATH2 = -1532077,
+    SAY_BLIZZARD1 = -1532078,
+    SAY_BLIZZARD2 = -1532079,
+    SAY_EXPLOSION1 = -1532080,
+    SAY_EXPLOSION2 = -1532081,
+    SAY_DRINK = -1532082,               //Low Mana / AoE Pyroblast
+    SAY_ELEMENTALS = -1532083,
+    SAY_KILL1 = -1532084,
+    SAY_KILL2 = -1532085,
+    SAY_TIMEOVER = -1532086,
+    SAY_DEATH = -1532087,
+    SAY_ATIESH = -1532088                //Atiesh is equipped by a raid member
 };
 
 enum AranSpells
 {
-    SPELL_FROSTBOLT        = 29954,
-    SPELL_FIREBALL         = 29953,
-    SPELL_ARCMISSLE        = 29955,
-    SPELL_CHAINSOFICE      = 29991,
-    SPELL_DRAGONSBREATH    = 29964,   //Not used since 2.1.0
-    SPELL_MASSSLOW         = 30035,
-    SPELL_FLAME_WREATH     = 30004, // triggers 29946 on targets
-    SPELL_SUMMON_BLIZZ     = 29969, // script target on npc 17161 - triggers spell 29952 on target
-    SPELL_AOE_CS           = 29961,
-    SPELL_PLAYERPULL       = 32265,
-    SPELL_AEXPLOSION       = 29973,
-    SPELL_MASS_POLY        = 29963,
-    SPELL_BLINK_CENTER     = 29967,
-    SPELL_ELEMENTALS       = 29962,
-    SPELL_CONJURE          = 29975,
-    SPELL_DRINK            = 30024,
-    SPELL_POTION           = 32453,
-    SPELL_AOE_PYROBLAST    = 29978,
-    SPELL_ARCANE_BUBBLE    = 6724
+    SPELL_FROSTBOLT = 29954,
+    SPELL_FIREBALL = 29953,
+    SPELL_ARCMISSLE = 29955,
+    SPELL_CHAINSOFICE = 29991,
+    SPELL_DRAGONSBREATH = 29964,   //Not used since 2.1.0
+    SPELL_MASSSLOW = 30035,
+    SPELL_FLAME_WREATH = 30004, // triggers 29946 on targets
+    SPELL_SUMMON_BLIZZ = 29969, // script target on npc 17161 - triggers spell 29952 on target
+    SPELL_AOE_CS = 29961,
+    SPELL_PLAYERPULL = 32265,
+    SPELL_AEXPLOSION = 29973,
+    SPELL_MASS_POLY = 29963,
+    SPELL_BLINK_CENTER = 29967,
+    SPELL_ELEMENTALS = 29962,
+    SPELL_CONJURE = 29975,
+    SPELL_DRINK = 30024,
+    SPELL_POTION = 32453,
+    SPELL_AOE_PYROBLAST = 29978,
+    SPELL_ARCANE_BUBBLE = 6724
 };
 
 enum MiscSpells
 {
-    SPELL_CIRCULAR_BLIZZARD    = 29952,
-    SPELL_WATERBOLT            = 31012,
-    SPELL_SHADOW_PYRO          = 29978
+    SPELL_CIRCULAR_BLIZZARD = 29952,
+    SPELL_WATERBOLT = 31012,
+    SPELL_SHADOW_PYRO = 29978
 };
 
 //Creatures
 enum Creatures
 {
-    NPC_WATER_ELEMENTAL   = 17167,
-    NPC_SHADOW_OF_ARAN    = 18254,
-    NPC_ARAN_BLIZZARD     = 17161
+    NPC_WATER_ELEMENTAL = 17167,
+    NPC_SHADOW_OF_ARAN = 18254,
+    NPC_ARAN_BLIZZARD = 17161
 };
 
 enum SuperSpell
@@ -96,10 +96,10 @@ enum SuperSpell
 
 enum Items
 {
-    ITEM_ATIESH_MAGE            = 22589,
-    ITEM_ATIESH_WARLOCK         = 22630,
-    ITEM_ATIESH_PRIEST          = 22631,
-    ITEM_ATIESH_DRUID           = 22632
+    ITEM_ATIESH_MAGE = 22589,
+    ITEM_ATIESH_WARLOCK = 22630,
+    ITEM_ATIESH_PRIEST = 22631,
+    ITEM_ATIESH_DRUID = 22632
 };
 
 uint32 const AtieshStaves[4] =
@@ -110,20 +110,11 @@ uint32 const AtieshStaves[4] =
     ITEM_ATIESH_DRUID,
 };
 
-
-
-
-
-
-
-
-
-
 class boss_shade_of_aran : public CreatureScript
 {
-public: 
+public:
     boss_shade_of_aran() : CreatureScript("boss_shade_of_aran") { }
-    
+
     struct boss_shade_of_aranAI : public ScriptedAI
     {
         boss_shade_of_aranAI(Creature* c) : ScriptedAI(c)
@@ -705,8 +696,8 @@ public:
             return false;
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_shade_of_aranAI(pCreature);
     }
@@ -715,13 +706,11 @@ public:
 
 class mob_shadow_of_aran : public CreatureScript
 {
-public: 
+public:
     mob_shadow_of_aran() : CreatureScript("mob_shadow_of_aran") { }
-    
 
-    
     // CONVERT TO ACID
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         outstring_log("OSCR: Convert simpleAI script for Creature Entry %u to ACID", pCreature->GetEntry());
         SimpleAI* ai = new SimpleAI(pCreature);
@@ -736,16 +725,14 @@ public:
 
         return ai;
     }
-    
 
-    
 };
 
 class mob_aran_elemental : public CreatureScript
 {
-public: 
+public:
     mob_aran_elemental() : CreatureScript("mob_aran_elemental") { }
-    
+
     struct mob_aran_elementalAI : public ScriptedAI
     {
         mob_aran_elementalAI(Creature* c) : ScriptedAI(c) {}
@@ -772,23 +759,17 @@ public:
             else CastTimer -= diff;
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_aran_elementalAI(pCreature);
     }
-
-    
-
-    
 };
-
 
 void AddSC_boss_shade_of_aran()
 {
     new boss_shade_of_aran();
     new mob_shadow_of_aran();
     new mob_aran_elemental();
-
 }
 

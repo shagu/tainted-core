@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Magmadar
-SD%Complete: 75
-SDComment: Conflag on ground nyi, fear causes issues without VMAPs
-SDCategory: Molten Core
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Magmadar
+ SD%Complete: 75
+ SDComment: Conflag on ground nyi, fear causes issues without VMAPs
+ SDCategory: Molten Core
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -37,6 +37,7 @@ class boss_magmadar : public CreatureScript
 {
 public:
     boss_magmadar() : CreatureScript("boss_magmadar") { }
+
     struct boss_magmadarAI : public ScriptedAI
     {
         boss_magmadarAI(Creature* c) : ScriptedAI(c) {}
@@ -93,14 +94,16 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_magmadarAI(pCreature);
     }
 
 };
+
 void AddSC_boss_magmadar()
 {
-   new boss_magmadar();
+    new boss_magmadar();
 }
 

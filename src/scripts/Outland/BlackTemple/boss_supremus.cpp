@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Supremus
-SD%Complete: 95
-SDComment: Need to implement molten punch
-SDCategory: Black Temple
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Supremus
+ SD%Complete: 95
+ SDComment: Need to implement molten punch
+ SDCategory: Black Temple
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -31,7 +31,7 @@ EndScriptData */
 #define EMOTE_PUNCH_GROUND          -1564011                //DoScriptText(EMOTE_PUNCH_GROUND, me);
 #define EMOTE_GROUND_CRACK          -1564012
 
-//Spells
+ //Spells
 #define SPELL_MOLTEN_PUNCH          40126
 #define SPELL_HATEFUL_STRIKE        41926
 #define SPELL_MOLTEN_FLAME          40980
@@ -43,31 +43,31 @@ EndScriptData */
 #define CREATURE_VOLCANO            23085
 #define CREATURE_STALKER            23095
 
-
 class boss_supremus : public CreatureScript
 {
-public: 
+public:
     boss_supremus() : CreatureScript("boss_supremus") { }
+
     struct boss_supremusAI : public ScriptedAI
     {
         boss_supremusAI(Creature* c) : ScriptedAI(c), summons(me)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 SummonFlameTimer;
         uint32 SwitchTargetTimer;
         uint32 PhaseSwitchTimer;
         uint32 SummonVolcanoTimer;
         uint32 HatefulStrikeTimer;
         uint32 BerserkTimer;
-    
+
         bool Phase1;
-    
+
         SummonList summons;
-    
+
         void Reset()
         {
             if (pInstance)
@@ -75,29 +75,29 @@ public:
                 if (me->IsAlive())
                     pInstance->SetData(DATA_SUPREMUSEVENT, NOT_STARTED);
             }
-    
+
             HatefulStrikeTimer = 5000;
             SummonFlameTimer = 20000;
             SwitchTargetTimer = 90000;
             PhaseSwitchTimer = 60000;
             SummonVolcanoTimer = 5000;
             BerserkTimer = 900000;                              // 15 minute enrage
-    
+
             Phase1 = true;
             summons.DespawnAll();
-    
+
             me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, false);
             me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, false);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoZoneInCombat();
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_SUPREMUSEVENT, IN_PROGRESS);
         }
-    
+
         void ToggleDoors(bool close)
         {
             if (GameObject* Doors = GameObject::GetGameObject(*me, pInstance->GetData64(DATA_GAMEOBJECT_SUPREMUS_DOORS)))
@@ -106,7 +106,7 @@ public:
                 else Doors->SetGoState(GO_STATE_ACTIVE);                      // Open
             }
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             if (pInstance)
@@ -116,7 +116,7 @@ public:
             }
             summons.DespawnAll();
         }
-    
+
         void JustSummoned(Creature* summon)
         {
             summons.Summon(summon);
@@ -125,12 +125,12 @@ public:
         {
             summons.Despawn(summon);
         }
-    
+
         Unit* CalculateHatefulStrikeTarget()
         {
             uint32 health = 0;
             Unit* pTarget = NULL;
-    
+
             ThreatContainer::StorageType const &threatlist = me->getThreatManager().getThreatList();
             ThreatContainer::StorageType::const_iterator i = threatlist.begin();
             for (i = threatlist.begin(); i != threatlist.end(); ++i)
@@ -145,29 +145,29 @@ public:
                     }
                 }
             }
-    
+
             return pTarget;
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (!me->HasAura(SPELL_BERSERK, 0))
             {
                 if (BerserkTimer <= diff)
                     DoCast(me, SPELL_BERSERK);
                 else BerserkTimer -= diff;
             }
-    
+
             if (SummonFlameTimer <= diff)
             {
                 DoCast(me, SPELL_MOLTEN_PUNCH);
                 SummonFlameTimer = 10000;
             }
             else SummonFlameTimer -= diff;
-    
+
             if (Phase1)
             {
                 if (HatefulStrikeTimer <= diff)
@@ -180,7 +180,7 @@ public:
                 }
                 else HatefulStrikeTimer -= diff;
             }
-    
+
             if (!Phase1)
             {
                 if (SwitchTargetTimer <= diff)
@@ -189,7 +189,7 @@ public:
                     {
                         if (me->GetDistance2d(me->GetVictim()) < 40)
                             me->CastSpell(me->GetVictim(), SPELL_CHARGE, false);
-    
+
                         DoResetThreat();
                         me->AddThreat(pTarget, 5000000.0f);
                         DoScriptText(EMOTE_NEW_TARGET, me);
@@ -197,7 +197,7 @@ public:
                     }
                 }
                 else SwitchTargetTimer -= diff;
-    
+
                 if (SummonVolcanoTimer <= diff)
                 {
                     if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 999, true))
@@ -209,7 +209,7 @@ public:
                 }
                 else SummonVolcanoTimer -= diff;
             }
-    
+
             if (PhaseSwitchTimer <= diff)
             {
                 if (!Phase1)
@@ -236,27 +236,22 @@ public:
                 }
             }
             else PhaseSwitchTimer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_supremusAI>(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class molten_flame : public CreatureScript
 {
-public: 
+public:
     molten_flame() : CreatureScript("molten_flame") { }
+
     struct molten_flameAI : public NullCreatureAI
     {
         molten_flameAI(Creature* c) : NullCreatureAI(c)
@@ -267,44 +262,45 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new molten_flameAI (pCreature);
+        return new molten_flameAI(pCreature);
     }
 };
 
 class npc_volcano : public CreatureScript
 {
-public: 
+public:
     npc_volcano() : CreatureScript("npc_volcano") { }
+
     struct npc_volcanoAI : public ScriptedAI
     {
         npc_volcanoAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 CheckTimer;
         bool Eruption;
-    
+
         void Reset()
         {
             CheckTimer = 3000;
             Eruption = false;
-    
+
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void MoveInLineOfSight(Unit* /*who*/)
         {
             return; // paralyze the npc
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (CheckTimer <= diff)
@@ -327,7 +323,7 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<npc_volcanoAI>(pCreature);
     }
@@ -339,6 +335,5 @@ void AddSC_boss_supremus()
     new boss_supremus();
     new molten_flame();
     new npc_volcano();
-
 }
 

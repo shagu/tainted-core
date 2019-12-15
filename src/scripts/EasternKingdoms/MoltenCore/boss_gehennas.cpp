@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Gehennas
-SD%Complete: 90
-SDComment: Adds MC NYI
-SDCategory: Molten Core
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Gehennas
+ SD%Complete: 90
+ SDComment: Adds MC NYI
+ SDCategory: Molten Core
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -33,6 +33,7 @@ class boss_gehennas : public CreatureScript
 {
 public:
     boss_gehennas() : CreatureScript("boss_gehennas") { }
+
     struct boss_gehennasAI : public ScriptedAI
     {
         boss_gehennasAI(Creature* c) : ScriptedAI(c) {}
@@ -86,14 +87,14 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_gehennasAI(pCreature);
     }
-
 };
+
 void AddSC_boss_gehennas()
 {
     new boss_gehennas();
 }
-

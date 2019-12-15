@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Netherspite
-SD%Complete: 80
-SDComment: some workaround
-SDCategory: Karazhan
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Netherspite
+ SD%Complete: 80
+ SDComment: some workaround
+ SDCategory: Karazhan
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -52,24 +52,24 @@ enum Netherspite_Portal
     BLUE_PORTAL = 2 // Dominance
 };
 
-const uint32 PortalID[3] = {17369, 17367, 17368};
-const uint32 PortalVisual[3] = {30487, 30490, 30491};
-const uint32 PortalBeam[3] = {30465, 30464, 30463};
-const uint32 PlayerBuff[3] = {30421, 30422, 30423};
-const uint32 NetherBuff[3] = {30466, 30467, 30468};
-const uint32 PlayerDebuff[3] = {38637, 38638, 38639};
-
+const uint32 PortalID[3] = { 17369, 17367, 17368 };
+const uint32 PortalVisual[3] = { 30487, 30490, 30491 };
+const uint32 PortalBeam[3] = { 30465, 30464, 30463 };
+const uint32 PlayerBuff[3] = { 30421, 30422, 30423 };
+const uint32 NetherBuff[3] = { 30466, 30467, 30468 };
+const uint32 PlayerDebuff[3] = { 38637, 38638, 38639 };
 
 class boss_netherspite : public CreatureScript
 {
-public: 
+public:
     boss_netherspite() : CreatureScript("boss_netherspite") { }
+
     struct boss_netherspiteAI : public ScriptedAI
     {
         boss_netherspiteAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
-    
+
             for (int i = 0; i < 3; ++i)
             {
                 PortalGUID[i] = 0;
@@ -83,9 +83,9 @@ public:
                     spell->AttributesEx |= SPELL_ATTR0_NEGATIVE_1;
             }
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         bool PortalPhase;
         bool Berserk;
         uint32 PhaseTimer; // timer for phase switching
@@ -97,12 +97,12 @@ public:
         uint64 PortalGUID[3]; // guid's of portals
         uint64 BeamerGUID[3]; // guid's of auxiliary beaming portals
         uint64 BeamTarget[3]; // guid's of portals' current targets
-    
+
         bool IsBetween(WorldObject* u1, WorldObject* pTarget, WorldObject* u2) // the in-line checker
         {
             if (!u1 || !u2 || !pTarget)
                 return false;
-    
+
             float xn, yn, xp, yp, xh, yh;
             xn = u1->GetPositionX();
             yn = u1->GetPositionY();
@@ -110,30 +110,30 @@ public:
             yp = u2->GetPositionY();
             xh = pTarget->GetPositionX();
             yh = pTarget->GetPositionY();
-    
+
             // check if target is between (not checking distance from the beam yet)
             if (dist(xn, yn, xh, yh) >= dist(xn, yn, xp, yp) || dist(xp, yp, xh, yh) >= dist(xn, yn, xp, yp))
                 return false;
             // check  distance from the beam
             return (abs((xn - xp) * yh + (yp - yn) * xh - xn * yp + xp * yn) / dist(xn, yn, xp, yp) < 1.5f);
         }
-    
+
         float dist(float xa, float ya, float xb, float yb) // auxiliary method for distance
         {
             return sqrt((xa - xb) * (xa - xb) + (ya - yb) * (ya - yb));
         }
-    
+
         void Reset()
         {
             Berserk = false;
             NetherInfusionTimer = 540000;
             VoidZoneTimer = 15000;
             NetherbreathTimer = 3000;
-    
+
             HandleDoors(true);
             DestroyPortals();
         }
-    
+
         void SummonPortals()
         {
             uint8 r = rand() % 4;
@@ -141,7 +141,7 @@ public:
             pos[RED_PORTAL] = (r % 2 ? (r > 1 ? 2 : 1) : 0);
             pos[GREEN_PORTAL] = (r % 2 ? 0 : (r > 1 ? 2 : 1));
             pos[BLUE_PORTAL] = (r > 1 ? 1 : 2); // Blue Portal not on the left side (0)
-    
+
             for (int i = 0; i < 3; ++i)
                 if (Creature* portal = me->SummonCreature(PortalID[i], PortalCoord[pos[i]][0], PortalCoord[pos[i]][1], PortalCoord[pos[i]][2], 0, TEMPSUMMON_TIMED_DESPAWN, 60000))
                 {
@@ -149,7 +149,7 @@ public:
                     portal->AddAura(PortalVisual[i], portal);
                 }
         }
-    
+
         void DestroyPortals()
         {
             for (int i = 0; i < 3; ++i)
@@ -162,7 +162,7 @@ public:
                 BeamTarget[i] = 0;
             }
         }
-    
+
         void UpdatePortals() // Here we handle the beams' behavior
         {
             for (int j = 0; j < 3; ++j) // j = color
@@ -172,11 +172,11 @@ public:
                     Unit* current = Unit::GetUnit(*portal, BeamTarget[j]);
                     // temporary store for the best suitable beam reciever
                     Unit* pTarget = me;
-    
+
                     if (Map* map = me->GetMap())
                     {
                         Map::PlayerList const& players = map->GetPlayers();
-    
+
                         // get the best suitable target
                         for (Map::PlayerList::const_iterator i = players.begin(); i != players.end(); ++i)
                         {
@@ -219,7 +219,7 @@ public:
                         me->getThreatManager().addThreat(pTarget, 100000.0f + DoGetThreat(me->GetVictim()));
                 }
         }
-    
+
         void SwitchToPortalPhase()
         {
             me->RemoveAurasDueToSpell(SPELL_BANISH_ROOT);
@@ -231,7 +231,7 @@ public:
             EmpowermentTimer = 10000;
             DoScriptText(EMOTE_PHASE_PORTAL, me);
         }
-    
+
         void SwitchToBanishPhase()
         {
             me->RemoveAurasDueToSpell(SPELL_EMPOWERMENT);
@@ -242,34 +242,34 @@ public:
             PhaseTimer = 30000;
             PortalPhase = false;
             DoScriptText(EMOTE_PHASE_BANISH, me);
-    
+
             for (int i = 0; i < 3; ++i)
                 me->RemoveAurasDueToSpell(NetherBuff[i]);
         }
-    
+
         void HandleDoors(bool open) // Massive Door switcher
         {
             if (GameObject* Door = GameObject::GetGameObject(*me, pInstance ? pInstance->GetData64(DATA_GO_MASSIVE_DOOR) : 0))
                 Door->SetGoState(open ? GO_STATE_ACTIVE : GO_STATE_READY);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             HandleDoors(false);
             SwitchToPortalPhase();
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             HandleDoors(true);
             DestroyPortals();
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             // Void Zone
             if (VoidZoneTimer <= diff)
             {
@@ -277,7 +277,7 @@ public:
                 VoidZoneTimer = 15000;
             }
             else VoidZoneTimer -= diff;
-    
+
             // NetherInfusion Berserk
             if (!Berserk && NetherInfusionTimer <= diff)
             {
@@ -286,7 +286,7 @@ public:
                 Berserk = true;
             }
             else NetherInfusionTimer -= diff;
-    
+
             if (PortalPhase) // PORTAL PHASE
             {
                 // Distribute beams and buffs
@@ -296,7 +296,7 @@ public:
                     PortalTimer = 1000;
                 }
                 else PortalTimer -= diff;
-    
+
                 // Empowerment & Nether Burn
                 if (EmpowermentTimer <= diff)
                 {
@@ -305,7 +305,7 @@ public:
                     EmpowermentTimer = 90000;
                 }
                 else EmpowermentTimer -= diff;
-    
+
                 if (PhaseTimer <= diff)
                 {
                     if (!me->IsNonMeleeSpellCast(false))
@@ -326,7 +326,7 @@ public:
                     NetherbreathTimer = urand(5000, 7000);
                 }
                 else NetherbreathTimer -= diff;
-    
+
                 if (PhaseTimer <= diff)
                 {
                     if (!me->IsNonMeleeSpellCast(false))
@@ -337,18 +337,18 @@ public:
                 }
                 else PhaseTimer -= diff;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_netherspiteAI>(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_netherspite()
 {
     new boss_netherspite();

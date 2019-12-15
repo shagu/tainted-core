@@ -15,40 +15,40 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Arathi Highlands
-SD%Complete: 100
-SDComment: Quest support: 665
-SDCategory: Arathi Highlands
-EndScriptData */
+ /* ScriptData
+ SDName: Arathi Highlands
+ SD%Complete: 100
+ SDComment: Quest support: 665
+ SDCategory: Arathi Highlands
+ EndScriptData */
 
-/* ContentData
-npc_professor_phizzlethorpe
-EndContentData */
+ /* ContentData
+ npc_professor_phizzlethorpe
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
 
-/*######
-## npc_professor_phizzlethorpe
-######*/
+ /*######
+ ## npc_professor_phizzlethorpe
+ ######*/
 
 enum eEnums
 {
-    SAY_PROGRESS_1      = -1000264,
-    SAY_PROGRESS_2      = -1000265,
-    SAY_PROGRESS_3      = -1000266,
-    EMOTE_PROGRESS_4    = -1000267,
-    SAY_AGGRO           = -1000268,
-    SAY_PROGRESS_5      = -1000269,
-    SAY_PROGRESS_6      = -1000270,
-    SAY_PROGRESS_7      = -1000271,
-    EMOTE_PROGRESS_8    = -1000272,
-    SAY_PROGRESS_9      = -1000273,
+    SAY_PROGRESS_1 = -1000264,
+    SAY_PROGRESS_2 = -1000265,
+    SAY_PROGRESS_3 = -1000266,
+    EMOTE_PROGRESS_4 = -1000267,
+    SAY_AGGRO = -1000268,
+    SAY_PROGRESS_5 = -1000269,
+    SAY_PROGRESS_6 = -1000270,
+    SAY_PROGRESS_7 = -1000271,
+    EMOTE_PROGRESS_8 = -1000272,
+    SAY_PROGRESS_9 = -1000273,
 
-    QUEST_SUNKEN_TREASURE   = 665,
-    MOB_VENGEFUL_SURGE      = 2776
+    QUEST_SUNKEN_TREASURE = 665,
+    MOB_VENGEFUL_SURGE = 2776
 };
 class npc_professor_phizzlethorpe : CreatureScript
 {

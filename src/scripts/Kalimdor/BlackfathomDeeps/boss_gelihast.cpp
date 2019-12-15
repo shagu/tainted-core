@@ -21,67 +21,67 @@
 
 enum Spells
 {
-    SPELL_NET                                              = 6533
+    SPELL_NET = 6533
 };
 
 
 class boss_gelihast : public CreatureScript
 {
-public: 
+public:
     boss_gelihast() : CreatureScript("boss_gelihast") { }
+
     struct boss_gelihastAI : public ScriptedAI
     {
         boss_gelihastAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         uint32 uiNetTimer;
-    
+
         ScriptedInstance* pInstance;
-    
+
         void Reset()
         {
             uiNetTimer = urand(2000, 4000);
             if (pInstance)
                 pInstance->SetData(TYPE_GELIHAST, NOT_STARTED);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             if (pInstance)
                 pInstance->SetData(TYPE_GELIHAST, IN_PROGRESS);
         }
-    
+
         void JustDied(Unit* /*killer*/)
         {
             if (pInstance)
                 pInstance->SetData(TYPE_GELIHAST, DONE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (uiNetTimer < diff)
             {
                 DoCastVictim(SPELL_NET);
                 uiNetTimer = urand(4000, 7000);
             }
             else uiNetTimer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_gelihastAI (pCreature);
+        return new boss_gelihastAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_gelihast()
 {
     new boss_gelihast();

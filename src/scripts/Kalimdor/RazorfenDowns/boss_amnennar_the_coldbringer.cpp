@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Amnennar_the_coldbringer
-SD%Complete: 100
-SDComment:
-SDCategory: Razorfen Downs
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Amnennar_the_coldbringer
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Razorfen Downs
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -39,12 +39,13 @@ EndScriptData */
 
 class boss_amnennar_the_coldbringer : public CreatureScript
 {
-public: 
+public:
     boss_amnennar_the_coldbringer() : CreatureScript("boss_amnennar_the_coldbringer") { }
+
     struct boss_amnennar_the_coldbringerAI : public ScriptedAI
     {
         boss_amnennar_the_coldbringerAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 AmnenarsWrath_Timer;
         uint32 FrostBolt_Timer;
         uint32 FrostNova_Timer;
@@ -52,7 +53,7 @@ public:
         bool Spectrals55;
         bool Spectrals30;
         bool Hp;
-    
+
         void Reset()
         {
             AmnenarsWrath_Timer = 8000;
@@ -63,80 +64,80 @@ public:
             Spectrals30 = false;
             Hp = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(SAY_AGGRO, me);
         }
-    
+
         void KilledUnit()
         {
             DoScriptText(SAY_KILL, me);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //AmnenarsWrath_Timer
             if (AmnenarsWrath_Timer <= diff)
             {
-                DoCastVictim( SPELL_AMNENNARSWRATH);
+                DoCastVictim(SPELL_AMNENNARSWRATH);
                 AmnenarsWrath_Timer = 12000;
             }
             else AmnenarsWrath_Timer -= diff;
-    
+
             //FrostBolt_Timer
             if (FrostBolt_Timer <= diff)
             {
-                DoCastVictim( SPELL_FROSTBOLT);
+                DoCastVictim(SPELL_FROSTBOLT);
                 FrostBolt_Timer = 8000;
             }
             else FrostBolt_Timer -= diff;
-    
+
             if (FrostNova_Timer <= diff)
             {
                 DoCast(me, SPELL_FROST_NOVA);
                 FrostNova_Timer = 15000;
             }
             else FrostNova_Timer -= diff;
-    
+
             if (!Spectrals70 && HealthBelowPct(70))
             {
                 DoScriptText(SAY_SUMMON60, me);
-                DoCastVictim( SPELL_FROST_SPECTRES);
+                DoCastVictim(SPELL_FROST_SPECTRES);
                 Spectrals70 = true;
             }
-    
+
             if (!Hp && HealthBelowPct(50))
             {
                 DoScriptText(SAY_HP, me);
                 Hp = true;
             }
-    
+
             if (!Spectrals55 && HealthBelowPct(55))
             {
                 DoScriptText(SAY_SUMMON30, me);
-                DoCastVictim( SPELL_FROST_SPECTRES);
+                DoCastVictim(SPELL_FROST_SPECTRES);
                 Spectrals55 = true;
             }
-    
-    
+
+
             if (!Spectrals30 && HealthBelowPct(30))
             {
-               DoScriptText(SAY_SUMMON30, me);
-               DoCastVictim(SPELL_FROST_SPECTRES);
-               Spectrals30 = true;
+                DoScriptText(SAY_SUMMON30, me);
+                DoCastVictim(SPELL_FROST_SPECTRES);
+                Spectrals30 = true;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_amnennar_the_coldbringerAI (pCreature);
+        return new boss_amnennar_the_coldbringerAI(pCreature);
     }
 };
 

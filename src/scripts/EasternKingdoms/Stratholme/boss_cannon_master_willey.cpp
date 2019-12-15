@@ -15,17 +15,17 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: boss_cannon_master_willey
-SD%Complete: 100
-SDComment:
-SDCategory: Stratholme
-EndScriptData */
+ /* ScriptData
+ SDName: boss_cannon_master_willey
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Stratholme
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-//front, left
+ //front, left
 #define ADD_1X 3553.851807f
 #define ADD_1Y -2945.885986f
 #define ADD_1Z 125.001015f
@@ -76,20 +76,20 @@ EndScriptData */
 #define SPELL_SHOOT    16496
 //#define SPELL_SUMMONCRIMSONRIFLEMAN    17279
 
-
 class boss_cannon_master_willey : public CreatureScript
 {
-public: 
+public:
     boss_cannon_master_willey() : CreatureScript("boss_cannon_master_willey") { }
+
     struct boss_cannon_master_willeyAI : public ScriptedAI
     {
         boss_cannon_master_willeyAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 KnockAway_Timer;
         uint32 Pummel_Timer;
         uint32 Shoot_Timer;
         uint32 SummonRifleman_Timer;
-    
+
         void Reset()
         {
             Shoot_Timer = 1000;
@@ -97,7 +97,7 @@ public:
             KnockAway_Timer = 11000;
             SummonRifleman_Timer = 15000;
         }
-    
+
         void JustDied(Unit* /*Victim*/)
         {
             me->SummonCreature(11054, ADD_1X, ADD_1Y, ADD_1Z, ADD_1O, TEMPSUMMON_TIMED_DESPAWN, 240000);
@@ -108,49 +108,49 @@ public:
             me->SummonCreature(11054, ADD_7X, ADD_7Y, ADD_7Z, ADD_7O, TEMPSUMMON_TIMED_DESPAWN, 240000);
             me->SummonCreature(11054, ADD_9X, ADD_9Y, ADD_9Z, ADD_9O, TEMPSUMMON_TIMED_DESPAWN, 240000);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Pummel
             if (Pummel_Timer <= diff)
             {
                 //Cast
                 if (rand() % 100 < 90) //90% chance to cast
-                    DoCastVictim( SPELL_PUMMEL);
+                    DoCastVictim(SPELL_PUMMEL);
                 //12 seconds until we should cast this again
                 Pummel_Timer = 12000;
             }
             else Pummel_Timer -= diff;
-    
+
             //KnockAway
             if (KnockAway_Timer <= diff)
             {
                 //Cast
                 if (rand() % 100 < 80) //80% chance to cast
-                    DoCastVictim( SPELL_KNOCKAWAY);
+                    DoCastVictim(SPELL_KNOCKAWAY);
                 //14 seconds until we should cast this again
                 KnockAway_Timer = 14000;
             }
             else KnockAway_Timer -= diff;
-    
+
             //Shoot
             if (Shoot_Timer <= diff)
             {
                 //Cast
-                DoCastVictim( SPELL_SHOOT);
+                DoCastVictim(SPELL_SHOOT);
                 //1 seconds until we should cast this again
                 Shoot_Timer = 1000;
             }
             else Shoot_Timer -= diff;
-    
+
             //SummonRifleman
             if (SummonRifleman_Timer <= diff)
             {
@@ -207,19 +207,19 @@ public:
                 SummonRifleman_Timer = 30000;
             }
             else SummonRifleman_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_cannon_master_willeyAI (pCreature);
+        return new boss_cannon_master_willeyAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_cannon_master_willey()
 {
     new boss_cannon_master_willey();
 }
-

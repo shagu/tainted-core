@@ -15,18 +15,18 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Teron_Gorefiend
-SD%Complete: 60
-SDComment: Requires Mind Control support for Ghosts.
-SDCategory: Black Temple
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Teron_Gorefiend
+ SD%Complete: 60
+ SDComment: Requires Mind Control support for Ghosts.
+ SDCategory: Black Temple
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "black_temple.h"
 
-//Speech'n'sound
+ //Speech'n'sound
 #define SAY_INTRO                       -1564037
 #define SAY_AGGRO                       -1564038
 #define SAY_SLAY1                       -1564039
@@ -51,50 +51,36 @@ EndScriptData */
 #define CREATURE_DOOM_BLOSSOM           23123
 #define CREATURE_SHADOWY_CONSTRUCT      23111
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class mob_doom_blossom : public CreatureScript
 {
-public: 
+public:
     mob_doom_blossom() : CreatureScript("mob_doom_blossom") { }
+
     struct mob_doom_blossomAI : public ScriptedAI
     {
         mob_doom_blossomAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 CheckTeronTimer;
         uint32 ShadowBoltTimer;
         uint64 TeronGUID;
-    
+
         void Reset()
         {
             CheckTeronTimer = 5000;
             ShadowBoltTimer = 12000;
             TeronGUID = 0;
         }
-    
+
         void EnterCombat(Unit* /*who*/) { }
         void AttackStart(Unit* /*who*/) {}
         void MoveInLineOfSight(Unit* /*who*/) {}
-    
+
         void Despawn()
         {
             me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
             me->RemoveCorpse();
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (CheckTeronTimer <= diff)
@@ -102,18 +88,18 @@ public:
                 if (TeronGUID)
                 {
                     DoZoneInCombat();
-    
+
                     Creature* Teron = (Unit::GetCreature((*me), TeronGUID));
                     if ((Teron) && (!Teron->IsAlive() || Teron->IsInEvadeMode()))
                         Despawn();
                 }
                 else
                     Despawn();
-    
+
                 CheckTeronTimer = 5000;
             }
             else CheckTeronTimer -= diff;
-    
+
             if (ShadowBoltTimer <= diff && me->IsInCombat())
             {
                 DoCast(SelectUnit(SELECT_TARGET_RANDOM, 0), SPELL_SHADOWBOLT);
@@ -122,58 +108,53 @@ public:
             else ShadowBoltTimer -= diff;
             return;
         }
-    
+
         void SetTeronGUID(uint64 guid)
         {
             TeronGUID = guid;
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_doom_blossomAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class mob_shadowy_construct : public CreatureScript
 {
-public: 
+public:
     mob_shadowy_construct() : CreatureScript("mob_shadowy_construct") { }
+
     struct mob_shadowy_constructAI : public ScriptedAI
     {
         mob_shadowy_constructAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint64 GhostGUID;
         uint64 TeronGUID;
-    
+
         uint32 CheckPlayerTimer;
         uint32 CheckTeronTimer;
-    
+
         void Reset()
         {
             GhostGUID = 0;
             TeronGUID = 0;
-    
+
             CheckPlayerTimer = 2000;
             CheckTeronTimer = 5000;
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!who || (!who->IsAlive()) || (who->GetGUID() == GhostGUID))
                 return;
-    
+
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
+
         /* Comment it out for now. NOTE TO FUTURE DEV: UNCOMMENT THIS OUT ONLY AFTER MIND CONTROL IS IMPLEMENTED
             void DamageTaken(Unit* done_by, uint32 &damage)
             {
@@ -181,7 +162,7 @@ public:
                 damage = 0;                                         // Only the ghost can deal damage.
             }
          */
-    
+
         void CheckPlayers()
         {
             ThreatContainer::StorageType const &threatlist = me->getThreatManager().getThreatList();
@@ -203,7 +184,7 @@ public:
                 me->AI()->AttackStart(pTarget);
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (CheckPlayerTimer <= diff)
@@ -212,44 +193,39 @@ public:
                 CheckPlayerTimer = 3000;
             }
             else CheckPlayerTimer -= diff;
-    
+
             if (CheckTeronTimer <= diff)
             {
                 Creature* Teron = (Unit::GetCreature((*me), TeronGUID));
                 if (!Teron || !Teron->IsAlive() || Teron->IsInEvadeMode())
                     me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-    
+
                 CheckTeronTimer = 5000;
             }
             else CheckTeronTimer -= diff;
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_shadowy_constructAI(pCreature);
     }
-
-    
-
-    
-
-    
 };
 
 class boss_teron_gorefiend : public CreatureScript
 {
-public: 
+public:
     boss_teron_gorefiend() : CreatureScript("boss_teron_gorefiend") { }
+
     struct boss_teron_gorefiendAI : public ScriptedAI
     {
         boss_teron_gorefiendAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 IncinerateTimer;
         uint32 SummonDoomBlossomTimer;
         uint32 EnrageTimer;
@@ -258,56 +234,56 @@ public:
         uint32 SummonShadowsTimer;
         uint32 RandomYellTimer;
         uint32 AggroTimer;
-    
+
         uint64 AggroTargetGUID;
         uint64 GhostGUID;                                       // Player that gets killed by Shadow of Death and gets turned into a ghost
-    
+
         bool Intro;
-    
+
         void Reset()
         {
             if (pInstance)
                 pInstance->SetData(DATA_TERONGOREFIENDEVENT, NOT_STARTED);
-    
+
             IncinerateTimer = 20000 + rand() % 11000;
             SummonDoomBlossomTimer = 12000;
             EnrageTimer = 600000;
             CrushingShadowsTimer = 22000;
             SummonShadowsTimer = 60000;
             RandomYellTimer = 50000;
-    
+
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             // Start off unattackable so that the intro is done properly
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-    
+
             AggroTimer = 20000;
             AggroTargetGUID = 0;
             Intro = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!who || (!who->IsAlive())) return;
-    
-            if (who->isTargetableForAttack() && who->isInAccessiblePlaceFor (me) && me->IsHostileTo(who))
+
+            if (who->isTargetableForAttack() && who->isInAccessiblePlaceFor(me) && me->IsHostileTo(who))
             {
                 float attackRadius = me->GetAttackDistance(who);
-    
+
                 if (me->IsWithinDistInMap(who, attackRadius) && me->GetDistanceZ(who) <= CREATURE_Z_ATTACK_RANGE && me->IsWithinLOSInMap(who))
                 {
                     //if (who->HasStealthAura())
                     //    who->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
-    
+
                     me->AddThreat(who, 1.0f);
                 }
-    
+
                 if (!me->IsInCombat() && !Intro && me->IsWithinDistInMap(who, 60.0f) && (who->GetTypeId() == TYPEID_PLAYER))
                 {
                     if (pInstance)
                         pInstance->SetData(DATA_TERONGOREFIENDEVENT, IN_PROGRESS);
-    
+
                     me->GetMotionMaster()->Clear(false);
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     DoScriptText(SAY_INTRO, me);
@@ -317,20 +293,20 @@ public:
                 }
             }
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), me);
         }
-    
+
         void JustDied(Unit* /*victim*/)
         {
             if (pInstance)
                 pInstance->SetData(DATA_TERONGOREFIENDEVENT, DONE);
-    
+
             DoScriptText(SAY_DEATH, me);
         }
-    
+
         float CalculateRandomLocation(float Loc, uint32 radius)
         {
             float coord = Loc;
@@ -345,11 +321,11 @@ public:
             }
             return coord;
         }
-    
+
         void SetThreatList(Creature* Blossom)
         {
             if (!Blossom) return;
-    
+
             ThreatContainer::StorageType const &threatlist = me->getThreatManager().getThreatList();
             ThreatContainer::StorageType::const_iterator i = threatlist.begin();
             for (i = threatlist.begin(); i != threatlist.end(); ++i)
@@ -362,7 +338,7 @@ public:
                 }
             }
         }
-    
+
         void MindControlGhost()
         {
             /************************************************************************/
@@ -371,7 +347,7 @@ public:
             /**  THE CURRENT CODE IN THIS FUNCTION IS ONLY THE BEGINNING OF    *****/
             /**   WHAT IS FULLY NECESSARY FOR GOREFIEND TO BE 100% COMPLETE    *****/
             /************************************************************************/
-    
+
             Unit* Ghost = NULL;
             if (GhostGUID)
                 Ghost = Unit::GetUnit((*me), GhostGUID);
@@ -400,14 +376,14 @@ public:
                         Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
                         if (!pTarget)                             // someone's trying to solo.
                             pTarget = me->GetVictim();
-    
+
                         if (pTarget)
                             Construct->GetMotionMaster()->MoveChase(pTarget);
                     }
                 }
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (Intro)
@@ -424,7 +400,7 @@ public:
                         Unit* pUnit = Unit::GetUnit((*me), AggroTargetGUID);
                         if (pUnit)
                             AttackStart(pUnit);
-    
+
                         DoZoneInCombat();
                     }
                     else
@@ -435,14 +411,14 @@ public:
                 }
                 else AggroTimer -= diff;
             }
-    
+
             if (!UpdateVictim() || Intro)
                 return;
-    
+
             if (SummonShadowsTimer <= diff)
             {
                 //MindControlGhost();
-    
+
                 for (uint8 i = 0; i < 2; ++i)
                 {
                     Creature* Shadow = NULL;
@@ -453,7 +429,7 @@ public:
                         Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
                         if (!pTarget)
                             pTarget = me->GetVictim();
-    
+
                         if (pTarget)
                             Shadow->AI()->AttackStart(pTarget);
                     }
@@ -461,7 +437,7 @@ public:
                 SummonShadowsTimer = 60000;
             }
             else SummonShadowsTimer -= diff;
-    
+
             if (SummonDoomBlossomTimer <= diff)
             {
                 if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
@@ -484,13 +460,13 @@ public:
                 }
             }
             else SummonDoomBlossomTimer -= diff;
-    
+
             if (IncinerateTimer <= diff)
             {
                 Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
                 if (!pTarget)
                     pTarget = me->GetVictim();
-    
+
                 if (pTarget)
                 {
                     DoScriptText(RAND(SAY_SPECIAL1, SAY_SPECIAL2), me);
@@ -499,7 +475,7 @@ public:
                 }
             }
             else IncinerateTimer -= diff;
-    
+
             if (CrushingShadowsTimer <= diff)
             {
                 Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0);
@@ -508,15 +484,15 @@ public:
                 CrushingShadowsTimer = 10000 + rand() % 16 * 1000;
             }
             else CrushingShadowsTimer -= diff;
-    
+
             /*** NOTE FOR FUTURE DEV: UNCOMMENT BELOW ONLY IF MIND CONTROL IS FULLY IMPLEMENTED **/
             /*if (ShadowOfDeathTimer <= diff)
             {
                 Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
-    
+
                 if (!pTarget)
                    pTarget = me->GetVictim();
-    
+
                 if (pTarget && pTarget->IsAlive() && pTarget->GetTypeId() == TYPEID_PLAYER)
                 {
                     DoCast(pTarget, SPELL_SHADOW_OF_DEATH);
@@ -525,14 +501,14 @@ public:
                     SummonShadowsTimer = 53000; // Make it VERY close but slightly less so that we can check if the aura is still on the player
                 }
             } else ShadowOfDeathTimer -= diff;*/
-    
+
             if (RandomYellTimer <= diff)
             {
                 DoScriptText(RAND(SAY_SPELL1, SAY_SPELL2), me);
                 RandomYellTimer = 50000 + rand() % 51 * 1000;
             }
             else RandomYellTimer -= diff;
-    
+
             if (!me->HasAura(SPELL_BERSERK, 0))
             {
                 if (EnrageTimer <= diff)
@@ -542,23 +518,21 @@ public:
                 }
                 else EnrageTimer -= diff;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_teron_gorefiendAI>(pCreature);
     }
 };
-
 
 void AddSC_boss_teron_gorefiend()
 {
     new mob_doom_blossom();
     new mob_shadowy_construct();
     new boss_teron_gorefiend();
-
 }
 

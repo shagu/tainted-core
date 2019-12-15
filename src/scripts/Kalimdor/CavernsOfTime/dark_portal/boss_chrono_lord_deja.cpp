@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Chrono_Lord_Deja
-SD%Complete: 65
-SDComment: All abilities not implemented
-SDCategory: Caverns of Time, The Dark Portal
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Chrono_Lord_Deja
+ SD%Complete: 65
+ SDComment: All abilities not implemented
+ SDCategory: Caverns of Time, The Dark Portal
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -40,11 +40,11 @@ EndScriptData */
 #define SPELL_TIME_LAPSE            31467
 #define SPELL_ATTRACTION            38540                       //Not Implemented (Heroic mode)
 
-
 class boss_chrono_lord_deja : public CreatureScript
 {
-public: 
+public:
     boss_chrono_lord_deja() : CreatureScript("boss_chrono_lord_deja") { }
+
     struct boss_chrono_lord_dejaAI : public ScriptedAI
     {
         boss_chrono_lord_dejaAI(Creature* c) : ScriptedAI(c)
@@ -52,24 +52,24 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
         bool HeroicMode;
-    
+
         uint32 ArcaneBlast_Timer;
         uint32 TimeLapse_Timer;
-    
+
         void Reset()
         {
             ArcaneBlast_Timer = 20000;
             TimeLapse_Timer = 15000;
         }
-    
+
         void EnterCombat(Unit*)
         {
             DoScriptText(SAY_AGGRO, me);
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             //Despawn Time Keeper
@@ -81,10 +81,10 @@ public:
                     me->DealDamage(who, who->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
                 }
             }
-    
+
             ScriptedAI::MoveInLineOfSight(who);
         }
-    
+
         void KilledUnit(Unit*)
         {
             switch (rand() % 2)
@@ -97,29 +97,29 @@ public:
                 break;
             }
         }
-    
+
         void JustDied(Unit*)
         {
             DoScriptText(SAY_DEATH, me);
-    
+
             if (pInstance)
                 pInstance->SetData(TYPE_RIFT, SPECIAL);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Arcane Blast
             if (ArcaneBlast_Timer <= diff)
             {
-                DoCastVictim( SPELL_ARCANE_BLAST);
+                DoCastVictim(SPELL_ARCANE_BLAST);
                 ArcaneBlast_Timer = 20000 + rand() % 5000;
             }
             else ArcaneBlast_Timer -= diff;
-    
+
             //Time Lapse
             if (TimeLapse_Timer <= diff)
             {
@@ -128,18 +128,17 @@ public:
                 TimeLapse_Timer = 15000 + rand() % 10000;
             }
             else TimeLapse_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_chrono_lord_dejaAI (pCreature);
+        return new boss_chrono_lord_dejaAI(pCreature);
     }
-    
-    
 };
+
 void AddSC_boss_chrono_lord_deja()
 {
     new boss_chrono_lord_deja();

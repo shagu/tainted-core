@@ -15,21 +15,21 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_General_Angerforge
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_General_Angerforge
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_MIGHTYBLOW                                       = 14099,
-    SPELL_HAMSTRING                                        = 9080,
-    SPELL_CLEAVE                                           = 20691
+    SPELL_MIGHTYBLOW = 14099,
+    SPELL_HAMSTRING = 9080,
+    SPELL_CLEAVE = 20691
 };
 
 class boss_general_angerforge : public CreatureScript
@@ -128,11 +128,11 @@ public:
             DoMeleeAttackIfReady();
         }
     };
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_general_angerforgeAI(pCreature);
     }
-
 };
 
 void AddSC_boss_general_angerforge()

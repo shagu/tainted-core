@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Anzu
-SD%Complete: 95
-SDComment:Summon event is missing.
-SDCategory: Auchindoun, Sethekk Halls
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Anzu
+ SD%Complete: 95
+ SDComment:Summon event is missing.
+ SDCategory: Auchindoun, Sethekk Halls
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -53,7 +53,7 @@ enum anzu
 
 class boss_anzu : public CreatureScript
 {
-public: 
+public:
     boss_anzu() : CreatureScript("boss_anzu") { }
     struct boss_anzuAI : public ScriptedAI
     {
@@ -61,47 +61,47 @@ public:
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
-    
+
             talkTimer = 1;
             me->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             me->AddAura(SPELL_SHADOWFORM, me);
-    
+
             if (GameObject* pClaw = me->FindNearestGameObject(GO_CLAW, 20))
                 pClaw->RemoveFromWorld();
         }
-    
+
         ScriptedInstance* pInstance;
         EventMap events;
         uint32 talkTimer;
         SummonList summons;
         bool HeroicMode;
-    
+
         void Reset()
         {
             summons.DespawnAll();
-    
+
             if (GameObject* pClaw = me->FindNearestGameObject(GO_CLAW, 20))
                 if (!pClaw)
                     pClaw->AddToWorld();
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_ANZUEVENT, NOT_STARTED);
         }
-    
+
         void JustSummoned(Creature* summon)
         {
             summons.Summon(summon);
             summon->AI()->AttackStart(me->GetVictim());
         }
-    
+
         void SummonedCreatureDies(Creature* summon, Unit*)
         {
             summons.Despawn(summon);
-            
+
             if (summons.empty())
                 me->RemoveAurasDueToSpell(SPELL_BANISH);
         }
-    
+
         void EnterCombat(Unit*)
         {
             events.Reset();
@@ -110,17 +110,17 @@ public:
             events.ScheduleEvent(EVENT_SPELL_CYCLONE, 8000);
             events.ScheduleEvent(EVENT_ANZU_HEALTH1, 2000);
             events.ScheduleEvent(EVENT_ANZU_HEALTH2, 2001);
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_ANZUEVENT, IN_PROGRESS);
         }
-    
+
         void JustDied(Unit*)
         {
             if (pInstance)
                 pInstance->SetData(DATA_ANZUEVENT, DONE);
         }
-    
+
         void SummonBroods()
         {
             DoScriptText(SAY_HELP, me);
@@ -131,7 +131,7 @@ public:
                 brood->AI()->AttackStart(SelectTarget(SELECT_TARGET_RANDOM, 1, 45.0f, true));
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (talkTimer)
@@ -152,11 +152,11 @@ public:
             }
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
             if (me->HasUnitState(UNIT_STATE_CASTING | UNIT_STATE_STUNNED))
                 return;
-    
+
             switch (events.ExecuteEvent())
             {
             case EVENT_SPELL_SCREECH:
@@ -197,18 +197,16 @@ public:
                 events.Repeat(1000);
                 break;
             }
-    
-                DoMeleeAttackIfReady();
-            
+
+            DoMeleeAttackIfReady();
+
         }
     };
-    
+
     CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_anzuAI>(pCreature);
     }
-    
-    
 };
 
 void AddSC_boss_anzu()

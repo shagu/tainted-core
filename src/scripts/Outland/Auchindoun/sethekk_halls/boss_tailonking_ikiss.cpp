@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Talon_King_Ikiss
-SD%Complete: 95
-SDComment: Heroic supported. Some details missing, but most are spell related.
-SDCategory: Auchindoun, Sethekk Halls
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Talon_King_Ikiss
+ SD%Complete: 95
+ SDComment: Heroic supported. Some details missing, but most are spell related.
+ SDCategory: Auchindoun, Sethekk Halls
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -66,48 +66,49 @@ enum events
 
 class boss_talon_king_ikiss : public CreatureScript
 {
-public: 
+public:
     boss_talon_king_ikiss() : CreatureScript("boss_talon_king_ikiss") { }
+
     struct boss_talon_king_ikissAI : public ScriptedAI
     {
         boss_talon_king_ikissAI(Creature* c) : ScriptedAI(c)
         {
             IsHeroic = me->GetMap()->IsHeroic();
-            pInstance =(ScriptedInstance*)c->GetInstanceData();
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
         EventMap events;
         bool spoken;
         bool IsHeroic;
-    
-    
+
+
         void Reset()
         {
             spoken = false;
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_IKISSEVENT, NOT_STARTED);
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!spoken && who->GetTypeId() == TYPEID_PLAYER && who->IsAlive())
             {
                 DoScriptText(SAY_INTRO, me);
                 spoken = true;
-    
+
                 ScriptedAI::MoveInLineOfSight(who);
             }
         }
-    
+
         void EnterCombat(Unit*)
         {
             DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2, SAY_AGGRO_3), me);
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_IKISSEVENT, IN_PROGRESS);
-    
+
             events.ScheduleEvent(EVENT_SPELL_BLINK, 35000);
             events.ScheduleEvent(EVENT_SPELL_ARCANE_VOLLEY, 5000);
             events.ScheduleEvent(EVENT_SPELL_POLYMORPH, 8000);
@@ -115,30 +116,30 @@ public:
             if (me->GetMap()->IsHeroic())
                 events.ScheduleEvent(EVENT_SPELL_SLOW, urand(15000, 25000));
         }
-    
+
         void JustDied(Unit*)
         {
             DoScriptText(SAY_DEATH, me);
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_IKISSEVENT, DONE);
         }
-    
+
         void KilledUnit(Unit*)
         {
             DoScriptText(RAND(SAY_SLAY_1, SAY_SLAY_2), me);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             events.Update(diff);
             if (me->HasUnitState(UNIT_STATE_CASTING))
                 return;
-    
-    
+
+
             switch (events.ExecuteEvent())
             {
             case EVENT_SPELL_ARCANE_VOLLEY:
@@ -146,8 +147,8 @@ public:
                 events.ScheduleEvent(EVENT_SPELL_ARCANE_VOLLEY, urand(7000, 12000));
                 break;
             case EVENT_SPELL_POLYMORPH:
-                if (Unit* target = (IsHeroic? SelectTarget(SELECT_TARGET_RANDOM, 0) : SelectTarget(SELECT_TARGET_TOPAGGRO, 1)))
-                    me->CastSpell(target, IsHeroic? H_SPELL_POLYMORPH :SPELL_POLYMORPH, false);
+                if (Unit* target = (IsHeroic ? SelectTarget(SELECT_TARGET_RANDOM, 0) : SelectTarget(SELECT_TARGET_TOPAGGRO, 1)))
+                    me->CastSpell(target, IsHeroic ? H_SPELL_POLYMORPH : SPELL_POLYMORPH, false);
                 events.ScheduleEvent(EVENT_SPELL_POLYMORPH, urand(15000, 17500));
                 break;
             case EVENT_SPELL_SLOW:
@@ -169,7 +170,7 @@ public:
                 {
                     me->CastSpell(target, SPELL_BLINK, false);
                     me->NearTeleportTo(target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), target->GetOrientation());
-    
+
                     DoCast(target, SPELL_BLINK_TELEPORT);
                 }
                 events.Repeat(urand(35000, 40000));
@@ -177,23 +178,23 @@ public:
                 events.ScheduleEvent(EVENT_SPELL_BLINK_2, 0);
                 return;
             case EVENT_SPELL_BLINK_2:
-                me->CastSpell(me, IsHeroic? H_SPELL_ARCANE_EXPLOSION : SPELL_ARCANE_EXPLOSION, false);
+                me->CastSpell(me, IsHeroic ? H_SPELL_ARCANE_EXPLOSION : SPELL_ARCANE_EXPLOSION, false);
                 me->CastSpell(me, SPELL_ARCANE_BUBBLE, true);
                 events.ExecuteEvent();
                 break;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_talon_king_ikissAI>(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_talon_king_ikiss()
 {
     new boss_talon_king_ikiss();

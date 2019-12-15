@@ -23,21 +23,21 @@
 
 enum eSpells
 {
-    SPELL_BLESSING_OF_BLACKFATHOM                           = 8733,
-    SPELL_RAVAGE                                            = 8391,
-    SPELL_FROST_NOVA                                        = 865,
-    SPELL_FROST_BOLT_VOLLEY                                 = 8398,
-    SPELL_TELEPORT_DARNASSUS                                = 9268
+    SPELL_BLESSING_OF_BLACKFATHOM = 8733,
+    SPELL_RAVAGE = 8391,
+    SPELL_FROST_NOVA = 865,
+    SPELL_FROST_BOLT_VOLLEY = 8398,
+    SPELL_TELEPORT_DARNASSUS = 9268
 };
 
 #define GOSSIP_ITEM_MORRIDUNE "Please port me to Darnassus"
 
-const Position HomePosition = { -815.817f, -145.299f, -25.870f, 0};
+const Position HomePosition = { -815.817f, -145.299f, -25.870f, 0 };
 
 class go_blackfathom_altar : GameObjectScript
 {
 public:
-    go_blackfathom_altar() : GameObjectScript("go_blackfathom_altar"){}
+    go_blackfathom_altar() : GameObjectScript("go_blackfathom_altar") {}
 
     bool OnGossipHello(Player* player, GameObject* /*go*/)
     {
@@ -70,7 +70,7 @@ public:
 class npc_blackfathom_deeps_event : public CreatureScript
 {
 public:
-    npc_blackfathom_deeps_event() :  CreatureScript("npc_blackfathom_deeps_event") {}
+    npc_blackfathom_deeps_event() : CreatureScript("npc_blackfathom_deeps_event") {}
 
     struct npc_blackfathom_deeps_eventAI : public ScriptedAI
     {

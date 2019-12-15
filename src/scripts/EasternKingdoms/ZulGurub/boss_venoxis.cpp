@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Venoxis
-SD%Complete: 100
-SDComment:
-SDCategory: Zul'Gurub
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Venoxis
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Zul'Gurub
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -28,37 +28,37 @@ EndScriptData */
 
 enum Texts
 {
-    SAY_TRANSFORM   =   -1309000,
-    SAY_DEATH       =   -1309001
+    SAY_TRANSFORM = -1309000,
+    SAY_DEATH = -1309001
 };
 
 enum Spells
 {
-    SPELL_HOLY_FIRE    = 23860,
-    SPELL_HOLY_WRATH   = 23979,
-    SPELL_VENOMSPIT    = 23862,
-    SPELL_HOLY_NOVA    = 23858,
+    SPELL_HOLY_FIRE = 23860,
+    SPELL_HOLY_WRATH = 23979,
+    SPELL_VENOMSPIT = 23862,
+    SPELL_HOLY_NOVA = 23858,
     SPELL_POISON_CLOUD = 23861,
-    SPELL_SNAKE_FORM   = 23849,
-    SPELL_RENEW        = 23895,
-    SPELL_BERSERK      = 23537,
-    SPELL_DISPELL      = 23859
+    SPELL_SNAKE_FORM = 23849,
+    SPELL_RENEW = 23895,
+    SPELL_BERSERK = 23537,
+    SPELL_DISPELL = 23859
 };
-
 
 class boss_venoxis : public CreatureScript
 {
-public: 
+public:
     boss_venoxis() : CreatureScript("boss_venoxis") { }
+
     struct boss_venoxisAI : public ScriptedAI
     {
         boss_venoxisAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 HolyFire_Timer;
         uint32 HolyWrath_Timer;
         uint32 VenomSpit_Timer;
@@ -67,10 +67,10 @@ public:
         uint32 HolyNova_Timer;
         uint32 Dispell_Timer;
         uint32 TargetInRange;
-    
+
         bool PhaseTwo;
         bool InBerserk;
-    
+
         void Reset()
         {
             HolyFire_Timer = 10000;
@@ -81,27 +81,27 @@ public:
             HolyNova_Timer = 5000;
             Dispell_Timer = 35000;
             TargetInRange = 0;
-    
+
             PhaseTwo = false;
             InBerserk = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
             if (pInstance)
                 pInstance->SetData(TYPE_VENOXIS, DONE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (HealthAbovePct(50))
             {
                 if (Dispell_Timer <= diff)
@@ -111,7 +111,7 @@ public:
                 }
                 else
                     Dispell_Timer -= diff;
-    
+
                 if (Renew_Timer <= diff)
                 {
                     DoCast(me, SPELL_RENEW);
@@ -119,15 +119,15 @@ public:
                 }
                 else
                     Renew_Timer -= diff;
-    
+
                 if (HolyWrath_Timer <= diff)
                 {
-                    DoCastVictim( SPELL_HOLY_WRATH);
+                    DoCastVictim(SPELL_HOLY_WRATH);
                     HolyWrath_Timer = 15000 + rand() % 10000;
                 }
                 else
                     HolyWrath_Timer -= diff;
-    
+
                 if (HolyNova_Timer <= diff)
                 {
                     TargetInRange = 0;
@@ -137,24 +137,24 @@ public:
                             if (me->IsWithinMeleeRange(pTarget))
                                 ++TargetInRange;
                     }
-    
+
                     if (TargetInRange > 1)
                     {
-                        DoCastVictim( SPELL_HOLY_NOVA);
+                        DoCastVictim(SPELL_HOLY_NOVA);
                         HolyNova_Timer = 1000;
                     }
                     else
                         HolyNova_Timer = 2000;
-    
+
                 }
                 else
                     HolyNova_Timer -= diff;
-    
+
                 if (HolyFire_Timer <= diff && TargetInRange < 3)
                 {
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                         DoCast(pTarget, SPELL_HOLY_FIRE);
-    
+
                     HolyFire_Timer = 8000;
                 }
                 else
@@ -171,35 +171,35 @@ public:
                     const CreatureInfo* cinfo = me->GetCreatureTemplate();
                     CreatureBaseStats const* cCLS = sObjectMgr.GetCreatureClassLvlStats(me->getLevel(), cinfo->unit_class, cinfo->exp);
                     float basedamage = cCLS->BaseDamage;
-    
+
                     float weaponBaseMinDamage = basedamage;
                     float weaponBaseMaxDamage = basedamage * 1.5;
-    
+
                     me->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, (weaponBaseMinDamage + ((weaponBaseMinDamage / 100) * 25)));
                     me->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, (weaponBaseMaxDamage + ((weaponBaseMaxDamage / 100) * 25)));
                     me->UpdateDamagePhysical(BASE_ATTACK);
                     DoResetThreat();
                     PhaseTwo = true;
                 }
-    
+
                 if (PhaseTwo && PoisonCloud_Timer <= diff)
                 {
-                    DoCastVictim( SPELL_POISON_CLOUD);
+                    DoCastVictim(SPELL_POISON_CLOUD);
                     PoisonCloud_Timer = 15000;
                 }
-    
+
                 PoisonCloud_Timer -= diff;
-    
+
                 if (PhaseTwo && VenomSpit_Timer <= diff)
                 {
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                         DoCast(pTarget, SPELL_VENOMSPIT);
-    
+
                     VenomSpit_Timer = 15000 + rand() % 5000;
                 }
                 else
                     VenomSpit_Timer -= diff;
-    
+
                 if (PhaseTwo && HealthBelowPct(10))
                 {
                     if (!InBerserk)
@@ -213,14 +213,14 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_venoxisAI (pCreature);
+        return new boss_venoxisAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_venoxis()
 {
     new boss_venoxis();

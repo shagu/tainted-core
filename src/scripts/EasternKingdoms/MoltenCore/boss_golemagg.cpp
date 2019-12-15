@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Golemagg
-SD%Complete: 90
-SDComment: Timers need to be confirmed, Golemagg's Trust need to be checked
-SDCategory: Molten Core
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Golemagg
+ SD%Complete: 90
+ SDComment: Timers need to be confirmed, Golemagg's Trust need to be checked
+ SDCategory: Molten Core
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -28,21 +28,22 @@ EndScriptData */
 
 enum eEnums
 {
-    SPELL_MAGMASPLASH       = 13879,
-    SPELL_PYROBLAST         = 20228,
-    SPELL_EARTHQUAKE        = 19798,
-    SPELL_ENRAGE            = 19953,
-    SPELL_GOLEMAGG_TRUST    = 20553,
+    SPELL_MAGMASPLASH = 13879,
+    SPELL_PYROBLAST = 20228,
+    SPELL_EARTHQUAKE = 19798,
+    SPELL_ENRAGE = 19953,
+    SPELL_GOLEMAGG_TRUST = 20553,
 
     // Core Rager
-    EMOTE_LOWHP             = -1409002,
-    SPELL_MANGLE            = 19820
+    EMOTE_LOWHP = -1409002,
+    SPELL_MANGLE = 19820
 };
 
 class boss_golemagg : public CreatureScript
 {
 public:
     boss_golemagg() : CreatureScript("boss_golemagg") { }
+
     struct boss_golemaggAI : public ScriptedAI
     {
         boss_golemaggAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -123,7 +124,7 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_golemaggAI(pCreature);
     }
@@ -188,11 +189,12 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_core_ragerAI(pCreature);
     }
 };
+
 void AddSC_boss_golemagg()
 {
     new boss_golemagg();

@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Garr
-SD%Complete: 50
-SDComment: Adds NYI
-SDCategory: Molten Core
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Garr
+ SD%Complete: 50
+ SDComment: Adds NYI
+ SDCategory: Molten Core
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -29,21 +29,22 @@ EndScriptData */
 enum Spells
 {
     // Garr spells
-    SPELL_ANTIMAGICPULSE       = 19492,
-    SPELL_MAGMASHACKLES        = 19496,
-    SPELL_ENRAGE               = 19516,     //Stacking enrage (stacks to 10 times)
+    SPELL_ANTIMAGICPULSE = 19492,
+    SPELL_MAGMASHACKLES = 19496,
+    SPELL_ENRAGE = 19516,     //Stacking enrage (stacks to 10 times)
 
     //Add spells
-    SPELL_ERUPTION             = 19497,
-    SPELL_MASSIVE_ERUPTION     = 20483,     // @todo possible on death
-    SPELL_IMMOLATE             = 20294,
-    SPELL_SEPARATION_ANXIETY   = 23492      // Used if separated too far from Garr
+    SPELL_ERUPTION = 19497,
+    SPELL_MASSIVE_ERUPTION = 20483,     // @todo possible on death
+    SPELL_IMMOLATE = 20294,
+    SPELL_SEPARATION_ANXIETY = 23492      // Used if separated too far from Garr
 };
 
 class boss_garr : public CreatureScript
 {
 public:
     boss_garr() : CreatureScript("boss_garr") { }
+
     struct boss_garrAI : public ScriptedAI
     {
         boss_garrAI(Creature* c) : ScriptedAI(c) { }
@@ -83,12 +84,13 @@ public:
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_garrAI(pCreature);
     }
 
 };
+
 class mob_firesworn : public CreatureScript
 {
 public:
@@ -163,11 +165,10 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new mob_fireswornAI(pCreature);
     }
-
 };
 
 void AddSC_boss_garr()

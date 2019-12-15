@@ -15,55 +15,55 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Ashenvale
-SD%Complete: 70
-SDComment: Quest support: 6544, 6482, 6641
-SDCategory: Ashenvale Forest
-EndScriptData */
+ /* ScriptData
+ SDName: Ashenvale
+ SD%Complete: 70
+ SDComment: Quest support: 6544, 6482, 6641
+ SDCategory: Ashenvale Forest
+ EndScriptData */
 
-/* ContentData
-npc_muglash
-npc_torek
-npc_ruul_snowhoof
-EndContentData */
+ /* ContentData
+ npc_muglash
+ npc_torek
+ npc_ruul_snowhoof
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
 #include "ScriptedGossip.h"
 
-/*####
-# npc_muglash
-####*/
+ /*####
+ # npc_muglash
+ ####*/
 
 enum
 {
-    SAY_MUG_START1          = -1000501,
-    SAY_MUG_START2          = -1000502,
-    SAY_MUG_BRAZIER         = -1000503,
-    SAY_MUG_BRAZIER_WAIT    = -1000504,
-    SAY_MUG_ON_GUARD        = -1000505,
-    SAY_MUG_REST            = -1000506,
-    SAY_MUG_DONE            = -1000507,
-    SAY_MUG_GRATITUDE       = -1000508,
-    SAY_MUG_PATROL          = -1000509,
-    SAY_MUG_RETURN          = -1000510,
+    SAY_MUG_START1 = -1000501,
+    SAY_MUG_START2 = -1000502,
+    SAY_MUG_BRAZIER = -1000503,
+    SAY_MUG_BRAZIER_WAIT = -1000504,
+    SAY_MUG_ON_GUARD = -1000505,
+    SAY_MUG_REST = -1000506,
+    SAY_MUG_DONE = -1000507,
+    SAY_MUG_GRATITUDE = -1000508,
+    SAY_MUG_PATROL = -1000509,
+    SAY_MUG_RETURN = -1000510,
 
-    QUEST_VORSHA            = 6641,
+    QUEST_VORSHA = 6641,
 
-    GO_NAGA_BRAZIER         = 178247,
-    NPC_MUGLASH             = 12717,
+    GO_NAGA_BRAZIER = 178247,
+    NPC_MUGLASH = 12717,
 
-    NPC_WRATH_RIDER         = 3713,
-    NPC_WRATH_SORCERESS     = 3717,
-    NPC_WRATH_RAZORTAIL     = 3712,
+    NPC_WRATH_RIDER = 3713,
+    NPC_WRATH_SORCERESS = 3717,
+    NPC_WRATH_RAZORTAIL = 3712,
 
-    NPC_WRATH_PRIESTESS     = 3944,
-    NPC_WRATH_MYRMIDON      = 3711,
-    NPC_WRATH_SEAWITCH      = 3715,
+    NPC_WRATH_PRIESTESS = 3944,
+    NPC_WRATH_MYRMIDON = 3711,
+    NPC_WRATH_SEAWITCH = 3715,
 
-    NPC_VORSHA              = 12940
+    NPC_VORSHA = 12940
 };
 
 static float m_afFirstNagaCoord[3][3] =
@@ -80,7 +80,7 @@ static float m_afSecondNagaCoord[3][3] =
     {3583.602051f, 1128.405762f, 2.347f}                    // myrmidon
 };
 
-static float m_fVorshaCoord[] = {3633.056885f, 1172.924072f, -5.388f};
+static float m_fVorshaCoord[] = { 3633.056885f, 1172.924072f, -5.388f };
 
 class npc_muglash : CreatureScript
 {
@@ -254,21 +254,21 @@ public:
 
 enum
 {
-    SAY_READY                   = -1000106,
-    SAY_MOVE                    = -1000107,
-    SAY_PREPARE                 = -1000108,
-    SAY_WIN                     = -1000109,
-    SAY_END                     = -1000110,
+    SAY_READY = -1000106,
+    SAY_MOVE = -1000107,
+    SAY_PREPARE = -1000108,
+    SAY_WIN = -1000109,
+    SAY_END = -1000110,
 
-    SPELL_REND                  = 11977,
-    SPELL_THUNDERCLAP           = 8078,
+    SPELL_REND = 11977,
+    SPELL_THUNDERCLAP = 8078,
 
-    QUEST_TOREK_ASSULT          = 6544,
+    QUEST_TOREK_ASSULT = 6544,
 
-    NPC_SPLINTERTREE_RAIDER     = 12859,
-    ENTRY_DURIEL                = 12860,
-    ENTRY_SILVERWING_SENTINEL   = 12896,
-    ENTRY_SILVERWING_WARRIOR    = 12897
+    NPC_SPLINTERTREE_RAIDER = 12859,
+    ENTRY_DURIEL = 12860,
+    ENTRY_SILVERWING_SENTINEL = 12896,
+    ENTRY_SILVERWING_WARRIOR = 12897
 };
 
 class npc_torek : CreatureScript
@@ -473,15 +473,15 @@ public:
 
 enum Ferro
 {
-	FACTION_ESCORTEE = 774,
+    FACTION_ESCORTEE = 774,
 
-	NPC_DARK_STRAND_ASSASSINS = 3879,
-	NPC_FORSAKEN_SCOUT = 3893,
-	NPC_CAEDAKAR_LEFT = 3900,
-	NPC_ALIGAR_MIDDLE = 3898,
-	NPC_BALIZAR_RIGHT = 3899,
+    NPC_DARK_STRAND_ASSASSINS = 3879,
+    NPC_FORSAKEN_SCOUT = 3893,
+    NPC_CAEDAKAR_LEFT = 3900,
+    NPC_ALIGAR_MIDDLE = 3898,
+    NPC_BALIZAR_RIGHT = 3899,
 
-	QUEST_SUPPLIES_TO_AUBERDINE = 976
+    QUEST_SUPPLIES_TO_AUBERDINE = 976
 };
 
 #define SAY_TEXT_1 "It looks like we're in trouble. Look lively, here they come!"

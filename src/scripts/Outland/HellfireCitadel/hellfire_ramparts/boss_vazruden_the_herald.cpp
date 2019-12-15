@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-Name: Boss_Vazruden_the_Herald
-%Complete: 99
-Comment:
-Category: Hellfire Citadel, Hellfire Ramparts
-EndScriptData */
+ /* ScriptData
+ Name: Boss_Vazruden_the_Herald
+ %Complete: 99
+ Comment:
+ Category: Hellfire Citadel, Hellfire Ramparts
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -64,6 +64,7 @@ class boss_nazan : public CreatureScript
 {
 public:
     boss_nazan() : CreatureScript("boss_nazan") { }
+
     struct boss_nazanAI : public ScriptedAI
     {
         boss_nazanAI(Creature* c) : ScriptedAI(c)
@@ -190,7 +191,7 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_nazanAI>(pCreature);
     }
@@ -198,8 +199,9 @@ public:
 
 class boss_vazruden_the_herald : public CreatureScript
 {
-public: 
+public:
     boss_vazruden_the_herald() : CreatureScript("boss_vazruden_the_herald") { }
+
     struct boss_vazruden_the_heraldAI : public ScriptedAI
     {
         boss_vazruden_the_heraldAI(Creature* c) : ScriptedAI(c)
@@ -211,12 +213,12 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         std::vector<uint64> OrcGUID;
         std::list<Creature*> orcs;
-    
+
         uint32 phase;
         uint32 waypoint;
         uint32 check;
@@ -225,24 +227,24 @@ public:
         uint64 VazrudenGUID;
         bool summoned;
         bool HeroicMode;
-    
+
         void Reset()
         {
             me->GetCreatureListWithEntryInGrid(orcs, 17517, 70.0f);
             OrcGUID.clear();
             for (std::list<Creature*>::iterator itr = orcs.begin(); itr != orcs.end(); itr++)
                 OrcGUID.push_back((*itr)->GetGUID());
-    
+
             phase = 0;
             waypoint = 0;
             check = 0;
             UnsummonAdds();
             me->GetMotionMaster()->MovePath(PATH_ENTRY, true);
-    
+
             if (pInstance)
                 pInstance->SetData(DATA_VAZRUDEN, NOT_STARTED);
         }
-    
+
         void UnsummonAdds()
         {
             if (summoned)
@@ -255,7 +257,7 @@ public:
                     Nazan->DisappearAndDie();
                     NazanGUID = 0;
                 }
-    
+
                 Creature* Vazruden = Unit::GetCreature(*me, VazrudenGUID);
                 if (!Vazruden)
                     Vazruden = me->FindNearestCreature(ENTRY_VAZRUDEN, 5000);
@@ -267,7 +269,7 @@ public:
                 summoned = false;
                 me->ClearUnitState(UNIT_STATE_ROOT);
                 me->SetVisible(true);
-    
+
                 for (std::vector<uint64>::const_iterator itr = OrcGUID.begin(); itr != OrcGUID.end(); ++itr)
                 {
                     if (Creature* pOrc = Creature::GetCreature(*me, *itr))
@@ -281,7 +283,7 @@ public:
                 }
             }
         }
-    
+
         void SummonAdds()
         {
             if (!summoned)
@@ -297,7 +299,7 @@ public:
                 me->AddUnitState(UNIT_STATE_ROOT);
             }
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             if (phase == 0)
@@ -305,12 +307,12 @@ public:
                 phase = 1;
                 check = 0;
                 DoScriptText(SAY_INTRO, me);
-    
+
                 if (pInstance)
                     pInstance->SetData(DATA_VAZRUDEN, IN_PROGRESS);
             }
         }
-    
+
         void JustSummoned(Creature* summoned)
         {
             if (!summoned) return;
@@ -326,7 +328,7 @@ public:
             else if (victim)
                 summoned->AI()->AttackStart(victim);
         }
-    
+
         void SentryDownBy(Unit* killer)
         {
             if (sentryDown)
@@ -337,7 +339,7 @@ public:
             else
                 sentryDown = true;
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             switch (phase)
@@ -395,7 +397,7 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_vazruden_the_heraldAI>(pCreature);
     }
@@ -403,8 +405,9 @@ public:
 
 class boss_vazruden : public CreatureScript
 {
-public: 
+public:
     boss_vazruden() : CreatureScript("boss_vazruden") { }
+
     struct boss_vazrudenAI : public ScriptedAI
     {
         boss_vazrudenAI(Creature* c) : ScriptedAI(c)
@@ -412,21 +415,21 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
-    
+
         uint32 Revenge_Timer;
         bool HeroicMode;
         bool WipeSaid;
         uint32 UnsummonCheck;
-    
+
         void Reset()
         {
             Revenge_Timer = 4000;
             UnsummonCheck = 2000;
             WipeSaid = false;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             switch (rand() % 3)
@@ -441,10 +444,10 @@ public:
                 DoScriptText(SAY_AGGRO_3, me);
                 break;
             }
-    
-    		me->SetInCombatWithZone();
+
+            me->SetInCombatWithZone();
         }
-    
+
         void KilledUnit(Unit* who)
         {
             if (who && who->GetEntry() != ENTRY_VAZRUDEN)
@@ -458,13 +461,13 @@ public:
                     break;
                 }
         }
-    
+
         void JustDied(Unit* who)
         {
             if (who && who != me)
                 DoScriptText(SAY_DIE, me);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
@@ -484,7 +487,7 @@ public:
                 else UnsummonCheck -= diff;
                 return;
             }
-    
+
             if (Revenge_Timer <= diff)
             {
                 if (Unit* victim = me->GetVictim())
@@ -492,12 +495,12 @@ public:
                 Revenge_Timer = 5000;
             }
             else Revenge_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_vazrudenAI>(pCreature);
     }
@@ -506,32 +509,33 @@ public:
 
 class mob_hellfire_sentry : public CreatureScript
 {
-public: 
+public:
     mob_hellfire_sentry() : CreatureScript("mob_hellfire_sentry") { }
+
     struct mob_hellfire_sentryAI : public ScriptedAI
     {
         mob_hellfire_sentryAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 KidneyShot_Timer;
-    
+
         void Reset()
         {
             KidneyShot_Timer = 3000 + rand() % 4000;
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void JustDied(Unit* who)
         {
             if (Creature* herald = me->FindNearestCreature(ENTRY_VAZRUDEN_HERALD, 150))
                 CAST_AI(boss_vazruden_the_herald::boss_vazruden_the_heraldAI, herald->AI())->SentryDownBy(who);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (KidneyShot_Timer <= diff)
             {
                 if (Unit* victim = me->GetVictim())
@@ -539,17 +543,16 @@ public:
                 KidneyShot_Timer = 20000;
             }
             else KidneyShot_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_hellfire_sentryAI>(pCreature);
     }
 };
-
 
 void AddSC_boss_vazruden_the_herald()
 {
@@ -557,6 +560,5 @@ void AddSC_boss_vazruden_the_herald()
     new boss_vazruden();
     new boss_nazan();
     new mob_hellfire_sentry();
-
 }
 

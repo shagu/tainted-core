@@ -15,32 +15,27 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_jandicebarov
-SD%Complete: 100
-SDComment:
-SDCategory: Scholomance
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_jandicebarov
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Scholomance
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 #define SPELL_CURSEOFBLOOD          24673
-//#define SPELL_ILLUSION              17773
+ //#define SPELL_ILLUSION              17773
 
-//Spells of Illusion of Jandice Barov
+ //Spells of Illusion of Jandice Barov
 #define SPELL_CLEAVE                15584
-
-
-
-
-
 
 class boss_jandice_barov : public CreatureScript
 {
-public: 
+public:
     boss_jandice_barov() : CreatureScript("boss_jandice_barov") { }
-    
+
     struct boss_jandicebarovAI : public ScriptedAI
     {
         boss_jandicebarovAI(Creature* c) : ScriptedAI(c) {}
@@ -128,104 +123,67 @@ public:
             }
             else Illusion_Timer -= diff;
 
-            //            //Illusion_Timer
-            //            if (Illusion_Timer <= diff)
-            //            {
-            //                  //Cast
-            //                DoCastVictim( SPELL_ILLUSION);
-            //
-            //                  //3 Illusion will be summoned
-            //                  if (Illusioncounter < 3)
-            //                  {
-            //                    Illusion_Timer = 500;
-            //                    ++Illusioncounter;
-            //                  }
-            //                  else {
-            //                      //15 seconds until we should cast this again
-            //                      Illusion_Timer = 15000;
-            //                      Illusioncounter = 0;
-            //                  }
-            //
-            //            } else Illusion_Timer -= diff;
-
             DoMeleeAttackIfReady();
         }
     };
 
-    // Illusion of Jandice Barov Script
-
-
-
-    
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_jandicebarovAI(pCreature);
     }
-
-
-
-    
 };
 
 class mob_illusionofjandicebarov : public CreatureScript
 {
-public: 
+public:
     mob_illusionofjandicebarov() : CreatureScript("mob_illusionofjandicebarov") { }
+
     struct mob_illusionofjandicebarovAI : public ScriptedAI
     {
         mob_illusionofjandicebarovAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Cleave_Timer;
-    
+
         void Reset()
         {
             Cleave_Timer = 2000 + rand() % 6000;
             me->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_MAGIC, true);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Cleave_Timer
             if (Cleave_Timer <= diff)
             {
                 //Cast
-                DoCastVictim( SPELL_CLEAVE);
-    
+                DoCastVictim(SPELL_CLEAVE);
+
                 //5-8 seconds
                 Cleave_Timer = 5000 + rand() % 3000;
             }
             else Cleave_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-    
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new mob_illusionofjandicebarovAI (pCreature);
+        return new mob_illusionofjandicebarovAI(pCreature);
     }
-
-    
-
-    
 };
-
 
 void AddSC_boss_jandicebarov()
 {
     new boss_jandice_barov();
     new mob_illusionofjandicebarov();
-
 }
 

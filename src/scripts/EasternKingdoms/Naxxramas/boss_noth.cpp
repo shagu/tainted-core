@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Noth
-SD%Complete: 40
-SDComment: Missing Balcony stage
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Noth
+ SD%Complete: 40
+ SDComment: Missing Balcony stage
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -42,7 +42,7 @@ EndScriptData */
 
 #define C_PLAGUED_WARRIOR               16984
 
-// Teleport position of Noth on his balcony
+ // Teleport position of Noth on his balcony
 #define TELE_X 2631.370f
 #define TELE_Y -3529.680f
 #define TELE_Z 274.040f
@@ -54,23 +54,24 @@ EndScriptData */
 
 class boss_noth : public CreatureScript
 {
-public: 
+public:
     boss_noth() : CreatureScript("boss_noth") { }
+
     struct boss_nothAI : public ScriptedAI
     {
         boss_nothAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Blink_Timer;
         uint32 Curse_Timer;
         uint32 Summon_Timer;
-    
+
         void Reset()
         {
             Blink_Timer = 25000;
             Curse_Timer = 4000;
             Summon_Timer = 12000;
         }
-    
+
         void EnterCombat(Unit*)
         {
             switch (rand() % 3)
@@ -86,7 +87,7 @@ public:
                 break;
             }
         }
-    
+
         void KilledUnit(Unit*)
         {
             switch (rand() % 2)
@@ -99,33 +100,33 @@ public:
                 break;
             }
         }
-    
+
         void JustSummoned(Creature* summoned)
         {
             if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                 summoned->AddThreat(pTarget, 0.0f);
         }
-    
+
         void JustDied(Unit*)
         {
             DoScriptText(SAY_DEATH, me);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //Blink_Timer
             if (Blink_Timer <= diff)
             {
                 DoCastVictim(SPELL_CRIPPLE);
                 DoCast(me, SPELL_BLINK);
-    
+
                 Blink_Timer = 25000;
             }
             else Blink_Timer -= diff;
-    
+
             //Curse_Timer
             if (Curse_Timer <= diff)
             {
@@ -133,28 +134,29 @@ public:
                 Curse_Timer = 28000;
             }
             else Curse_Timer -= diff;
-    
+
             //Summon_Timer
             if (Summon_Timer <= diff)
             {
                 DoScriptText(SAY_SUMMON, me);
-    
+
                 for (uint8 i = 0; i < 6; i++)
                     me->SummonCreature(C_PLAGUED_WARRIOR, 2684.804f, -3502.517f, 261.313f, 0, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 80000);
-    
+
                 Summon_Timer = 30500;
             }
             else Summon_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_nothAI (pCreature);
+        return new boss_nothAI(pCreature);
     }
-    
-    
+
+
 };
 void AddSC_boss_noth()
 {

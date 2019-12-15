@@ -15,18 +15,18 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Grand_Warlock_Nethekurse
-SD%Complete: 99
-SDComment:
-SDCategory: Hellfire Citadel, Shattered Halls
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Grand_Warlock_Nethekurse
+ SD%Complete: 99
+ SDComment:
+ SDCategory: Hellfire Citadel, Shattered Halls
+ EndScriptData */
 
-/* ContentData
-boss_grand_warlock_nethekurse
-mob_fel_orc_convert
-mob_lesser_shadow_fissure
-EndContentData */
+ /* ContentData
+ boss_grand_warlock_nethekurse
+ mob_fel_orc_convert
+ mob_lesser_shadow_fissure
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -79,25 +79,11 @@ static Say PeonDies[] =
 #define SPELL_CONSUMPTION           30497
 
 
-
-
-
-//NOTE: this creature are also summoned by other spells, for different creatures
-
-
-
-
-
-
-
-
-
-
-
 class boss_grand_warlock_nethekurse : public CreatureScript
 {
-public: 
+public:
     boss_grand_warlock_nethekurse() : CreatureScript("boss_grand_warlock_nethekurse") { }
+
     struct boss_grand_warlock_nethekurseAI : public ScriptedAI
     {
         boss_grand_warlock_nethekurseAI(Creature* c) : ScriptedAI(c)
@@ -105,73 +91,73 @@ public:
             pInstance = (ScriptedInstance*)c->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance* pInstance;
         bool HeroicMode;
-    
+
         bool IntroOnce;
         bool IsIntroEvent;
         bool IsMainEvent;
         bool SpinOnce;
         bool Phase;
-    
+
         std::vector<uint64> OrcGUID;
         std::list<Creature*> orcs;
-    
+
         uint32 PeonEngagedCount;
         uint32 PeonKilledCount;
-    
+
         uint32 IntroEvent_Timer;
         uint32 DeathCoil_Timer;
         uint32 ShadowFissure_Timer;
         uint32 Cleave_Timer;
-    	uint32 shadowbolt_timer;
-    
+        uint32 shadowbolt_timer;
+
         void Reset()
         {
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-    
+
             IsIntroEvent = false;
             IntroOnce = false;
             IsMainEvent = false;
             SpinOnce = false;
             Phase = false;
-    
+
             PeonEngagedCount = 0;
             PeonKilledCount = 0;
-    
+
             IntroEvent_Timer = 90000;                           //how long before getting bored and kills his minions?
             DeathCoil_Timer = 20000;
             ShadowFissure_Timer = 8000;
             Cleave_Timer = 5000;
-    		shadowbolt_timer = 1000;
-    
+            shadowbolt_timer = 1000;
+
             me->GetCreatureListWithEntryInGrid(orcs, 17083, 40.0f);
             OrcGUID.clear();
             for (std::list<Creature*>::iterator itr = orcs.begin(); itr != orcs.end(); itr++)
                 OrcGUID.push_back((*itr)->GetGUID());
-    
+
             if (pInstance)
                 pInstance->SetData(TYPE_NETHEKURSE, NOT_STARTED);
         }
-    
+
         void DoYellForPeonEnterCombat()
         {
             if (PeonEngagedCount >= 4)
                 return;
-    
+
             DoScriptText(PeonAttacked[PeonEngagedCount].id, me);
             ++PeonEngagedCount;
         }
-    
+
         void DoYellForPeonDeath()
         {
             if (PeonKilledCount >= 4)
                 return;
-    
+
             DoScriptText(PeonDies[PeonKilledCount].id, me);
             ++PeonKilledCount;
-    
+
             if (PeonKilledCount == 4)
             {
                 IsIntroEvent = false;
@@ -179,7 +165,7 @@ public:
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             }
         }
-    
+
         void DoKillPeons()
         {
             switch (rand() % 3)
@@ -194,7 +180,7 @@ public:
                 DoScriptText(SAY_TAUNT_3, me);
                 break;
             }
-    
+
             for (std::vector<uint64>::const_iterator itr = OrcGUID.begin(); itr != OrcGUID.end(); ++itr)
             {
                 if (Creature* pOrc = Creature::GetCreature(*me, *itr))
@@ -206,19 +192,19 @@ public:
                     }
                 }
             }
-    
+
             IsIntroEvent = false;
             PeonEngagedCount = 4;
             PeonKilledCount = 4;
             IsMainEvent = true;
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
         }
-    
+
         void AttackStart(Unit* who)
         {
             if (IsIntroEvent || !IsMainEvent)
                 return;
-    
+
             if (me->Attack(who, true))
             {
                 if (Phase)
@@ -227,27 +213,27 @@ public:
                     DoStartMovement(who);
             }
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
-            if (!me->GetVictim() && who->isTargetableForAttack() && (me->IsHostileTo(who)) && who->isInAccessiblePlaceFor (me))
+            if (!me->GetVictim() && who->isTargetableForAttack() && (me->IsHostileTo(who)) && who->isInAccessiblePlaceFor(me))
             {
                 if (!IntroOnce && me->IsWithinDistInMap(who, 40))
                 {
                     DoScriptText(SAY_INTRO, me);
                     IntroOnce = true;
                     IsIntroEvent = true;
-    
+
                     if (pInstance)
                         pInstance->SetData(TYPE_NETHEKURSE, IN_PROGRESS);
                 }
-    
+
                 if (!me->CanFly() && me->GetDistanceZ(who) > CREATURE_Z_ATTACK_RANGE)
                     return;
-    
+
                 if (IsIntroEvent || !IsMainEvent)
                     return;
-    
+
                 float attackRadius = me->GetAttackDistance(who);
                 if (me->IsWithinDistInMap(who, attackRadius) && me->IsWithinLOSInMap(who))
                 {
@@ -257,7 +243,7 @@ public:
                 }
             }
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             switch (rand() % 3)
@@ -273,14 +259,14 @@ public:
                 break;
             }
         }
-    
+
         void JustSummoned(Creature* summoned)
         {
             summoned->SetFaction(14);
             summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             summoned->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         }
-    
+
         void KilledUnit(Unit* /*victim*/)
         {
             switch (rand() % 2)
@@ -293,17 +279,17 @@ public:
                 break;
             }
         }
-    
+
         void EnterEvadeMode()
         {
             me->RemoveAllAuras();
             me->DeleteThreatList();
             me->CombatStop(true);
             Reset();
-    
+
             if (!me->IsAlive())
                 return;
-    
+
             if (pInstance)
             {
                 pInstance->SetData(TYPE_NETHEKURSE, FAIL);
@@ -313,7 +299,7 @@ public:
             }
             else
                 me->GetMotionMaster()->MoveTargetedHome();
-    
+
             for (std::vector<uint64>::const_iterator itr = OrcGUID.begin(); itr != OrcGUID.end(); ++itr)
             {
                 if (Creature* pOrc = Creature::GetCreature(*me, *itr))
@@ -326,17 +312,17 @@ public:
                 }
             }
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DIE, me);
-    
+
             if (!pInstance)
                 return;
-    
+
             pInstance->SetData(TYPE_NETHEKURSE, DONE);
         }
-    
+
         void MovementInform(uint32 uiMotionType, uint32 /*uiPointId*/)
         {
             if (uiMotionType == POINT_MOTION_TYPE)
@@ -345,18 +331,18 @@ public:
                 {
                     if (Creature* pOrc = Creature::GetCreature(*me, *itr))
                         me->SetFacingToObject(pOrc);
-    
+
                 }
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (IsIntroEvent)
             {
                 if (!pInstance)
                     return;
-    
+
                 if (pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
                 {
                     if (IntroEvent_Timer <= diff)
@@ -364,13 +350,13 @@ public:
                     else IntroEvent_Timer -= diff;
                 }
             }
-    
+
             if (!UpdateVictim())
                 return;
-    
+
             if (!IsMainEvent)
                 return;
-    
+
             if (Phase)
             {
                 if (!SpinOnce)
@@ -378,21 +364,21 @@ public:
                     DoCastVictim(SPELL_DARK_SPIN);
                     SpinOnce = true;
                 }
-    
-    			if (SpinOnce == true && shadowbolt_timer <= diff)
-    			{
-    				if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-    					DoCast(pTarget, SPELL_SHADOW_BOLT);
-    				shadowbolt_timer = 1000;
-    			}
-    			else shadowbolt_timer -= diff;
+
+                if (SpinOnce == true && shadowbolt_timer <= diff)
+                {
+                    if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                        DoCast(pTarget, SPELL_SHADOW_BOLT);
+                    shadowbolt_timer = 1000;
+                }
+                else shadowbolt_timer -= diff;
                 if (Cleave_Timer <= diff)
                 {
                     DoCastVictim((HeroicMode ? H_SPELL_SHADOW_SLAM : SPELL_SHADOW_CLEAVE));
                     Cleave_Timer = 6000 + rand() % 2500;
                 }
                 else Cleave_Timer -= diff;
-    
+
             }
             else
             {
@@ -403,7 +389,7 @@ public:
                     ShadowFissure_Timer = 7500 + rand() % 7500;
                 }
                 else ShadowFissure_Timer -= diff;
-    
+
                 if (DeathCoil_Timer <= diff)
                 {
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
@@ -411,16 +397,16 @@ public:
                     DeathCoil_Timer = 15000 + rand() % 5000;
                 }
                 else DeathCoil_Timer -= diff;
-    
+
                 if ((me->GetHealth() * 100) / me->GetMaxHealth() <= 20)
                     Phase = true;
-    
+
                 DoMeleeAttackIfReady();
             }
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_grand_warlock_nethekurseAI>(pCreature);
     }
@@ -428,29 +414,30 @@ public:
 
 class mob_fel_orc_convert : public CreatureScript
 {
-public: 
+public:
     mob_fel_orc_convert() : CreatureScript("mob_fel_orc_convert") { }
+
     struct mob_fel_orc_convertAI : public ScriptedAI
     {
         mob_fel_orc_convertAI(Creature* c) : ScriptedAI(c)
         {
             pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    
+
         ScriptedInstance* pInstance;
         uint32 Hemorrhage_Timer;
-    
+
         void Reset()
         {
             me->SetNoCallAssistance(true);              //we don't want any assistance (WE R HEROZ!)
             Hemorrhage_Timer = 3000;
         }
-    
+
         void MoveInLineOfSight(Unit* /*who*/)
         {
             return;
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             if (pInstance)
@@ -461,13 +448,13 @@ public:
                     if (pKurse)
                         ((boss_grand_warlock_nethekurse::boss_grand_warlock_nethekurseAI*)pKurse->AI())->DoYellForPeonEnterCombat();
                 }
-    
+
                 if (pInstance->GetData(TYPE_NETHEKURSE) == IN_PROGRESS)
                     return;
                 else pInstance->SetData(TYPE_NETHEKURSE, IN_PROGRESS);
             }
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             if (pInstance)
@@ -480,24 +467,24 @@ public:
                 }
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (Hemorrhage_Timer <= diff)
             {
                 DoCastVictim(SPELL_HEMORRHAGE);
                 Hemorrhage_Timer = 15000;
             }
             else Hemorrhage_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_fel_orc_convertAI>(pCreature);
     }
@@ -506,40 +493,41 @@ public:
 
 class mob_lesser_shadow_fissure : public CreatureScript
 {
-public: 
+public:
     mob_lesser_shadow_fissure() : CreatureScript("mob_lesser_shadow_fissure") { }
+
     struct mob_lesser_shadow_fissureAI : public ScriptedAI
     {
-        mob_lesser_shadow_fissureAI(Creature* c) : ScriptedAI(c) 
-    	{
-    		pInstance = (ScriptedInstance*)c->GetInstanceData();
-    		HeroicMode = me->GetMap()->IsHeroic();
-    	}
-    
-    	ScriptedInstance* pInstance;
-    
-    	bool HeroicMode;
+        mob_lesser_shadow_fissureAI(Creature* c) : ScriptedAI(c)
+        {
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+            HeroicMode = me->GetMap()->IsHeroic();
+        }
+
+        ScriptedInstance* pInstance;
+
+        bool HeroicMode;
         bool Start;
         uint32 Stop_Timer;
-    
+
         void Reset()
         {
             Start = false;
             Stop_Timer = 30000;
         }
-    
+
         void EnterCombat(Unit* /*who*/) { }
-    
+
         void MoveInLineOfSight(Unit* /*who*/)
         {
             return;
         }
-    
+
         void AttackStart(Unit* /*who*/)
         {
             return;
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!Start)
@@ -547,7 +535,7 @@ public:
                 me->CastSpell(me, SPELL_CONSUMPTION, false);
                 Start = true;
             }
-    
+
             if (Stop_Timer <= diff)
             {
                 me->setDeathState(JUST_DIED);
@@ -559,9 +547,9 @@ public:
         }
     };
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new mob_lesser_shadow_fissureAI (pCreature);
+        return new mob_lesser_shadow_fissureAI(pCreature);
     }
 };
 

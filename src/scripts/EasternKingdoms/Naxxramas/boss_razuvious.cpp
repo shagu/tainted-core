@@ -15,29 +15,29 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Razuvious
-SD%Complete: 50
-SDComment: Missing adds and event is impossible without Mind Control
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Razuvious
+ SD%Complete: 50
+ SDComment: Missing adds and event is impossible without Mind Control
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-//Razuvious - NO TEXT sound only
-//8852 aggro01 - Hah hah, I'm just getting warmed up!
-//8853 aggro02 Stand and fight!
-//8854 aggro03 Show me what you've got!
-//8861 slay1 - You should've stayed home!
-//8863 slay2-
-//8858 cmmnd3 - You disappoint me, students!
-//8855 cmmnd1 - Do as I taught you!
-//8856 cmmnd2 - Show them no mercy!
-//8859 cmmnd4 - The time for practice is over! Show me what you've learned!
-//8861 Sweep the leg! Do you have a problem with that?
-//8860 death - An honorable... death...
-//8947 - Aggro Mixed? - ?
+ //Razuvious - NO TEXT sound only
+ //8852 aggro01 - Hah hah, I'm just getting warmed up!
+ //8853 aggro02 Stand and fight!
+ //8854 aggro03 Show me what you've got!
+ //8861 slay1 - You should've stayed home!
+ //8863 slay2-
+ //8858 cmmnd3 - You disappoint me, students!
+ //8855 cmmnd1 - Do as I taught you!
+ //8856 cmmnd2 - Show them no mercy!
+ //8859 cmmnd4 - The time for practice is over! Show me what you've learned!
+ //8861 Sweep the leg! Do you have a problem with that?
+ //8860 death - An honorable... death...
+ //8947 - Aggro Mixed? - ?
 
 #define SOUND_AGGRO1    8852
 #define SOUND_AGGRO2    8853
@@ -58,28 +58,29 @@ EndScriptData */
 
 class boss_razuvious : public CreatureScript
 {
-public: 
+public:
     boss_razuvious() : CreatureScript("boss_razuvious") { }
+
     struct boss_razuviousAI : public ScriptedAI
     {
         boss_razuviousAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 UnbalancingStrike_Timer;
         uint32 DisruptingShout_Timer;
         uint32 CommandSound_Timer;
-    
+
         void Reset()
         {
             UnbalancingStrike_Timer = 30000;                    //30 seconds
             DisruptingShout_Timer = 25000;                      //25 seconds
             CommandSound_Timer = 40000;                         //40 seconds
         }
-    
+
         void KilledUnit(Unit*)
         {
             if (rand() % 3)
                 return;
-    
+
             switch (rand() % 2)
             {
             case 0:
@@ -90,12 +91,12 @@ public:
                 break;
             }
         }
-    
+
         void JustDied(Unit*)
         {
             DoPlaySoundToSet(me, SOUND_DEATH);
         }
-    
+
         void EnterCombat(Unit*)
         {
             switch (rand() % 3)
@@ -111,12 +112,12 @@ public:
                 break;
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //UnbalancingStrike_Timer
             if (UnbalancingStrike_Timer <= diff)
             {
@@ -124,15 +125,15 @@ public:
                 UnbalancingStrike_Timer = 30000;
             }
             else UnbalancingStrike_Timer -= diff;
-    
+
             //DisruptingShout_Timer
             if (DisruptingShout_Timer <= diff)
             {
-                DoCastVictim( SPELL_DISRUPTINGSHOUT);
+                DoCastVictim(SPELL_DISRUPTINGSHOUT);
                 DisruptingShout_Timer = 25000;
             }
             else DisruptingShout_Timer -= diff;
-    
+
             //CommandSound_Timer
             if (CommandSound_Timer <= diff)
             {
@@ -154,21 +155,22 @@ public:
                     DoPlaySoundToSet(me, SOUND_COMMND5);
                     break;
                 }
-    
+
                 CommandSound_Timer = 40000;
             }
             else CommandSound_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_razuviousAI (pCreature);
+        return new boss_razuviousAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_razuvious()
 {
     new boss_razuvious();

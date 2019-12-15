@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Mother_Smolderweb
-SD%Complete: 100
-SDComment: Uncertain how often mother's milk is casted
-SDCategory: Blackrock Spire
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Mother_Smolderweb
+ SD%Complete: 100
+ SDComment: Uncertain how often mother's milk is casted
+ SDCategory: Blackrock Spire
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -29,38 +29,38 @@ EndScriptData */
 #define SPELL_MOTHERSMILK               16468
 #define SPELL_SUMMON_SPIRE_SPIDERLING   16103
 
-
 class boss_mother_smolderweb : public CreatureScript
 {
-public: 
+public:
     boss_mother_smolderweb() : CreatureScript("boss_mother_smolderweb") { }
+
     struct boss_mother_smolderwebAI : public ScriptedAI
     {
         boss_mother_smolderwebAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 Crystalize_Timer;
         uint32 MothersMilk_Timer;
-    
+
         void Reset()
         {
             Crystalize_Timer = 20000;
             MothersMilk_Timer = 10000;
         }
-    
+
         void EnterCombat(Unit* /*who*/) {}
-    
+
         void DamageTaken(Unit* /*done_by*/, uint32& damage)
         {
             if (me->GetHealth() <= damage)
                 DoCast(me, SPELL_SUMMON_SPIRE_SPIDERLING, true);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             //Return since we have no target
             if (!UpdateVictim())
                 return;
-    
+
             //Crystalize_Timer
             if (Crystalize_Timer <= diff)
             {
@@ -68,7 +68,7 @@ public:
                 Crystalize_Timer = 15000;
             }
             else Crystalize_Timer -= diff;
-    
+
             //MothersMilk_Timer
             if (MothersMilk_Timer <= diff)
             {
@@ -76,17 +76,18 @@ public:
                 MothersMilk_Timer = urand(5000, 12500);
             }
             else MothersMilk_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_mother_smolderwebAI (pCreature);
+        return new boss_mother_smolderwebAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_mothersmolderweb()
 {
     new boss_mother_smolderweb();

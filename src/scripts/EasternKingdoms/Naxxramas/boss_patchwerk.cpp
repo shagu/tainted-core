@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Patchwerk
-SD%Complete: 100
-SDComment: Some issues with hateful strike inturrupting the melee swing timer. Probably core issue.
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Patchwerk
+ SD%Complete: 100
+ SDComment: Some issues with hateful strike inturrupting the melee swing timer. Probably core issue.
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -39,20 +39,20 @@ EndScriptData */
 #define SPELL_BERSERK           26662
 #define SPELL_SLIMEBOLT         32309
 
-
 class boss_patchwerk : public CreatureScript
 {
-public: 
+public:
     boss_patchwerk() : CreatureScript("boss_patchwerk") { }
+
     struct boss_patchwerkAI : public ScriptedAI
     {
         boss_patchwerkAI(Creature* c) : ScriptedAI(c) {}
-    
+
         uint32 HatefullStrike_Timer;
         uint32 Enrage_Timer;
         uint32 Slimebolt_Timer;
         bool Enraged;
-    
+
         void Reset()
         {
             HatefullStrike_Timer = 1200;                        //1.2 seconds
@@ -60,20 +60,20 @@ public:
             Slimebolt_Timer = 450000;                           //7.5 minutes 450,000
             Enraged = false;
         }
-    
+
         void KilledUnit(Unit* /*Victim*/)
         {
             if (rand() % 5)
                 return;
-    
+
             DoScriptText(SAY_SLAY, me);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             DoScriptText(SAY_DEATH, me);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             if (rand() % 2)
@@ -81,12 +81,12 @@ public:
             else
                 DoScriptText(SAY_AGGRO2, me);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             //HatefullStrike_Timer
             if (HatefullStrike_Timer <= diff)
             {
@@ -96,7 +96,7 @@ public:
                 Unit* pMostHPTarget = NULL;
                 Unit* pTemp = NULL;
                 ThreatContainer::StorageType::const_iterator i = me->getThreatManager().getThreatList().begin();
-    
+
                 for (i = me->getThreatManager().getThreatList().begin(); i != me->getThreatManager().getThreatList().end();)
                 {
                     pTemp = Unit::GetUnit((*me), (*i)->getUnitGuid());
@@ -107,24 +107,24 @@ public:
                         pMostHPTarget = pTemp;
                     }
                 }
-    
+
                 if (pMostHPTarget)
                     DoCast(pMostHPTarget, SPELL_HATEFULSTRIKE);
-    
+
                 HatefullStrike_Timer = 1200;
             }
             else HatefullStrike_Timer -= diff;
-    
+
             //Enrage_Timer
             if (Enrage_Timer <= diff)
             {
                 DoCast(me, SPELL_BERSERK);
                 DoScriptText(EMOTE_BERSERK, me);
-    
+
                 Enrage_Timer = 300000;
             }
             else Enrage_Timer -= diff;
-    
+
             //Slimebolt_Timer
             if (Slimebolt_Timer <= diff)
             {
@@ -132,7 +132,7 @@ public:
                 Slimebolt_Timer = 5000;
             }
             else Slimebolt_Timer -= diff;
-    
+
             //Enrage if not already enraged and below 5%
             if (!Enraged && HealthBelowPct(5))
             {
@@ -140,17 +140,18 @@ public:
                 DoScriptText(EMOTE_ENRAGE, NULL);
                 Enraged = true;
             }
-    
+
             DoMeleeAttackIfReady();
         }
     };
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_patchwerkAI (pCreature);
+        return new boss_patchwerkAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_patchwerk()
 {
     new boss_patchwerk();

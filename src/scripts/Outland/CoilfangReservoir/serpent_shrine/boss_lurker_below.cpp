@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: boss_the_lurker_below
-SD%Complete: 80
-SDComment: Coilfang Frenzy, find out how could we fishing in the strangepool
-SDCategory: The Lurker Below
-EndScriptData */
+ /* ScriptData
+ SDName: boss_the_lurker_below
+ SD%Complete: 80
+ SDComment: Coilfang Frenzy, find out how could we fishing in the strangepool
+ SDCategory: The Lurker Below
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -45,7 +45,7 @@ EndScriptData */
 #define MOB_COILFANG_GUARDIAN 21873
 #define MOB_COILFANG_AMBUSHER 21865
 
-//Ambusher spells
+ //Ambusher spells
 #define SPELL_SPREAD_SHOT   37790
 #define SPELL_SHOOT         37770
 
@@ -66,24 +66,11 @@ float AddPos[9][3] =
     {42.471519f, -445.115295f, -19.769423f}    //MOVE_GUARDIAN_3 X, Y, Z
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class boss_the_lurker_below : public CreatureScript
 {
-public: 
+public:
     boss_the_lurker_below() : CreatureScript("boss_the_lurker_below") { }
+
     struct boss_the_lurker_belowAI : public Scripted_NoMovementAI
     {
         boss_the_lurker_belowAI(Creature* c) : Scripted_NoMovementAI(c), Summons(me)
@@ -97,10 +84,10 @@ public:
                 TempSpell->Effect[2] = 0;
             }
         }
-    
+
         ScriptedInstance* pInstance;
         SummonList Summons;
-    
+
         bool Spawned;
         bool Submerged;
         bool InRange;
@@ -115,7 +102,7 @@ public:
         uint32 CheckTimer;
         uint32 WaitTimer;
         uint32 WaitTimer2;
-    
+
         bool CheckCanStart()//check if players fished
         {
             if (pInstance && pInstance->GetData(DATA_STRANGE_POOL) == NOT_STARTED)
@@ -135,14 +122,14 @@ public:
             CheckTimer = 15000;//give time to get in range when fight starts
             WaitTimer = 60000;//never reached
             WaitTimer2 = 60000;//never reached
-    
+
             Submerged = true;//will be false at combat start
             Spawned = false;
             InRange = false;
             CanStartEvent = false;
-    
+
             Summons.DespawnAll();
-    
+
             if (pInstance)
             {
                 pInstance->SetData(DATA_THELURKERBELOWEVENT, NOT_STARTED);
@@ -153,22 +140,22 @@ public:
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             if (pInstance)
                 pInstance->SetData(DATA_THELURKERBELOWEVENT, DONE);
-    
+
             Summons.DespawnAll();
         }
-    
+
         void EnterCombat(Unit* who)
         {
             if (pInstance)
                 pInstance->SetData(DATA_THELURKERBELOWEVENT, IN_PROGRESS);
             Scripted_NoMovementAI::EnterCombat(who);
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!CanStartEvent)//boss is invisible, don't attack
@@ -180,13 +167,13 @@ public:
                     AttackStart(who);
             }
         }
-    
+
         void MovementInform(uint32 type, uint32 /*id*/)
         {
             if (type == ROTATE_MOTION_TYPE)
                 me->SetReactState(REACT_AGGRESSIVE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!CanStartEvent)//boss is invisible, don't attack
@@ -208,7 +195,7 @@ public:
                         WaitTimer = 3000;
                     }
                     else WaitTimer2 -= diff;
-    
+
                     if (WaitTimer <= diff)//wait 3secs for emerge anim, then attack
                     {
                         WaitTimer = 3000;
@@ -220,7 +207,7 @@ public:
                 }
                 return;
             }
-    
+
             if (me->getThreatManager().getThreatList().empty())//check if should evade
             {
                 if (me->IsInCombat())
@@ -237,7 +224,7 @@ public:
                     Submerged = true;
                 }
                 else PhaseTimer -= diff;
-    
+
                 if (SpoutTimer <= diff)
                 {
                     me->MonsterTextEmote(EMOTE_SPOUT, 0, true);
@@ -249,7 +236,7 @@ public:
                     return;
                 }
                 else SpoutTimer -= diff;
-    
+
                 //Whirl directly after a Spout and at random times
                 if (WhirlTimer <= diff)
                 {
@@ -257,7 +244,7 @@ public:
                     DoCast(me, SPELL_WHIRL);
                 }
                 else WhirlTimer -= diff;
-    
+
                 if (CheckTimer <= diff)//check if there are players in melee range
                 {
                     InRange = false;
@@ -274,7 +261,7 @@ public:
                     CheckTimer = 2000;
                 }
                 else CheckTimer -= diff;
-    
+
                 if (RotTimer)
                 {
                     Map* pMap = me->GetMap();
@@ -287,20 +274,20 @@ public:
                                 DoCast(i->GetSource(), SPELL_SPOUT, true);//only knock back palyers in arc, in 100yards, not in water
                         }
                     }
-    
+
                     if (SpoutAnimTimer <= diff)
                     {
                         DoCast(me, SPELL_SPOUT_ANIM, true);
                         SpoutAnimTimer = 1000;
                     }
                     else SpoutAnimTimer -= diff;
-    
+
                     if (RotTimer <= diff)
                         RotTimer = 0;
                     else RotTimer -= diff;
                     return;
                 }
-    
+
                 if (GeyserTimer <= diff)
                 {
                     Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
@@ -311,7 +298,7 @@ public:
                     GeyserTimer = rand() % 5000 + 15000;
                 }
                 else GeyserTimer -= diff;
-    
+
                 if (!InRange)//if on players in melee range cast Waterbolt
                 {
                     if (WaterboltTimer <= diff)
@@ -325,12 +312,12 @@ public:
                     }
                     else WaterboltTimer -= diff;
                 }
-    
+
                 if (!UpdateVictim())
                     return;
-    
+
                 DoMeleeAttackIfReady();
-    
+
             }
             else //submerged
             {
@@ -348,7 +335,7 @@ public:
                     return;
                 }
                 else PhaseTimer -= diff;
-    
+
                 if (me->getThreatManager().getThreatList().empty())//check if should evade
                 {
                     EnterEvadeMode();
@@ -356,7 +343,7 @@ public:
                 }
                 if (!me->IsInCombat())
                     DoZoneInCombat();
-    
+
                 if (!Spawned)
                 {
                     me->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
@@ -367,7 +354,7 @@ public:
                         if (i < 6)
                             Summoned = me->SummonCreature(MOB_COILFANG_AMBUSHER, AddPos[i][0], AddPos[i][1], AddPos[i][2], 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
                         else Summoned = me->SummonCreature(MOB_COILFANG_GUARDIAN, AddPos[i][0], AddPos[i][1], AddPos[i][2], 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
-    
+
                         if (Summoned)
                             Summons.Summon(Summoned);
                     }
@@ -377,51 +364,43 @@ public:
         }
     };
 
-    
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_the_lurker_belowAI>(pCreature);
     }
 
-    
-
-    
 };
 
 class mob_coilfang_guardian : public CreatureScript
 {
-public: 
+public:
     mob_coilfang_guardian() : CreatureScript("mob_coilfang_guardian") { }
-    
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        SimpleAI* ai = new SimpleAI (pCreature);
-    
+        SimpleAI* ai = new SimpleAI(pCreature);
+
         ai->Spell[0].Enabled = true;
         ai->Spell[0].Spell_Id = SPELL_ARCINGSMASH;
         ai->Spell[0].Cooldown = 15000;
         ai->Spell[0].First_Cast = 5000;
         ai->Spell[0].Cast_Target_Type = CAST_HOSTILE_TARGET;
-    
+
         ai->Spell[1].Enabled = true;
         ai->Spell[1].Spell_Id = SPELL_HAMSTRING;
         ai->Spell[1].Cooldown = 10000;
         ai->Spell[1].First_Cast = 2000;
         ai->Spell[1].Cast_Target_Type = CAST_HOSTILE_TARGET;
-    
+
         return ai;
     }
 
-    
-
-    
 };
 
 class mob_coilfang_ambusher : public CreatureScript
 {
-public: 
+public:
     mob_coilfang_ambusher() : CreatureScript("mob_coilfang_ambusher") { }
     struct mob_coilfang_ambusherAI : public Scripted_NoMovementAI
     {
@@ -431,42 +410,42 @@ public:
             if (TempSpell)
                 TempSpell->Effect[0] = 2;//change spell effect from weapon % dmg to simple phisical dmg
         }
-    
+
         uint32 MultiShotTimer;
         uint32 ShootBowTimer;
-    
+
         void Reset()
         {
             MultiShotTimer = 10000;
             ShootBowTimer = 4000;
-    
+
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
-    
+
         }
-    
+
         void MoveInLineOfSight(Unit* who)
         {
             if (!who || me->GetVictim()) return;
-    
+
             if (who->isTargetableForAttack() && who->isInAccessiblePlaceFor(me) && me->IsHostileTo(who) && me->IsWithinDistInMap(who, 45))
                 AttackStart(who);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (MultiShotTimer <= diff)
             {
                 if (me->GetVictim())
-                    DoCastVictim( SPELL_SPREAD_SHOT, true);
-    
+                    DoCastVictim(SPELL_SPREAD_SHOT, true);
+
                 MultiShotTimer = 10000 + rand() % 10000;
                 ShootBowTimer += 1500;//add global cooldown
             }
             else MultiShotTimer -= diff;
-    
+
             if (ShootBowTimer <= diff)
             {
                 Unit* pTarget = NULL;
@@ -481,24 +460,18 @@ public:
         }
     };
 
-    
 
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new mob_coilfang_ambusherAI (pCreature);
+        return new mob_coilfang_ambusherAI(pCreature);
     }
 
-    
-
-    
 };
-
 
 void AddSC_boss_the_lurker_below()
 {
     new boss_the_lurker_below();
     new mob_coilfang_guardian();
     new mob_coilfang_ambusher();
-
 }
 

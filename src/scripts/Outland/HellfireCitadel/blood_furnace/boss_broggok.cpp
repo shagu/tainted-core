@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Broggok
-SD%Complete: 99
-SDComment:
-SDCategory: Hellfire Citadel, Blood Furnace
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Broggok
+ SD%Complete: 99
+ SDComment:
+ SDCategory: Hellfire Citadel, Blood Furnace
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -28,91 +28,64 @@ EndScriptData */
 
 enum Texts
 {
-    SAY_AGGRO              = -1542008
+    SAY_AGGRO = -1542008
 };
 
 enum Spells
 {
-    SPELL_SLIME_SPRAY            = 30913,
-    SPELL_SLIME_SPRAY_H          = 38458,
-    SPELL_POISON_CLOUD           = 30916,
-    SPELL_POISON_BOLT            = 30917,
-    SPELL_POISON_BOLT_H          = 38459,
+    SPELL_SLIME_SPRAY = 30913,
+    SPELL_SLIME_SPRAY_H = 38458,
+    SPELL_POISON_CLOUD = 30916,
+    SPELL_POISON_BOLT = 30917,
+    SPELL_POISON_BOLT_H = 38459,
 
-    SPELL_POISON_CLOUD_PASSIVE   = 30914,
+    SPELL_POISON_CLOUD_PASSIVE = 30914,
     SPELL_POISON_CLOUD_PASSIVE_H = 38462
 };
 
-
-
-
-/*######
-## mob_nascent_orc
-######*/
-
-enum OrcSpells
-{
-    SPELL_BLOW    = 22427,
-    SPELL_STOMP   = 31900
-};
-
-
-
-
-
-/*######
-## mob_broggok_poisoncloud
-######*/
-
-
-
-
-
-
-
-
 class boss_broggok : public CreatureScript
 {
-public: 
+public:
     boss_broggok() : CreatureScript("boss_broggok") { }
+
     struct boss_broggokAI : public ScriptedAI
     {
         boss_broggokAI(Creature* creature) : ScriptedAI(creature)
         {
             instance = (ScriptedInstance*)creature->GetInstanceData();
         }
-    
+
         ScriptedInstance* instance;
-    
+
         uint32 AcidSpray_Timer;
         uint32 PoisonSpawn_Timer;
         uint32 PoisonBolt_Timer;
-    
+
         void Reset()
         {
             me->SetUnitMovementFlags(MOVEMENTFLAG_NONE);
             AcidSpray_Timer = 10000;
             PoisonSpawn_Timer = 5000;
             PoisonBolt_Timer = 7000;
-    
+
             if (instance)
                 instance->SetData(DATA_BROGGOKEVENT, NOT_STARTED);
         }
-    
+
         void EnterCombat(Unit* /*who*/)
         {
             DoScriptText(SAY_AGGRO, me);
-    
+
             if (instance)
                 instance->SetData(DATA_BROGGOKEVENT, IN_PROGRESS);
         }
-    
+
         void JustDied(Unit* /*Killer*/)
         {
             if (instance)
                 instance->SetData(DATA_BROGGOKEVENT, DONE);
         }
-    
+
         void EnterEvadeMode()
         {
             me->RemoveAllAuras();
@@ -120,10 +93,10 @@ public:
             me->CombatStop(true);
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_IMMUNE_TO_NPC);
             Reset();
-    
+
             if (!me->IsAlive())
                 return;
-    
+
             if (instance)
             {
                 instance->SetData(DATA_BROGGOKEVENT, FAIL);
@@ -134,7 +107,7 @@ public:
             else
                 me->GetMotionMaster()->MoveTargetedHome();
         }
-    
+
         void MovementInform(uint32 uiMotionType, uint32 /*uiPointId*/)
         {
             if (uiMotionType == POINT_MOTION_TYPE)
@@ -143,65 +116,70 @@ public:
                     me->SetFacingToObject(pFrontDoor);
             }
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (AcidSpray_Timer <= diff)
             {
                 DoCastVictim(HeroicMode ? SPELL_SLIME_SPRAY_H : SPELL_SLIME_SPRAY);
                 AcidSpray_Timer = 4000 + rand() % 8000;
             }
             else AcidSpray_Timer -= diff;
-    
+
             if (PoisonBolt_Timer <= diff)
             {
                 DoCastVictim(HeroicMode ? SPELL_POISON_BOLT_H : SPELL_POISON_BOLT);
                 PoisonBolt_Timer = 4000 + rand() % 8000;
             }
             else PoisonBolt_Timer -= diff;
-    
+
             if (PoisonSpawn_Timer <= diff)
             {
                 DoCast(me, SPELL_POISON_CLOUD);
                 PoisonSpawn_Timer = 20000;
             }
             else PoisonSpawn_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-    
-
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<boss_broggokAI>(pCreature);
     }
-    
+};
 
-    
+/*######
+## mob_nascent_orc
+######*/
+
+enum OrcSpells
+{
+    SPELL_BLOW = 22427,
+    SPELL_STOMP = 31900
 };
 
 class mob_nascent_orc : public CreatureScript
 {
-public: 
+public:
     mob_nascent_orc() : CreatureScript("mob_nascent_orc") { }
+
     struct mob_nascent_orcAI : public ScriptedAI
     {
         mob_nascent_orcAI(Creature* creature) : ScriptedAI(creature)
         {
             instance = (ScriptedInstance*)creature->GetInstanceData();
         }
-    
+
         ScriptedInstance* instance;
-    
+
         uint32 Blow_Timer;
         uint32 Stomp_Timer;
-    
+
         void Reset()
         {
             me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
@@ -209,7 +187,7 @@ public:
             Blow_Timer = 4000 + rand() % 4000;
             Stomp_Timer = 5000 + rand() % 4000;
         }
-    
+
         void MovementInform(uint32 uiMotionType, uint32 /*uiPointId*/)
         {
             if (uiMotionType == POINT_MOTION_TYPE)
@@ -218,93 +196,85 @@ public:
                     me->AI()->AttackStart(pTarget);
             }
         }
-    
+
         void EnterEvadeMode()
         {
             if (instance)
                 instance->SetData(DATA_BROGGOKEVENT, FAIL);
-    
+
             me->DeleteThreatList();
             me->CombatStop(true);
             me->GetMotionMaster()->MoveTargetedHome();
             Reset();
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (!UpdateVictim())
                 return;
-    
+
             if (Blow_Timer <= diff)
             {
                 DoCastVictim(SPELL_BLOW);
                 Blow_Timer = 10000 + rand() % 4000;
             }
             else Blow_Timer -= diff;
-    
+
             if (Stomp_Timer <= diff)
             {
                 DoCastVictim(SPELL_STOMP);
                 Stomp_Timer = 15000 + rand() % 4000;
             }
             else Stomp_Timer -= diff;
-    
+
             DoMeleeAttackIfReady();
         }
     };
 
-    
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_nascent_orcAI>(pCreature);
     }
 
-    
-
-    
 };
+
+/*######
+## mob_broggok_poisoncloud
+######*/
 
 class mob_broggok_poisoncloud : public CreatureScript
 {
-public: 
+public:
     mob_broggok_poisoncloud() : CreatureScript("mob_broggok_poisoncloud") { }
+
     struct mob_broggok_poisoncloudAI : public ScriptedAI
     {
         mob_broggok_poisoncloudAI(Creature* creature) : ScriptedAI(creature)
         {
             instance = (ScriptedInstance*)creature->GetInstanceData();
         }
-    
+
         ScriptedInstance* instance;
-    
+
         void Reset()
         {
             DoCast(me, HeroicMode ? SPELL_POISON_CLOUD_PASSIVE_H : SPELL_POISON_CLOUD_PASSIVE);
         }
-    
+
         void AttackedBy(Unit* /*who*/) {}
         void AttackStart(Unit* /*who*/) {}
     };
 
-    
-
-     CreatureAI* GetAI(Creature* pCreature) const
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return GetInstanceAI<mob_broggok_poisoncloudAI>(pCreature);
     }
-
-    
-
-    
 };
-
 
 void AddSC_boss_broggok()
 {
     new boss_broggok();
     new mob_nascent_orc();
     new mob_broggok_poisoncloud();
-
 }
 

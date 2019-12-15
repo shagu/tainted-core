@@ -17,12 +17,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Captain_Skarloc
-SD%Complete: 99
-SDComment:
-SDCategory: Caverns of Time, Old Hillsbrad Foothills
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Captain_Skarloc
+ SD%Complete: 99
+ SDComment:
+ SDCategory: Caverns of Time, Old Hillsbrad Foothills
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -51,8 +51,9 @@ EndScriptData */
 
 class boss_captain_skarloc : public CreatureScript
 {
-public: 
+public:
     boss_captain_skarloc() : CreatureScript("boss_captain_skarloc") { }
+
     struct boss_captain_skarlocAI : public ScriptedAI
     {
         boss_captain_skarlocAI(Creature *creature) : ScriptedAI(creature)
@@ -60,12 +61,12 @@ public:
             pInstance = (ScriptedInstance*)creature->GetInstanceData();
             HeroicMode = me->GetMap()->IsHeroic();
         }
-    
+
         ScriptedInstance *pInstance;
-    
+
         bool HeroicMode;
         bool Intro;
-    
+
         uint8 Next;
         uint32 IntroTimer;
         uint32 Holy_Light_Timer;
@@ -77,7 +78,7 @@ public:
         uint64 Add1GUID;
         uint64 Add2GUID;
         uint64 ThrallinGUID;
-    
+
         void Reset()
         {
             Intro = true;
@@ -96,25 +97,25 @@ public:
             me->Mount(SKARLOC_MOUNT_MODEL);
             SummonGuards();
             me->GetMotionMaster()->MovePoint(0, 2047.90f, 254.85f, 62.822f);
-    
+
             if (Creature *Thrall = (Creature*)(Unit::GetUnit((*me), pInstance->GetData64(DATA_THRALL))))
                 ThrallinGUID = Thrall->GetGUID();
             else if (Creature* Thrall = me->FindNearestCreature(17876, 100.0f, true))
                 ThrallinGUID = Thrall->GetGUID();
-    
+
         }
-    
+
         void SummonGuards()
         {
-            if (Creature *tAdd1 = DoSpawnCreature( C_WARDEN, -2, -2, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000))
+            if (Creature *tAdd1 = DoSpawnCreature(C_WARDEN, -2, -2, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000))
             {
                 Add1GUID = tAdd1->GetGUID();
                 tAdd1->SetReactState(REACT_PASSIVE);
                 tAdd1->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                 tAdd1->GetMotionMaster()->MovePoint(0, 2044.12f, 253.47f, 62.748f);
             }
-    
-            if (Creature *tAdd2 = DoSpawnCreature( C_VETERAN, 2, 2, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000))
+
+            if (Creature *tAdd2 = DoSpawnCreature(C_VETERAN, 2, 2, 0, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000))
             {
                 Add2GUID = tAdd2->GetGUID();
                 tAdd2->SetReactState(REACT_PASSIVE);
@@ -122,55 +123,55 @@ public:
                 tAdd2->GetMotionMaster()->MovePoint(0, 2049.22f, 258.16f, 62.754f);
             }
         }
-    
+
         void MovementInform(uint32 type, uint32 id)
         {
             if (type == POINT_MOTION_TYPE)
             {
                 switch (Next)
                 {
-                    case 0:
-                        me->RemoveAurasByType(SPELL_AURA_MOUNTED);
-    
-                        if (Creature* Thrall = me->GetMap()->GetCreature(ThrallinGUID))
-                            Thrall->SummonCreature(SKARLOC_MOUNT,2049.90f, 256.85f, 62.822f, me->GetOrientation(), TEMPSUMMON_DEAD_DESPAWN, 5000);
-    
-                        me->SetWalk(true);
-                        me->GetMotionMaster()->MovePoint(0, 2056.80f, 240.81f, 63.538f);
-    
-                        if (Creature* tAdd1 = me->GetMap()->GetCreature(Add1GUID))
-                        {
-                            tAdd1->SetWalk(true);
-                            tAdd1->GetMotionMaster()->MovePoint(0, 2052.94f, 239.37f, 63.219f);
-                        }
-    
-                        if (Creature* tAdd2 = me->GetMap()->GetCreature(Add2GUID))
-                        {
-                            tAdd2->SetWalk(true);
-                            tAdd2->GetMotionMaster()->MovePoint(0, 2058.66f, 243.99f, 63.59f);
-                        }
-    
-                        ++Next;
-                        break;
-                    case 1:
-                        DoScriptText(SAY_ENTER, me);
-                        ++Next;
-                        break;
+                case 0:
+                    me->RemoveAurasByType(SPELL_AURA_MOUNTED);
+
+                    if (Creature* Thrall = me->GetMap()->GetCreature(ThrallinGUID))
+                        Thrall->SummonCreature(SKARLOC_MOUNT, 2049.90f, 256.85f, 62.822f, me->GetOrientation(), TEMPSUMMON_DEAD_DESPAWN, 5000);
+
+                    me->SetWalk(true);
+                    me->GetMotionMaster()->MovePoint(0, 2056.80f, 240.81f, 63.538f);
+
+                    if (Creature* tAdd1 = me->GetMap()->GetCreature(Add1GUID))
+                    {
+                        tAdd1->SetWalk(true);
+                        tAdd1->GetMotionMaster()->MovePoint(0, 2052.94f, 239.37f, 63.219f);
+                    }
+
+                    if (Creature* tAdd2 = me->GetMap()->GetCreature(Add2GUID))
+                    {
+                        tAdd2->SetWalk(true);
+                        tAdd2->GetMotionMaster()->MovePoint(0, 2058.66f, 243.99f, 63.59f);
+                    }
+
+                    ++Next;
+                    break;
+                case 1:
+                    DoScriptText(SAY_ENTER, me);
+                    ++Next;
+                    break;
                 }
             }
         }
-    
+
         void IntroEnd()
         {
             me->SetReactState(REACT_AGGRESSIVE);
             me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
             me->Dismount();
             me->SetWalk(false);
-    
+
             if (Creature* Thrall = me->GetMap()->GetCreature(ThrallinGUID))
             {
                 me->AI()->AttackStart(Thrall);
-    
+
                 if (Creature* tAdd1 = me->GetMap()->GetCreature(Add1GUID))
                 {
                     tAdd1->SetReactState(REACT_AGGRESSIVE);
@@ -178,7 +179,7 @@ public:
                     tAdd1->SetWalk(false);
                     tAdd1->AI()->AttackStart(Thrall);
                 }
-    
+
                 if (Creature* tAdd2 = me->GetMap()->GetCreature(Add2GUID))
                 {
                     tAdd2->SetReactState(REACT_AGGRESSIVE);
@@ -188,48 +189,48 @@ public:
                 }
             }
         }
-    
+
         void EnterCombat(Unit *who)
         {
-    
+
             DoScriptText(SAY_TAUNT1, me);
             DoScriptText(SAY_TAUNT2, me);
         }
-    
+
         void KilledUnit(Unit *victim)
         {
             DoScriptText(RAND(SAY_SLAY1, SAY_SLAY2), me);
         }
-    
+
         void EnterEvadeMode()
         {
             me->InterruptNonMeleeSpells(true);
             me->RemoveAllAuras();
             me->DeleteThreatList();
             me->CombatStop(true);
-    
+
             Map* tmpMap = me->GetMap();
-    
+
             if (!tmpMap)
                 return;
-    
+
             if (Creature *mount = (Creature*)(Unit::GetUnit((*me), pInstance->GetData64(DATA_SKARLOC_MOUNT))))
                 mount->ForcedDespawn();
         }
-    
+
         void JustDied(Unit *victim)
         {
             DoScriptText(SAY_DEATH, me);
-    
+
             if (pInstance->GetData(TYPE_THRALL_EVENT) == IN_PROGRESS)
                 pInstance->SetData(TYPE_THRALL_PART1, DONE);
-    
+
             if (pInstance->GetData(DATA_SKARLOC_DEATH) == DONE)
                 me->SetLootRecipient(NULL);
             else
                 pInstance->SetData(DATA_SKARLOC_DEATH, DONE);
         }
-    
+
         void UpdateAI(const uint32 diff)
         {
             if (Intro)
@@ -242,11 +243,11 @@ public:
                 else
                     IntroTimer -= diff;
             }
-    
+
             //Return since we have no target
-            if (!UpdateVictim() )
+            if (!UpdateVictim())
                 return;
-    
+
             //Holy_Light
             if (Holy_Light_Timer < diff)
             {
@@ -255,16 +256,16 @@ public:
             }
             else
                 Holy_Light_Timer -= diff;
-    
+
             //Cleanse
-            if(Cleanse_Timer  < diff)
+            if (Cleanse_Timer < diff)
             {
                 DoCast(me, SPELL_CLEANSE);
                 Cleanse_Timer = 10000;
             }
             else
                 Cleanse_Timer -= diff;
-    
+
             //Hammer of Justice
             if (HammerOfJustice_Timer < diff)
             {
@@ -273,16 +274,16 @@ public:
             }
             else
                 HammerOfJustice_Timer -= diff;
-    
+
             //Holy Shield
-            if(HolyShield_Timer < diff)
+            if (HolyShield_Timer < diff)
             {
                 DoCast(me, SPELL_HOLY_SHIELD);
                 HolyShield_Timer = 240000;
             }
             else
                 HolyShield_Timer -= diff;
-    
+
             //Devotion_Aura
             if (DevotionAura_Timer < diff)
             {
@@ -291,27 +292,27 @@ public:
             }
             else
                 DevotionAura_Timer -= diff;
-    
-            if(HeroicMode)
-            if(Consecration_Timer < diff)
-            {
-                DoCast(me, SPELL_CONSECRATION);
-                Consecration_Timer = 8000;
-            }
-            else
-                Consecration_Timer -= diff;
-    
+
+            if (HeroicMode)
+                if (Consecration_Timer < diff)
+                {
+                    DoCast(me, SPELL_CONSECRATION);
+                    Consecration_Timer = 8000;
+                }
+                else
+                    Consecration_Timer -= diff;
+
             DoMeleeAttackIfReady();
         }
     };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        return new boss_captain_skarlocAI (pCreature);
+        return new boss_captain_skarlocAI(pCreature);
     }
-    
-    
+
 };
+
 void AddSC_boss_captain_skarloc()
 {
     new boss_captain_skarloc();
