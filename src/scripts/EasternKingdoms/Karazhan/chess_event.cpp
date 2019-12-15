@@ -1265,73 +1265,68 @@ public:
 
 class chess_move_trigger : public CreatureScript
 {
-public: 
+public:
     chess_move_trigger() : CreatureScript("chess_move_trigger") { }
-    
+
 
     struct Move_triggerAI : public ScriptedAI
-{
-    ScriptedInstance* pInstance;
-    uint32 search_timer;
-
-    Move_triggerAI(Creature* c) : ScriptedAI(c)
     {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
-        Reset();
-    }
+        ScriptedInstance* pInstance;
+        uint32 search_timer;
 
-    void Reset()
-    {
-        search_timer = 4500;
-    }
-
-    void Aggro(Unit*) { }
-
-    bool HasMoveMarker()
-    {
-        //for more performance refactor this with a other type of check
-        Unit* marker = GetClosestCreatureWithEntry(me, NPC_MOVE_MARKER, 2);
-        if (marker)
-            return true;
-
-        return false;
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (pInstance->GetData(TYPE_CHESS) != IN_PROGRESS)
-            return;
-
-		if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL))
+        Move_triggerAI(Creature* c) : ScriptedAI(c)
         {
-            if (search_timer < diff)
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+            Reset();
+        }
+
+        void Reset()
+        {
+            search_timer = 4500;
+        }
+
+        void Aggro(Unit*) { }
+
+        bool HasMoveMarker()
+        {
+            //for more performance refactor this with a other type of check
+            Unit* marker = GetClosestCreatureWithEntry(me, NPC_MOVE_MARKER, 2);
+            if (marker)
+                return true;
+
+            return false;
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (pInstance->GetData(TYPE_CHESS) != IN_PROGRESS)
+                return;
+
+            if (me->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL))
             {
-                if (!HasMoveMarker())
-					me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
+                if (search_timer < diff)
+                {
+                    if (!HasMoveMarker())
+                        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
 
-                search_timer = 2000;
+                    search_timer = 2000;
+                }
+                else
+                    search_timer -= diff;
             }
-            else
-                search_timer -= diff;
         }
-    }
 
-    void SpellHit(Unit* /*caster*/, const SpellEntry* spell)
-    {
-        if (spell->Id == SPELL_TRANSFORM_FIELD)
+        void SpellHit(Unit* /*caster*/, const SpellEntry* spell)
         {
-            search_timer = 3000;
-			         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
+            if (spell->Id == SPELL_TRANSFORM_FIELD)
+            {
+                search_timer = 3000;
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_REMOVE_CLIENT_CONTROL);
+            }
         }
-    }
 
 
-
-};
-
-    
-
-    
+    };
 };
 
 class chess_move_marker : public CreatureScript
@@ -1598,6 +1593,5 @@ void AddSC_chess_event()
     new chess_move_trigger();
     new chess_move_marker();
     new chess_victory_controler();
-
 }
 
