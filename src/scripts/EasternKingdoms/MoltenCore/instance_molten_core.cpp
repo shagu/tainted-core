@@ -257,7 +257,7 @@ public:
         }
     };
     
-    InstanceData* GetInstance_instance_molten_coreAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_molten_coreAI (pMap);
     }

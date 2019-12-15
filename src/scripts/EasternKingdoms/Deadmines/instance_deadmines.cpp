@@ -314,7 +314,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData(Map* pMap) const
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_deadminesAI(pMap);
     }

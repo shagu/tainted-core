@@ -39,13 +39,6 @@ EndScriptData */
 */
 
 
-
-
-
-
-
-
-
 class go_main_chambers_access_panel : public GameObjectScript
 {
 public: 
@@ -67,9 +60,7 @@ public:
     
         return true;
     }
-    
-    
-    
+
 };
 
 class instance_steam_vault : public InstanceMapScript
@@ -285,9 +276,6 @@ public:
 	{
         return new instance_steam_vaultAI(pMap);
     }
-    
-    
-    
 };
 
 
@@ -295,6 +283,5 @@ void AddSC_instance_steam_vault()
 {
     new go_main_chambers_access_panel();
     new instance_steam_vault();
-
 }
 

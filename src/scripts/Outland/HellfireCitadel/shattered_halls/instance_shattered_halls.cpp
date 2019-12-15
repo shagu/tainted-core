@@ -418,10 +418,6 @@ public:
         return new instance_shattered_hallsAI(pMap);
     }
     
-
-    
-
-    
 };
 
 class at_shattered_halls : public AreaTriggerScript
@@ -429,9 +425,6 @@ class at_shattered_halls : public AreaTriggerScript
 public: 
     at_shattered_halls() : AreaTriggerScript("at_shattered_halls") { }
     
-
-    
-
     bool OnTrigger(Player* pPlayer, AreaTriggerEntry const* /*pAt*/) override
     {
         if (pPlayer->IsGameMaster() || pPlayer->isDead())
