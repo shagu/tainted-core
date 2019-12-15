@@ -48,7 +48,7 @@ static SHostageInfo HostageInfo[] =
 class instance_zulaman : public InstanceMapScript
 {
 public: 
-    instance_zulaman() : InstanceMapScript("instance_zulaman") { }
+    instance_zulaman() : InstanceMapScript("instance_zulaman", 568) { }
     struct instance_zulamanAI : public ScriptedInstance
     {
         instance_zulamanAI(Map* pMap) : ScriptedInstance(pMap)
@@ -308,7 +308,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_zulamanAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_zulamanAI(pMap);
     }

@@ -54,7 +54,7 @@ const Position OptionalSpawn[] =
 class instance_karazhan : public InstanceMapScript
 {
 public:
-    instance_karazhan() : InstanceMapScript("instance_karazhan") { }
+    instance_karazhan() : InstanceMapScript("instance_karazhan", 532) { }
 
     struct instance_karazhanAI : public ScriptedInstance
     {
@@ -89,7 +89,7 @@ public:
         uint64 MastersTerraceDoor[2];
         uint64 ImageGUID;
 
-        void Initialize()
+        void Initialize() override 
         {
             memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
@@ -122,7 +122,7 @@ public:
 
         }
 
-        bool IsEncounterInProgress() const
+        bool IsEncounterInProgress() const override
         {
             for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
                 if (m_auiEncounter[i] == IN_PROGRESS)
@@ -131,7 +131,7 @@ public:
             return false;
         }
 
-        void OnCreatureCreate(Creature* pCreature, bool /*add*/)
+        void OnCreatureCreate(Creature* pCreature, bool /*add*/) override
         {
             switch (pCreature->GetEntry())
             {
@@ -154,7 +154,7 @@ public:
             }
         }
 
-        void OnCreatureDeath(Creature* pCreature)
+        void OnCreatureDeath(Creature* pCreature) override
         {
             switch (pCreature->GetEntry())
             {
@@ -173,7 +173,7 @@ public:
             }
         }
 
-        void SetData(uint32 type, uint32 uiData)
+        void SetData(uint32 type, uint32 uiData) override
         {
             switch (type)
             {
@@ -255,7 +255,7 @@ public:
                 SaveToDB();
         }
 
-        void SetData64(uint32 identifier, uint64 data)
+        void SetData64(uint32 identifier, uint64 data) override
         {
             switch (identifier)
             {
@@ -266,7 +266,7 @@ public:
             }
         }
 
-        void OnGameObjectCreate(GameObject* pGo, bool /*add*/)
+        void OnGameObjectCreate(GameObject* pGo, bool /*add*/) override
         {
             switch (pGo->GetEntry())
             {
@@ -330,7 +330,7 @@ public:
             }
         }
 
-        std::string GetSaveData()
+        std::string GetSaveData() override
         {
             OUT_SAVE_INST_DATA;
             std::ostringstream stream;
@@ -352,7 +352,7 @@ public:
             return NULL;
         }
 
-        uint32 GetData(uint32 uiData)
+        uint32 GetData(uint32 uiData) override
         {
             switch (uiData)
             {
@@ -391,7 +391,7 @@ public:
             return 0;
         }
 
-        uint64 GetData64(uint32 uiData)
+        uint64 GetData64(uint32 uiData) override
         {
             switch (uiData)
             {
@@ -436,7 +436,7 @@ public:
             return 0;
         }
 
-        void Load(const char* in)
+        void Load(const char* in) override
         {
             if (!in)
             {
@@ -463,8 +463,8 @@ public:
             else OUT_LOAD_INST_DATA_COMPLETE;
         }
     };
-
-    InstanceData* GetInstanceData_instance_karazhan(Map* pMap)
+	 
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_karazhanAI(pMap);
     }

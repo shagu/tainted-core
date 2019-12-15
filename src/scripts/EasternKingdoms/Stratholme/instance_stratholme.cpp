@@ -53,7 +53,7 @@ EndScriptData */
 class instance_stratholme : public InstanceMapScript
 {
 public: 
-    instance_stratholme() : InstanceMapScript("instance_stratholme") { }
+    instance_stratholme() : InstanceMapScript("instance_stratholme", 329) { }
     struct instance_stratholmeAI : public ScriptedInstance
     {
         instance_stratholmeAI(Map* pMap) : ScriptedInstance(pMap) {}
@@ -459,7 +459,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_stratholmeAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_stratholmeAI(pMap);
     }

@@ -40,7 +40,7 @@ bool passagePhase7 = false;
 class instance_mechanar : public InstanceMapScript
 {
 public: 
-    instance_mechanar() : InstanceMapScript("instance_mechanar") { }
+    instance_mechanar() : InstanceMapScript("instance_mechanar", 554) { }
     struct instance_mechanarAI : public ScriptedInstance
     {
         instance_mechanarAI(Map* map) : ScriptedInstance(map)
@@ -281,9 +281,9 @@ public:
         std::set<uint64> _passageGUIDs;
     };
     
-    InstanceData* GetInstanceData_instance_mechanarAI(Map* map)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
-        return new instance_mechanarAI(map);
+        return new instance_mechanarAI(pMap);
     }
     
     

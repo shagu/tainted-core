@@ -38,7 +38,7 @@ EndScriptData */
 class instance_sunwell_plateau : public InstanceMapScript
 {
 public: 
-    instance_sunwell_plateau() : InstanceMapScript("instance_sunwell_plateau") { }
+    instance_sunwell_plateau() : InstanceMapScript("instance_sunwell_plateau", 580) { }
     struct instance_sunwell_plateauAI : public ScriptedInstance
     {
         instance_sunwell_plateauAI(Map* pMap) : ScriptedInstance(pMap)
@@ -914,7 +914,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_sunwell_plateauAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_sunwell_plateauAI(pMap);
     }

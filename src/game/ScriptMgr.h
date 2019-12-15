@@ -415,7 +415,7 @@ public:
     bool IsDatabaseBound() const { return true; }
 
     // Gets an InstanceData object for this instance.
-    virtual InstanceData* OnGetInstanceData(InstanceMap* map) const { return NULL; }
+    virtual InstanceData* GetInstanceScript(InstanceMap* map) const { return NULL; }
 };
 
 class BattlegroundMapScript : public ScriptObject, public MapScript<BattlegroundMap>

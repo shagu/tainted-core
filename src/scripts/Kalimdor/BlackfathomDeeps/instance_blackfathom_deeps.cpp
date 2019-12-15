@@ -55,7 +55,7 @@ const Position SpawnsLocation[] =
 class instance_blackfathom_deeps : public InstanceMapScript
 {
 public: 
-    instance_blackfathom_deeps() : InstanceMapScript("instance_blackfathom_deeps") { }
+    instance_blackfathom_deeps() : InstanceMapScript("instance_blackfathom_deeps", 48) { }
     struct instance_blackfathom_deepsAI : public ScriptedInstance
     {
         instance_blackfathom_deepsAI(Map* pMap) : ScriptedInstance(pMap)
@@ -254,8 +254,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_blackfathom_deepsAI(Map* pMap)
-    {
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override    {
         return new instance_blackfathom_deepsAI(pMap);
     }
     

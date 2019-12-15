@@ -39,7 +39,7 @@ EndScriptData */
 class instance_the_eye : public InstanceMapScript
 {
 public: 
-    instance_the_eye() : InstanceMapScript("instance_the_eye") { }
+    instance_the_eye() : InstanceMapScript("instance_the_eye", 550) { }
     struct instance_the_eyeAI : public ScriptedInstance
     {
         instance_the_eyeAI(Map* map) : ScriptedInstance(map)
@@ -199,9 +199,9 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_the_eyeAI(Map* map)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
-        return new instance_the_eyeAI(map);
+        return new instance_the_eyeAI(pMap);
     }
     
     

@@ -41,7 +41,7 @@ EndScriptData */
 class instance_scholomance : public InstanceMapScript
 {
 public: 
-    instance_scholomance() : InstanceMapScript("instance_scholomance") { }
+    instance_scholomance() : InstanceMapScript("instance_scholomance", 289) { }
     struct instance_scholomanceAI : public ScriptedInstance
     {
         instance_scholomanceAI(Map* pMap) : ScriptedInstance(pMap)
@@ -156,7 +156,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_scholomanceAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_scholomanceAI(pMap);
     }

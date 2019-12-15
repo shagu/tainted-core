@@ -32,7 +32,7 @@ EndScriptData */
 class instance_wailing_caverns : public InstanceMapScript
 {
 public: 
-    instance_wailing_caverns() : InstanceMapScript("instance_wailing_caverns") { }
+    instance_wailing_caverns() : InstanceMapScript("instance_wailing_caverns", 43) { }
     struct instance_wailing_cavernsAI : public ScriptedInstance
     {
         instance_wailing_cavernsAI(Map* pMap) : ScriptedInstance(pMap)
@@ -167,7 +167,7 @@ public:
     
     };
     
-    InstanceData* GetInstanceData_instance_wailing_cavernsAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_wailing_cavernsAI(pMap);
     }

@@ -37,11 +37,13 @@ EndScriptData */
 3 - Azgalor event
 4 - Archimonde event
 */
+#define YELL_EFFORTS        "All of your efforts have been in vain, for the draining of the World Tree has already begun. Soon the heart of your world will beat no more."
+#define YELL_EFFORTS_NAME   "Archimonde"
 
 class instance_hyjal : public InstanceMapScript
 {
 public:
-    instance_hyjal() : InstanceMapScript("script_name") { }
+    instance_hyjal() : InstanceMapScript("instance_hyjal", 534) { }
 
     struct instance_hyjalAI : public ScriptedInstance
     {
@@ -70,8 +72,6 @@ public:
 
         uint32 RaidDamage;
 
-#define YELL_EFFORTS        "All of your efforts have been in vain, for the draining of the World Tree has already begun. Soon the heart of your world will beat no more."
-#define YELL_EFFORTS_NAME   "Archimonde"
 
         void Initialize()
         {
@@ -354,7 +354,7 @@ public:
         }
     };
 
-    InstanceData* GetInstanceData_instance_mount_hyjal(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_hyjalAI(pMap);
     }

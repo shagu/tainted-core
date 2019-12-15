@@ -54,7 +54,7 @@ static Yell RandomTaunt[] =
 class instance_blood_furnace : public InstanceMapScript
 {
 public:
-    instance_blood_furnace() : InstanceMapScript("instance_blood_furnace") { }
+    instance_blood_furnace() : InstanceMapScript("instance_blood_furnace", 542) { }
     struct instance_blood_furnaceAI : public ScriptedInstance
     {
         instance_blood_furnaceAI(Map* map) : ScriptedInstance(map)
@@ -496,9 +496,9 @@ public:
         }
     };
 
-    InstanceData* GetInstanceData_instance_blood_furnace(Map* map)
-    {
-        return new instance_blood_furnaceAI(map);
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override    
+	{
+        return new instance_blood_furnaceAI(pMap);
     }
 
 };

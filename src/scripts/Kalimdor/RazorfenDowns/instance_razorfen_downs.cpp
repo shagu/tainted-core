@@ -25,7 +25,7 @@
 class instance_razorfen_downs : public InstanceMapScript
 {
 public: 
-    instance_razorfen_downs() : InstanceMapScript("instance_razorfen_downs") { }
+    instance_razorfen_downs() : InstanceMapScript("instance_razorfen_downs", 129) { }
     struct instance_razorfen_downsAI : public ScriptedInstance
     {
         instance_razorfen_downsAI(Map* pMap) : ScriptedInstance(pMap)
@@ -206,7 +206,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_razorfen_downsAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_razorfen_downsAI(pMap);
     }

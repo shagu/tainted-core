@@ -44,7 +44,7 @@ EndScriptData */
 class instance_black_temple : public InstanceMapScript
 {
 public: 
-    instance_black_temple() : InstanceMapScript("instance_black_temple") { }
+    instance_black_temple() : InstanceMapScript("instance_black_temple", 564) { }
     struct instance_black_templeAI : public ScriptedInstance
     {
         instance_black_templeAI(Map* pMap) : ScriptedInstance(pMap)
@@ -430,8 +430,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_black_templeAI(Map* pMap)
-    {
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override    {
         return new instance_black_templeAI(pMap);
     }
     

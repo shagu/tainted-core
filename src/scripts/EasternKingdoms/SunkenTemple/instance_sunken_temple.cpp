@@ -43,7 +43,7 @@ EndScriptData */
 class instance_sunken_temple : public InstanceMapScript
 {
 public: 
-    instance_sunken_temple() : InstanceMapScript("instance_sunken_temple") { }
+    instance_sunken_temple() : InstanceMapScript("instance_sunken_temple", 109) { }
     struct instance_sunken_templeAI : public ScriptedInstance
     {
         instance_sunken_templeAI(Map* pMap) : ScriptedInstance(pMap)
@@ -208,7 +208,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_sunken_templeAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_sunken_templeAI(pMap);
     }

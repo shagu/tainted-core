@@ -92,7 +92,7 @@ float Spawnsway[2][3] =
 class instance_zulfarrak : public InstanceMapScript
 {
 public: 
-    instance_zulfarrak() : InstanceMapScript("instance_zulfarrak") { }
+    instance_zulfarrak() : InstanceMapScript("instance_zulfarrak", 209) { }
     struct instance_zulfarrakAI : public ScriptedInstance
     {
         instance_zulfarrakAI(Map* pMap) : ScriptedInstance(pMap)
@@ -392,7 +392,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_zulfarrakAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_zulfarrakAI(pMap);
     }

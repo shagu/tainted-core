@@ -61,7 +61,7 @@ enum Summon
 class instance_old_hillsbrad : public InstanceMapScript
 {
 public: 
-    instance_old_hillsbrad() : InstanceMapScript("instance_old_hillsbrad") { }
+    instance_old_hillsbrad() : InstanceMapScript("instance_old_hillsbrad", 560) { }
     struct instance_old_hillsbradAI : public ScriptedInstance
     {
         instance_old_hillsbradAI(Map *map) : ScriptedInstance(map) {Initialize();};
@@ -448,9 +448,9 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_old_hillsbradAI(Map* map)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
-        return new instance_old_hillsbradAI(map);
+        return new instance_old_hillsbradAI(pMap);
     }
     
     

@@ -30,7 +30,7 @@ EndScriptData */
 class instance_temple_of_ahnqiraj : public InstanceMapScript
 {
 public: 
-    instance_temple_of_ahnqiraj() : InstanceMapScript("instance_temple_of_ahnqiraj") { }
+    instance_temple_of_ahnqiraj() : InstanceMapScript("instance_temple_of_ahnqiraj", 531) { }
     struct instance_temple_of_ahnqirajAI : public ScriptedInstance
     {
         instance_temple_of_ahnqirajAI(Map* map) : ScriptedInstance(map)
@@ -170,9 +170,9 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_temple_of_ahnqirajAI(Map* map)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
-        return new instance_temple_of_ahnqirajAI(map);
+        return new instance_temple_of_ahnqirajAI(pMap);
     }
     
     

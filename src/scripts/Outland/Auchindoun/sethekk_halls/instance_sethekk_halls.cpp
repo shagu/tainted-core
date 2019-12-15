@@ -87,7 +87,7 @@ public:
 class instance_sethekk_halls : public InstanceMapScript
 {
 public:
-    instance_sethekk_halls() : InstanceMapScript("instance_sethekk_halls") { }
+    instance_sethekk_halls() : InstanceMapScript("instance_sethekk_halls", 556) { }
     struct instance_sethekk_hallsAI : public ScriptedInstance
     {
         instance_sethekk_hallsAI(Map* map) : ScriptedInstance(map)
@@ -234,9 +234,9 @@ public:
         }
     };
 
-    InstanceData* GetInstanceData_instance_sethekk_halls(Map* map)
-    {
-        return new instance_sethekk_hallsAI(map);
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override    
+	{
+        return new instance_sethekk_hallsAI(pMap);
     }
 
 };

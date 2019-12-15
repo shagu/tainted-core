@@ -39,7 +39,7 @@ EndScriptData */
 class instance_magtheridons_lair : public InstanceMapScript
 {
 public: 
-    instance_magtheridons_lair() : InstanceMapScript("instance_magtheridons_lair") { }
+    instance_magtheridons_lair() : InstanceMapScript("instance_magtheridons_lair", 544) { }
     struct instance_magtheridons_lairAI : public ScriptedInstance
     {
         instance_magtheridons_lairAI(Map* Map) : ScriptedInstance(Map)
@@ -251,9 +251,9 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_magtheridons_lairAI(Map* map)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
-        return new instance_magtheridons_lairAI(map);
+        return new instance_magtheridons_lairAI(pMap);
     }
     
     

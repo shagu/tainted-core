@@ -30,7 +30,7 @@ EndScriptData */
 class instance_zulgurub : public InstanceMapScript
 {
 public: 
-    instance_zulgurub() : InstanceMapScript("instance_zulgurub") { }
+    instance_zulgurub() : InstanceMapScript("instance_zulgurub", 309) { }
     struct instance_zulgurubAI : public ScriptedInstance
     {
         instance_zulgurubAI(Map* pMap) : ScriptedInstance(pMap)
@@ -167,7 +167,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_zulgurubAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_zulgurubAI(pMap);
     }

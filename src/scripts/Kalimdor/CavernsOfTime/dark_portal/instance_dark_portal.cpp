@@ -67,7 +67,7 @@ static Wave RiftWaves[] =
 class instance_dark_portal : public InstanceMapScript
 {
 public: 
-    instance_dark_portal() : InstanceMapScript("instance_dark_portal") { }
+    instance_dark_portal() : InstanceMapScript("instance_dark_portal", 269) { }
     struct instance_dark_portalAI : public ScriptedInstance
     {
         instance_dark_portalAI(Map* map) : ScriptedInstance(map)
@@ -377,9 +377,9 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_dark_portalAI(Map* map)
-    {
-        return new instance_dark_portalAI(map);
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override    
+	{
+        return new instance_dark_portalAI(pMap);
     }
     
     

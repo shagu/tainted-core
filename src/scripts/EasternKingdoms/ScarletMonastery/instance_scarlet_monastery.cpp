@@ -38,7 +38,7 @@ EndScriptData */
 class instance_scarlet_monastery : public InstanceMapScript
 {
 public: 
-    instance_scarlet_monastery() : InstanceMapScript("instance_scarlet_monastery") { }
+    instance_scarlet_monastery() : InstanceMapScript("instance_scarlet_monastery", 189) { }
     struct instance_scarlet_monasteryAI : public ScriptedInstance
     {
         instance_scarlet_monasteryAI(Map* pMap) : ScriptedInstance(pMap)
@@ -188,7 +188,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_scarlet_monasteryAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_scarlet_monasteryAI(pMap);
     }

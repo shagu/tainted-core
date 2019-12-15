@@ -25,7 +25,7 @@
 class instance_gnomeregan : public InstanceMapScript
 {
 public: 
-    instance_gnomeregan() : InstanceMapScript("instance_gnomeregan") { }
+    instance_gnomeregan() : InstanceMapScript("instance_gnomeregan", 90) { }
     struct instance_gnomereganAI : public ScriptedInstance
     {
         instance_gnomereganAI(Map* pMap) : ScriptedInstance(pMap)
@@ -136,8 +136,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_gnomereganAI(Map* pMap)
-    {
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override    {
         return new instance_gnomereganAI(pMap);
     }
     

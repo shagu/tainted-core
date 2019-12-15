@@ -32,7 +32,7 @@ EndScriptData */
 class instance_ramparts : public InstanceMapScript
 {
 public: 
-    instance_ramparts() : InstanceMapScript("instance_ramparts") { }
+    instance_ramparts() : InstanceMapScript("instance_ramparts", 543) { }
     struct instance_rampartsAI : public ScriptedInstance
     {
         instance_rampartsAI(Map* map) : ScriptedInstance(map)
@@ -160,7 +160,7 @@ public:
             OUT_LOAD_INST_DATA_COMPLETE;
         }
     };
-    InstanceData* GetInstanceData_instance_rampartsAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_rampartsAI(pMap);
     }

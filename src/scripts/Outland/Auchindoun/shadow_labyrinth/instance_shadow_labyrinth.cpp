@@ -42,7 +42,7 @@ EndScriptData */
 class instance_shadow_labyrinth : public InstanceMapScript
 {
 public: 
-    instance_shadow_labyrinth() : InstanceMapScript("instance_shadow_labyrinth") { }
+    instance_shadow_labyrinth() : InstanceMapScript("instance_shadow_labyrinth", 555) { }
     struct instance_shadow_labyrinthAI : public ScriptedInstance
     {
         instance_shadow_labyrinthAI(Map* map) : ScriptedInstance(map)
@@ -270,9 +270,9 @@ public:
     
     };
     
-    InstanceData* GetInstanceData_instance_shadow_labyrinthAI(Map* map)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
-        return new instance_shadow_labyrinthAI(map);
+        return new instance_shadow_labyrinthAI(pMap);
     }
     
     

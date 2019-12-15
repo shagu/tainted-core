@@ -81,8 +81,9 @@ static SpawnLocation aSoldiersLocs[] =
 class instance_shattered_halls : public InstanceMapScript
 {
 public: 
-    instance_shattered_halls() : InstanceMapScript("instance_shattered_halls") { }
-        struct instance_shattered_hallsAI : public ScriptedInstance
+    instance_shattered_halls() : InstanceMapScript("instance_shattered_halls", 540) { }
+    
+    struct instance_shattered_hallsAI : public ScriptedInstance
     {
         instance_shattered_hallsAI(Map* map) : ScriptedInstance(map)
         {
@@ -410,13 +411,16 @@ public:
         }
     };
 
-    
-    InstanceData* GetInstanceData_instance_shattered_halls(Map* map)
+    
+
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
-        return new instance_shattered_hallsAI(map);
+        return new instance_shattered_hallsAI(pMap);
     }
-    
-    
+    
+
+    
+
     
 };
 
@@ -424,8 +428,10 @@ class at_shattered_halls : public AreaTriggerScript
 {
 public: 
     at_shattered_halls() : AreaTriggerScript("at_shattered_halls") { }
-    
-    
+    
+
+    
+
     bool OnTrigger(Player* pPlayer, AreaTriggerEntry const* /*pAt*/) override
     {
         if (pPlayer->IsGameMaster() || pPlayer->isDead())
@@ -447,8 +453,10 @@ public:
     
         return true;
     }
-    
-    
+    
+
+    
+
     
 };
 

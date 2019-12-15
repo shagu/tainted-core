@@ -37,7 +37,7 @@ EndScriptData */
 class instance_gruuls_lair : public InstanceMapScript
 {
 public: 
-    instance_gruuls_lair() : InstanceMapScript("instance_gruuls_lair") { }
+    instance_gruuls_lair() : InstanceMapScript("instance_gruuls_lair", 565) { }
     struct instance_gruuls_lairAI : public ScriptedInstance
     {
         instance_gruuls_lairAI(Map* map) : ScriptedInstance(map)
@@ -220,9 +220,9 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_gruuls_lairAI(Map* map)
-    {
-        return new instance_gruuls_lairAI(map);
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override    
+	{
+        return new instance_gruuls_lairAI(pMap);
     }
     
     

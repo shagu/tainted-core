@@ -50,7 +50,7 @@ EndScriptData */
 class instance_serpent_shrine : public InstanceMapScript
 {
 public:
-    instance_serpent_shrine() : InstanceMapScript("instance_serpent_shrine") { }
+    instance_serpent_shrine() : InstanceMapScript("instance_serpent_shrine", 548) { }
 
     struct instance_serpentshrine_cavernAI : public ScriptedInstance
     {
@@ -442,8 +442,7 @@ public:
         }
     };
 
-    InstanceData* GetInstanceData_instance_serpentshrine_cavern(Map* pMap)
-    {
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override    {
         return new instance_serpentshrine_cavernAI(pMap);
     }
 };

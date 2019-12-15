@@ -80,7 +80,7 @@ enum eEnums
 class instance_blackrock_depths : public InstanceMapScript
 {
 public:
-    instance_blackrock_depths() : InstanceMapScript("instance_blackrock_depths") { }
+    instance_blackrock_depths() : InstanceMapScript("instance_blackrock_depths", 230) { }
 
     struct instance_blackrock_depthsAI : public ScriptedInstance
     {
@@ -513,8 +513,7 @@ public:
         }
     };
 
-    InstanceData* GetInstanceData_instance_blackrock_depths(Map* pMap)
-    {
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override    {
         return new instance_blackrock_depthsAI(pMap);
     }
 

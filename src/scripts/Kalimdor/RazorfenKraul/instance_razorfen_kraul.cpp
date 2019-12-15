@@ -32,7 +32,7 @@ EndScriptData */
 class instance_razorfen_kraul : public InstanceMapScript
 {
 public: 
-    instance_razorfen_kraul() : InstanceMapScript("instance_razorfen_kraul") { }
+    instance_razorfen_kraul() : InstanceMapScript("instance_razorfen_kraul", 47) { }
     struct instance_razorfen_kraulAI : public ScriptedInstance
     {
         instance_razorfen_kraulAI(Map* pMap) : ScriptedInstance(pMap)
@@ -115,7 +115,7 @@ public:
     
     };
     
-    InstanceData* GetInstanceData_instance_razorfen_kraulAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_razorfen_kraulAI(pMap);
     }

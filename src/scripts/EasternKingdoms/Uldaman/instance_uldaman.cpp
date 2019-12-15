@@ -46,7 +46,7 @@ EndScriptData */
 class instance_uldaman : public InstanceMapScript
 {
 public: 
-    instance_uldaman() : InstanceMapScript("instance_uldaman") { }
+    instance_uldaman() : InstanceMapScript("instance_uldaman", 70) { }
     struct instance_uldamanAI : public ScriptedInstance
     {
         instance_uldamanAI(Map* pMap) : ScriptedInstance(pMap)
@@ -476,7 +476,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_uldamanAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_uldamanAI(pMap);
     }

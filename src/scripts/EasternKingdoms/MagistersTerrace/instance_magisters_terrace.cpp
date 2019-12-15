@@ -39,7 +39,7 @@ EndScriptData */
 class instance_magisters_terrace : public InstanceMapScript
 {
 public: 
-    instance_magisters_terrace() : InstanceMapScript("instance_magisters_terrace") { }
+    instance_magisters_terrace() : InstanceMapScript("instance_magisters_terrace", 585) { }
     struct instance_magisters_terraceAI : public ScriptedInstance
     {
         instance_magisters_terraceAI(Map* pMap) : ScriptedInstance(pMap)
@@ -237,7 +237,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_magisters_terraceAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_magisters_terraceAI(pMap);
     }

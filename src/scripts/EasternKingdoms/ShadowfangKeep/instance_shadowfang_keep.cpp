@@ -58,7 +58,7 @@ const Position SpawnLocation[] =
 class instance_shadowfang_keep : public InstanceMapScript
 {
 public: 
-    instance_shadowfang_keep() : InstanceMapScript("instance_shadowfang_keep") { }
+    instance_shadowfang_keep() : InstanceMapScript("instance_shadowfang_keep", 33) { }
     struct instance_shadowfang_keepAI : public ScriptedInstance
     {
         instance_shadowfang_keepAI(Map* pMap) : ScriptedInstance(pMap)
@@ -278,7 +278,7 @@ public:
         }
     };
     
-    InstanceData* GetInstanceData_instance_shadowfang_keepAI(Map* pMap)
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
         return new instance_shadowfang_keepAI(pMap);
     }
