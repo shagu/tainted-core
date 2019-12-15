@@ -278,8 +278,6 @@ public:
     at_map_chamber() : AreaTriggerScript("at_map_chamber") { }
     
 
-    
-
     bool OnTrigger(Player* pPlayer, const AreaTriggerEntry*) override
     {
         if (pPlayer && pPlayer->GetQuestStatus(QUEST_HIDDEN_CHAMBER) == QUEST_STATUS_INCOMPLETE)

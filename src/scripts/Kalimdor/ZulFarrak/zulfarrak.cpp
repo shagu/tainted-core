@@ -437,8 +437,6 @@ public:
     at_zumrah() : AreaTriggerScript("at_zumrah") { }
     
 
-    
-
     bool OnTrigger(Player* pPlayer, const AreaTriggerEntry* /*at*/) override
     {
         Creature* Zumrah = pPlayer->FindNearestCreature(ZUMRAH_ID, 30.0f);
@@ -451,11 +449,6 @@ public:
         Zumrah->AI()->AttackStart(pPlayer);
         return true;
     }
-    
-
-    
-
-    
 };
 
 class at_antusul : public AreaTriggerScript
@@ -463,7 +456,6 @@ class at_antusul : public AreaTriggerScript
 public: 
     at_antusul() : AreaTriggerScript("at_antusul") { }
     
-
     
 
     bool OnTrigger(Player* pPlayer, const AreaTriggerEntry* /*at*/) override
@@ -478,8 +470,7 @@ public:
     }
     
 
-    
-
+ 
     
 };
 

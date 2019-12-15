@@ -375,9 +375,6 @@ public:
     }
 };
 
-
-
-
 /*####
 # npc_ruul_snowhoof
 ####*/
@@ -637,9 +634,6 @@ public:
         return feeroAI;
     }
 };
-
-
-
 
 
 void AddSC_ashenvale()
