@@ -35,7 +35,7 @@ void AddSC_guards();
 void AddSC_item_scripts();
 void AddSC_npc_professions();
 void AddSC_npc_innkeeper();
-//void AddSC_npcs_special();
+void AddSC_npcs_special();
 
 //eastern kingdoms
 void AddSC_hillsbrad_foothills();
@@ -409,7 +409,7 @@ void AddScripts()
     AddSC_item_scripts();
     AddSC_npc_professions();
     AddSC_npc_innkeeper();
-    //AddSC_npcs_special();
+    AddSC_npcs_special();
 
     //eastern kingdoms
     AddSC_hillsbrad_foothills();
