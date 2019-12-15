@@ -83,7 +83,7 @@ void AddSC_deadmines();                      //Deadmines
 void AddSC_instance_deadmines();
 void AddSC_instance_gnomeregan();            //Gnomeregan
 void AddSC_gnomeregan();
-//void AddSC_boss_attumen();                   //Karazhan
+void AddSC_boss_attumen();                   //Karazhan
 void AddSC_boss_curator();
 void AddSC_boss_maiden_of_virtue();
 void AddSC_boss_shade_of_aran();
@@ -457,7 +457,7 @@ void AddScripts()
     AddSC_instance_deadmines();
     AddSC_gnomeregan();                     //Gnomeregan
     AddSC_instance_gnomeregan();
-    //AddSC_boss_attumen();                   //Karazhan
+    AddSC_boss_attumen();                   //Karazhan
     AddSC_boss_curator();
     AddSC_boss_maiden_of_virtue();
     AddSC_boss_shade_of_aran();
