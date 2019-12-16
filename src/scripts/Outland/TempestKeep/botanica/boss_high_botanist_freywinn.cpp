@@ -53,115 +53,116 @@ enum Misc
     EVENT_RESTORE_COMBAT = 4
 };
 
-
-struct boss_high_botanist_freywinnAI : public ScriptedAI
+class boss_high_botanist_freywinn : public CreatureScript
 {
-    boss_high_botanist_freywinnAI(Creature* c) : ScriptedAI(c), summons(me) {}
+public:
+    boss_high_botanist_freywinn() : CreatureScript("boss_high_botanist_freywinn") { }
 
-    SummonList summons;
-    EventMap events;
-
-    void Reset() {}
-
-    void EnterCombat(Unit* /*who*/)
+    struct boss_high_botanist_freywinnAI : public ScriptedAI
     {
-        DoScriptText(SAY_AGGRO, me);
-        events.ScheduleEvent(EVENT_SUMMON_SEEDLING, 6000);
-        events.ScheduleEvent(EVENT_TREE_FORM, 30000);
-    }
+        boss_high_botanist_freywinnAI(Creature* c) : ScriptedAI(c), summons(me) {}
 
-    void JustSummoned(Creature* summoned)
-    {
-        //  Forced Summon Frayers to Attack players
-        if (me->GetVictim())
-            summoned->AI()->AttackStart(me->GetVictim());
+        SummonList summons;
+        EventMap events;
 
-        summons.Summon(summoned);
-    }
+        void Reset() {}
 
-    void KilledUnit(Unit* victim)
-    {
-        if (victim->GetTypeId() == TYPEID_PLAYER)
-            DoScriptText(RAND( SAY_KILL_1, SAY_KILL_2), me);
-    }
-
-    void JustDied(Unit* /*Killer*/)
-    {
-        DoScriptText(SAY_DEATH, me);
-    }
-
-    void SummonedCreatureDies(Creature* summon, Unit*)
-    {
-        summons.Despawn(summon);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        events.Update(diff);
-
-        switch (events.ExecuteEvent())
+        void EnterCombat(Unit* /*who*/)
         {
-        case EVENT_SUMMON_SEEDLING:
-            me->CastSpell(me, RAND(SPELL_PLANT_WHITE, SPELL_PLANT_GREEN, SPELL_PLANT_BLUE, SPELL_PLANT_RED), false);
+            DoScriptText(SAY_AGGRO, me);
             events.ScheduleEvent(EVENT_SUMMON_SEEDLING, 6000);
-            break;
-        case EVENT_TREE_FORM:
-            events.Reset();
-            events.SetPhase(1);
-            events.ScheduleEvent(EVENT_CHECK_FRAYERS, 1000);
-            events.ScheduleEvent(EVENT_TREE_FORM, 75000);
-            events.ScheduleEvent(EVENT_RESTORE_COMBAT, 46000);
-
-            DoScriptText(RAND(SAY_TREE_1, SAY_TREE_2), me);
-            me->RemoveAllAuras();
-            me->GetMotionMaster()->MoveIdle();
-            me->GetMotionMaster()->Clear(false);
-
-            for (int i = 0; i < 3; ++i)
-                me->SummonCreature(ENTRY_FRAYER, me->GetPosition(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 60000) + i;
-
-            me->CastSpell(me, SPELL_TRANQUILITY, true);
-            me->CastSpell(me, SPELL_TREE_FORM, true);
-            break;
-        case EVENT_RESTORE_COMBAT:
-            events.SetPhase(0);
-            events.ScheduleEvent(EVENT_SUMMON_SEEDLING, 6000);
-            me->GetMotionMaster()->MoveChase(me->GetVictim());
-            break;
-
-        case EVENT_CHECK_FRAYERS:
-            if (!summons.HasEntry(NPC_FRAYER))
-            {
-                me->InterruptNonMeleeSpells(true);
-                me->RemoveAllAuras();
-                events.RescheduleEvent(EVENT_RESTORE_COMBAT, 0);
-                events.RescheduleEvent(EVENT_TREE_FORM, 30000);
-                break;
-            }
-            events.ScheduleEvent(EVENT_CHECK_FRAYERS, 500);
-            break;
+            events.ScheduleEvent(EVENT_TREE_FORM, 30000);
         }
 
-        if (!events.IsInPhase(1))
-            DoMeleeAttackIfReady();
-    }
-};
+        void JustSummoned(Creature* summoned)
+        {
+            //  Forced Summon Frayers to Attack players
+            if (me->GetVictim())
+                summoned->AI()->AttackStart(me->GetVictim());
 
-CreatureAI* GetAI_boss_high_botanist_freywinn(Creature* pCreature)
-{
-    return new boss_high_botanist_freywinnAI(pCreature);
-}
+            summons.Summon(summoned);
+        }
+
+        void KilledUnit(Unit* victim)
+        {
+            if (victim->GetTypeId() == TYPEID_PLAYER)
+                DoScriptText(RAND(SAY_KILL_1, SAY_KILL_2), me);
+        }
+
+        void JustDied(Unit* /*Killer*/)
+        {
+            DoScriptText(SAY_DEATH, me);
+        }
+
+        void SummonedCreatureDies(Creature* summon, Unit*)
+        {
+            summons.Despawn(summon);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            events.Update(diff);
+
+            switch (events.ExecuteEvent())
+            {
+            case EVENT_SUMMON_SEEDLING:
+                me->CastSpell(me, RAND(SPELL_PLANT_WHITE, SPELL_PLANT_GREEN, SPELL_PLANT_BLUE, SPELL_PLANT_RED), false);
+                events.ScheduleEvent(EVENT_SUMMON_SEEDLING, 6000);
+                break;
+            case EVENT_TREE_FORM:
+                events.Reset();
+                events.SetPhase(1);
+                events.ScheduleEvent(EVENT_CHECK_FRAYERS, 1000);
+                events.ScheduleEvent(EVENT_TREE_FORM, 75000);
+                events.ScheduleEvent(EVENT_RESTORE_COMBAT, 46000);
+
+                DoScriptText(RAND(SAY_TREE_1, SAY_TREE_2), me);
+                me->RemoveAllAuras();
+                me->GetMotionMaster()->MoveIdle();
+                me->GetMotionMaster()->Clear(false);
+
+                for (int i = 0; i < 3; ++i)
+                    me->SummonCreature(ENTRY_FRAYER, me->GetPosition(), TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 60000) + i;
+
+                me->CastSpell(me, SPELL_TRANQUILITY, true);
+                me->CastSpell(me, SPELL_TREE_FORM, true);
+                break;
+            case EVENT_RESTORE_COMBAT:
+                events.SetPhase(0);
+                events.ScheduleEvent(EVENT_SUMMON_SEEDLING, 6000);
+                me->GetMotionMaster()->MoveChase(me->GetVictim());
+                break;
+
+            case EVENT_CHECK_FRAYERS:
+                if (!summons.HasEntry(NPC_FRAYER))
+                {
+                    me->InterruptNonMeleeSpells(true);
+                    me->RemoveAllAuras();
+                    events.RescheduleEvent(EVENT_RESTORE_COMBAT, 0);
+                    events.RescheduleEvent(EVENT_TREE_FORM, 30000);
+                    break;
+                }
+                events.ScheduleEvent(EVENT_CHECK_FRAYERS, 500);
+                break;
+            }
+
+            if (!events.IsInPhase(1))
+                DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_high_botanist_freywinnAI(pCreature);
+    }
+
+};
 
 void AddSC_boss_high_botanist_freywinn()
 {
-    Script* newscript;
-
-    newscript = new Script;
-    newscript->Name = "boss_high_botanist_freywinn";
-    newscript->GetAI = &GetAI_boss_high_botanist_freywinn;
-    newscript->RegisterSelf();
+    new boss_high_botanist_freywinn();
 }
 

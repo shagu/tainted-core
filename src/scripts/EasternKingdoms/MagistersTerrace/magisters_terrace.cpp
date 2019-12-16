@@ -52,104 +52,105 @@ const float afKaelLandPoint[] = {225.045f, -276.236f, -5.434f};
 
 // This is friendly keal that appear after used Orb.
 // If we assume DB handle summon, summon appear somewhere outside the platform where Orb is
-struct npc_kalecgosAI : public ScriptedAI
+
+class npc_kalecgos : public CreatureScript
 {
-    npc_kalecgosAI(Creature* pCreature) : ScriptedAI(pCreature) {}
-
-    uint32 m_uiTransformTimer;
-
-    void Reset()
+public: 
+    npc_kalecgos() : CreatureScript("npc_kalecgos") { }
+    struct npc_kalecgosAI : public ScriptedAI
     {
-        m_uiTransformTimer = 0;
-
-        // @todo Remove this requirement
-        me->setActive(true);
-
-        // we must assume he appear as dragon somewhere outside the platform of orb, and then move directly to here
-        if (me->GetEntry() != NPC_KAEL)
-            me->GetMotionMaster()->MovePoint(POINT_ID_LAND, afKaelLandPoint[0], afKaelLandPoint[1], afKaelLandPoint[2], false);
-    }
-
-    void MovementInform(uint32 uiType, uint32 uiPointId)
-    {
-        if (uiType != POINT_MOTION_TYPE)
-            return;
-
-        if (uiPointId == POINT_ID_LAND)
-            m_uiTransformTimer = MINUTE * IN_MILLISECONDS;
-    }
-
-    void UpdateAI(const uint32 uiDiff)
-    {
-        if (m_uiTransformTimer)
+        npc_kalecgosAI(Creature* pCreature) : ScriptedAI(pCreature) {}
+    
+        uint32 m_uiTransformTimer;
+    
+        void Reset()
         {
-            if (m_uiTransformTimer <= uiDiff)
-            {
-                DoCast(me, SPELL_ORB_KILL_CREDIT, false);
-
-                // Transform and update entry, now ready for quest/read gossip
-                DoCast(me, SPELL_TRANSFORM_TO_KAEL, false);
-                me->UpdateEntry(NPC_KAEL);
-
-                m_uiTransformTimer = 0;
-            }
-            else m_uiTransformTimer -= uiDiff;
+            m_uiTransformTimer = 0;
+    
+            // @todo Remove this requirement
+            me->setActive(true);
+    
+            // we must assume he appear as dragon somewhere outside the platform of orb, and then move directly to here
+            if (me->GetEntry() != NPC_KAEL)
+                me->GetMotionMaster()->MovePoint(POINT_ID_LAND, afKaelLandPoint[0], afKaelLandPoint[1], afKaelLandPoint[2], false);
         }
-    }
-};
-
-CreatureAI* GetAI_npc_kalecgos(Creature* pCreature)
-{
-    return new npc_kalecgosAI(pCreature);
-}
-
-bool GossipHello_npc_kalecgos(Player* pPlayer, Creature* pCreature)
-{
-    if (pCreature->IsQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
-
-    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
-    pPlayer->SEND_GOSSIP_MENU(12498, pCreature->GetGUID());
-
-    return true;
-}
-
-bool GossipSelect_npc_kalecgos(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    switch (uiAction)
+    
+        void MovementInform(uint32 uiType, uint32 uiPointId)
+        {
+            if (uiType != POINT_MOTION_TYPE)
+                return;
+    
+            if (uiPointId == POINT_ID_LAND)
+                m_uiTransformTimer = MINUTE * IN_MILLISECONDS;
+        }
+    
+        void UpdateAI(const uint32 uiDiff)
+        {
+            if (m_uiTransformTimer)
+            {
+                if (m_uiTransformTimer <= uiDiff)
+                {
+                    DoCast(me, SPELL_ORB_KILL_CREDIT, false);
+    
+                    // Transform and update entry, now ready for quest/read gossip
+                    DoCast(me, SPELL_TRANSFORM_TO_KAEL, false);
+                    me->UpdateEntry(NPC_KAEL);
+    
+                    m_uiTransformTimer = 0;
+                }
+                else m_uiTransformTimer -= uiDiff;
+            }
+        }
+    };
+    
+     CreatureAI* GetAI(Creature* pCreature) const
     {
-    case GOSSIP_ACTION_INFO_DEF:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        pPlayer->SEND_GOSSIP_MENU(12500, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+1:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-        pPlayer->SEND_GOSSIP_MENU(12502, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+2:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-        pPlayer->SEND_GOSSIP_MENU(12606, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+3:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-        pPlayer->SEND_GOSSIP_MENU(12607, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+4:
-        pPlayer->SEND_GOSSIP_MENU(12608, pCreature->GetGUID());
-        break;
+        return new npc_kalecgosAI(pCreature);
     }
-
-    return true;
-}
-
+    
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        if (pCreature->IsQuestGiver())
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+    
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+        pPlayer->SEND_GOSSIP_MENU(12498, pCreature->GetGUID());
+    
+        return true;
+    }
+    
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        switch (uiAction)
+        {
+        case GOSSIP_ACTION_INFO_DEF:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            pPlayer->SEND_GOSSIP_MENU(12500, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            pPlayer->SEND_GOSSIP_MENU(12502, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+            pPlayer->SEND_GOSSIP_MENU(12606, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+3:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_KAEL_5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+            pPlayer->SEND_GOSSIP_MENU(12607, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+4:
+            pPlayer->SEND_GOSSIP_MENU(12608, pCreature->GetGUID());
+            break;
+        }
+    
+        return true;
+    }
+    
+    
+};
 void AddSC_magisters_terrace()
 {
-    Script* newscript;
-
-    newscript = new Script;
-    newscript->Name = "npc_kalecgos";
-    newscript->GetAI = &GetAI_npc_kalecgos;
-    newscript->pGossipHello = &GossipHello_npc_kalecgos;
-    newscript->pGossipSelect = &GossipSelect_npc_kalecgos;
-    newscript->RegisterSelf();
+    new npc_kalecgos();
 }
+

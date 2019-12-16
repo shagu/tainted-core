@@ -5,11 +5,11 @@
 
 enum Spells
 {
-	// Jammal
-	SPELL_TOTEM = 8376,
-	SPELL_FLAMESTRIKE = 12468,
-	SPELL_HEALING_WAVE = 12492,
-	SPELL_TRANSFORM = 12480
+    // Jammal
+    SPELL_TOTEM = 8376,
+    SPELL_FLAMESTRIKE = 12468,
+    SPELL_HEALING_WAVE = 12492,
+    SPELL_TRANSFORM = 12480
 };
 
 #define NPC_WEAVER				 5720
@@ -23,133 +23,138 @@ enum Spells
 #define SAY_TRANSFORM			-1910075
 #define SAY_KILL				-1910076
 
-struct boss_JammalAI : public ScriptedAI
+
+class boss_Jammal : public CreatureScript
 {
-	boss_JammalAI(Creature* creature) : ScriptedAI(creature)
-	{
-		Initialize();
-	}
+public:
+    boss_Jammal() : CreatureScript("boss_Jammal") { }
 
-	void Initialize()
-	{
-		healingwave_timer = 12000;
-		transform_timer = 15000;
-		totem_Timer = 30000;
-		flamestrike_timer = 25000;
+    struct boss_JammalAI : public ScriptedAI
+    {
+        boss_JammalAI(Creature* creature) : ScriptedAI(creature)
+        {
+            Initialize();
+        }
 
-		hp = false;
-	}
+        void Initialize()
+        {
+            healingwave_timer = 12000;
+            transform_timer = 15000;
+            totem_Timer = 30000;
+            flamestrike_timer = 25000;
 
-	ScriptedInstance* instance;
+            hp = false;
+        }
 
-	uint32 transform_timer;
-	uint32 totem_Timer;
-	uint32 healingwave_timer;
-	uint32 flamestrike_timer;
+        ScriptedInstance* instance;
 
-	bool hp;
+        uint32 transform_timer;
+        uint32 totem_Timer;
+        uint32 healingwave_timer;
+        uint32 flamestrike_timer;
 
-	void Reset() override
-	{
-		Initialize();
-	}
+        bool hp;
 
-	void EnterCombat(Unit* victim) override
-	{
-		me->InterruptNonMeleeSpells(false);
-		
-		std::list<Creature*> creatureList;
-		GetCreatureListWithEntryInGrid(creatureList, me, NPC_DEATHWALKER, 60.0f);
-		GetCreatureListWithEntryInGrid(creatureList, me, NPC_MUMMIFIED, 60.0f);
-		for (std::list<Creature*>::iterator itr = creatureList.begin(); itr != creatureList.end(); ++itr)
-		{
-			if (Creature* creature = *itr)
-			{
-				creature->AI()->AttackStart(me->GetVictim());
-			}
-		}
+        void Reset() override
+        {
+            Initialize();
+        }
 
-		DoScriptText(SAY_AGGRO, me);
-		DoCast(SPELL_TOTEM);
-	}
+        void EnterCombat(Unit* victim) override
+        {
+            me->InterruptNonMeleeSpells(false);
 
-	void DamageTaken(Unit* /*attacker*/, uint32& damage) override { }
+            std::list<Creature*> creatureList;
+            GetCreatureListWithEntryInGrid(creatureList, me, NPC_DEATHWALKER, 60.0f);
+            GetCreatureListWithEntryInGrid(creatureList, me, NPC_MUMMIFIED, 60.0f);
+            for (std::list<Creature*>::iterator itr = creatureList.begin(); itr != creatureList.end(); ++itr)
+            {
+                if (Creature* creature = *itr)
+                {
+                    creature->AI()->AttackStart(me->GetVictim());
+                }
+            }
 
-	void JustDied(Unit* /*killer*/) override 
-	{
-		me->SummonCreature(NPC_WEAVER, -467.098f, 85.294f, -94.731f, 3.95f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 90000);
-		me->SummonCreature(NPC_DREAMSCYTHE, -472.019f, 105.822f, -94.629f, 0.03f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 90000);
-	}
+            DoScriptText(SAY_AGGRO, me);
+            DoCast(SPELL_TOTEM);
+        }
 
-	void KilledUnit(Unit* /*victim*/)
-	{
-		DoScriptText(SAY_KILL, me);
-	}
+        void DamageTaken(Unit* /*attacker*/, uint32& damage) override { }
 
-	void UpdateAI(const uint32 diff) override
-	{
-		if (!UpdateVictim())
-			return;
+        void JustDied(Unit* /*killer*/) override
+        {
+            me->SummonCreature(NPC_WEAVER, -467.098f, 85.294f, -94.731f, 3.95f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 90000);
+            me->SummonCreature(NPC_DREAMSCYTHE, -472.019f, 105.822f, -94.629f, 0.03f, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 90000);
+        }
 
-		if (totem_Timer <= diff)
-		{
-			DoCast(SPELL_TOTEM);
-			totem_Timer = 30000;
-		}
-		else
-			totem_Timer -= diff;
+        void KilledUnit(Unit* /*victim*/)
+        {
+            DoScriptText(SAY_KILL, me);
+        }
 
-		if (transform_timer <= diff)
-		{
-			if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-				DoCast(target, SPELL_TRANSFORM);
-			transform_timer = 15000;
+        void UpdateAI(const uint32 diff) override
+        {
+            if (!UpdateVictim())
+                return;
 
-			DoScriptText(SAY_TRANSFORM, me);
-		}
-		else
-			transform_timer -= diff;
+            if (totem_Timer <= diff)
+            {
+                DoCast(SPELL_TOTEM);
+                totem_Timer = 30000;
+            }
+            else
+                totem_Timer -= diff;
 
-		if (HealthBelowPct(60) && healingwave_timer <= diff)
-		{
-			DoCast(me, SPELL_HEALING_WAVE);
-			healingwave_timer = 12000;
-		}
-		else
-			healingwave_timer -= diff;
+            if (transform_timer <= diff)
+            {
+                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                    DoCast(target, SPELL_TRANSFORM);
+                transform_timer = 15000;
 
-		if (flamestrike_timer <= diff)
-		{
-			if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-			DoCast(target, SPELL_FLAMESTRIKE);
-			flamestrike_timer = 25000;
-		}
-		else
-			flamestrike_timer -= diff;
+                DoScriptText(SAY_TRANSFORM, me);
+            }
+            else
+                transform_timer -= diff;
 
-		if (!hp)
-		{
-			if (HealthBelowPct(10))
-			{
-				DoScriptText(SAY_HP, me);
-				hp = true;
-			}
-		}
+            if (HealthBelowPct(60) && healingwave_timer <= diff)
+            {
+                DoCast(me, SPELL_HEALING_WAVE);
+                healingwave_timer = 12000;
+            }
+            else
+                healingwave_timer -= diff;
 
-		DoMeleeAttackIfReady();
-	}
+            if (flamestrike_timer <= diff)
+            {
+                if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                    DoCast(target, SPELL_FLAMESTRIKE);
+                flamestrike_timer = 25000;
+            }
+            else
+                flamestrike_timer -= diff;
+
+            if (!hp)
+            {
+                if (HealthBelowPct(10))
+                {
+                    DoScriptText(SAY_HP, me);
+                    hp = true;
+                }
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_JammalAI(pCreature);
+    }
+
 };
-
-CreatureAI* GetAI_boss_Jammal(Creature* pCreature)
-{
-	return new boss_JammalAI(pCreature);
-}
 
 void AddSC_boss_Jammal()
 {
-	Script* newscript;
-	newscript = new Script;
-	newscript->Name = "boss_Jammal";
-	newscript->GetAI = &GetAI_boss_Jammal;
-	newscript->RegisterSelf();
+    new boss_Jammal();
 }
+

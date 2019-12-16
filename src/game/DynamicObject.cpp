@@ -28,6 +28,7 @@
 #include "GridNotifiers.h"
 #include "CellImpl.h"
 #include "GridNotifiersImpl.h"
+#include "ScriptMgr.h"
 
 DynamicObject::DynamicObject(bool isWorldObject) : WorldObject(isWorldObject)
 {
@@ -150,6 +151,8 @@ void DynamicObject::Update(uint32 p_time)
         caster->RemoveDynObjectWithGUID(GetGUID());
         Remove();
     }
+    else
+        sScriptMgr.OnDynamicObjectUpdate(this, p_time);
 }
 
 void DynamicObject::Remove()

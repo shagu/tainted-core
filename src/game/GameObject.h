@@ -840,6 +840,7 @@ class GameObject : public WorldObject, public GridObject<GameObject>
         GameObjectAI* AI() const { return m_AI; }
 
         std::string GetAIName() const;
+        virtual uint32 GetScriptId() const { return GetGOInfo()->ScriptId; }
     protected:
         bool AIM_Initialize();
         uint32      m_spellId;

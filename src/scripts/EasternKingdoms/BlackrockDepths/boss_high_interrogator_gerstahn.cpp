@@ -15,98 +15,101 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_High_Interrogator_Gerstahn
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_High_Interrogator_Gerstahn
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_SHADOWWORDPAIN                                   = 10894,
-    SPELL_MANABURN                                         = 10876,
-    SPELL_PSYCHICSCREAM                                    = 8122,
-    SPELL_SHADOWSHIELD                                     = 22417
+    SPELL_SHADOWWORDPAIN = 10894,
+    SPELL_MANABURN = 10876,
+    SPELL_PSYCHICSCREAM = 8122,
+    SPELL_SHADOWSHIELD = 22417
 };
 
-struct boss_high_interrogator_gerstahnAI : public ScriptedAI
+class boss_high_interrogator_gerstahn : public CreatureScript
 {
-    boss_high_interrogator_gerstahnAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_high_interrogator_gerstahn() : CreatureScript("boss_high_interrogator_gerstahn") { }
 
-    uint32 ShadowWordPain_Timer;
-    uint32 ManaBurn_Timer;
-    uint32 PsychicScream_Timer;
-    uint32 ShadowShield_Timer;
-
-    void Reset()
+    struct boss_high_interrogator_gerstahnAI : public ScriptedAI
     {
-        ShadowWordPain_Timer = 4000;
-        ManaBurn_Timer = 14000;
-        PsychicScream_Timer = 32000;
-        ShadowShield_Timer = 8000;
-    }
+        boss_high_interrogator_gerstahnAI(Creature* c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* /*who*/)
+        uint32 ShadowWordPain_Timer;
+        uint32 ManaBurn_Timer;
+        uint32 PsychicScream_Timer;
+        uint32 ShadowShield_Timer;
+
+        void Reset()
+        {
+            ShadowWordPain_Timer = 4000;
+            ManaBurn_Timer = 14000;
+            PsychicScream_Timer = 32000;
+            ShadowShield_Timer = 8000;
+        }
+
+        void EnterCombat(Unit* /*who*/)
+        {
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+
+            //ShadowWordPain_Timer
+            if (ShadowWordPain_Timer <= diff)
+            {
+                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                    DoCast(pTarget, SPELL_SHADOWWORDPAIN);
+                ShadowWordPain_Timer = 7000;
+            }
+            else ShadowWordPain_Timer -= diff;
+
+            //ManaBurn_Timer
+            if (ManaBurn_Timer <= diff)
+            {
+                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                    DoCast(pTarget, SPELL_MANABURN);
+                ManaBurn_Timer = 10000;
+            }
+            else ManaBurn_Timer -= diff;
+
+            //PsychicScream_Timer
+            if (PsychicScream_Timer <= diff)
+            {
+                DoCastVictim(SPELL_PSYCHICSCREAM);
+                PsychicScream_Timer = 30000;
+            }
+            else PsychicScream_Timer -= diff;
+
+            //ShadowShield_Timer
+            if (ShadowShield_Timer <= diff)
+            {
+                DoCast(me, SPELL_SHADOWSHIELD);
+                ShadowShield_Timer = 25000;
+            }
+            else ShadowShield_Timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //ShadowWordPain_Timer
-        if (ShadowWordPain_Timer <= diff)
-        {
-            if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                DoCast(pTarget, SPELL_SHADOWWORDPAIN);
-            ShadowWordPain_Timer = 7000;
-        }
-        else ShadowWordPain_Timer -= diff;
-
-        //ManaBurn_Timer
-        if (ManaBurn_Timer <= diff)
-        {
-            if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                DoCast(pTarget, SPELL_MANABURN);
-            ManaBurn_Timer = 10000;
-        }
-        else ManaBurn_Timer -= diff;
-
-        //PsychicScream_Timer
-        if (PsychicScream_Timer <= diff)
-        {
-            DoCastVictim( SPELL_PSYCHICSCREAM);
-            PsychicScream_Timer = 30000;
-        }
-        else PsychicScream_Timer -= diff;
-
-        //ShadowShield_Timer
-        if (ShadowShield_Timer <= diff)
-        {
-            DoCast(me, SPELL_SHADOWSHIELD);
-            ShadowShield_Timer = 25000;
-        }
-        else ShadowShield_Timer -= diff;
-
-        DoMeleeAttackIfReady();
+        return new boss_high_interrogator_gerstahnAI(pCreature);
     }
 };
-CreatureAI* GetAI_boss_high_interrogator_gerstahn(Creature* pCreature)
-{
-    return new boss_high_interrogator_gerstahnAI (pCreature);
-}
 
 void AddSC_boss_high_interrogator_gerstahn()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_high_interrogator_gerstahn";
-    newscript->GetAI = &GetAI_boss_high_interrogator_gerstahn;
-    newscript->RegisterSelf();
+    new boss_high_interrogator_gerstahn();
 }

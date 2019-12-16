@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_the_black_stalker
-SD%Complete: 95
-SDComment: Timers may be incorrect
-SDCategory: Coilfang Resevoir, Underbog
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_the_black_stalker
+ SD%Complete: 95
+ SDComment: Timers may be incorrect
+ SDCategory: Coilfang Resevoir, Underbog
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -35,164 +35,166 @@ EndScriptData */
 
 #define ENTRY_SPORE_STRIDER        22299
 
-struct boss_the_black_stalkerAI : public ScriptedAI
+class boss_the_black_stalker : public CreatureScript
 {
-    boss_the_black_stalkerAI(Creature* c) : ScriptedAI(c)
+public:
+    boss_the_black_stalker() : CreatureScript("boss_the_black_stalker") { }
+
+    struct boss_the_black_stalkerAI : public ScriptedAI
     {
-        HeroicMode = me->GetMap()->IsHeroic();
-    }
-
-    bool HeroicMode;
-    uint32 SporeStriders_Timer;
-    uint32 Levitate_Timer;
-    uint32 ChainLightning_Timer;
-    uint32 StaticCharge_Timer;
-    uint64 LevitatedTarget;
-    uint32 LevitatedTarget_Timer;
-    bool InAir;
-    uint32 check_Timer;
-    std::list<uint64> Striders;
-
-    void Reset()
-    {
-        Levitate_Timer = 12000;
-        ChainLightning_Timer = 6000;
-        StaticCharge_Timer = 10000;
-        SporeStriders_Timer = 10000 + rand() % 5000;
-        check_Timer = 5000;
-        LevitatedTarget = 0;
-        LevitatedTarget_Timer = 0;
-        Striders.clear();
-    }
-
-    void EnterCombat(Unit* /*who*/) {}
-
-    void JustSummoned(Creature* summon)
-    {
-        if (summon && summon->GetEntry() == ENTRY_SPORE_STRIDER)
+        boss_the_black_stalkerAI(Creature* c) : ScriptedAI(c)
         {
-            Striders.push_back(summon->GetGUID());
-            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
-                summon->AI()->AttackStart(pTarget);
-            else if (me->GetVictim())
-                summon->AI()->AttackStart(me->GetVictim());
+            HeroicMode = me->GetMap()->IsHeroic();
         }
-    }
 
-    void JustDied(Unit* /*who*/)
-    {
-        for (std::list<uint64>::iterator i = Striders.begin(); i != Striders.end(); ++i)
-            if (Creature* strider = Unit::GetCreature(*me, *i))
-            {
-                strider->SetLootRecipient(NULL);
-                strider->DealDamage(strider, strider->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                strider->RemoveCorpse();
-            }
-    }
+        bool HeroicMode;
+        uint32 SporeStriders_Timer;
+        uint32 Levitate_Timer;
+        uint32 ChainLightning_Timer;
+        uint32 StaticCharge_Timer;
+        uint64 LevitatedTarget;
+        uint32 LevitatedTarget_Timer;
+        bool InAir;
+        uint32 check_Timer;
+        std::list<uint64> Striders;
 
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        // Evade if too far
-        if (check_Timer <= diff)
+        void Reset()
         {
-            float x, y, z, o;
-            me->GetHomePosition(x, y, z, o);
-            if (me->GetDistance(x, y, z) > 60)
-            {
-                EnterEvadeMode();
-                return;
-            }
-            check_Timer = 1000;
-        }
-        else check_Timer -= diff;
-
-        // Spore Striders
-        if (HeroicMode && SporeStriders_Timer <= diff)
-        {
-            DoCast(me, SPELL_SUMMON_SPORE_STRIDER);
+            Levitate_Timer = 12000;
+            ChainLightning_Timer = 6000;
+            StaticCharge_Timer = 10000;
             SporeStriders_Timer = 10000 + rand() % 5000;
+            check_Timer = 5000;
+            LevitatedTarget = 0;
+            LevitatedTarget_Timer = 0;
+            Striders.clear();
         }
-        else SporeStriders_Timer -= diff;
 
-        // Levitate
-        if (LevitatedTarget)
+        void EnterCombat(Unit* /*who*/) {}
+
+        void JustSummoned(Creature* summon)
         {
-            if (LevitatedTarget_Timer <= diff)
+            if (summon && summon->GetEntry() == ENTRY_SPORE_STRIDER)
             {
-                if (Unit* pTarget = (Unit*)Unit::GetUnit(*me, LevitatedTarget))
+                Striders.push_back(summon->GetGUID());
+                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+                    summon->AI()->AttackStart(pTarget);
+                else if (me->GetVictim())
+                    summon->AI()->AttackStart(me->GetVictim());
+            }
+        }
+
+        void JustDied(Unit* /*who*/)
+        {
+            for (std::list<uint64>::iterator i = Striders.begin(); i != Striders.end(); ++i)
+                if (Creature* strider = Unit::GetCreature(*me, *i))
                 {
-                    if (!pTarget->HasAura(SPELL_LEVITATE, 0))
+                    strider->SetLootRecipient(NULL);
+                    strider->DealDamage(strider, strider->GetMaxHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    strider->RemoveCorpse();
+                }
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            // Evade if too far
+            if (check_Timer <= diff)
+            {
+                float x, y, z, o;
+                me->GetHomePosition(x, y, z, o);
+                if (me->GetDistance(x, y, z) > 60)
+                {
+                    EnterEvadeMode();
+                    return;
+                }
+                check_Timer = 1000;
+            }
+            else check_Timer -= diff;
+
+            // Spore Striders
+            if (HeroicMode && SporeStriders_Timer <= diff)
+            {
+                DoCast(me, SPELL_SUMMON_SPORE_STRIDER);
+                SporeStriders_Timer = 10000 + rand() % 5000;
+            }
+            else SporeStriders_Timer -= diff;
+
+            // Levitate
+            if (LevitatedTarget)
+            {
+                if (LevitatedTarget_Timer <= diff)
+                {
+                    if (Unit* pTarget = (Unit*)Unit::GetUnit(*me, LevitatedTarget))
                     {
-                        LevitatedTarget = 0;
-                        return;
-                    }
-                    if (InAir)
-                    {
-                        pTarget->AddAura(SPELL_SUSPENSION, pTarget);
-                        LevitatedTarget = 0;
+                        if (!pTarget->HasAura(SPELL_LEVITATE, 0))
+                        {
+                            LevitatedTarget = 0;
+                            return;
+                        }
+                        if (InAir)
+                        {
+                            pTarget->AddAura(SPELL_SUSPENSION, pTarget);
+                            LevitatedTarget = 0;
+                        }
+                        else
+                        {
+                            pTarget->CastSpell(pTarget, SPELL_MAGNETIC_PULL, true);
+                            InAir = true;
+                            LevitatedTarget_Timer = 1500;
+                        }
                     }
                     else
-                    {
-                        pTarget->CastSpell(pTarget, SPELL_MAGNETIC_PULL, true);
-                        InAir = true;
-                        LevitatedTarget_Timer = 1500;
-                    }
+                        LevitatedTarget = 0;
                 }
-                else
-                    LevitatedTarget = 0;
+                else LevitatedTarget_Timer -= diff;
             }
-            else LevitatedTarget_Timer -= diff;
-        }
-        if (Levitate_Timer <= diff)
-        {
-            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+            if (Levitate_Timer <= diff)
             {
-                DoCast(pTarget, SPELL_LEVITATE);
-                LevitatedTarget = pTarget->GetGUID();
-                LevitatedTarget_Timer = 2000;
-                InAir = false;
+                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+                {
+                    DoCast(pTarget, SPELL_LEVITATE);
+                    LevitatedTarget = pTarget->GetGUID();
+                    LevitatedTarget_Timer = 2000;
+                    InAir = false;
+                }
+                Levitate_Timer = 12000 + rand() % 3000;
             }
-            Levitate_Timer = 12000 + rand() % 3000;
-        }
-        else Levitate_Timer -= diff;
+            else Levitate_Timer -= diff;
 
-        // Chain Lightning
-        if (ChainLightning_Timer <= diff)
-        {
-            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                DoCast(pTarget, SPELL_CHAIN_LIGHTNING);
-            ChainLightning_Timer = 7000;
-        }
-        else ChainLightning_Timer -= diff;
+            // Chain Lightning
+            if (ChainLightning_Timer <= diff)
+            {
+                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                    DoCast(pTarget, SPELL_CHAIN_LIGHTNING);
+                ChainLightning_Timer = 7000;
+            }
+            else ChainLightning_Timer -= diff;
 
-        // Static Charge
-        if (StaticCharge_Timer <= diff)
-        {
-            if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 30, true))
-                DoCast(pTarget, SPELL_STATIC_CHARGE);
-            StaticCharge_Timer = 10000;
-        }
-        else StaticCharge_Timer -= diff;
+            // Static Charge
+            if (StaticCharge_Timer <= diff)
+            {
+                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 30, true))
+                    DoCast(pTarget, SPELL_STATIC_CHARGE);
+                StaticCharge_Timer = 10000;
+            }
+            else StaticCharge_Timer -= diff;
 
-        DoMeleeAttackIfReady();
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_the_black_stalkerAI(pCreature);
     }
-};
 
-CreatureAI* GetAI_boss_the_black_stalker(Creature* pCreature)
-{
-    return new boss_the_black_stalkerAI (pCreature);
-}
+};
 
 void AddSC_boss_the_black_stalker()
 {
-    Script* newscript;
-
-    newscript = new Script;
-    newscript->Name = "boss_the_black_stalker";
-    newscript->GetAI = &GetAI_boss_the_black_stalker;
-    newscript->RegisterSelf();
+    new boss_the_black_stalker();
 }
 

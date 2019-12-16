@@ -64,7 +64,7 @@ struct StringTextData
     uint32 uiEmote;
 };
 
-#define pSystemMgr SystemMgr::Instance()
+#define sScriptSystemMgr SystemMgr::Instance()
 
 class SystemMgr
 {

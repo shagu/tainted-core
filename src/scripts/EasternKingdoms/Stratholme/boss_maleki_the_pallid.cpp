@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: boss_maleki_the_pallid
-SD%Complete: 100
-SDComment:
-SDCategory: Stratholme
-EndScriptData */
+ /* ScriptData
+ SDName: boss_maleki_the_pallid
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Stratholme
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -31,83 +31,88 @@ EndScriptData */
 #define SPELL_DRAIN_MANA    17243
 #define SPELL_ICETOMB    16869
 
-struct boss_maleki_the_pallidAI : public ScriptedAI
+
+class boss_maleki_the_pallid : public CreatureScript
 {
-    boss_maleki_the_pallidAI(Creature* c) : ScriptedAI(c)
+public:
+    boss_maleki_the_pallid() : CreatureScript("boss_maleki_the_pallid") { }
+
+    struct boss_maleki_the_pallidAI : public ScriptedAI
     {
-        pInstance = (ScriptedInstance*)me->GetInstanceData();
-    }
-
-    ScriptedInstance* pInstance;
-
-    uint32 Frostbolt_Timer;
-    uint32 IceTomb_Timer;
-    uint32 DrainLife_Timer;
-
-    void Reset()
-    {
-        Frostbolt_Timer = 1000;
-        IceTomb_Timer = 16000;
-        DrainLife_Timer = 31000;
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-    }
-
-    void JustDied(Unit* /*Killer*/)
-    {
-        if (pInstance)
-            pInstance->SetData(TYPE_PALLID, IN_PROGRESS);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //Frostbolt
-        if (Frostbolt_Timer <= diff)
+        boss_maleki_the_pallidAI(Creature* c) : ScriptedAI(c)
         {
-            if (rand() % 100 < 90)
-                DoCastVictim( SPELL_FROSTBOLT);
-            Frostbolt_Timer = 3500;
+            pInstance = (ScriptedInstance*)me->GetInstanceData();
         }
-        else Frostbolt_Timer -= diff;
 
-        //IceTomb
-        if (IceTomb_Timer <= diff)
-        {
-            if (rand() % 100 < 65)
-                DoCastVictim( SPELL_ICETOMB);
-            IceTomb_Timer = 28000;
-        }
-        else IceTomb_Timer -= diff;
+        ScriptedInstance* pInstance;
 
-        //DrainLife
-        if (DrainLife_Timer <= diff)
+        uint32 Frostbolt_Timer;
+        uint32 IceTomb_Timer;
+        uint32 DrainLife_Timer;
+
+        void Reset()
         {
-            if (rand() % 100 < 55)
-                DoCastVictim( SPELL_DRAINLIFE);
+            Frostbolt_Timer = 1000;
+            IceTomb_Timer = 16000;
             DrainLife_Timer = 31000;
         }
-        else DrainLife_Timer -= diff;
 
-        DoMeleeAttackIfReady();
+        void EnterCombat(Unit* /*who*/)
+        {
+        }
+
+        void JustDied(Unit* /*Killer*/)
+        {
+            if (pInstance)
+                pInstance->SetData(TYPE_PALLID, IN_PROGRESS);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+
+            //Frostbolt
+            if (Frostbolt_Timer <= diff)
+            {
+                if (rand() % 100 < 90)
+                    DoCastVictim(SPELL_FROSTBOLT);
+                Frostbolt_Timer = 3500;
+            }
+            else Frostbolt_Timer -= diff;
+
+            //IceTomb
+            if (IceTomb_Timer <= diff)
+            {
+                if (rand() % 100 < 65)
+                    DoCastVictim(SPELL_ICETOMB);
+                IceTomb_Timer = 28000;
+            }
+            else IceTomb_Timer -= diff;
+
+            //DrainLife
+            if (DrainLife_Timer <= diff)
+            {
+                if (rand() % 100 < 55)
+                    DoCastVictim(SPELL_DRAINLIFE);
+                DrainLife_Timer = 31000;
+            }
+            else DrainLife_Timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_maleki_the_pallidAI(pCreature);
     }
+
 };
-CreatureAI* GetAI_boss_maleki_the_pallid(Creature* pCreature)
-{
-    return new boss_maleki_the_pallidAI (pCreature);
-}
 
 void AddSC_boss_maleki_the_pallid()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_maleki_the_pallid";
-    newscript->GetAI = &GetAI_boss_maleki_the_pallid;
-    newscript->RegisterSelf();
+    new boss_maleki_the_pallid();
 }
 
