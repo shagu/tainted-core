@@ -230,7 +230,7 @@ public:
 
     };
 
-    CreatureAI* OnGetAI(Creature* pCreature)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
         return new boss_mr_smiteAI(pCreature);
     }
