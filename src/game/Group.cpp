@@ -123,7 +123,7 @@ bool Group::Create(const uint64& guid, const char* name)
 
     if (!isBGGroup()) CharacterDatabase.CommitTransaction();
 
-    sScriptMgr.OnGroupCreated(leader->GetGroup(), leader);
+    sScriptMgr.OnGroupCreate(leader->GetGroup(), leader);
    
     // used by eluna
     sEluna->OnCreate(this, m_leaderGuid, m_groupType);
