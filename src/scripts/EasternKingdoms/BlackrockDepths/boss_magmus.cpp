@@ -15,88 +15,94 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Magmus
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Magmus
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_FIERYBURST                                       = 13900,
-    SPELL_WARSTOMP                                         = 24375
+    SPELL_FIERYBURST = 13900,
+    SPELL_WARSTOMP = 24375
 };
 
 enum eEnums
 {
-    DATA_THRONE_DOOR                              = 24 // not id or guid of doors but number of enum in blackrock_depths.h
+    DATA_THRONE_DOOR = 24 // not id or guid of doors but number of enum in blackrock_depths.h
 };
 
-struct boss_magmusAI : public ScriptedAI
+
+class boss_magmus : public CreatureScript
 {
-    boss_magmusAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_magmus() : CreatureScript("boss_magmus") { }
 
-    uint32 FieryBurst_Timer;
-    uint32 WarStomp_Timer;
-
-    void Reset()
+    struct boss_magmusAI : public ScriptedAI
     {
-        FieryBurst_Timer = 5000;
-        WarStomp_Timer = 0;
-    }
+        boss_magmusAI(Creature* c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* /*who*/)
-    {
-    }
+        uint32 FieryBurst_Timer;
+        uint32 WarStomp_Timer;
 
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //FieryBurst_Timer
-        if (FieryBurst_Timer <= diff)
+        void Reset()
         {
-            DoCastVictim( SPELL_FIERYBURST);
-            FieryBurst_Timer = 6000;
+            FieryBurst_Timer = 5000;
+            WarStomp_Timer = 0;
         }
-        else FieryBurst_Timer -= diff;
 
-        //WarStomp_Timer
-        if (HealthBelowPct(50))
+        void EnterCombat(Unit* /*who*/)
         {
-            if (WarStomp_Timer <= diff)
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+
+            //FieryBurst_Timer
+            if (FieryBurst_Timer <= diff)
             {
-                DoCastVictim( SPELL_WARSTOMP);
-                WarStomp_Timer = 8000;
+                DoCastVictim(SPELL_FIERYBURST);
+                FieryBurst_Timer = 6000;
             }
-            else WarStomp_Timer -= diff;
-        }
+            else FieryBurst_Timer -= diff;
 
-        DoMeleeAttackIfReady();
-    }
-    // When he die open door to last chamber
-    void JustDied(Unit* who)
+            //WarStomp_Timer
+            if (HealthBelowPct(50))
+            {
+                if (WarStomp_Timer <= diff)
+                {
+                    DoCastVictim(SPELL_WARSTOMP);
+                    WarStomp_Timer = 8000;
+                }
+                else WarStomp_Timer -= diff;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+        // When he die open door to last chamber
+        void JustDied(Unit* who)
+        {
+            if (ScriptedInstance* pInstance = (ScriptedInstance*)who->GetInstanceData())
+                pInstance->HandleGameObject(pInstance->GetData64(DATA_THRONE_DOOR), true);
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        if (ScriptedInstance* pInstance = (ScriptedInstance*)who->GetInstanceData())
-            pInstance->HandleGameObject(pInstance->GetData64(DATA_THRONE_DOOR), true);
+        return new boss_magmusAI(pCreature);
     }
+
 };
-CreatureAI* GetAI_boss_magmus(Creature* pCreature)
-{
-    return new boss_magmusAI (pCreature);
-}
 
 void AddSC_boss_magmus()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_magmus";
-    newscript->GetAI = &GetAI_boss_magmus;
-    newscript->RegisterSelf();
+    new boss_magmus();
 }
+

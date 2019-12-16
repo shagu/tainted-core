@@ -268,7 +268,9 @@ class Map : public GridRefManager<NGridType>, public Oregon::ObjectLevelLockable
         friend class MapReference;
     public:
         Map(uint32 id, time_t, uint32 InstanceId, uint8 SpawnMode, Map* _parent = NULL);
-        ~Map() override;
+        virtual ~Map() override;
+
+        MapEntry const* GetEntry() const { return i_mapEntry; }
 
         // currently unused for normal maps
         bool CanUnload(uint32 diff)

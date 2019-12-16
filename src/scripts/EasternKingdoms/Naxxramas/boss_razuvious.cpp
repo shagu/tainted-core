@@ -15,29 +15,29 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Razuvious
-SD%Complete: 50
-SDComment: Missing adds and event is impossible without Mind Control
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Razuvious
+ SD%Complete: 50
+ SDComment: Missing adds and event is impossible without Mind Control
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-//Razuvious - NO TEXT sound only
-//8852 aggro01 - Hah hah, I'm just getting warmed up!
-//8853 aggro02 Stand and fight!
-//8854 aggro03 Show me what you've got!
-//8861 slay1 - You should've stayed home!
-//8863 slay2-
-//8858 cmmnd3 - You disappoint me, students!
-//8855 cmmnd1 - Do as I taught you!
-//8856 cmmnd2 - Show them no mercy!
-//8859 cmmnd4 - The time for practice is over! Show me what you've learned!
-//8861 Sweep the leg! Do you have a problem with that?
-//8860 death - An honorable... death...
-//8947 - Aggro Mixed? - ?
+ //Razuvious - NO TEXT sound only
+ //8852 aggro01 - Hah hah, I'm just getting warmed up!
+ //8853 aggro02 Stand and fight!
+ //8854 aggro03 Show me what you've got!
+ //8861 slay1 - You should've stayed home!
+ //8863 slay2-
+ //8858 cmmnd3 - You disappoint me, students!
+ //8855 cmmnd1 - Do as I taught you!
+ //8856 cmmnd2 - Show them no mercy!
+ //8859 cmmnd4 - The time for practice is over! Show me what you've learned!
+ //8861 Sweep the leg! Do you have a problem with that?
+ //8860 death - An honorable... death...
+ //8947 - Aggro Mixed? - ?
 
 #define SOUND_AGGRO1    8852
 #define SOUND_AGGRO2    8853
@@ -55,119 +55,124 @@ EndScriptData */
 #define SPELL_UNBALANCINGSTRIKE     26613
 #define SPELL_DISRUPTINGSHOUT       29107
 
-struct boss_razuviousAI : public ScriptedAI
+
+class boss_razuvious : public CreatureScript
 {
-    boss_razuviousAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_razuvious() : CreatureScript("boss_razuvious") { }
 
-    uint32 UnbalancingStrike_Timer;
-    uint32 DisruptingShout_Timer;
-    uint32 CommandSound_Timer;
-
-    void Reset()
+    struct boss_razuviousAI : public ScriptedAI
     {
-        UnbalancingStrike_Timer = 30000;                    //30 seconds
-        DisruptingShout_Timer = 25000;                      //25 seconds
-        CommandSound_Timer = 40000;                         //40 seconds
-    }
+        boss_razuviousAI(Creature* c) : ScriptedAI(c) {}
 
-    void KilledUnit(Unit*)
-    {
-        if (rand() % 3)
-            return;
+        uint32 UnbalancingStrike_Timer;
+        uint32 DisruptingShout_Timer;
+        uint32 CommandSound_Timer;
 
-        switch (rand() % 2)
+        void Reset()
         {
-        case 0:
-            DoPlaySoundToSet(me, SOUND_SLAY1);
-            break;
-        case 1:
-            DoPlaySoundToSet(me, SOUND_SLAY2);
-            break;
+            UnbalancingStrike_Timer = 30000;                    //30 seconds
+            DisruptingShout_Timer = 25000;                      //25 seconds
+            CommandSound_Timer = 40000;                         //40 seconds
         }
-    }
 
-    void JustDied(Unit*)
-    {
-        DoPlaySoundToSet(me, SOUND_DEATH);
-    }
-
-    void EnterCombat(Unit*)
-    {
-        switch (rand() % 3)
+        void KilledUnit(Unit*)
         {
-        case 0:
-            DoPlaySoundToSet(me, SOUND_AGGRO1);
-            break;
-        case 1:
-            DoPlaySoundToSet(me, SOUND_AGGRO2);
-            break;
-        case 2:
-            DoPlaySoundToSet(me, SOUND_AGGRO3);
-            break;
-        }
-    }
+            if (rand() % 3)
+                return;
 
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        //UnbalancingStrike_Timer
-        if (UnbalancingStrike_Timer <= diff)
-        {
-            DoCastVictim(SPELL_UNBALANCINGSTRIKE);
-            UnbalancingStrike_Timer = 30000;
-        }
-        else UnbalancingStrike_Timer -= diff;
-
-        //DisruptingShout_Timer
-        if (DisruptingShout_Timer <= diff)
-        {
-            DoCastVictim( SPELL_DISRUPTINGSHOUT);
-            DisruptingShout_Timer = 25000;
-        }
-        else DisruptingShout_Timer -= diff;
-
-        //CommandSound_Timer
-        if (CommandSound_Timer <= diff)
-        {
-            switch (rand() % 5)
+            switch (rand() % 2)
             {
             case 0:
-                DoPlaySoundToSet(me, SOUND_COMMND1);
+                DoPlaySoundToSet(me, SOUND_SLAY1);
                 break;
             case 1:
-                DoPlaySoundToSet(me, SOUND_COMMND2);
-                break;
-            case 2:
-                DoPlaySoundToSet(me, SOUND_COMMND3);
-                break;
-            case 3:
-                DoPlaySoundToSet(me, SOUND_COMMND4);
-                break;
-            case 4:
-                DoPlaySoundToSet(me, SOUND_COMMND5);
+                DoPlaySoundToSet(me, SOUND_SLAY2);
                 break;
             }
-
-            CommandSound_Timer = 40000;
         }
-        else CommandSound_Timer -= diff;
 
-        DoMeleeAttackIfReady();
+        void JustDied(Unit*)
+        {
+            DoPlaySoundToSet(me, SOUND_DEATH);
+        }
+
+        void EnterCombat(Unit*)
+        {
+            switch (rand() % 3)
+            {
+            case 0:
+                DoPlaySoundToSet(me, SOUND_AGGRO1);
+                break;
+            case 1:
+                DoPlaySoundToSet(me, SOUND_AGGRO2);
+                break;
+            case 2:
+                DoPlaySoundToSet(me, SOUND_AGGRO3);
+                break;
+            }
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            //UnbalancingStrike_Timer
+            if (UnbalancingStrike_Timer <= diff)
+            {
+                DoCastVictim(SPELL_UNBALANCINGSTRIKE);
+                UnbalancingStrike_Timer = 30000;
+            }
+            else UnbalancingStrike_Timer -= diff;
+
+            //DisruptingShout_Timer
+            if (DisruptingShout_Timer <= diff)
+            {
+                DoCastVictim(SPELL_DISRUPTINGSHOUT);
+                DisruptingShout_Timer = 25000;
+            }
+            else DisruptingShout_Timer -= diff;
+
+            //CommandSound_Timer
+            if (CommandSound_Timer <= diff)
+            {
+                switch (rand() % 5)
+                {
+                case 0:
+                    DoPlaySoundToSet(me, SOUND_COMMND1);
+                    break;
+                case 1:
+                    DoPlaySoundToSet(me, SOUND_COMMND2);
+                    break;
+                case 2:
+                    DoPlaySoundToSet(me, SOUND_COMMND3);
+                    break;
+                case 3:
+                    DoPlaySoundToSet(me, SOUND_COMMND4);
+                    break;
+                case 4:
+                    DoPlaySoundToSet(me, SOUND_COMMND5);
+                    break;
+                }
+
+                CommandSound_Timer = 40000;
+            }
+            else CommandSound_Timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_razuviousAI(pCreature);
     }
+
 };
-CreatureAI* GetAI_boss_razuvious(Creature* pCreature)
-{
-    return new boss_razuviousAI (pCreature);
-}
 
 void AddSC_boss_razuvious()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_razuvious";
-    newscript->GetAI = &GetAI_boss_razuvious;
-    newscript->RegisterSelf();
+    new boss_razuvious();
 }
 

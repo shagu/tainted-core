@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Victor_Nefarius
-SD%Complete: 75
-SDComment: Missing some text, Vael beginning event, and spawns Nef in wrong place
-SDCategory: Blackwing Lair
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Victor_Nefarius
+ SD%Complete: 75
+ SDComment: Missing some text, Vael beginning event, and spawns Nef in wrong place
+ SDCategory: Blackwing Lair
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -61,332 +61,332 @@ EndScriptData */
 #define SPELL_SHADOWBOLT        21077
 #define SPELL_FEAR              26070
 
-//This script is complicated
-//Instead of morphing Victor Nefarius we will have him control phase 1
-//And then have him spawn "Nefarian" for phase 2
-//When phase 2 starts Victor Nefarius will go into hiding and stop attacking
-//If Nefarian despawns because he killed the players then this guy will EnterEvadeMode
-//and allow players to start the event over
-//If nefarian dies then he will kill himself then he will kill himself in his hiding place
-//To prevent players from doing the event twice
+ //This script is complicated
+ //Instead of morphing Victor Nefarius we will have him control phase 1
+ //And then have him spawn "Nefarian" for phase 2
+ //When phase 2 starts Victor Nefarius will go into hiding and stop attacking
+ //If Nefarian despawns because he killed the players then this guy will EnterEvadeMode
+ //and allow players to start the event over
+ //If nefarian dies then he will kill himself then he will kill himself in his hiding place
+ //To prevent players from doing the event twice
 
-struct boss_victor_nefariusAI : public ScriptedAI
+class boss_victor_nefarius : public CreatureScript
 {
-    boss_victor_nefariusAI(Creature* c) : ScriptedAI(c)
+public:
+    boss_victor_nefarius() : CreatureScript("boss_victor_nefarius") { }
+
+    struct boss_victor_nefariusAI : public ScriptedAI
     {
-        NefarianGUID = 0;
-        switch (urand(0, 19))
+        boss_victor_nefariusAI(Creature* c) : ScriptedAI(c)
         {
-        case 0:
-            DrakType1 = CREATURE_BRONZE_DRAKANOID;
-            DrakType2 = CREATURE_BLUE_DRAKANOID;
-            break;
-        case 1:
-            DrakType1 = CREATURE_BRONZE_DRAKANOID;
-            DrakType2 = CREATURE_RED_DRAKANOID;
-            break;
-        case 2:
-            DrakType1 = CREATURE_BRONZE_DRAKANOID;
-            DrakType2 = CREATURE_GREEN_DRAKANOID;
-            break;
-        case 3:
-            DrakType1 = CREATURE_BRONZE_DRAKANOID;
-            DrakType2 = CREATURE_BLACK_DRAKANOID;
-            break;
-        case 4:
-            DrakType1 = CREATURE_BLUE_DRAKANOID;
-            DrakType2 = CREATURE_BRONZE_DRAKANOID;
-            break;
-        case 5:
-            DrakType1 = CREATURE_BLUE_DRAKANOID;
-            DrakType2 = CREATURE_RED_DRAKANOID;
-            break;
-        case 6:
-            DrakType1 = CREATURE_BLUE_DRAKANOID;
-            DrakType2 = CREATURE_GREEN_DRAKANOID;
-            break;
-        case 7:
-            DrakType1 = CREATURE_BLUE_DRAKANOID;
-            DrakType2 = CREATURE_BLACK_DRAKANOID;
-            break;
-        case 8:
-            DrakType1 = CREATURE_RED_DRAKANOID;
-            DrakType2 = CREATURE_BRONZE_DRAKANOID;
-            break;
-        case 9:
-            DrakType1 = CREATURE_RED_DRAKANOID;
-            DrakType2 = CREATURE_BLUE_DRAKANOID;
-            break;
-        case 10:
-            DrakType1 = CREATURE_RED_DRAKANOID;
-            DrakType2 = CREATURE_GREEN_DRAKANOID;
-            break;
-        case 11:
-            DrakType1 = CREATURE_RED_DRAKANOID;
-            DrakType2 = CREATURE_BLACK_DRAKANOID;
-            break;
-        case 12:
-            DrakType1 = CREATURE_GREEN_DRAKANOID;
-            DrakType2 = CREATURE_BRONZE_DRAKANOID;
-            break;
-        case 13:
-            DrakType1 = CREATURE_GREEN_DRAKANOID;
-            DrakType2 = CREATURE_BLUE_DRAKANOID;
-            break;
-        case 14:
-            DrakType1 = CREATURE_GREEN_DRAKANOID;
-            DrakType2 = CREATURE_RED_DRAKANOID;
-            break;
-        case 15:
-            DrakType1 = CREATURE_GREEN_DRAKANOID;
-            DrakType2 = CREATURE_BLACK_DRAKANOID;
-            break;
-        case 16:
-            DrakType1 = CREATURE_BLACK_DRAKANOID;
-            DrakType2 = CREATURE_BRONZE_DRAKANOID;
-            break;
-        case 17:
-            DrakType1 = CREATURE_BLACK_DRAKANOID;
-            DrakType2 = CREATURE_BLUE_DRAKANOID;
-            break;
-        case 18:
-            DrakType1 = CREATURE_BLACK_DRAKANOID;
-            DrakType2 = CREATURE_GREEN_DRAKANOID;
-            break;
-        case 19:
-            DrakType1 = CREATURE_BLACK_DRAKANOID;
-            DrakType2 = CREATURE_RED_DRAKANOID;
-            break;
-        }
-    }
-
-    uint32 SpawnedAdds;
-    uint32 AddSpawnTimer;
-    uint32 ShadowBoltTimer;
-    uint32 FearTimer;
-    uint32 MindControlTimer;
-    uint32 ResetTimer;
-    uint32 DrakType1;
-    uint32 DrakType2;
-    uint64 NefarianGUID;
-    uint32 NefCheckTime;
-
-    void Reset()
-    {
-        SpawnedAdds = 0;
-        AddSpawnTimer = 10000;
-        ShadowBoltTimer = 5000;
-        FearTimer = 8000;
-        ResetTimer = 900000;                                //On official it takes him 15 minutes(900 seconds) to reset. We are only doing 1 minute to make testing easier
-        NefarianGUID = 0;
-        NefCheckTime = 2000;
-
-        me->SetUInt32Value(UNIT_NPC_FLAGS, 1);
-        me->SetFaction(35);
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-    }
-
-    void BeginEvent(Player* pTarget)
-    {
-        DoScriptText(SAY_GAMESBEGIN_2, me);
-
-        //Oregon::Singleton<MapManager>::Instance().GetMap(me->GetMapId(), me)->GetPlayers().begin();
-        /*
-        list <Player*>::const_iterator i = MapManager::Instance().GetMap(me->GetMapId(), me)->GetPlayers().begin();
-
-        for (i = MapManager::Instance().GetMap(me->GetMapId(), me)->GetPlayers().begin(); i != MapManager::Instance().GetMap(me->GetMapId(), me)->GetPlayers().end(); ++i)
-        {
-        AttackStart((*i));
-        }
-        */
-        me->SetUInt32Value(UNIT_NPC_FLAGS, 0);
-        me->SetFaction(103);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        AttackStart(pTarget);
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-    }
-
-    void MoveInLineOfSight(Unit* who)
-    {
-        //We simply use this function to find players until we can use Map->GetPlayers()
-
-        if (who && who->GetTypeId() == TYPEID_PLAYER && me->IsHostileTo(who))
-        {
-            //Add them to our threat list
-            me->AddThreat(who, 0.0f);
-        }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        //Only do this if we haven't spawned nef yet
-        if (SpawnedAdds < 42)
-        {
-            //ShadowBoltTimer
-            if (ShadowBoltTimer <= diff)
+            NefarianGUID = 0;
+            switch (urand(0, 19))
             {
-                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                    DoCast(pTarget, SPELL_SHADOWBOLT);
-
-                ShadowBoltTimer = urand(3000, 10000);
+            case 0:
+                DrakType1 = CREATURE_BRONZE_DRAKANOID;
+                DrakType2 = CREATURE_BLUE_DRAKANOID;
+                break;
+            case 1:
+                DrakType1 = CREATURE_BRONZE_DRAKANOID;
+                DrakType2 = CREATURE_RED_DRAKANOID;
+                break;
+            case 2:
+                DrakType1 = CREATURE_BRONZE_DRAKANOID;
+                DrakType2 = CREATURE_GREEN_DRAKANOID;
+                break;
+            case 3:
+                DrakType1 = CREATURE_BRONZE_DRAKANOID;
+                DrakType2 = CREATURE_BLACK_DRAKANOID;
+                break;
+            case 4:
+                DrakType1 = CREATURE_BLUE_DRAKANOID;
+                DrakType2 = CREATURE_BRONZE_DRAKANOID;
+                break;
+            case 5:
+                DrakType1 = CREATURE_BLUE_DRAKANOID;
+                DrakType2 = CREATURE_RED_DRAKANOID;
+                break;
+            case 6:
+                DrakType1 = CREATURE_BLUE_DRAKANOID;
+                DrakType2 = CREATURE_GREEN_DRAKANOID;
+                break;
+            case 7:
+                DrakType1 = CREATURE_BLUE_DRAKANOID;
+                DrakType2 = CREATURE_BLACK_DRAKANOID;
+                break;
+            case 8:
+                DrakType1 = CREATURE_RED_DRAKANOID;
+                DrakType2 = CREATURE_BRONZE_DRAKANOID;
+                break;
+            case 9:
+                DrakType1 = CREATURE_RED_DRAKANOID;
+                DrakType2 = CREATURE_BLUE_DRAKANOID;
+                break;
+            case 10:
+                DrakType1 = CREATURE_RED_DRAKANOID;
+                DrakType2 = CREATURE_GREEN_DRAKANOID;
+                break;
+            case 11:
+                DrakType1 = CREATURE_RED_DRAKANOID;
+                DrakType2 = CREATURE_BLACK_DRAKANOID;
+                break;
+            case 12:
+                DrakType1 = CREATURE_GREEN_DRAKANOID;
+                DrakType2 = CREATURE_BRONZE_DRAKANOID;
+                break;
+            case 13:
+                DrakType1 = CREATURE_GREEN_DRAKANOID;
+                DrakType2 = CREATURE_BLUE_DRAKANOID;
+                break;
+            case 14:
+                DrakType1 = CREATURE_GREEN_DRAKANOID;
+                DrakType2 = CREATURE_RED_DRAKANOID;
+                break;
+            case 15:
+                DrakType1 = CREATURE_GREEN_DRAKANOID;
+                DrakType2 = CREATURE_BLACK_DRAKANOID;
+                break;
+            case 16:
+                DrakType1 = CREATURE_BLACK_DRAKANOID;
+                DrakType2 = CREATURE_BRONZE_DRAKANOID;
+                break;
+            case 17:
+                DrakType1 = CREATURE_BLACK_DRAKANOID;
+                DrakType2 = CREATURE_BLUE_DRAKANOID;
+                break;
+            case 18:
+                DrakType1 = CREATURE_BLACK_DRAKANOID;
+                DrakType2 = CREATURE_GREEN_DRAKANOID;
+                break;
+            case 19:
+                DrakType1 = CREATURE_BLACK_DRAKANOID;
+                DrakType2 = CREATURE_RED_DRAKANOID;
+                break;
             }
-            else ShadowBoltTimer -= diff;
+        }
 
-            //FearTimer
-            if (FearTimer <= diff)
+        uint32 SpawnedAdds;
+        uint32 AddSpawnTimer;
+        uint32 ShadowBoltTimer;
+        uint32 FearTimer;
+        uint32 MindControlTimer;
+        uint32 ResetTimer;
+        uint32 DrakType1;
+        uint32 DrakType2;
+        uint64 NefarianGUID;
+        uint32 NefCheckTime;
+
+        void Reset()
+        {
+            SpawnedAdds = 0;
+            AddSpawnTimer = 10000;
+            ShadowBoltTimer = 5000;
+            FearTimer = 8000;
+            ResetTimer = 900000;                                //On official it takes him 15 minutes(900 seconds) to reset. We are only doing 1 minute to make testing easier
+            NefarianGUID = 0;
+            NefCheckTime = 2000;
+
+            me->SetUInt32Value(UNIT_NPC_FLAGS, 1);
+            me->SetFaction(35);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        }
+
+        void BeginEvent(Player* pTarget)
+        {
+            DoScriptText(SAY_GAMESBEGIN_2, me);
+
+            //Oregon::Singleton<MapManager>::Instance().GetMap(me->GetMapId(), me)->GetPlayers().begin();
+            /*
+            list <Player*>::const_iterator i = MapManager::Instance().GetMap(me->GetMapId(), me)->GetPlayers().begin();
+
+            for (i = MapManager::Instance().GetMap(me->GetMapId(), me)->GetPlayers().begin(); i != MapManager::Instance().GetMap(me->GetMapId(), me)->GetPlayers().end(); ++i)
             {
-                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                    DoCast(pTarget, SPELL_FEAR);
-
-                FearTimer = 10000 + (rand() % 10000);
+            AttackStart((*i));
             }
-            else FearTimer -= diff;
+            */
+            me->SetUInt32Value(UNIT_NPC_FLAGS, 0);
+            me->SetFaction(103);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            AttackStart(pTarget);
+        }
 
-            //Add spawning mechanism
-            if (AddSpawnTimer <= diff)
+        void EnterCombat(Unit* /*who*/)
+        {
+        }
+
+        void MoveInLineOfSight(Unit* who)
+        {
+            //We simply use this function to find players until we can use Map->GetPlayers()
+
+            if (who && who->GetTypeId() == TYPEID_PLAYER && me->IsHostileTo(who))
             {
-                //Spawn 2 random types of creatures at the 2 locations
-                uint32 CreatureID;
-                Creature* Spawned = NULL;
-                Unit* pTarget = NULL;
+                //Add them to our threat list
+                me->AddThreat(who, 0.0f);
+            }
+        }
 
-                //1 in 3 chance it will be a chromatic
-                if (urand(0, 2) == 0)
-                    CreatureID = CREATURE_CHROMATIC_DRAKANOID;
-                else
-                    CreatureID = DrakType1;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
 
-                ++SpawnedAdds;
-
-                //Spawn Creature and force it to start attacking a random target
-                Spawned = me->SummonCreature(CreatureID, ADD_X1, ADD_Y1, ADD_Z1, 5.000f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
-                pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true);
-                if (pTarget && Spawned)
+            //Only do this if we haven't spawned nef yet
+            if (SpawnedAdds < 42)
+            {
+                //ShadowBoltTimer
+                if (ShadowBoltTimer <= diff)
                 {
-                    Spawned->AI()->AttackStart(pTarget);
-                    Spawned->SetFaction(103);
+                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                        DoCast(pTarget, SPELL_SHADOWBOLT);
+
+                    ShadowBoltTimer = urand(3000, 10000);
                 }
+                else ShadowBoltTimer -= diff;
 
-                //1 in 3 chance it will be a chromatic
-                if (urand(0, 2) == 0)
-                    CreatureID = CREATURE_CHROMATIC_DRAKANOID;
-                else
-                    CreatureID = DrakType2;
-
-                ++SpawnedAdds;
-
-                Spawned = me->SummonCreature(CreatureID, ADD_X2, ADD_Y2, ADD_Z2, 5.000f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
-                pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true);
-                if (pTarget && Spawned)
+                //FearTimer
+                if (FearTimer <= diff)
                 {
-                    Spawned->AI()->AttackStart(pTarget);
-                    Spawned->SetFaction(103);
+                    if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                        DoCast(pTarget, SPELL_FEAR);
+
+                    FearTimer = 10000 + (rand() % 10000);
                 }
+                else FearTimer -= diff;
 
-                //Begin phase 2 by spawning Nefarian and what not
-                if (SpawnedAdds >= 42)
+                //Add spawning mechanism
+                if (AddSpawnTimer <= diff)
                 {
-                    //Teleport Victor Nefarius way out of the map
-                    //MapManager::Instance().GetMap(me->GetMapId(), me)->CreatureRelocation(me,0,0,-5000,0);
+                    //Spawn 2 random types of creatures at the 2 locations
+                    uint32 CreatureID;
+                    Creature* Spawned = NULL;
+                    Unit* pTarget = NULL;
 
-                    //Inturrupt any spell casting
-                    me->InterruptNonMeleeSpells(false);
+                    //1 in 3 chance it will be a chromatic
+                    if (urand(0, 2) == 0)
+                        CreatureID = CREATURE_CHROMATIC_DRAKANOID;
+                    else
+                        CreatureID = DrakType1;
 
-                    //Root self
-                    DoCast(me, 33356);
+                    ++SpawnedAdds;
 
-                    //Make super invis
-                    DoCast(me, 8149);
-
-                    //Teleport self to a hiding spot (this causes errors in the Oregon log but no real issues)
-                    DoTeleportTo(HIDE_X, HIDE_Y, HIDE_Z);
-                    me->AddUnitState(UNIT_STATE_FLEEING);
-
-                    //Spawn nef and have him attack a random target
-                    Creature* Nefarian = me->SummonCreature(CREATURE_NEFARIAN, NEF_X, NEF_Y, NEF_Z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                    //Spawn Creature and force it to start attacking a random target
+                    Spawned = me->SummonCreature(CreatureID, ADD_X1, ADD_Y1, ADD_Z1, 5.000f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
                     pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true);
-                    if (pTarget && Nefarian)
+                    if (pTarget && Spawned)
                     {
-                        Nefarian->AI()->AttackStart(pTarget);
-                        Nefarian->SetFaction(103);
-                        NefarianGUID = Nefarian->GetGUID();
+                        Spawned->AI()->AttackStart(pTarget);
+                        Spawned->SetFaction(103);
                     }
-                    else error_log("OSCR: Blackwing Lair: Unable to spawn nefarian properly.");
-                }
 
-                AddSpawnTimer = 4000;
+                    //1 in 3 chance it will be a chromatic
+                    if (urand(0, 2) == 0)
+                        CreatureID = CREATURE_CHROMATIC_DRAKANOID;
+                    else
+                        CreatureID = DrakType2;
+
+                    ++SpawnedAdds;
+
+                    Spawned = me->SummonCreature(CreatureID, ADD_X2, ADD_Y2, ADD_Z2, 5.000f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+                    pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true);
+                    if (pTarget && Spawned)
+                    {
+                        Spawned->AI()->AttackStart(pTarget);
+                        Spawned->SetFaction(103);
+                    }
+
+                    //Begin phase 2 by spawning Nefarian and what not
+                    if (SpawnedAdds >= 42)
+                    {
+                        //Teleport Victor Nefarius way out of the map
+                        //MapManager::Instance().GetMap(me->GetMapId(), me)->CreatureRelocation(me,0,0,-5000,0);
+
+                        //Inturrupt any spell casting
+                        me->InterruptNonMeleeSpells(false);
+
+                        //Root self
+                        DoCast(me, 33356);
+
+                        //Make super invis
+                        DoCast(me, 8149);
+
+                        //Teleport self to a hiding spot (this causes errors in the Oregon log but no real issues)
+                        DoTeleportTo(HIDE_X, HIDE_Y, HIDE_Z);
+                        me->AddUnitState(UNIT_STATE_FLEEING);
+
+                        //Spawn nef and have him attack a random target
+                        Creature* Nefarian = me->SummonCreature(CREATURE_NEFARIAN, NEF_X, NEF_Y, NEF_Z, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+                        pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true);
+                        if (pTarget && Nefarian)
+                        {
+                            Nefarian->AI()->AttackStart(pTarget);
+                            Nefarian->SetFaction(103);
+                            NefarianGUID = Nefarian->GetGUID();
+                        }
+                        else error_log("OSCR: Blackwing Lair: Unable to spawn nefarian properly.");
+                    }
+
+                    AddSpawnTimer = 4000;
+                }
+                else AddSpawnTimer -= diff;
             }
-            else AddSpawnTimer -= diff;
-        }
-        else if (NefarianGUID)
-        {
-            if (NefCheckTime <= diff)
+            else if (NefarianGUID)
             {
-                Unit* Nefarian = Unit::GetCreature((*me), NefarianGUID);
-
-                //If nef is dead then we die to so the players get out of combat
-                //and cannot repeat the event
-                if (!Nefarian || !Nefarian->IsAlive())
+                if (NefCheckTime <= diff)
                 {
-                    NefarianGUID = 0;
-                    me->ForcedDespawn();
+                    Unit* Nefarian = Unit::GetCreature((*me), NefarianGUID);
+
+                    //If nef is dead then we die to so the players get out of combat
+                    //and cannot repeat the event
+                    if (!Nefarian || !Nefarian->IsAlive())
+                    {
+                        NefarianGUID = 0;
+                        me->ForcedDespawn();
+                    }
+
+                    NefCheckTime = 2000;
                 }
-
-                NefCheckTime = 2000;
+                else NefCheckTime -= diff;
             }
-            else NefCheckTime -= diff;
         }
-    }
-};
+    };
 
-CreatureAI* GetAI_boss_victor_nefarius(Creature* pCreature)
-{
-    return new boss_victor_nefariusAI (pCreature);
-}
-
-bool GossipHello_boss_victor_nefarius(Player* pPlayer, Creature* pCreature)
-{
-    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_1 , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    pPlayer->SEND_GOSSIP_MENU(7134, pCreature->GetGUID());
-    return true;
-}
-
-bool GossipSelect_boss_victor_nefarius(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    switch (uiAction)
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-    case GOSSIP_ACTION_INFO_DEF+1:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-        pPlayer->SEND_GOSSIP_MENU(7198, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+2:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-        pPlayer->SEND_GOSSIP_MENU(7199, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+3:
-        pPlayer->CLOSE_GOSSIP_MENU();
-        DoScriptText(SAY_GAMESBEGIN_1, pCreature);
-        CAST_AI(boss_victor_nefariusAI, pCreature->AI())->BeginEvent(pPlayer);
-        break;
+        return new boss_victor_nefariusAI(pCreature);
     }
-    return true;
-}
+
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        pPlayer->SEND_GOSSIP_MENU(7134, pCreature->GetGUID());
+        return true;
+    }
+
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        switch (uiAction)
+        {
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            pPlayer->SEND_GOSSIP_MENU(7198, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 2:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+            pPlayer->SEND_GOSSIP_MENU(7199, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 3:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            DoScriptText(SAY_GAMESBEGIN_1, pCreature);
+            CAST_AI(boss_victor_nefariusAI, pCreature->AI())->BeginEvent(pPlayer);
+            break;
+        }
+        return true;
+    }
+
+};
 
 void AddSC_boss_victor_nefarius()
 {
-    Script* newscript;
-
-    newscript = new Script;
-    newscript->Name = "boss_victor_nefarius";
-    newscript->GetAI = &GetAI_boss_victor_nefarius;
-    newscript->pGossipHello = &GossipHello_boss_victor_nefarius;
-    newscript->pGossipSelect = &GossipSelect_boss_victor_nefarius;
-    newscript->RegisterSelf();
+    new boss_victor_nefarius();
 }
 

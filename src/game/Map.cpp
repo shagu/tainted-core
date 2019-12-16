@@ -40,6 +40,9 @@ GridState* si_GridStates[MAX_GRID_STATE];
 
 Map::~Map()
 {
+    if (!Instanceable())
+        sScriptMgr.OnDestroyMap(this);
+
     sEluna->OnDestroy(this);
 
     UnloadAll();
@@ -51,6 +54,7 @@ Map::~Map()
         //ASSERT(obj->GetTypeId() == TYPEID_CORPSE);
         obj->RemoveFromWorld();
         obj->ResetMap();
+        //sScriptMgr.OnUnloadGridMap(this, gx, gy);
     }
 
     if (!m_scriptSchedule.empty())
@@ -139,6 +143,7 @@ void Map::LoadVMap(int gx, int gy)
         DEBUG_LOG("Ignored VMAP name:%s, id:%d, x:%d, y:%d (vmap rep.: x:%d, y:%d)", GetMapName(), GetId(), gx, gy, gx, gy);
         break;
     }
+
 }
 
 void Map::LoadMap(int gx, int gy, bool reload)
@@ -164,6 +169,8 @@ void Map::LoadMap(int gx, int gy, bool reload)
     if (GridMaps[gx][gy])
     {
         sLog.outDetail("Unloading previously loaded map %u before reloading.", GetId());
+
+        sScriptMgr.OnUnloadGridMap(this, gx, gy);
         delete (GridMaps[gx][gy]);
         GridMaps[gx][gy] = nullptr;
     }
@@ -179,6 +186,8 @@ void Map::LoadMap(int gx, int gy, bool reload)
     if (!GridMaps[gx][gy]->loadData(tmp))
         sLog.outError("Error loading map file: \n %s\n", tmp);
     delete [] tmp;
+
+    sScriptMgr.OnLoadGridMap(this, gx, gy);
 }
 
 void Map::LoadMapAndVMap(int gx, int gy)
@@ -229,6 +238,9 @@ Map::Map(uint32 id, time_t expiry, uint32 InstanceId, uint8 SpawnMode, Map* _par
 
     //lets initialize visibility distance for map
     Map::InitVisibilityDistance();
+
+    if (!Instanceable())
+        sScriptMgr.OnCreateMap(this);
 
     sEluna->OnCreate(this);
 }
@@ -426,6 +438,7 @@ bool Map::AddPlayerToMap(Player* player)
 
     player->m_clientGUIDs.clear();
     player->UpdateObjectVisibility(false);
+    sScriptMgr.OnPlayerEnter(this, player);
 
     sEluna->OnMapChanged(player);
     sEluna->OnPlayerEnter(this, player);
@@ -592,6 +605,8 @@ void Map::Update(const uint32& t_diff)
         ProcessRelocationNotifies(t_diff);
 
     sEluna->OnUpdate(this, t_diff);
+
+    sScriptMgr.OnMapUpdate(this, t_diff);
 }
 
 struct ResetNotifier
@@ -704,6 +719,8 @@ void Map::RemovePlayerFromMap(Player* player, bool remove)
 
     if (remove)
         DeleteFromWorld(player);
+
+    sScriptMgr.OnPlayerLeave(this, player);
 }
 
 template<class T>

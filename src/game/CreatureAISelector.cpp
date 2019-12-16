@@ -39,7 +39,7 @@ CreatureAI* selectAI(Creature* creature)
 
     //scriptname in db
     if (!ai_factory)
-        if (CreatureAI* scriptedAI = sScriptMgr.GetAI(creature))
+        if (CreatureAI* scriptedAI = sScriptMgr.GetCreatureAI(creature))
             return scriptedAI;
 
     // AIname in db

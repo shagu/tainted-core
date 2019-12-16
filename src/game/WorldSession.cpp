@@ -332,7 +332,7 @@ void WorldSession::LogoutPlayer(bool Save)
     if (_player)
     {
         //Hook for OnLogout Event
-        sScriptMgr.OnLogout(_player);
+        sScriptMgr.OnPlayerLogout(_player);
 
         if (uint64 lguid = GetPlayer()->GetLootGUID())
             DoLootRelease(lguid);

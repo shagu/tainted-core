@@ -15,58 +15,59 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Black_Temple
-SD%Complete: 95
-SDComment: Spirit of Olum: Player Teleporter to Seer Kanai Teleport after defeating Naj'entus and Supremus. @todo Find proper gossip.
-SDCategory: Black Temple
-EndScriptData */
+ /* ScriptData
+ SDName: Black_Temple
+ SD%Complete: 95
+ SDComment: Spirit of Olum: Player Teleporter to Seer Kanai Teleport after defeating Naj'entus and Supremus. @todo Find proper gossip.
+ SDCategory: Black Temple
+ EndScriptData */
 
-/* ContentData
-npc_spirit_of_olum
-EndContentData */
+ /* ContentData
+ npc_spirit_of_olum
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "black_temple.h"
 #include "ScriptedGossip.h"
 
-/*###
-# npc_spirit_of_olum
-####*/
+ /*###
+ # npc_spirit_of_olum
+ ####*/
 
 #define SPELL_TELEPORT      41566                           // s41566 - Teleport to Ashtongue NPC's
 #define GOSSIP_OLUM1        "Teleport me to the other Ashtongue Deathsworn"
 
-bool GossipHello_npc_spirit_of_olum(Player* pPlayer, Creature* pCreature)
+class npc_spirit_of_olum : CreatureScript
 {
-    ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+public:
+    npc_spirit_of_olum() : CreatureScript("npc_spirit_of_olum") {}
 
-    if (pInstance && (pInstance->GetData(DATA_SUPREMUSEVENT) >= DONE) && (pInstance->GetData(DATA_HIGHWARLORDNAJENTUSEVENT) >= DONE))
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_OLUM1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    bool OnGossipHello(Player* player, Creature* creature)
+    {
+        ScriptedInstance* pInstance = (ScriptedInstance*)creature->GetInstanceData();
 
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-    return true;
-}
+        if (pInstance && (pInstance->GetData(DATA_SUPREMUSEVENT) >= DONE) && (pInstance->GetData(DATA_HIGHWARLORDNAJENTUSEVENT) >= DONE))
+            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_OLUM1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
-bool GossipSelect_npc_spirit_of_olum(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction)
-{
-    if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-        pPlayer->CLOSE_GOSSIP_MENU();
+        player->SEND_GOSSIP_MENU(player->GetGossipTextId(creature), creature->GetGUID());
+        return true;
+    }
 
-    pPlayer->InterruptNonMeleeSpells(false);
-    pPlayer->CastSpell(pPlayer, SPELL_TELEPORT, false);
-    return true;
-}
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+    {
+        if (action == GOSSIP_ACTION_INFO_DEF + 1)
+            player->CLOSE_GOSSIP_MENU();
+
+        player->InterruptNonMeleeSpells(false);
+        player->CastSpell(player, SPELL_TELEPORT, false);
+        return true;
+    }
+};
+
 
 void AddSC_black_temple()
 {
-    Script* newscript;
-
-    newscript = new Script;
-    newscript->Name = "npc_spirit_of_olum";
-    newscript->pGossipHello = &GossipHello_npc_spirit_of_olum;
-    newscript->pGossipSelect = &GossipSelect_npc_spirit_of_olum;
-    newscript->RegisterSelf();
+    new npc_spirit_of_olum();
 }
 

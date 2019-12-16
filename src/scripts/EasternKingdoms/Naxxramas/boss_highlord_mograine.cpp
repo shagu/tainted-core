@@ -15,17 +15,17 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Highlord_Mograine
-SD%Complete: 100
-SDComment: SCRIPT OBSOLETE
-SDCategory: Naxxramas
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Highlord_Mograine
+ SD%Complete: 100
+ SDComment: SCRIPT OBSOLETE
+ SDCategory: Naxxramas
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-//All horsemen
+ //All horsemen
 #define SPELL_SHIELDWALL           29061
 #define SPELL_BESERK               26662
 
@@ -57,125 +57,129 @@ EndScriptData */
 
 #define SPIRIT_OF_MOGRAINE         16775
 
-struct boss_highlord_mograineAI : public ScriptedAI
+
+class boss_highlord_mograine : public CreatureScript
 {
-    boss_highlord_mograineAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_highlord_mograine() : CreatureScript("boss_highlord_mograine") { }
 
-    uint32 Mark_Timer;
-    uint32 RighteousFire_Timer;
-    bool ShieldWall1;
-    bool ShieldWall2;
-
-    void Reset()
+    struct boss_highlord_mograineAI : public ScriptedAI
     {
-        Mark_Timer = 20000;                                 // First Horsemen Mark is applied at 20 sec.
-        RighteousFire_Timer = 2000;                         // applied approx 1 out of 4 attacks
-        ShieldWall1 = true;
-        ShieldWall2 = true;
-    }
+        boss_highlord_mograineAI(Creature* c) : ScriptedAI(c) {}
 
-    void InitialYell()
-    {
-        if (!me->IsInCombat())
+        uint32 Mark_Timer;
+        uint32 RighteousFire_Timer;
+        bool ShieldWall1;
+        bool ShieldWall2;
+
+        void Reset()
         {
-            switch (rand() % 3)
+            Mark_Timer = 20000;                                 // First Horsemen Mark is applied at 20 sec.
+            RighteousFire_Timer = 2000;                         // applied approx 1 out of 4 attacks
+            ShieldWall1 = true;
+            ShieldWall2 = true;
+        }
+
+        void InitialYell()
+        {
+            if (!me->IsInCombat())
+            {
+                switch (rand() % 3)
+                {
+                case 0:
+                    me->MonsterYell(SAY_AGGRO1, LANG_UNIVERSAL, 0);
+                    DoPlaySoundToSet(me, SOUND_AGGRO1);
+                    break;
+                case 1:
+                    me->MonsterYell(SAY_AGGRO2, LANG_UNIVERSAL, 0);
+                    DoPlaySoundToSet(me, SOUND_AGGRO2);
+                    break;
+                case 2:
+                    me->MonsterYell(SAY_AGGRO3, LANG_UNIVERSAL, 0);
+                    DoPlaySoundToSet(me, SOUND_AGGRO3);
+                    break;
+                }
+            }
+        }
+
+        void KilledUnit()
+        {
+            switch (rand() % 2)
             {
             case 0:
-                me->MonsterYell(SAY_AGGRO1, LANG_UNIVERSAL, 0);
-                DoPlaySoundToSet(me, SOUND_AGGRO1);
+                me->MonsterYell(SAY_SLAY1, LANG_UNIVERSAL, 0);
+                DoPlaySoundToSet(me, SOUND_SLAY1);
                 break;
             case 1:
-                me->MonsterYell(SAY_AGGRO2, LANG_UNIVERSAL, 0);
-                DoPlaySoundToSet(me, SOUND_AGGRO2);
-                break;
-            case 2:
-                me->MonsterYell(SAY_AGGRO3, LANG_UNIVERSAL, 0);
-                DoPlaySoundToSet(me, SOUND_AGGRO3);
+                me->MonsterYell(SAY_SLAY2, LANG_UNIVERSAL, 0);
+                DoPlaySoundToSet(me, SOUND_SLAY2);
                 break;
             }
         }
-    }
 
-    void KilledUnit()
-    {
-        switch (rand() % 2)
+        void JustDied(Unit*)
         {
-        case 0:
-            me->MonsterYell(SAY_SLAY1, LANG_UNIVERSAL, 0);
-            DoPlaySoundToSet(me, SOUND_SLAY1);
-            break;
-        case 1:
-            me->MonsterYell(SAY_SLAY2, LANG_UNIVERSAL, 0);
-            DoPlaySoundToSet(me, SOUND_SLAY2);
-            break;
+            me->MonsterYell(SAY_DEATH, LANG_UNIVERSAL, 0);
+            DoPlaySoundToSet(me, SOUND_DEATH);
         }
-    }
 
-    void JustDied(Unit*)
-    {
-        me->MonsterYell(SAY_DEATH, LANG_UNIVERSAL, 0);
-        DoPlaySoundToSet(me, SOUND_DEATH);
-    }
-
-    void EnterCombat(Unit*)
-    {
-        InitialYell();
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        // Mark of Mograine
-        if (Mark_Timer <= diff)
+        void EnterCombat(Unit*)
         {
-            DoCastVictim(SPELL_MARK_OF_MOGRAINE);
-            Mark_Timer = 12000;
+            InitialYell();
         }
-        else Mark_Timer -= diff;
 
-        // Shield Wall - All 4 horsemen will shield wall at 50% hp and 20% hp for 20 seconds
-        if (ShieldWall1 && HealthBelowPct(50))
+        void UpdateAI(const uint32 diff)
         {
-            if (ShieldWall1)
+            if (!UpdateVictim())
+                return;
+
+            // Mark of Mograine
+            if (Mark_Timer <= diff)
             {
-                DoCast(me, SPELL_SHIELDWALL);
-                ShieldWall1 = false;
+                DoCastVictim(SPELL_MARK_OF_MOGRAINE);
+                Mark_Timer = 12000;
             }
-        }
-        if (ShieldWall2 && HealthBelowPct(20))
-        {
-            if (ShieldWall2)
+            else Mark_Timer -= diff;
+
+            // Shield Wall - All 4 horsemen will shield wall at 50% hp and 20% hp for 20 seconds
+            if (ShieldWall1 && HealthBelowPct(50))
             {
-                DoCast(me, SPELL_SHIELDWALL);
-                ShieldWall2 = false;
+                if (ShieldWall1)
+                {
+                    DoCast(me, SPELL_SHIELDWALL);
+                    ShieldWall1 = false;
+                }
             }
-        }
+            if (ShieldWall2 && HealthBelowPct(20))
+            {
+                if (ShieldWall2)
+                {
+                    DoCast(me, SPELL_SHIELDWALL);
+                    ShieldWall2 = false;
+                }
+            }
 
-        // Righteous Fire
-        if (RighteousFire_Timer <= diff)
-        {
-            if (rand() % 4 == 1)                             // 1/4
-                DoCastVictim(SPELL_RIGHTEOUS_FIRE);
-            RighteousFire_Timer = 2000;
-        }
-        else RighteousFire_Timer -= diff;
+            // Righteous Fire
+            if (RighteousFire_Timer <= diff)
+            {
+                if (rand() % 4 == 1)                             // 1/4
+                    DoCastVictim(SPELL_RIGHTEOUS_FIRE);
+                RighteousFire_Timer = 2000;
+            }
+            else RighteousFire_Timer -= diff;
 
-        DoMeleeAttackIfReady();
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_highlord_mograineAI(pCreature);
     }
 };
-CreatureAI* GetAI_boss_highlord_mograine(Creature* pCreature)
-{
-    return new boss_highlord_mograineAI (pCreature);
-}
 
 void AddSC_boss_highlord_mograine()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_highlord_mograine";
-    newscript->GetAI = &GetAI_boss_highlord_mograine;
-    newscript->RegisterSelf();
+    new boss_highlord_mograine();
 }
 

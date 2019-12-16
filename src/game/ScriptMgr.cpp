@@ -16,6 +16,7 @@
  */
 
 #include "ScriptMgr.h"
+#include "ScriptPCH.h"
 #include "Config/Config.h"
 #include "Database/DatabaseEnv.h"
 #include "DBCStores.h"
@@ -25,73 +26,42 @@
 #include "SpellMgr.h"
 #include "GossipDef.h"
 #include "CreatureAIImpl.h"
+#include "ScriptLoader.h"
+#include "ScriptSystem.h"
 #include "Player.h"
 #include "LuaEngine.h"
 
 INSTANTIATE_SINGLETON_1(ScriptMgr);
 
-int num_sc_scripts;
-Script* m_scripts[MAX_SCRIPTS];
+// Utility macros to refer to the script registry.
+#define SCR_REG_MAP(T) ScriptRegistry<T>::ScriptMap
+#define SCR_REG_LST(T) ScriptRegistry<T>::ScriptPointerList
 
-void FillSpellSummary();
-void LoadOverridenSQLData();
+// Utility macros for looping over scripts.
+#define FOR_SCRIPTS(T,C,E) \
+    if (SCR_REG_LST(T).empty()) \
+        return; \
+    for (SCR_REG_MAP(T)::iterator C = SCR_REG_LST(T).begin(); \
+        C != SCR_REG_LST(T).end(); ++C)
+#define FOR_SCRIPTS_RET(T,C,E,R) \
+    if (SCR_REG_LST(T).empty()) \
+        return R; \
+    for (SCR_REG_MAP(T)::iterator C = SCR_REG_LST(T).begin(); \
+        C != SCR_REG_LST(T).end(); ++C)
+#define FOREACH_SCRIPT(T) \
+    FOR_SCRIPTS(T, itr, end) \
+    itr->second
 
-void ScriptMgr::LoadDatabase()
-{
-    pSystemMgr.LoadVersion();
-    pSystemMgr.LoadScriptTexts();
-    pSystemMgr.LoadScriptTextsCustom();
-    pSystemMgr.LoadScriptWaypoints();
-}
+// Utility macros for finding specific scripts.
+#define GET_SCRIPT(T,I,V) \
+    T* V = ScriptRegistry<T>::GetScriptById(I); \
+    if (!V) \
+        return;
+#define GET_SCRIPT_RET(T,I,V,R) \
+    T* V = ScriptRegistry<T>::GetScriptById(I); \
+    if (!V) \
+        return R;
 
-struct TSpellSummary
-{
-    uint8 Targets;                                          // set of enum SelectTarget
-    uint8 Effects;                                          // set of enum SelectEffect
-} extern* SpellSummary;
-
-ScriptMgr::ScriptMgr()
-{
-}
-
-ScriptMgr::~ScriptMgr()
-{
-    // Free Spell Summary
-    delete []SpellSummary;
-
-    // Free resources before library unload
-    for (uint16 i = 0; i < MAX_SCRIPTS; ++i)
-        delete m_scripts[i];
-
-    num_sc_scripts = 0;
-}
-
-void ScriptMgr::ScriptsInit()
-{
-    outstring_log("   ____                              _____           _       _   ");
-    outstring_log("  / __ \\                            / ____|         (_)     | |  ");
-    outstring_log(" | |  | |_ __ ___  __ _  ___  _ __ | (___   ___ _ __ _ _ __ | |_ ");
-    outstring_log(" | |  | | '__/ _ \\/ _` |/ _ \\| '_ \\ \\___ \\ / __| '__| | '_ \\| __|");
-    outstring_log(" | |__| | | |  __/ (_| | (_) | | | |____) | (__| |  | | |_) | |_ ");
-    outstring_log("  \\____/|_|  \\___|\\__, |\\___/|_| |_|_____/ \\___|_|  |_| .__/ \\__|");
-    outstring_log("                   __/ |                              | |        ");
-    outstring_log("                  |___/                               |_|  \n");
-
-    //Load database (must be called after SD2Config.SetSource).
-    LoadDatabase();
-
-    for (uint16 i = 0; i < MAX_SCRIPTS; ++i)
-        m_scripts[i] = NULL;
-
-    FillSpellSummary();
-
-    AddScripts();
-
-    outstring_log(">> Loaded %i C++ Scripts.", num_sc_scripts);
-
-    outstring_log(">> Load Overriden SQL Data.");
-    LoadOverridenSQLData();
-}
 
 //*********************************
 //*** Functions used globally ***
@@ -110,7 +80,7 @@ void DoScriptText(int32 iTextEntry, WorldObject* pSource, Unit* pTarget)
         return;
     }
 
-    const StringTextData* pData = pSystemMgr.GetTextData(iTextEntry);
+    const StringTextData* pData = sScriptSystemMgr.GetTextData(iTextEntry);
 
     if (!pData)
     {
@@ -172,447 +142,1236 @@ void DoScriptText(int32 iTextEntry, WorldObject* pSource, Unit* pTarget)
     }
 }
 
-void Script::RegisterSelf()
+void FillSpellSummary();
+void LoadOverridenSQLData();
+
+ScriptMgr::ScriptMgr()
 {
-    // try to find scripts which try to use another script's allocated memory
-    // that means didn't allocate memory for script
-    for (uint16 i = 0; i < MAX_SCRIPTS; ++i)
+}
+
+ScriptMgr::~ScriptMgr()
+{
+#define SCR_CLEAR(T) \
+        FOR_SCRIPTS(T, itr, end) \
+            delete itr->second; \
+        SCR_REG_LST(T).clear();
+
+    // Clear scripts for every script type.
+    SCR_CLEAR(SpellHandlerScript);
+    SCR_CLEAR(AuraHandlerScript);
+    SCR_CLEAR(ServerScript);
+    SCR_CLEAR(WorldScript);
+	SCR_CLEAR(PlayerScript);
+    SCR_CLEAR(GroupScript);
+    SCR_CLEAR(FormulaScript);
+    SCR_CLEAR(WorldMapScript);
+    SCR_CLEAR(InstanceMapScript);
+    SCR_CLEAR(BattlegroundMapScript);
+    SCR_CLEAR(ItemScript);
+    SCR_CLEAR(CreatureScript);
+    SCR_CLEAR(GameObjectScript);
+    SCR_CLEAR(AreaTriggerScript);
+    SCR_CLEAR(BattlegroundScript);
+    SCR_CLEAR(OutdoorPvPScript);
+    SCR_CLEAR(CommandScript);
+    SCR_CLEAR(WeatherScript);
+    SCR_CLEAR(AuctionHouseScript);
+    SCR_CLEAR(ConditionScript);
+    SCR_CLEAR(DynamicObjectScript);
+    SCR_CLEAR(TransportScript);
+
+#undef SCR_CLEAR
+}
+void ScriptMgr::ScriptsInit()
+{
+    outstring_log("   ____                              _____           _       _   ");
+    outstring_log("  / __ \\                            / ____|         (_)     | |  ");
+    outstring_log(" | |  | |_ __ ___  __ _  ___  _ __ | (___   ___ _ __ _ _ __ | |_ ");
+    outstring_log(" | |  | | '__/ _ \\/ _` |/ _ \\| '_ \\ \\___ \\ / __| '__| | '_ \\| __|");
+    outstring_log(" | |__| | | |  __/ (_| | (_) | | | |____) | (__| |  | | |_) | |_ ");
+    outstring_log("  \\____/|_|  \\___|\\__, |\\___/|_| |_|_____/ \\___|_|  |_| .__/ \\__|");
+    outstring_log("                   __/ |                              | |        ");
+    outstring_log("                  |___/                               |_|  \n");
+
+    //Load database (must be called after SD2Config.SetSource).
+    LoadDatabase();
+
+    FillSpellSummary();
+
+    AddScripts();
+
+    outstring_log(">> Loaded %i C++ Scripts.", sScriptMgr.GetScriptCount());
+
+    sLog.outString(">> Load Overriden SQL Data.");
+    LoadOverridenSQLData();
+}
+
+
+struct TSpellSummary
+{
+    uint8 Targets;                                          // set of enum SelectTarget
+    uint8 Effects;                                          // set of enum SelectEffect
+} *SpellSummary;
+
+void ScriptMgr::LoadDatabase()
+{
+    sScriptSystemMgr.LoadVersion();
+    sScriptSystemMgr.LoadScriptTexts();
+    sScriptSystemMgr.LoadScriptTextsCustom();
+    sScriptSystemMgr.LoadScriptWaypoints();
+}
+
+void ScriptMgr::FillSpellSummary()
+{
+    SpellSummary = new TSpellSummary[GetSpellStore()->GetNumRows()];
+
+    SpellEntry const* pTempSpell;
+
+    for (uint32 i = 0; i < GetSpellStore()->GetNumRows(); ++i)
     {
-        // somebody forgot to allocate memory for a script by a method like this: newscript = new Script
-        if (m_scripts[i] == this)
+        SpellSummary[i].Effects = 0;
+        SpellSummary[i].Targets = 0;
+
+        pTempSpell = GetSpellStore()->LookupEntry(i);
+        //This spell doesn't exist
+        if (!pTempSpell)
+            continue;
+
+        for (uint32 j = 0; j < 3; ++j)
         {
-            error_log("ScriptName: '%s' - Forgot to allocate memory, so this script and/or the script before that can't work.", Name.c_str());
-            // don't register it
-            // and don't delete it because its memory is used for another script
-            return;
+            //Spell targets self
+            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_CASTER)
+                SpellSummary[i].Targets |= 1 << (SELECT_TARGET_SELF - 1);
+
+            //Spell targets a single enemy
+            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_ENEMY ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_DST_TARGET_ENEMY)
+                SpellSummary[i].Targets |= 1 << (SELECT_TARGET_SINGLE_ENEMY - 1);
+
+            //Spell targets AoE at enemy
+            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_AREA_ENEMY_SRC ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_AREA_ENEMY_DST ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_SRC_CASTER ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_DEST_DYNOBJ_ENEMY)
+                SpellSummary[i].Targets |= 1 << (SELECT_TARGET_AOE_ENEMY - 1);
+
+            //Spell targets an enemy
+            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_ENEMY ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_DST_TARGET_ENEMY ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_AREA_ENEMY_SRC ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_AREA_ENEMY_DST ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_SRC_CASTER ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_DEST_DYNOBJ_ENEMY)
+                SpellSummary[i].Targets |= 1 << (SELECT_TARGET_ANY_ENEMY - 1);
+
+            //Spell targets a single friend(or self)
+            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_CASTER ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_ALLY ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_PARTY)
+                SpellSummary[i].Targets |= 1 << (SELECT_TARGET_SINGLE_FRIEND - 1);
+
+            //Spell targets aoe friends
+            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_PARTY_CASTER ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_PARTY_TARGET ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_SRC_CASTER)
+                SpellSummary[i].Targets |= 1 << (SELECT_TARGET_AOE_FRIEND - 1);
+
+            //Spell targets any friend(or self)
+            if (pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_CASTER ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_ALLY ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_TARGET_PARTY ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_PARTY_CASTER ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_UNIT_PARTY_TARGET ||
+                pTempSpell->EffectImplicitTargetA[j] == TARGET_SRC_CASTER)
+                SpellSummary[i].Targets |= 1 << (SELECT_TARGET_ANY_FRIEND - 1);
+
+            //Make sure that this spell includes a damage effect
+            if (pTempSpell->Effect[j] == SPELL_EFFECT_SCHOOL_DAMAGE ||
+                pTempSpell->Effect[j] == SPELL_EFFECT_INSTAKILL ||
+                pTempSpell->Effect[j] == SPELL_EFFECT_ENVIRONMENTAL_DAMAGE ||
+                pTempSpell->Effect[j] == SPELL_EFFECT_HEALTH_LEECH)
+                SpellSummary[i].Effects |= 1 << (SELECT_EFFECT_DAMAGE - 1);
+
+            //Make sure that this spell includes a healing effect (or an apply aura with a periodic heal)
+            if (pTempSpell->Effect[j] == SPELL_EFFECT_HEAL ||
+                pTempSpell->Effect[j] == SPELL_EFFECT_HEAL_MAX_HEALTH ||
+                pTempSpell->Effect[j] == SPELL_EFFECT_HEAL_MECHANICAL ||
+                (pTempSpell->Effect[j] == SPELL_EFFECT_APPLY_AURA && pTempSpell->EffectApplyAuraName[j] == 8))
+                SpellSummary[i].Effects |= 1 << (SELECT_EFFECT_HEALING - 1);
+
+            //Make sure that this spell applies an aura
+            if (pTempSpell->Effect[j] == SPELL_EFFECT_APPLY_AURA)
+                SpellSummary[i].Effects |= 1 << (SELECT_EFFECT_AURA - 1);
         }
     }
+}
 
-    int id = GetScriptId(Name.c_str());
-    if (id)
-    {
-        // try to find the script in assigned scripts
-        bool IsExist = false;
-        for (uint16 i = 0; i < MAX_SCRIPTS; ++i)
-        {
-            if (m_scripts[i])
+void ScriptMgr::OnNetworkStart()
+{
+    FOREACH_SCRIPT(ServerScript)->OnNetworkStart();
+}
+
+void ScriptMgr::OnNetworkStop()
+{
+    FOREACH_SCRIPT(ServerScript)->OnNetworkStop();
+}
+
+void ScriptMgr::OnSocketOpen(WorldSocket* socket)
+{
+    ASSERT(socket);
+
+    FOREACH_SCRIPT(ServerScript)->OnSocketOpen(socket);
+}
+void ScriptMgr::OnSocketClose(WorldSocket* socket, bool wasNew)
+{
+    ASSERT(socket);
+
+    FOREACH_SCRIPT(ServerScript)->OnSocketClose(socket, wasNew);
+}
+
+void ScriptMgr::OnPacketReceive(WorldSocket* socket, WorldPacket& packet)
+{
+    ASSERT(socket);
+
+    FOREACH_SCRIPT(ServerScript)->OnPacketReceive(socket, packet);
+}
+
+void ScriptMgr::OnPacketSend(WorldSocket* socket, WorldPacket& packet)
+{
+    ASSERT(socket);
+
+    FOREACH_SCRIPT(ServerScript)->OnPacketSend(socket, packet);
+}
+
+void ScriptMgr::OnUnknownPacketReceive(WorldSocket* socket, WorldPacket& packet)
+{
+    ASSERT(socket);
+
+    FOREACH_SCRIPT(ServerScript)->OnUnknownPacketReceive(socket, packet);
+}
+
+void ScriptMgr::OnOpenStateChange(bool open)
+{
+    FOREACH_SCRIPT(WorldScript)->OnOpenStateChange(open);
+}
+
+void ScriptMgr::OnConfigLoad(bool reload)
+{
+    FOREACH_SCRIPT(WorldScript)->OnConfigLoad(reload);
+}
+
+void ScriptMgr::OnMotdChange(std::string& newMotd)
+{
+    FOREACH_SCRIPT(WorldScript)->OnMotdChange(newMotd);
+}
+
+void ScriptMgr::OnShutdown(ShutdownExitCode code, ShutdownMask mask)
+{
+    FOREACH_SCRIPT(WorldScript)->OnShutdown(code, mask);
+}
+
+void ScriptMgr::OnShutdownCancel()
+{
+    FOREACH_SCRIPT(WorldScript)->OnShutdownCancel();
+}
+
+void ScriptMgr::OnWorldUpdate(uint32 diff)
+{
+    FOREACH_SCRIPT(WorldScript)->OnUpdate(NULL, diff);
+}
+
+void ScriptMgr::OnHonorCalculation(float& honor, uint8 level, uint32 count)
+{
+    FOREACH_SCRIPT(FormulaScript)->OnHonorCalculation(honor, level, count);
+}
+
+void ScriptMgr::OnHonorCalculation(uint32& honor, uint8 level, uint32 count)
+{
+    FOREACH_SCRIPT(FormulaScript)->OnHonorCalculation(honor, level, count);
+}
+
+void ScriptMgr::OnGetGrayLevel(uint8& grayLevel, uint8 playerLevel)
+{
+    FOREACH_SCRIPT(FormulaScript)->OnGetGrayLevel(grayLevel, playerLevel);
+}
+
+void ScriptMgr::OnGetColorCode(XPColorChar& color, uint8 playerLevel, uint8 mobLevel)
+{
+    FOREACH_SCRIPT(FormulaScript)->OnGetColorCode(color, playerLevel, mobLevel);
+}
+
+void ScriptMgr::OnGetZeroDifference(uint8& diff, uint8 playerLevel)
+{
+    FOREACH_SCRIPT(FormulaScript)->OnGetZeroDifference(diff, playerLevel);
+}
+
+void ScriptMgr::OnGetBaseGain(uint32& gain, uint8 playerLevel, uint8 mobLevel, ContentLevels content)
+{
+    FOREACH_SCRIPT(FormulaScript)->OnGetBaseGain(gain, playerLevel, mobLevel, content);
+}
+
+void ScriptMgr::OnGetGain(uint32& gain, Player* player, Unit* unit)
+{
+    ASSERT(player);
+    ASSERT(unit);
+
+    FOREACH_SCRIPT(FormulaScript)->OnGetGain(gain, player, unit);
+}
+
+void ScriptMgr::OnGetGroupRate(float& rate, uint32 count, bool isRaid)
+{
+    FOREACH_SCRIPT(FormulaScript)->OnGetGroupRate(rate, count, isRaid);
+}
+
+#define SCR_MAP_BGN(M,V,I,E,C,T) \
+    if (V->GetEntry()->T()) \
+    { \
+        FOR_SCRIPTS(M, I, E) \
+        { \
+            MapEntry const* C = I->second->GetEntry(); \
+            if (!C) \
+                continue; \
+            if (entry->MapID == V->GetId()) \
             {
-                // if the assigned script's name and the new script's name is the same
-                if (m_scripts[i]->Name == Name)
-                {
-                    IsExist = true;
-                    break;
-                }
-            }
-        }
 
-        // if the script doesn't assigned -> assign it!
-        if (!IsExist)
-        {
-            m_scripts[id] = this;
-            ++num_sc_scripts;
-        }
-        // if the script is already assigned -> delete it!
-        else
-        {
-            // @todo write a better error message than this one :)
-            error_log("ScriptName: '%s' already assigned with the same ScriptName, so the script can't work.", Name.c_str());
-            delete this;
-        }
-    }
-    else
-    {
-        if (Name.find("example") == std::string::npos)
-            error_db_log("OSCR: RegisterSelf, but script named %s does not have ScriptName assigned in database.", (this)->Name.c_str());
-        delete this;
-    }
+#define SCR_MAP_END \
+                break; \
+            } \
+        } \
 }
 
-void ScriptMgr::OnLogin(Player* player)
+void ScriptMgr::OnCreateMap(Map* map)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnLogin) return;
-    tmpscript->OnLogin(player);
+    ASSERT(map);
+
+    SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
+    itr->second->OnCreate(map);
+    SCR_MAP_END;
+
+    SCR_MAP_BGN(InstanceMapScript, map, itr, end, entry, IsDungeon);
+    itr->second->OnCreate((InstanceMap*)map);
+    SCR_MAP_END;
 }
 
-void ScriptMgr::OnLogout(Player* player)
+void ScriptMgr::OnDestroyMap(Map* map)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnLogout) return;
-    tmpscript->OnLogout(player);
+    ASSERT(map);
+    SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
+    itr->second->OnDestroy(map);
+    SCR_MAP_END;
+
+    SCR_MAP_BGN(InstanceMapScript, map, itr, end, entry, IsDungeon);
+    itr->second->OnDestroy((InstanceMap*)map);
+    SCR_MAP_END;
 }
 
-void ScriptMgr::OnGivePlayerXP(Player* player, uint32& xp, Unit* victim)
+void ScriptMgr::OnLoadGridMap(Map* map, uint32 gx, uint32 gy)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnGivePlayerXP) return;
-    tmpscript->OnGivePlayerXP(player, xp, victim);
+    ASSERT(map);
+
+    SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
+    itr->second->OnLoadGridMap(map, gx, gy);
+    SCR_MAP_END;
+
+    SCR_MAP_BGN(InstanceMapScript, map, itr, end, entry, IsDungeon);
+    itr->second->OnLoadGridMap((InstanceMap*)map, gx, gy);
+    SCR_MAP_END;
 }
 
+void ScriptMgr::OnUnloadGridMap(Map* map, uint32 gx, uint32 gy)
+{
+    ASSERT(map);
+
+    SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
+    itr->second->OnUnloadGridMap(map, gx, gy);
+    SCR_MAP_END;
+
+    SCR_MAP_BGN(InstanceMapScript, map, itr, end, entry, IsDungeon);
+    itr->second->OnUnloadGridMap((InstanceMap*)map, gx, gy);
+    SCR_MAP_END;
+}
+
+void ScriptMgr::OnPlayerEnter(Map* map, Player* player)
+{
+    ASSERT(map);
+    ASSERT(player);
+
+    SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
+    itr->second->OnPlayerEnter(map, player);
+    SCR_MAP_END;
+
+    SCR_MAP_BGN(InstanceMapScript, map, itr, end, entry, IsDungeon);
+    itr->second->OnPlayerEnter((InstanceMap*)map, player);
+    SCR_MAP_END;
+}
+
+void ScriptMgr::OnPlayerLeave(Map* map, Player* player)
+{
+    ASSERT(map);
+    ASSERT(player);
+
+    SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
+    itr->second->OnPlayerLeave(map, player);
+    SCR_MAP_END;
+
+    SCR_MAP_BGN(InstanceMapScript, map, itr, end, entry, IsDungeon);
+    itr->second->OnPlayerLeave((InstanceMap*)map, player);
+    SCR_MAP_END;
+
+}
+
+void ScriptMgr::OnMapUpdate(Map* map, uint32 diff)
+{
+    ASSERT(map);
+
+    SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
+    itr->second->OnUpdate(map, diff);
+    SCR_MAP_END;
+
+    SCR_MAP_BGN(InstanceMapScript, map, itr, end, entry, IsDungeon);
+    itr->second->OnUpdate((InstanceMap*)map, diff);
+    SCR_MAP_END;
+}
+
+#undef SCR_MAP_BGN
+#undef SCR_MAP_END
+
+InstanceData* ScriptMgr::CreateInstanceData(InstanceMap* map)
+{
+    ASSERT(map);
+    GET_SCRIPT_RET(InstanceMapScript, map->GetScriptId(), tmpscript, NULL);
+    return tmpscript->GetInstanceScript(map);
+}
+
+bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, uint32 effIndex, Item* target)
+{
+    ASSERT(caster);
+    ASSERT(target);
+
+    if (sEluna->OnDummyEffect(caster, spellId, (SpellEffIndex)effIndex, target))
+        return true;
+
+    GET_SCRIPT_RET(ItemScript, target->GetProto()->ScriptId, tmpscript, false);
+    return tmpscript->OnDummyEffect(caster, spellId, effIndex, target);
+}
+
+bool ScriptMgr::OnQuestAccept(Player* player, Item* item, Quest const* quest)
+{
+    ASSERT(player);
+    ASSERT(quest);
+    ASSERT(item);
+
+    if (sEluna->OnQuestAccept(player, item, quest))
+        return true;
+
+    GET_SCRIPT_RET(ItemScript, item->GetProto()->ScriptId, tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnQuestAccept(player, item, quest);
+}
+
+bool ScriptMgr::OnItemUse(Player* player, Item* item, SpellCastTargets const& targets)
+{
+    ASSERT(player);
+    ASSERT(item);
+
+    if (!sEluna->OnUse(player, item, targets))
+        return true;
+
+    GET_SCRIPT_RET(ItemScript, item->GetProto()->ScriptId, tmpscript, false);
+    return tmpscript->OnUse(player, item, targets);
+}
+
+bool ScriptMgr::OnDummyEffect(Unit* caster, uint32 spellId, uint32 effIndex, Creature* target)
+{
+    ASSERT(caster);
+    ASSERT(target);
+
+    if (sEluna->OnDummyEffect(caster, spellId, (SpellEffIndex)effIndex, target))
+        return true;
+
+    GET_SCRIPT_RET(CreatureScript, target->GetScriptId(), tmpscript, false);
+    return tmpscript->OnDummyEffect(caster, spellId, effIndex, target);
+}
+
+
+bool ScriptMgr::OnGossipHello(Player* player, Creature* creature)
+{
+    ASSERT(player);
+    ASSERT(creature);
+
+    if (sEluna->OnGossipHello(player, creature))
+        return true;
+
+    GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnGossipHello(player, creature);
+}
+
+bool ScriptMgr::OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+{
+    ASSERT(player);
+    ASSERT(creature);
+    GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnGossipSelect(player, creature, sender, action);
+}
+
+bool ScriptMgr::OnGossipSelectCode(Player* player, Creature* creature, uint32 sender, uint32 action, const char* code)
+{
+    ASSERT(player);
+    ASSERT(creature);
+    ASSERT(code);
+
+    if (sEluna->OnGossipSelect(player, creature, sender, action))
+        return true;
+
+    GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnGossipSelectCode(player, creature, sender, action, code);
+}
+
+bool ScriptMgr::OnQuestAccept(Player* player, Creature* creature, Quest const* quest)
+{
+    ASSERT(player);
+    ASSERT(creature);
+    ASSERT(quest);
+
+    if (sEluna->OnQuestAccept(player, creature, quest))
+        return true;
+
+    GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnQuestAccept(player, creature, quest);
+}
+
+bool ScriptMgr::OnQuestSelect(Player* player, Creature* creature, Quest const* quest)
+{
+    ASSERT(player);
+    ASSERT(creature);
+    ASSERT(quest);
+
+    GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnQuestSelect(player, creature, quest);
+}
+
+bool ScriptMgr::OnQuestComplete(Player* player, Creature* creature, Quest const* quest)
+{
+    ASSERT(player);
+    ASSERT(creature);
+    ASSERT(quest);
+
+    GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnQuestComplete(player, creature, quest);
+}
+
+bool ScriptMgr::OnQuestReward(Player* player, Creature* creature, Quest const* quest, uint32 opt)
+{
+    ASSERT(player);
+    ASSERT(creature);
+    ASSERT(quest);
+
+    GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnQuestReward(player, creature, quest, opt);
+}
+
+uint32 ScriptMgr::GetDialogStatus(Player* player, Creature* creature)
+{
+    ASSERT(player);
+    ASSERT(creature);
+
+    if (uint32 dialogId = sEluna->GetDialogStatus(player, creature))
+        return dialogId;
+
+    // TODO: 100 is a funny magic number to have hanging around here...
+    GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, 100);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnDialogStatus(player, creature);
+}
+
+CreatureAI* ScriptMgr::GetCreatureAI(Creature* creature)
+{
+    ASSERT(creature);
+
+    if (CreatureAI* luaAI = sEluna->GetAI(creature))
+        return luaAI;
+
+    GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, NULL);
+    return tmpscript->GetAI(creature);
+}
+
+void ScriptMgr::OnCreatureUpdate(Creature* creature, uint32 diff)
+{
+    ASSERT(creature);
+
+    GET_SCRIPT(CreatureScript, creature->GetScriptId(), tmpscript);
+    tmpscript->OnUpdate(creature, diff);
+}
+
+bool ScriptMgr::OnGossipHello(Player* player, GameObject* go)
+{
+    ASSERT(player);
+    ASSERT(go);
+
+    if (sEluna->OnGossipHello(player, go))
+        return true;
+
+    if (sEluna->OnGameObjectUse(player, go))
+        return true;
+
+    GET_SCRIPT_RET(GameObjectScript, go->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnGossipHello(player, go);
+}
+
+bool ScriptMgr::OnGossipSelect(Player* player, GameObject* go, uint32 sender, uint32 action)
+{
+    ASSERT(player);
+    ASSERT(go);
+
+    if (sEluna->OnGossipSelect(player, go, sender, action))
+        return true;
+
+    GET_SCRIPT_RET(GameObjectScript, go->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnGossipSelect(player, go, sender, action);
+}
+
+bool ScriptMgr::OnGossipSelectCode(Player* player, GameObject* go, uint32 sender, uint32 action, const char* code)
+{
+    ASSERT(player);
+    ASSERT(go);
+    ASSERT(code);
+
+    if (sEluna->OnGossipSelectCode(player, go, sender, action, code))
+        return true;
+
+    GET_SCRIPT_RET(GameObjectScript, go->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnGossipSelectCode(player, go, sender, action, code);
+}
+
+bool ScriptMgr::OnQuestAccept(Player* player, GameObject* go, Quest const* quest)
+{
+    ASSERT(player);
+    ASSERT(go);
+    ASSERT(quest);
+
+    if (sEluna->OnQuestAccept(player, go, quest))
+        return true;
+
+    GET_SCRIPT_RET(GameObjectScript, go->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnQuestAccept(player, go, quest);
+}
+
+bool ScriptMgr::OnQuestReward(Player* player, GameObject* go, Quest const* quest, uint32 opt)
+{
+    ASSERT(player);
+    ASSERT(go);
+    ASSERT(quest);
+
+    GET_SCRIPT_RET(GameObjectScript, go->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnQuestReward(player, go, quest, opt);
+}
+
+
+bool ScriptMgr::OnQuestComplete(Player* player, GameObject* gameobject, Quest const* quest)
+{
+    ASSERT(player);
+    ASSERT(gameobject);
+    ASSERT(quest);
+
+    GET_SCRIPT_RET(GameObjectScript, gameobject->GetScriptId(), tmpscript, false);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnQuestComplete(player, gameobject, quest);
+}
+
+uint32 ScriptMgr::GetDialogStatus(Player* player, GameObject* go)
+{
+    ASSERT(player);
+    ASSERT(go);
+
+    if (uint32 dialogId = sEluna->GetDialogStatus(player, go))
+        return dialogId;
+
+    GET_SCRIPT_RET(GameObjectScript, go->GetScriptId(), tmpscript, 100);
+    player->PlayerTalkClass->ClearMenus();
+    return tmpscript->OnDialogStatus(player, go);
+}
+
+void ScriptMgr::OnGameObjectDestroyed(Player * player, GameObject * go, uint32 eventId)
+{
+    ASSERT(go);
+
+    GET_SCRIPT(GameObjectScript, go->GetScriptId(), tmpscript);
+    tmpscript->OnDestroyed(player, go, eventId);
+}
+
+void ScriptMgr::OnGameObjectUpdate(GameObject* go, uint32 diff)
+{
+    ASSERT(go);
+
+    GET_SCRIPT(GameObjectScript, go->GetScriptId(), tmpscript);
+    tmpscript->OnUpdate(go, diff);
+}
+
+
+bool ScriptMgr::OnTrigger(Player* player, AreaTriggerEntry const* trigger)
+{
+    ASSERT(player);
+    ASSERT(trigger);
+
+    if (sEluna->OnAreaTrigger(player, trigger))
+        return true;
+
+    GET_SCRIPT_RET(AreaTriggerScript, sObjectMgr.GetAreaTriggerScriptId(trigger->id), tmpscript, false);
+    return tmpscript->OnTrigger(player, trigger);
+}
+
+
+std::vector<ChatCommand*> ScriptMgr::GetChatCommands()
+{
+    std::vector<ChatCommand*> table;
+
+    FOR_SCRIPTS_RET(CommandScript, itr, end, table)
+        table.push_back(itr->second->OnGetCommands());
+
+    return table;
+}
+
+void ScriptMgr::OnAddPassenger(Transport* transport, Player* player)
+{
+    ASSERT(transport);
+    ASSERT(player);
+
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnAddPassenger(transport, player);
+}
+
+void ScriptMgr::OnAddCreaturePassenger(Transport* transport, Creature* creature)
+{
+    ASSERT(transport);
+    ASSERT(creature);
+
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnAddCreaturePassenger(transport, creature);
+}
+
+void ScriptMgr::OnRemovePassenger(Transport* transport, Player* player)
+{
+    ASSERT(transport);
+    ASSERT(player);
+
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnRemovePassenger(transport, player);
+}
+
+void ScriptMgr::OnTransportUpdate(Transport* transport, uint32 diff)
+{
+    ASSERT(transport);
+
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnUpdate(transport, diff);
+}
+
+void ScriptMgr::OnRelocate(Transport* transport, uint32 waypointId, uint32 mapId, float x, float y, float z)
+{
+    GET_SCRIPT(TransportScript, transport->GetScriptId(), tmpscript);
+    tmpscript->OnRelocate(transport, waypointId, mapId, x, y, z);
+}
+
+void ScriptMgr::OnAuctionAdd(AuctionHouseObject* ah, AuctionEntry* entry)
+{
+    ASSERT(ah);
+    ASSERT(entry);
+
+    FOREACH_SCRIPT(AuctionHouseScript)->OnAuctionAdd(ah, entry);
+}
+
+void ScriptMgr::OnAuctionRemove(AuctionHouseObject* ah, AuctionEntry* entry)
+{
+    ASSERT(ah);
+    ASSERT(entry);
+
+    FOREACH_SCRIPT(AuctionHouseScript)->OnAuctionRemove(ah, entry);
+}
+
+void ScriptMgr::OnAuctionSuccessful(AuctionHouseObject* ah, AuctionEntry* entry)
+{
+    ASSERT(ah);
+    ASSERT(entry);
+
+    FOREACH_SCRIPT(AuctionHouseScript)->OnAuctionSuccessful(ah, entry);
+}
+
+void ScriptMgr::OnAuctionExpire(AuctionHouseObject* ah, AuctionEntry* entry)
+{
+    ASSERT(ah);
+    ASSERT(entry);
+
+    FOREACH_SCRIPT(AuctionHouseScript)->OnAuctionExpire(ah, entry);
+}
+
+
+void ScriptMgr::OnDynamicObjectUpdate(DynamicObject* dynobj, uint32 diff)
+{
+    ASSERT(dynobj);
+    FOR_SCRIPTS(DynamicObjectScript, itr, end)
+        itr->second->OnUpdate(dynobj, diff);
+}
+
+SpellHandlerScript::SpellHandlerScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<SpellHandlerScript>::AddScript(this);
+}
+
+AuraHandlerScript::AuraHandlerScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<AuraHandlerScript>::AddScript(this);
+}
+
+ServerScript::ServerScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<ServerScript>::AddScript(this);
+}
+
+WorldScript::WorldScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<WorldScript>::AddScript(this);
+}
+
+FormulaScript::FormulaScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<FormulaScript>::AddScript(this);
+}
+
+WorldMapScript::WorldMapScript(const char* name, uint32 mapId)
+    : ScriptObject(name), MapScript(mapId)
+{
+    if (GetEntry() && !GetEntry()->IsContinent())
+        sLog.outError("WorldMapScript for map %u is invalid.", mapId);
+
+    ScriptMgr::ScriptRegistry<WorldMapScript>::AddScript(this);
+}
+
+InstanceMapScript::InstanceMapScript(const char* name, uint32 mapId)
+    : ScriptObject(name), MapScript(mapId)
+{
+    if (GetEntry() && !GetEntry()->IsDungeon())
+        sLog.outError("InstanceMapScript for map %u is invalid.", mapId);
+
+    ScriptMgr::ScriptRegistry<InstanceMapScript>::AddScript(this);
+}
+
+BattlegroundMapScript::BattlegroundMapScript(const char* name, uint32 mapId)
+    : ScriptObject(name), MapScript(mapId)
+{
+    if (GetEntry() && !GetEntry()->IsBattleground())
+        sLog.outError("BattlegroundMapScript for map %u is invalid.", mapId);
+
+    ScriptMgr::ScriptRegistry<BattlegroundMapScript>::AddScript(this);
+}
+
+AreaTriggerScript::AreaTriggerScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<AreaTriggerScript>::AddScript(this);
+}
+
+ItemScript::ItemScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<ItemScript>::AddScript(this);
+}
+
+CreatureScript::CreatureScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<CreatureScript>::AddScript(this);
+}
+
+GameObjectScript::GameObjectScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<GameObjectScript>::AddScript(this);
+}
+
+BattlegroundScript::BattlegroundScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<BattlegroundScript>::AddScript(this);
+}
+
+OutdoorPvPScript::OutdoorPvPScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<OutdoorPvPScript>::AddScript(this);
+}
+
+CommandScript::CommandScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<CommandScript>::AddScript(this);
+}
+
+WeatherScript::WeatherScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<WeatherScript>::AddScript(this);
+}
+
+AuctionHouseScript::AuctionHouseScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<AuctionHouseScript>::AddScript(this);
+}
+
+ConditionScript::ConditionScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<ConditionScript>::AddScript(this);
+}
+
+DynamicObjectScript::DynamicObjectScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<DynamicObjectScript>::AddScript(this);
+}
+
+TransportScript::TransportScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<TransportScript>::AddScript(this);
+}
+
+GroupScript::GroupScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<GroupScript>::AddScript(this);
+}
+
+PlayerScript::PlayerScript(const char* name)
+	: ScriptObject(name)
+{
+	ScriptMgr::ScriptRegistry<PlayerScript>::AddScript(this);
+}
+
+// Group
+void ScriptMgr::OnGroupAddMember(Group* group, Player* guid)
+{
+    ASSERT(group);
+    FOREACH_SCRIPT(GroupScript)->OnAddMember(group, guid);
+}
+
+void ScriptMgr::OnGroupInviteMember(Group* group, Player* guid)
+{
+    ASSERT(group);
+    FOREACH_SCRIPT(GroupScript)->OnInviteMember(group, guid);
+}
+
+void ScriptMgr::OnGroupRemoveMember(Group* group, Player* guid, RemoveMethod method, uint64 kicker, char const* reason)
+{
+    ASSERT(group);
+    FOREACH_SCRIPT(GroupScript)->OnRemoveMember(group, guid, method, kicker, reason);
+}
+
+void ScriptMgr::OnGroupMemberJoin(Group* group, Player* player)
+{
+    ASSERT(group);
+    FOREACH_SCRIPT(GroupScript)->OnMemberJoin(group, player);
+}
+
+void ScriptMgr::OnGroupChangeLeader(Group* group, Player* newLeader, Player* oldLeader)
+{
+    ASSERT(group);
+    FOREACH_SCRIPT(GroupScript)->OnChangeLeader(group, newLeader, oldLeader);
+}
+
+void ScriptMgr::OnGroupCreate(Group* group, Player* leader)
+{
+    ASSERT(group);
+    FOREACH_SCRIPT(GroupScript)->OnCreate(group, leader);
+}
+
+void ScriptMgr::OnGroupDisband(Group* group, Player* leader)
+{
+    ASSERT(group);
+    FOREACH_SCRIPT(GroupScript)->OnDisband(group, leader);
+}
+
+
+// Player
 void ScriptMgr::OnPVPKill(Player* killer, Player* killed)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnPVPKill) return;
-    tmpscript->OnPVPKill(killer, killed);
+    FOREACH_SCRIPT(PlayerScript)->OnPVPKill(killer, killed);
 }
 
 void ScriptMgr::OnCreatureKill(Player* killer, Creature* killed)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnCreatureKill) return;
-    tmpscript->OnCreatureKill(killer, killed);
+    FOREACH_SCRIPT(PlayerScript)->OnCreatureKill(killer, killed);
 }
 
 void ScriptMgr::OnPlayerKilledByCreature(Creature* killer, Player* killed)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnPlayerKilledByCreature) return;
-    tmpscript->OnPlayerKilledByCreature(killer, killed);
+    FOREACH_SCRIPT(PlayerScript)->OnPlayerKilledByCreature(killer, killed);
 }
 
 void ScriptMgr::OnPlayerLevelChanged(Player* player, uint8 oldLevel, uint8 newLevel)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnLevelChanged) return;
-    tmpscript->OnLevelChanged(player, oldLevel, newLevel);
+    FOREACH_SCRIPT(PlayerScript)->OnLevelChanged(player, oldLevel, newLevel);
 }
 
-void ScriptMgr::OnPlayerTalentsReset(Player* player, bool no_cost)
+void ScriptMgr::OnPlayerFreeTalentPointsChanged(Player* player, uint32 points)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnTalentsReset) return;
-    tmpscript->OnTalentsReset(player, no_cost);
+    FOREACH_SCRIPT(PlayerScript)->OnFreeTalentPointsChanged(player, points);
 }
 
-void ScriptMgr::OnGroupCreated(Group* pGroup, Player* pPlayer)
+void ScriptMgr::OnPlayerTalentsReset(Player* player, bool noCost)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnGroupCreated) return;
-    tmpscript->OnGroupCreated(pGroup, pPlayer);
+    FOREACH_SCRIPT(PlayerScript)->OnTalentsReset(player, noCost);
 }
 
-void ScriptMgr::OnGroupPlayerInvited(Group* pGroup, Player* pPlayer)
+void ScriptMgr::OnPlayerMoneyChanged(Player* player, int32& amount)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnGroupPlayerInvited) return;
-    tmpscript->OnGroupPlayerInvited(pGroup, pPlayer);
+    FOREACH_SCRIPT(PlayerScript)->OnMoneyChanged(player, amount);
 }
 
-void ScriptMgr::OnGroupPlayerJoined(Group* pGroup, Player* pPlayer)
+void ScriptMgr::OnPlayerMoneyLimit(Player* player, int32 amount)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnGroupPlayerJoined) return;
-    tmpscript->OnGroupPlayerJoined(pGroup, pPlayer);
+    FOREACH_SCRIPT(PlayerScript)->OnMoneyLimit(player, amount);
 }
 
-void ScriptMgr::OnGroupPlayerRemoved(Group* pGroup, Player* pPlayer, uint8 method, uint64 kicker, const char* reason)
+void ScriptMgr::OnGivePlayerXP(Player* player, uint32& amount, Unit* victim)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnGroupPlayerRemoved) return;
-    tmpscript->OnGroupPlayerRemoved(pGroup, pPlayer, method, kicker, reason);
+    FOREACH_SCRIPT(PlayerScript)->OnGiveXP(player, amount, victim);
 }
 
-void ScriptMgr::OnGroupLeaderChanged(Group* pGroup, Player* pOldLeader, Player* pNewLeader)
+void ScriptMgr::OnPlayerReputationChange(Player* player, uint32 factionID, int32& standing, bool incremental)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnGroupLeaderChanged) return;
-    tmpscript->OnGroupLeaderChanged(pGroup, pOldLeader, pNewLeader);
+    FOREACH_SCRIPT(PlayerScript)->OnReputationChange(player, factionID, standing, incremental);
 }
 
-void ScriptMgr::OnGroupDisbanded(Group* pGroup, Player* pLeader)
+void ScriptMgr::OnPlayerDuelRequest(Player* target, Player* challenger)
 {
-    Script* tmpscript = m_scripts[GetScriptId("scripted_on_events")];
-    if (!tmpscript || !tmpscript->OnGroupDisbanded) return;
-    tmpscript->OnGroupDisbanded(pGroup, pLeader);
+    FOREACH_SCRIPT(PlayerScript)->OnDuelRequest(target, challenger);
 }
 
-char const* ScriptMgr::ScriptsVersion()
+void ScriptMgr::OnPlayerDuelStart(Player* player1, Player* player2)
 {
-    return "Integrated Oregon Scripts";
+    FOREACH_SCRIPT(PlayerScript)->OnDuelStart(player1, player2);
 }
 
-bool ScriptMgr::GossipHello (Player* pPlayer, Creature* pCreature)
+void ScriptMgr::OnPlayerDuelEnd(Player* winner, Player* loser, DuelCompleteType type)
 {
-    if (sEluna->OnGossipHello(pPlayer, pCreature))
-        return true;
-
-    Script* tmpscript = m_scripts[pCreature->GetScriptId()];
-    if (!tmpscript || !tmpscript->pGossipHello) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pGossipHello(pPlayer, pCreature);
+    FOREACH_SCRIPT(PlayerScript)->OnDuelEnd(winner, loser, type);
 }
 
-bool ScriptMgr::GossipSelect(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+void ScriptMgr::OnPlayerChat(Player* player, uint32 type, uint32 lang, std::string& msg)
 {
-    debug_log("OSCR: Gossip selection, sender: %d, action: %d", uiSender, uiAction);
-
-    if (sEluna->OnGossipSelect(pPlayer, pCreature, uiSender, uiAction))
-        return true;
-
-    Script* tmpscript = m_scripts[pCreature->GetScriptId()];
-    if (!tmpscript || !tmpscript->pGossipSelect) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pGossipSelect(pPlayer, pCreature, uiSender, uiAction);
+    FOREACH_SCRIPT(PlayerScript)->OnChat(player, type, lang, msg);
 }
 
-bool ScriptMgr::GossipSelectWithCode(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction, const char* sCode)
+void ScriptMgr::OnPlayerChat(Player* player, uint32 type, uint32 lang, std::string& msg, Player* receiver)
 {
-    debug_log("OSCR: Gossip selection with code, sender: %d, action: %d", uiSender, uiAction);
-
-    if (sEluna->OnGossipSelectCode(pPlayer, pCreature, uiSender, uiAction, sCode))
-        return true;
-
-    Script* tmpscript = m_scripts[pCreature->GetScriptId()];
-    if (!tmpscript || !tmpscript->pGossipSelectWithCode) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pGossipSelectWithCode(pPlayer, pCreature, uiSender, uiAction, sCode);
+    FOREACH_SCRIPT(PlayerScript)->OnChat(player, type, lang, msg, receiver);
 }
 
-bool ScriptMgr::GOSelect(Player* pPlayer, GameObject* pGO, uint32 uiSender, uint32 uiAction)
+void ScriptMgr::OnPlayerChat(Player* player, uint32 type, uint32 lang, std::string& msg, Group* group)
 {
-    if (!pGO)
-        return false;
-    debug_log("OSCR: Gossip selection, sender: %d, action: %d", uiSender, uiAction);
-
-    if (sEluna->OnGossipSelect(pPlayer, pGO, uiSender, uiAction))
-        return true;
-
-    Script* tmpscript = m_scripts[pGO->GetGOInfo()->ScriptId];
-    if (!tmpscript || !tmpscript->pGOSelect) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pGOSelect(pPlayer, pGO, uiSender, uiAction);
+    FOREACH_SCRIPT(PlayerScript)->OnChat(player, type, lang, msg, group);
 }
 
-bool ScriptMgr::GOSelectWithCode(Player* pPlayer, GameObject* pGO, uint32 uiSender, uint32 uiAction, const char* sCode)
+void ScriptMgr::OnPlayerChat(Player* player, uint32 type, uint32 lang, std::string& msg, Guild* guild)
 {
-    if (!pGO)
-        return false;
-    debug_log("OSCR: Gossip selection, sender: %d, action: %d", uiSender, uiAction);
-
-    if (sEluna->OnGossipSelectCode(pPlayer, pGO, uiSender, uiAction, sCode))
-        return true;
-
-    Script* tmpscript = m_scripts[pGO->GetGOInfo()->ScriptId];
-    if (!tmpscript || !tmpscript->pGOSelectWithCode) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pGOSelectWithCode(pPlayer, pGO, uiSender , uiAction, sCode);
+    FOREACH_SCRIPT(PlayerScript)->OnChat(player, type, lang, msg, guild);
 }
 
-bool ScriptMgr::QuestAccept(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
+void ScriptMgr::OnPlayerChat(Player* player, uint32 type, uint32 lang, std::string& msg, Channel* channel)
 {
-    if (sEluna->OnQuestAccept(pPlayer, pCreature, pQuest))
-        return true;
-
-    Script* tmpscript = m_scripts[pCreature->GetScriptId()];
-    if (!tmpscript || !tmpscript->pQuestAccept) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pQuestAccept(pPlayer, pCreature, pQuest);
+    FOREACH_SCRIPT(PlayerScript)->OnChat(player, type, lang, msg, channel);
 }
 
-bool ScriptMgr::QuestSelect(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
+void ScriptMgr::OnPlayerEmote(Player* player, uint32 emote)
 {
-    Script* tmpscript = m_scripts[pCreature->GetScriptId()];
-    if (!tmpscript || !tmpscript->pQuestSelect) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pQuestSelect(pPlayer, pCreature, pQuest);
+    FOREACH_SCRIPT(PlayerScript)->OnEmote(player, emote);
 }
 
-bool ScriptMgr::QuestComplete(Player* pPlayer, Creature* pCreature, Quest const* pQuest)
+void ScriptMgr::OnPlayerTextEmote(Player* player, uint32 textEmote, uint32 emoteNum, ObjectGuid guid)
 {
-    Script* tmpscript = m_scripts[pCreature->GetScriptId()];
-    if (!tmpscript || !tmpscript->pQuestComplete) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pQuestComplete(pPlayer, pCreature, pQuest);
+    FOREACH_SCRIPT(PlayerScript)->OnTextEmote(player, textEmote, emoteNum, guid);
 }
 
-bool ScriptMgr::QuestComplete(Player* player, GameObject* pGO, Quest const* pQuest)
+void ScriptMgr::OnPlayerSpellCast(Player* player, Spell* spell, bool skipCheck)
 {
-    Script* tmpscript = m_scripts[pGO->GetGOInfo()->ScriptId];
-    if (!tmpscript || !tmpscript->GoQuestComplete) return false;
-
-    player->PlayerTalkClass->ClearMenus();
-    return tmpscript->GoQuestComplete(player, pGO, pQuest);
+    FOREACH_SCRIPT(PlayerScript)->OnSpellCast(player, spell, skipCheck);
 }
 
-bool ScriptMgr::ChooseReward(Player* pPlayer, Creature* pCreature, Quest const* pQuest, uint32 opt)
+void ScriptMgr::OnPlayerLogin(Player* player, bool firstLogin)
 {
-    Script* tmpscript = m_scripts[pCreature->GetScriptId()];
-    if (!tmpscript || !tmpscript->pChooseReward) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pChooseReward(pPlayer, pCreature, pQuest, opt);
+    FOREACH_SCRIPT(PlayerScript)->OnLogin(player, firstLogin);
 }
 
-uint32 ScriptMgr::NPCDialogStatus(Player* pPlayer, Creature* pCreature)
+void ScriptMgr::OnPlayerLogout(Player* player)
 {
-    // used by eluna
-    if (uint32 dialogId = sEluna->GetDialogStatus(pPlayer, pCreature))
-        return dialogId;
-
-    Script* tmpscript = m_scripts[pCreature->GetScriptId()];
-    if (!tmpscript || !tmpscript->pNPCDialogStatus) return 100;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pNPCDialogStatus(pPlayer, pCreature);
+    FOREACH_SCRIPT(PlayerScript)->OnLogout(player);
 }
 
-uint32 ScriptMgr::GODialogStatus(Player* pPlayer, GameObject* pGO)
+void ScriptMgr::OnPlayerCreate(Player* player)
 {
-    // used by eluna
-    if (uint32 dialogId = sEluna->GetDialogStatus(pPlayer, pGO))
-        return dialogId;
-
-    Script* tmpscript = m_scripts[pGO->GetGOInfo()->ScriptId];
-    if (!tmpscript || !tmpscript->pGODialogStatus) return 100;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pGODialogStatus(pPlayer, pGO);
+    FOREACH_SCRIPT(PlayerScript)->OnCreate(player);
 }
 
-bool ScriptMgr::ItemHello(Player* pPlayer, Item* pItem, Quest const* pQuest)
+void ScriptMgr::OnPlayerDelete(ObjectGuid guid, uint32 accountId)
 {
-    Script* tmpscript = m_scripts[pItem->GetProto()->ScriptId];
-    if (!tmpscript || !tmpscript->pItemHello) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pItemHello(pPlayer, pItem, pQuest);
+    FOREACH_SCRIPT(PlayerScript)->OnDelete(guid, accountId);
 }
 
-bool ScriptMgr::ItemQuestAccept(Player* pPlayer, Item* pItem, Quest const* pQuest)
+void ScriptMgr::OnPlayerFailedDelete(ObjectGuid guid, uint32 accountId)
 {
-    if (sEluna->OnQuestAccept(pPlayer, pItem, pQuest))
-        return true;
-
-    Script* tmpscript = m_scripts[pItem->GetProto()->ScriptId];
-    if (!tmpscript || !tmpscript->pItemQuestAccept) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pItemQuestAccept(pPlayer, pItem, pQuest);
+    FOREACH_SCRIPT(PlayerScript)->OnFailedDelete(guid, accountId);
 }
 
-bool ScriptMgr::GOHello(Player* pPlayer, GameObject* pGO)
+void ScriptMgr::OnPlayerSave(Player* player)
 {
-    if (sEluna->OnGossipHello(pPlayer, pGO))
-        return true;
-
-    if (sEluna->OnGameObjectUse(pPlayer, pGO))
-        return true;
-
-    Script* tmpscript = m_scripts[pGO->GetGOInfo()->ScriptId];
-    if (!tmpscript || !tmpscript->pGOHello) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pGOHello(pPlayer, pGO);
+    FOREACH_SCRIPT(PlayerScript)->OnSave(player);
 }
 
-bool ScriptMgr::GOQuestAccept(Player* pPlayer, GameObject* pGO, Quest const* pQuest)
+void ScriptMgr::OnPlayerBindToInstance(Player* player, DungeonDifficulty difficulty, uint32 mapid, bool permanent, uint8 extendState)
 {
-    if (sEluna->OnQuestAccept(pPlayer, pGO, pQuest))
-        return true;
-
-    Script* tmpscript = m_scripts[pGO->GetGOInfo()->ScriptId];
-    if (!tmpscript || !tmpscript->pGOQuestAccept) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pGOQuestAccept(pPlayer, pGO, pQuest);
+    FOREACH_SCRIPT(PlayerScript)->OnBindToInstance(player, difficulty, mapid, permanent, extendState);
 }
 
-bool ScriptMgr::GOChooseReward(Player* pPlayer, GameObject* pGO, Quest const* pQuest, uint32 opt)
+void ScriptMgr::OnPlayerUpdateZone(Player* player, uint32 newZone, uint32 newArea)
 {
-    Script* tmpscript = m_scripts[pGO->GetGOInfo()->ScriptId];
-    if (!tmpscript || !tmpscript->pGOChooseReward) return false;
-
-    pPlayer->PlayerTalkClass->ClearMenus();
-    return tmpscript->pGOChooseReward(pPlayer, pGO, pQuest, opt);
+    FOREACH_SCRIPT(PlayerScript)->OnUpdateZone(player, newZone, newArea);
 }
 
-bool ScriptMgr::AreaTrigger(Player* pPlayer, AreaTriggerEntry const* atEntry)
+void ScriptMgr::OnQuestStatusChange(Player* player, uint32 questId)
 {
-    if (sEluna->OnAreaTrigger(pPlayer, atEntry))
-        return true;
-
-    Script* tmpscript = m_scripts[GetAreaTriggerScriptId(atEntry->id)];
-    if (!tmpscript || !tmpscript->pAreaTrigger) return false;
-
-    return tmpscript->pAreaTrigger(pPlayer, atEntry);
+    FOREACH_SCRIPT(PlayerScript)->OnQuestStatusChange(player, questId);
 }
 
-CreatureAI* ScriptMgr::GetAI(Creature* pCreature)
+void ScriptMgr::OnPlayerRepop(Player* player)
 {
-    // used by eluna
-    if (CreatureAI* luaAI = sEluna->GetAI(pCreature))
-        return luaAI;
-
-    Script* tmpscript = m_scripts[pCreature->GetScriptId()];
-    if (!tmpscript || !tmpscript->GetAI) return NULL;
-
-    return tmpscript->GetAI(pCreature);
+    FOREACH_SCRIPT(PlayerScript)->OnPlayerRepop(player);
 }
 
-bool ScriptMgr::ItemUse(Player* pPlayer, Item* pItem, SpellCastTargets const& targets)
+void ScriptMgr::OnQuestObjectiveProgress(Player* player, Quest const* quest, uint32 objectiveIndex, uint16 progress)
 {
-    if (!sEluna->OnUse(pPlayer, pItem, targets))
-        return true;
-
-    Script* tmpscript = m_scripts[pItem->GetProto()->ScriptId];
-    if (!tmpscript || !tmpscript->pItemUse) return false;
-
-    return tmpscript->pItemUse(pPlayer, pItem, targets);
+    FOREACH_SCRIPT(PlayerScript)->OnQuestObjectiveProgress(player, quest, objectiveIndex, progress);
 }
 
-bool ScriptMgr::EffectDummyCreature(Unit* caster, uint32 spellId, uint32 effIndex, Creature* crTarget)
+template<class TScript>
+void ScriptMgr::ScriptRegistry<TScript>::AddScript(TScript* const script)
 {
-    if (sEluna->OnDummyEffect(caster, spellId, (SpellEffIndex)effIndex, crTarget))
-        return true;
+    ASSERT(script);
 
-    Script* tmpscript = m_scripts[crTarget->GetScriptId()];
+    // See if the script is using the same memory as another script. If this happens, it means that
+    // someone forgot to allocate new memory for a script.
+    typedef typename ScriptMap::iterator ScriptMapIterator;
+    for (ScriptMapIterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
+    {
+        if (it->second == script)
+        {
+            sLog.outError("Script '%s' forgot to allocate memory, so this script and/or the script before that can't work.",
+                script->ToString());
 
-    if (!tmpscript || !tmpscript->pEffectDummyCreature) return false;
+            return;
+        }
+    }
+    // Get an ID for the script. An ID only exists if it's a script that is assigned in the database
+    // through a script name (or similar).
+    uint32 id = GetScriptId(script->ToString());
+    if (id)
+    {
+        // Try to find an existing script.
+        bool existing = false;
+        typedef typename ScriptMap::iterator ScriptMapIterator;
+        for (ScriptMapIterator it = ScriptPointerList.begin(); it != ScriptPointerList.end(); ++it)
+        {
+            // If the script names match...
+            if (it->second->GetName() == script->GetName())
+            {
+                // ... It exists.
+                existing = true;
+                break;
+            }
+        }
 
-    return tmpscript->pEffectDummyCreature(caster, spellId, effIndex, crTarget);
+        // If the script isn't assigned -> assign it!
+        if (!existing)
+        {
+            ScriptPointerList[id] = script;
+            sScriptMgr.IncrementScriptCount();
+        }
+        else
+        {
+            // If the script is already assigned -> delete it!
+            sLog.outError("Script '%s' already assigned with the same script name, so the script can't work.",
+                script->ToString());
+
+            delete script;
+        }
+    }
+    else if (script->IsDatabaseBound())
+    {
+        // The script uses a script name from database, but isn't assigned to anything.
+        if (script->GetName().find("example") == std::string::npos)
+            sLog.outErrorDb("Script named '%s' does not have a script name assigned in database.",
+                script->ToString());
+
+        delete script;
+    }
+    else
+    {
+        // We're dealing with a code-only script; just add it.
+        ScriptPointerList[_scriptIdCounter++] = script;
+        sScriptMgr.IncrementScriptCount();
+    }
 }
 
-bool ScriptMgr::EffectDummyGO(Unit* caster, uint32 spellId, uint32 effIndex, GameObject* crTarget)
-{
-    if (sEluna->OnDummyEffect(caster, spellId, (SpellEffIndex)effIndex, crTarget))
-        return true;
+// Instantiate static members of ScriptMgr::ScriptRegistry.
+template<class TScript> std::map<uint32, TScript*> ScriptMgr::ScriptRegistry<TScript>::ScriptPointerList;
+template<class TScript> uint32 ScriptMgr::ScriptRegistry<TScript>::_scriptIdCounter;
 
-    Script* tmpscript = m_scripts[crTarget->GetGOInfo()->ScriptId];
+// Specialize for each script type class like so:
+template class ScriptMgr::ScriptRegistry<SpellHandlerScript>;
+template class ScriptMgr::ScriptRegistry<AuraHandlerScript>;
+template class ScriptMgr::ScriptRegistry<ServerScript>;
+template class ScriptMgr::ScriptRegistry<WorldScript>;
+template class ScriptMgr::ScriptRegistry<PlayerScript>;
+template class ScriptMgr::ScriptRegistry<GroupScript>;
+template class ScriptMgr::ScriptRegistry<FormulaScript>;
+template class ScriptMgr::ScriptRegistry<WorldMapScript>;
+template class ScriptMgr::ScriptRegistry<InstanceMapScript>;
+template class ScriptMgr::ScriptRegistry<BattlegroundMapScript>;
+template class ScriptMgr::ScriptRegistry<ItemScript>;
+template class ScriptMgr::ScriptRegistry<CreatureScript>;
+template class ScriptMgr::ScriptRegistry<GameObjectScript>;
+template class ScriptMgr::ScriptRegistry<AreaTriggerScript>;
+template class ScriptMgr::ScriptRegistry<BattlegroundScript>;
+template class ScriptMgr::ScriptRegistry<OutdoorPvPScript>;
+template class ScriptMgr::ScriptRegistry<CommandScript>;
+template class ScriptMgr::ScriptRegistry<WeatherScript>;
+template class ScriptMgr::ScriptRegistry<AuctionHouseScript>;
+template class ScriptMgr::ScriptRegistry<ConditionScript>;
+template class ScriptMgr::ScriptRegistry<DynamicObjectScript>;
+template class ScriptMgr::ScriptRegistry<TransportScript>;
 
-    if (!tmpscript || !tmpscript->pEffectDummyGO) return false;
-
-    return tmpscript->pEffectDummyGO(caster, spellId, effIndex, crTarget);
-}
-
-bool ScriptMgr::EffectDummyItem(Unit* caster, uint32 spellId, uint32 effIndex, Item* crTarget)
-{
-    if (sEluna->OnDummyEffect(caster, spellId, (SpellEffIndex)effIndex, crTarget))
-        return true;
-
-    Script* tmpscript = m_scripts[crTarget->GetProto()->ScriptId];
-
-    if (!tmpscript || !tmpscript->pEffectDummyItem) return false;
-
-    return tmpscript->pEffectDummyItem(caster, spellId, effIndex, crTarget);
-}
-
-InstanceData* ScriptMgr::CreateInstanceData(Map* map)
-{
-    if (!map->IsDungeon()) return NULL;
-
-    Script* tmpscript = m_scripts[((InstanceMap*)map)->GetScriptId()];
-    if (!tmpscript || !tmpscript->GetInstanceData) return NULL;
-
-    return tmpscript->GetInstanceData(map);
-}
-
-
-
+// Undefine utility macros.
+#undef GET_SCRIPT_RET
+#undef GET_SCRIPT
+#undef FOREACH_SCRIPT
+#undef FOR_SCRIPTS_RET
+#undef FOR_SCRIPTS
+#undef SCR_REG_LST
+#undef SCR_REG_MAP

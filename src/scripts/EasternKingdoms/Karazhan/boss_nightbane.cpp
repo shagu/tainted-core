@@ -15,17 +15,17 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Nightbane
-SD%Complete: 95
-SDComment:  timers,
-SDCategory: Karazhan
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Nightbane
+ SD%Complete: 95
+ SDComment:  timers,
+ SDCategory: Karazhan
+ EndScriptData */
 
 #include "ScriptPCH.h"
 #include "karazhan.h"
 
-//phase 1
+ //phase 1
 #define SPELL_BELLOWING_ROAR        39427
 #define SPELL_CHARRED_EARTH         30129
 #define SPELL_DISTRACTING_ASH       30130
@@ -47,458 +47,460 @@ EndScriptData */
 
 float IntroWay[8][3] =
 {
-	{ -11053.37f, -1794.48f, 149 },
-	{ -11141.07f, -1841.40f, 125 },
-	{ -11187.28f, -1890.23f, 125 },
-	{ -11189.20f, -1931.25f, 125 },
-	{ -11153.76f, -1948.93f, 125 },
-	{ -11128.73f, -1929.75f, 125 },
-	{ -11140, -1915, 122 },
-	{ -11163, -1903, 91.473f }
+    { -11053.37f, -1794.48f, 149 },
+    { -11141.07f, -1841.40f, 125 },
+    { -11187.28f, -1890.23f, 125 },
+    { -11189.20f, -1931.25f, 125 },
+    { -11153.76f, -1948.93f, 125 },
+    { -11128.73f, -1929.75f, 125 },
+    { -11140, -1915, 122 },
+    { -11163, -1903, 91.473f }
 };
 
-struct boss_nightbaneAI : public ScriptedAI
+class boss_nightbane : public CreatureScript
 {
-	boss_nightbaneAI(Creature* c) : ScriptedAI(c)
-	{
-		pInstance = (ScriptedInstance*)c->GetInstanceData();
-		Intro = true;
-		isReseted = false;
-	}
+public:
+    boss_nightbane() : CreatureScript("boss_nightbane") { }
 
-	ScriptedInstance* pInstance;
+    struct boss_nightbaneAI : public ScriptedAI
+    {
+        boss_nightbaneAI(Creature* c) : ScriptedAI(c)
+        {
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+            Intro = true;
+            isReseted = false;
+        }
 
-	uint32 Phase;
+        ScriptedInstance* pInstance;
 
-	bool RainBones;
-	bool Skeletons;
+        uint32 Phase;
 
-	uint32 BellowingRoarTimer;
-	uint32 CharredEarthTimer;
-	uint32 DistractingAshTimer;
-	uint32 SmolderingBreathTimer;
-	uint32 TailSweepTimer;
-	uint32 RainofBonesTimer;
-	uint32 SmokingBlastTimer;
-	uint32 FireballBarrageTimer;
-	uint32 SearingCindersTimer;
+        bool RainBones;
+        bool Skeletons;
 
-	uint32 FlyCount;
-	uint32 FlyTimer;
+        uint32 BellowingRoarTimer;
+        uint32 CharredEarthTimer;
+        uint32 DistractingAshTimer;
+        uint32 SmolderingBreathTimer;
+        uint32 TailSweepTimer;
+        uint32 RainofBonesTimer;
+        uint32 SmokingBlastTimer;
+        uint32 FireballBarrageTimer;
+        uint32 SearingCindersTimer;
 
-	bool Intro;
-	bool Flying;
-	bool Movement;
-	bool isReseted;
+        uint32 FlyCount;
+        uint32 FlyTimer;
 
-	uint32 WaitTimer;
-	uint32 MovePhase;
+        bool Intro;
+        bool Flying;
+        bool Movement;
+        bool isReseted;
 
-	void Reset()
-	{
-		if (pInstance)
-		{
-			bool isCorrectSpawned = true;
+        uint32 WaitTimer;
+        uint32 MovePhase;
 
-			if (pInstance->GetData(TYPE_NIGHTBANE) != DONE)
-			{
-				uint64 NightbaneGUID = 0;
-				NightbaneGUID = pInstance->GetData64(DATA_NIGHTBANE);
+        void Reset()
+        {
+            if (pInstance)
+            {
+                bool isCorrectSpawned = true;
 
-				if (NightbaneGUID)
-					if (Creature* Nightbane = Creature::GetCreature((*me), NightbaneGUID))
-						isCorrectSpawned = false;
-			}
-			else
-				isCorrectSpawned = false;
+                if (pInstance->GetData(TYPE_NIGHTBANE) != DONE)
+                {
+                    uint64 NightbaneGUID = 0;
+                    NightbaneGUID = pInstance->GetData64(DATA_NIGHTBANE);
 
-			if (!isCorrectSpawned)
-			{
-				(*me).GetMotionMaster()->Clear(false);
-				isReseted = true;
-				me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-				me->RemoveCorpse();
-			}
-			else
-			{
-				pInstance->SetData64(DATA_NIGHTBANE, me->GetGUID());
-			}
+                    if (NightbaneGUID)
+                        if (Creature* Nightbane = Creature::GetCreature((*me), NightbaneGUID))
+                            isCorrectSpawned = false;
+                }
+                else
+                    isCorrectSpawned = false;
 
-			if (!Intro)
-			{
-				(*me).GetMotionMaster()->Clear(false);
-				isReseted = true;
-				pInstance->SetData(TYPE_NIGHTBANE, NOT_STARTED);
-				me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-				me->RemoveCorpse();
-				return;
-			}
-			else
-			{
+                if (!isCorrectSpawned)
+                {
+                    (*me).GetMotionMaster()->Clear(false);
+                    isReseted = true;
+                    me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    me->RemoveCorpse();
+                }
+                else
+                {
+                    pInstance->SetData64(DATA_NIGHTBANE, me->GetGUID());
+                }
 
-				BellowingRoarTimer = 30000;
-				CharredEarthTimer = 15000;
-				DistractingAshTimer = 20000;
-				SmolderingBreathTimer = 10000;
-				TailSweepTimer = 12000;
-				RainofBonesTimer = 10000;
-				SmokingBlastTimer = 20000;
-				FireballBarrageTimer = 13000;
-				SearingCindersTimer = 14000;
-				WaitTimer = 1000;
+                if (!Intro)
+                {
+                    (*me).GetMotionMaster()->Clear(false);
+                    isReseted = true;
+                    pInstance->SetData(TYPE_NIGHTBANE, NOT_STARTED);
+                    me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    me->RemoveCorpse();
+                    return;
+                }
+                else
+                {
 
-				Phase = 1;
-				FlyCount = 0;
-				MovePhase = 0;
+                    BellowingRoarTimer = 30000;
+                    CharredEarthTimer = 15000;
+                    DistractingAshTimer = 20000;
+                    SmolderingBreathTimer = 10000;
+                    TailSweepTimer = 12000;
+                    RainofBonesTimer = 10000;
+                    SmokingBlastTimer = 20000;
+                    FireballBarrageTimer = 13000;
+                    SearingCindersTimer = 14000;
+                    WaitTimer = 1000;
 
-				me->SetCanFly(true);
-				me->SetLevitate(true);
-				me->SetHover(true);
+                    Phase = 1;
+                    FlyCount = 0;
+                    MovePhase = 0;
 
-				me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
-				me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
-				me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, true);
-				me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_INTERRUPT, true);
-				me->SetSpeed(MOVE_RUN, 3.0f);
-				me->AddUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT | MOVEMENTFLAG_LEVITATING);
-				me->RemoveUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
-				me->setActive(true);
+                    me->SetCanFly(true);
+                    me->SetLevitate(true);
+                    me->SetHover(true);
 
-				me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_TAUNT, true);
+                    me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_ATTACK_ME, true);
+                    me->ApplySpellImmune(0, IMMUNITY_EFFECT, SPELL_EFFECT_INTERRUPT_CAST, true);
+                    me->ApplySpellImmune(0, IMMUNITY_MECHANIC, MECHANIC_INTERRUPT, true);
+                    me->SetSpeed(MOVE_RUN, 3.0f);
+                    me->AddUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT | MOVEMENTFLAG_LEVITATING);
+                    me->RemoveUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
+                    me->setActive(true);
 
-				HandleTerraceDoors(true);
-				Flying = false;
-				Movement = false;
-			}
-		}
-	}
+                    me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
 
-	void HandleTerraceDoors(bool open)
-	{
-		if (pInstance)
-		{
-			pInstance->HandleGameObject(pInstance->GetData64(DATA_MASTERS_TERRACE_DOOR_1), open);
-			pInstance->HandleGameObject(pInstance->GetData64(DATA_MASTERS_TERRACE_DOOR_2), open);
-		}
-	}
+                    HandleTerraceDoors(true);
+                    Flying = false;
+                    Movement = false;
+                }
+            }
+        }
 
-	void EnterCombat(Unit * /*who*/)
-	{
-		if (pInstance)
-			pInstance->SetData(TYPE_NIGHTBANE, IN_PROGRESS);
+        void HandleTerraceDoors(bool open)
+        {
+            if (pInstance)
+            {
+                pInstance->HandleGameObject(pInstance->GetData64(DATA_MASTERS_TERRACE_DOOR_1), open);
+                pInstance->HandleGameObject(pInstance->GetData64(DATA_MASTERS_TERRACE_DOOR_2), open);
+            }
+        }
 
-		HandleTerraceDoors(false);
-		me->MonsterYell(YELL_AGGRO, LANG_UNIVERSAL, NULL);
-	}
+        void EnterCombat(Unit * /*who*/)
+        {
+            if (pInstance)
+                pInstance->SetData(TYPE_NIGHTBANE, IN_PROGRESS);
 
-	void AttackStart(Unit* who)
-	{
-		if (!Intro && !Flying)
-			if (Phase == 1)
-				ScriptedAI::AttackStart(who);
-			else
-				AttackStartNoMove(who);
-	}
+            HandleTerraceDoors(false);
+            me->MonsterYell(YELL_AGGRO, LANG_UNIVERSAL, NULL);
+        }
 
-	void JustDied(Unit* /*killer*/)
-	{
-		if (!isReseted)
-			if (pInstance)
-				pInstance->SetData(TYPE_NIGHTBANE, DONE);
+        void AttackStart(Unit* who)
+        {
+            if (!Intro && !Flying)
+                if (Phase == 1)
+                    ScriptedAI::AttackStart(who);
+                else
+                    AttackStartNoMove(who);
+        }
 
-		HandleTerraceDoors(true);
-	}
+        void JustDied(Unit* /*killer*/)
+        {
+            if (!isReseted)
+                if (pInstance)
+                    pInstance->SetData(TYPE_NIGHTBANE, DONE);
 
-	void MoveInLineOfSight(Unit *who)
-	{
-        if (!Intro && !Flying)
-            ScriptedAI::MoveInLineOfSight(who);
-	}
+            HandleTerraceDoors(true);
+        }
 
-	void MovementInform(uint32 type, uint32 id)
-	{
-		if (type != POINT_MOTION_TYPE)
-			return;
+        void MoveInLineOfSight(Unit *who)
+        {
+            if (!Intro && !Flying)
+                ScriptedAI::MoveInLineOfSight(who);
+        }
 
-		if (Intro)
-		{		
-			if (id >= 8)
-			{
-				Intro = false;
-				me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-				me->SetHomePosition(IntroWay[7][0], IntroWay[7][1], IntroWay[7][2], 0);
-				Phase = 1;
-				return;
-			}
+        void MovementInform(uint32 type, uint32 id)
+        {
+            if (type != POINT_MOTION_TYPE)
+                return;
 
-			WaitTimer = 1;
-		}
+            if (Intro)
+            {
+                if (id >= 8)
+                {
+                    Intro = false;
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    me->SetHomePosition(IntroWay[7][0], IntroWay[7][1], IntroWay[7][2], 0);
+                    Phase = 1;
+                    return;
+                }
 
-		if (Flying)
-		{
-			if (id == 0)
-			{
-				DoResetThreat();
-				DoStartNoMovement(me->GetVictim());
-				me->MonsterTextEmote(EMOTE_BREATH, 0, true);
-				Skeletons = false;
-				Flying = false;
-				Phase = 2;
-				return;
-			}
+                WaitTimer = 1;
+            }
 
-			if (id == 3)
-			{
-				MovePhase = 4;
-				WaitTimer = 1;
-				return;
-			}
+            if (Flying)
+            {
+                if (id == 0)
+                {
+                    DoResetThreat();
+                    DoStartNoMovement(me->GetVictim());
+                    me->MonsterTextEmote(EMOTE_BREATH, 0, true);
+                    Skeletons = false;
+                    Flying = false;
+                    Phase = 2;
+                    return;
+                }
 
-			if (id == 8)
-			{
-				DoResetThreat();
-				Flying = false;
-				Phase = 1;
-				Movement = true;
-				return;
-			}
+                if (id == 3)
+                {
+                    MovePhase = 4;
+                    WaitTimer = 1;
+                    return;
+                }
 
-			WaitTimer = 1;
-		}
-	}
+                if (id == 8)
+                {
+                    DoResetThreat();
+                    Flying = false;
+                    Phase = 1;
+                    Movement = true;
+                    return;
+                }
 
-	void JustSummoned(Creature *summoned)
-	{
-		summoned->AI()->AttackStart(me->GetVictim());
-	}
+                WaitTimer = 1;
+            }
+        }
 
-	void TakeOff()
-	{
-		me->MonsterYell(YELL_FLY_PHASE, LANG_UNIVERSAL, NULL);
-		me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-		me->InterruptSpell(CURRENT_GENERIC_SPELL);
-		me->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
-		me->AddUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT | MOVEMENTFLAG_LEVITATING);
-		(*me).GetMotionMaster()->Clear(false);
-		(*me).GetMotionMaster()->MovePoint(0, IntroWay[2][0], IntroWay[2][1], IntroWay[2][2]);
+        void JustSummoned(Creature *summoned)
+        {
+            summoned->AI()->AttackStart(me->GetVictim());
+        }
 
-		// Set Flight Speed to normal at begin of takeoff
-		me->SetSpeed(MOVE_FLIGHT, 1.0f);
+        void TakeOff()
+        {
+            me->MonsterYell(YELL_FLY_PHASE, LANG_UNIVERSAL, NULL);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            me->InterruptSpell(CURRENT_GENERIC_SPELL);
+            me->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
+            me->AddUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT | MOVEMENTFLAG_LEVITATING);
+            (*me).GetMotionMaster()->Clear(false);
+            (*me).GetMotionMaster()->MovePoint(0, IntroWay[2][0], IntroWay[2][1], IntroWay[2][2]);
 
-		Flying = true;
+            // Set Flight Speed to normal at begin of takeoff
+            me->SetSpeed(MOVE_FLIGHT, 1.0f);
 
-		FlyTimer = urand(45000, 60000); //timer wrong between 45 and 60 seconds
-		++FlyCount;
+            Flying = true;
 
-		RainofBonesTimer = 5000; //timer wrong (maybe)
-		RainBones = false;
-	}
+            FlyTimer = urand(45000, 60000); //timer wrong between 45 and 60 seconds
+            ++FlyCount;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (WaitTimer)
-			if (WaitTimer <= diff)
-			{
-				if (Intro)
-				{
-					me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            RainofBonesTimer = 5000; //timer wrong (maybe)
+            RainBones = false;
+        }
 
-					if (MovePhase >= 7)
-					{
-						me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-						me->RemoveUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT | MOVEMENTFLAG_LEVITATING);
-						me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-						me->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
-					}
-					else
-					{
-						me->GetMotionMaster()->MovePoint(MovePhase, IntroWay[MovePhase][0], IntroWay[MovePhase][1], IntroWay[MovePhase][2]);
-						++MovePhase;
-					}
-				}
+        void UpdateAI(const uint32 diff)
+        {
+            if (WaitTimer)
+                if (WaitTimer <= diff)
+                {
+                    if (Intro)
+                    {
+                        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
-				if (Flying)
-				{
-					me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                        if (MovePhase >= 7)
+                        {
+                            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            me->RemoveUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT | MOVEMENTFLAG_LEVITATING);
+                            me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
+                            me->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
+                        }
+                        else
+                        {
+                            me->GetMotionMaster()->MovePoint(MovePhase, IntroWay[MovePhase][0], IntroWay[MovePhase][1], IntroWay[MovePhase][2]);
+                            ++MovePhase;
+                        }
+                    }
 
-					if (MovePhase >= 7)
-					{
-						me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-						me->RemoveUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT | MOVEMENTFLAG_LEVITATING);
-						me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-						me->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
-					}
-					else
-					{
-						me->GetMotionMaster()->MovePoint(MovePhase, IntroWay[MovePhase][0], IntroWay[MovePhase][1], IntroWay[MovePhase][2]);
-						++MovePhase;
-					}
-				}
+                    if (Flying)
+                    {
+                        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
-				WaitTimer = 0;
-			}
-			else WaitTimer -= diff;
+                        if (MovePhase >= 7)
+                        {
+                            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                            me->RemoveUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT | MOVEMENTFLAG_LEVITATING);
+                            me->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
+                            me->GetMotionMaster()->MovePoint(8, IntroWay[7][0], IntroWay[7][1], IntroWay[7][2]);
+                        }
+                        else
+                        {
+                            me->GetMotionMaster()->MovePoint(MovePhase, IntroWay[MovePhase][0], IntroWay[MovePhase][1], IntroWay[MovePhase][2]);
+                            ++MovePhase;
+                        }
+                    }
 
-			if (!UpdateVictim())
-				return;
+                    WaitTimer = 0;
+                }
+                else WaitTimer -= diff;
 
-			if (Flying)
-				return;
+            if (!UpdateVictim())
+                return;
 
-			//  Phase 1 "GROUND FIGHT"
-			if (Phase == 1)
-			{
-				if (Movement)
-				{
-					DoStartMovement(me->GetVictim());
-					Movement = false;
-				}
+            if (Flying)
+                return;
 
-				if (BellowingRoarTimer <= diff)
-				{
-					DoCast(me->GetVictim(), SPELL_BELLOWING_ROAR);
-					BellowingRoarTimer = urand(30000, 40000);
-				}
-				else BellowingRoarTimer -= diff;
+            //  Phase 1 "GROUND FIGHT"
+            if (Phase == 1)
+            {
+                if (Movement)
+                {
+                    DoStartMovement(me->GetVictim());
+                    Movement = false;
+                }
 
-				if (SmolderingBreathTimer <= diff)
-				{
-					DoCast(me->GetVictim(), SPELL_SMOLDERING_BREATH);
-					SmolderingBreathTimer = 20000;
-				}
-				else SmolderingBreathTimer -= diff;
+                if (BellowingRoarTimer <= diff)
+                {
+                    DoCast(me->GetVictim(), SPELL_BELLOWING_ROAR);
+                    BellowingRoarTimer = urand(30000, 40000);
+                }
+                else BellowingRoarTimer -= diff;
 
-				if (DistractingAshTimer <= diff)
-				{
-					if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-						DoCast(pTarget, SPELL_DISTRACTING_ASH);
-					DistractingAshTimer = urand(15000, 28000); //timer wrong
-				}
-				else DistractingAshTimer -= diff;
+                if (SmolderingBreathTimer <= diff)
+                {
+                    DoCast(me->GetVictim(), SPELL_SMOLDERING_BREATH);
+                    SmolderingBreathTimer = 20000;
+                }
+                else SmolderingBreathTimer -= diff;
 
-				if (CharredEarthTimer <= diff)
-				{
-					if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-						DoCast(pTarget, SPELL_CHARRED_EARTH);
-					CharredEarthTimer = 20000;
-				}
-				else CharredEarthTimer -= diff;
+                if (DistractingAshTimer <= diff)
+                {
+                    if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                        DoCast(pTarget, SPELL_DISTRACTING_ASH);
+                    DistractingAshTimer = urand(15000, 28000); //timer wrong
+                }
+                else DistractingAshTimer -= diff;
 
-				if (TailSweepTimer <= diff)
-				{
-					if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-						if (!me->HasInArc(float(M_PI), pTarget))
-							DoCast(pTarget, SPELL_TAIL_SWEEP);
-					TailSweepTimer = 15000;
-				}
-				else TailSweepTimer -= diff;
+                if (CharredEarthTimer <= diff)
+                {
+                    if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                        DoCast(pTarget, SPELL_CHARRED_EARTH);
+                    CharredEarthTimer = 20000;
+                }
+                else CharredEarthTimer -= diff;
 
-				if (SearingCindersTimer <= diff)
-				{
-					if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-						DoCast(pTarget, SPELL_SEARING_CINDERS);
-					SearingCindersTimer = 10000;
-				}
-				else SearingCindersTimer -= diff;
+                if (TailSweepTimer <= diff)
+                {
+                    if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                        if (!me->HasInArc(float(M_PI), pTarget))
+                            DoCast(pTarget, SPELL_TAIL_SWEEP);
+                    TailSweepTimer = 15000;
+                }
+                else TailSweepTimer -= diff;
 
-				uint32 Prozent;
-				Prozent = (me->GetHealth() * 100) / me->GetMaxHealth();
+                if (SearingCindersTimer <= diff)
+                {
+                    if (Unit *pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                        DoCast(pTarget, SPELL_SEARING_CINDERS);
+                    SearingCindersTimer = 10000;
+                }
+                else SearingCindersTimer -= diff;
 
-				if (Prozent < 75 && FlyCount == 0) // first take off 75%
-					TakeOff();
+                uint32 Prozent;
+                Prozent = (me->GetHealth() * 100) / me->GetMaxHealth();
 
-				if (Prozent < 50 && FlyCount == 1) // secound take off 50%
-					TakeOff();
+                if (Prozent < 75 && FlyCount == 0) // first take off 75%
+                    TakeOff();
 
-				if (Prozent < 25 && FlyCount == 2) // third take off 25%
-					TakeOff();
+                if (Prozent < 50 && FlyCount == 1) // secound take off 50%
+                    TakeOff();
 
-				DoMeleeAttackIfReady();
-			}
+                if (Prozent < 25 && FlyCount == 2) // third take off 25%
+                    TakeOff();
 
-			//Phase 2 "FLYING FIGHT"
-			if (Phase == 2)
-			{
-				if (!RainBones)
-				{
-					if (RainofBonesTimer <= diff && !RainBones) // only once at the beginning of phase 2
-					{
+                DoMeleeAttackIfReady();
+            }
 
-						if (!Skeletons)
-						{
+            //Phase 2 "FLYING FIGHT"
+            if (Phase == 2)
+            {
+                if (!RainBones)
+                {
+                    if (RainofBonesTimer <= diff && !RainBones) // only once at the beginning of phase 2
+                    {
+
+                        if (!Skeletons)
+                        {
                             for (int i = 0; i < 6; i++)
                                 DoCast(me->GetVictim(), SPELL_SUMMON_SKELETON, true);
                             RainofBonesTimer = 10000;
-							Skeletons = true;
-						}
+                            Skeletons = true;
+                        }
 
-						DoCast(me->GetVictim(), SPELL_RAIN_OF_BONES);
-						RainBones = true;
-						SmokingBlastTimer = 20000;
-					}
-					else RainofBonesTimer -= diff;				
-				}
+                        DoCast(me->GetVictim(), SPELL_RAIN_OF_BONES);
+                        RainBones = true;
+                        SmokingBlastTimer = 20000;
+                    }
+                    else RainofBonesTimer -= diff;
+                }
 
-				if (RainBones)
-				{
-					if (SmokingBlastTimer <= diff)
-					{
-						DoCast(me->GetVictim(), SPELL_SMOKING_BLAST);
-						SmokingBlastTimer = 1500; //timer wrong
-					}
-					else SmokingBlastTimer -= diff;
-				}
+                if (RainBones)
+                {
+                    if (SmokingBlastTimer <= diff)
+                    {
+                        DoCast(me->GetVictim(), SPELL_SMOKING_BLAST);
+                        SmokingBlastTimer = 1500; //timer wrong
+                    }
+                    else SmokingBlastTimer -= diff;
+                }
 
-				if (FireballBarrageTimer <= diff)
-				{
-					Map *map = me->GetMap();
-					if (!map->IsDungeon()) return;
-					Map::PlayerList const &PlayerList = map->GetPlayers();
-					for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
-					{
-						if (Player* i_pl = i->GetSource())
-							if (i_pl->IsAlive() && !me->IsWithinDistInMap(i_pl, 80))
-							{
-								DoCast(i_pl, SPELL_FIREBALL_BARRAGE);
-							}
-					}
-					FireballBarrageTimer = 20000;
-				}
-				else FireballBarrageTimer -= diff;
+                if (FireballBarrageTimer <= diff)
+                {
+                    Map *map = me->GetMap();
+                    if (!map->IsDungeon()) return;
+                    Map::PlayerList const &PlayerList = map->GetPlayers();
+                    for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                    {
+                        if (Player* i_pl = i->GetSource())
+                            if (i_pl->IsAlive() && !me->IsWithinDistInMap(i_pl, 80))
+                            {
+                                DoCast(i_pl, SPELL_FIREBALL_BARRAGE);
+                            }
+                    }
+                    FireballBarrageTimer = 20000;
+                }
+                else FireballBarrageTimer -= diff;
 
-				if (FlyTimer <= diff) //landing
-				{
-					bool bChance = urand(0, 1);				
+                if (FlyTimer <= diff) //landing
+                {
+                    bool bChance = urand(0, 1);
 
-						if (bChance)
-						me->MonsterYell(YELL_LAND_PHASE_1, LANG_UNIVERSAL, NULL);
-					else
-						 me->MonsterYell(YELL_LAND_PHASE_2, LANG_UNIVERSAL, NULL);
+                    if (bChance)
+                        me->MonsterYell(YELL_LAND_PHASE_1, LANG_UNIVERSAL, NULL);
+                    else
+                        me->MonsterYell(YELL_LAND_PHASE_2, LANG_UNIVERSAL, NULL);
 
-					me->GetMotionMaster()->Clear(false);
-					me->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
+                    me->GetMotionMaster()->Clear(false);
+                    me->GetMotionMaster()->MovePoint(3, IntroWay[3][0], IntroWay[3][1], IntroWay[3][2]);
 
-					Flying = true;
+                    Flying = true;
 
-				// Set flying speed to x6.0 so doesnt take so long to land
-				me->SetSpeed(MOVE_FLIGHT, 6.0f);
-				}
-				else FlyTimer -= diff;
-			}
-	}
+                    // Set flying speed to x6.0 so doesnt take so long to land
+                    me->SetSpeed(MOVE_FLIGHT, 6.0f);
+                }
+                else FlyTimer -= diff;
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_nightbaneAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_boss_nightbane(Creature* pCreature)
-{
-    return new boss_nightbaneAI (pCreature);
-}
 
 void AddSC_boss_nightbane()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_nightbane";
-    newscript->GetAI = &GetAI_boss_nightbane;
-    newscript->RegisterSelf();
+    new boss_nightbane();
 }
 

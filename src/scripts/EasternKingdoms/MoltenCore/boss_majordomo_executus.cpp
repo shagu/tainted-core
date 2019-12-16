@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Majordomo_Executus
-SD%Complete: 30
-SDComment: Correct spawning and Event NYI
-SDCategory: Molten Core
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Majordomo_Executus
+ SD%Complete: 30
+ SDComment: Correct spawning and Event NYI
+ SDCategory: Molten Core
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -53,83 +53,70 @@ EndScriptData */
 #define ENTRY_FLAMEWALKER_HEALER    11663
 #define ENTRY_FLAMEWALKER_ELITE     11664
 
-struct boss_majordomoAI : public ScriptedAI
+
+class boss_majordomo : public CreatureScript
 {
-    boss_majordomoAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_majordomo() : CreatureScript("boss_majordomo") { }
 
-    uint32 MagicReflection_Timer;
-    uint32 DamageReflection_Timer;
-    uint32 Blastwave_Timer;
-
-    void Reset()
+    struct boss_majordomoAI : public ScriptedAI
     {
-        MagicReflection_Timer =  30000;                     //Damage reflection first so we alternate
-        DamageReflection_Timer = 15000;
-        Blastwave_Timer = 10000;
-    }
+        boss_majordomoAI(Creature* c) : ScriptedAI(c) {}
 
-    void KilledUnit(Unit* /*victim*/)
-    {
-        if (rand() % 5)
-            return;
+        uint32 MagicReflection_Timer;
+        uint32 DamageReflection_Timer;
+        uint32 Blastwave_Timer;
 
-        DoScriptText(SAY_SLAY, me);
-    }
-
-    void EnterCombat(Unit* /*who*/)
-    {
-        DoScriptText(SAY_AGGRO, me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        //Cast Ageis if less than 50% hp
-        if (HealthBelowPct(50))
-            DoCast(me, SPELL_AEGIS);
-
-        //MagicReflection_Timer
-        //        if (MagicReflection_Timer <= diff)
-        //        {
-        //            DoCast(me, SPELL_MAGICREFLECTION);
-
-        //60 seconds until we should cast this agian
-        //            MagicReflection_Timer = 30000;
-        //        } else MagicReflection_Timer -= diff;
-
-        //DamageReflection_Timer
-        //        if (DamageReflection_Timer <= diff)
-        //        {
-        //            DoCast(me, SPELL_DAMAGEREFLECTION);
-
-        //60 seconds until we should cast this agian
-        //            DamageReflection_Timer = 30000;
-        //        } else DamageReflection_Timer -= diff;
-
-        //Blastwave_Timer
-        if (Blastwave_Timer <= diff)
+        void Reset()
         {
-            DoCastVictim( SPELL_BLASTWAVE);
+            MagicReflection_Timer = 30000;                     //Damage reflection first so we alternate
+            DamageReflection_Timer = 15000;
             Blastwave_Timer = 10000;
         }
-        else Blastwave_Timer -= diff;
 
-        DoMeleeAttackIfReady();
+        void KilledUnit(Unit* /*victim*/)
+        {
+            if (rand() % 5)
+                return;
+
+            DoScriptText(SAY_SLAY, me);
+        }
+
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoScriptText(SAY_AGGRO, me);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            //Cast Ageis if less than 50% hp
+            if (HealthBelowPct(50))
+                DoCast(me, SPELL_AEGIS);
+
+            //Blastwave_Timer
+            if (Blastwave_Timer <= diff)
+            {
+                DoCastVictim(SPELL_BLASTWAVE);
+                Blastwave_Timer = 10000;
+            }
+            else Blastwave_Timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_majordomoAI(pCreature);
     }
+
 };
-CreatureAI* GetAI_boss_majordomo(Creature* pCreature)
-{
-    return new boss_majordomoAI (pCreature);
-}
 
 void AddSC_boss_majordomo()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_majordomo";
-    newscript->GetAI = &GetAI_boss_majordomo;
-    newscript->RegisterSelf();
+    new boss_majordomo();
 }
 

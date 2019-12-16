@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Amnennar_the_coldbringer
-SD%Complete: 100
-SDComment:
-SDCategory: Razorfen Downs
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Amnennar_the_coldbringer
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Razorfen Downs
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -36,110 +36,113 @@ EndScriptData */
 #define SPELL_FROST_NOVA        15531
 #define SPELL_FROST_SPECTRES    12642
 
-struct boss_amnennar_the_coldbringerAI : public ScriptedAI
+
+class boss_amnennar_the_coldbringer : public CreatureScript
 {
-    boss_amnennar_the_coldbringerAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_amnennar_the_coldbringer() : CreatureScript("boss_amnennar_the_coldbringer") { }
 
-    uint32 AmnenarsWrath_Timer;
-    uint32 FrostBolt_Timer;
-    uint32 FrostNova_Timer;
-    bool Spectrals70;
-    bool Spectrals55;
-    bool Spectrals30;
-    bool Hp;
-
-    void Reset()
+    struct boss_amnennar_the_coldbringerAI : public ScriptedAI
     {
-        AmnenarsWrath_Timer = 8000;
-        FrostBolt_Timer = 1000;
-        FrostNova_Timer = 10000 + rand() % 5000;
-        Spectrals70 = false;
-        Spectrals55 = false;
-        Spectrals30 = false;
-        Hp = false;
-    }
+        boss_amnennar_the_coldbringerAI(Creature* c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* /*who*/)
+        uint32 AmnenarsWrath_Timer;
+        uint32 FrostBolt_Timer;
+        uint32 FrostNova_Timer;
+        bool Spectrals70;
+        bool Spectrals55;
+        bool Spectrals30;
+        bool Hp;
+
+        void Reset()
+        {
+            AmnenarsWrath_Timer = 8000;
+            FrostBolt_Timer = 1000;
+            FrostNova_Timer = 10000 + rand() % 5000;
+            Spectrals70 = false;
+            Spectrals55 = false;
+            Spectrals30 = false;
+            Hp = false;
+        }
+
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoScriptText(SAY_AGGRO, me);
+        }
+
+        void KilledUnit()
+        {
+            DoScriptText(SAY_KILL, me);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            //AmnenarsWrath_Timer
+            if (AmnenarsWrath_Timer <= diff)
+            {
+                DoCastVictim(SPELL_AMNENNARSWRATH);
+                AmnenarsWrath_Timer = 12000;
+            }
+            else AmnenarsWrath_Timer -= diff;
+
+            //FrostBolt_Timer
+            if (FrostBolt_Timer <= diff)
+            {
+                DoCastVictim(SPELL_FROSTBOLT);
+                FrostBolt_Timer = 8000;
+            }
+            else FrostBolt_Timer -= diff;
+
+            if (FrostNova_Timer <= diff)
+            {
+                DoCast(me, SPELL_FROST_NOVA);
+                FrostNova_Timer = 15000;
+            }
+            else FrostNova_Timer -= diff;
+
+            if (!Spectrals70 && HealthBelowPct(70))
+            {
+                DoScriptText(SAY_SUMMON60, me);
+                DoCastVictim(SPELL_FROST_SPECTRES);
+                Spectrals70 = true;
+            }
+
+            if (!Hp && HealthBelowPct(50))
+            {
+                DoScriptText(SAY_HP, me);
+                Hp = true;
+            }
+
+            if (!Spectrals55 && HealthBelowPct(55))
+            {
+                DoScriptText(SAY_SUMMON30, me);
+                DoCastVictim(SPELL_FROST_SPECTRES);
+                Spectrals55 = true;
+            }
+
+
+            if (!Spectrals30 && HealthBelowPct(30))
+            {
+                DoScriptText(SAY_SUMMON30, me);
+                DoCastVictim(SPELL_FROST_SPECTRES);
+                Spectrals30 = true;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        DoScriptText(SAY_AGGRO, me);
-    }
-
-    void KilledUnit()
-    {
-        DoScriptText(SAY_KILL, me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        //AmnenarsWrath_Timer
-        if (AmnenarsWrath_Timer <= diff)
-        {
-            DoCastVictim( SPELL_AMNENNARSWRATH);
-            AmnenarsWrath_Timer = 12000;
-        }
-        else AmnenarsWrath_Timer -= diff;
-
-        //FrostBolt_Timer
-        if (FrostBolt_Timer <= diff)
-        {
-            DoCastVictim( SPELL_FROSTBOLT);
-            FrostBolt_Timer = 8000;
-        }
-        else FrostBolt_Timer -= diff;
-
-        if (FrostNova_Timer <= diff)
-        {
-            DoCast(me, SPELL_FROST_NOVA);
-            FrostNova_Timer = 15000;
-        }
-        else FrostNova_Timer -= diff;
-
-        if (!Spectrals70 && HealthBelowPct(70))
-        {
-            DoScriptText(SAY_SUMMON60, me);
-            DoCastVictim( SPELL_FROST_SPECTRES);
-            Spectrals70 = true;
-        }
-
-        if (!Hp && HealthBelowPct(50))
-        {
-            DoScriptText(SAY_HP, me);
-            Hp = true;
-        }
-
-        if (!Spectrals55 && HealthBelowPct(55))
-        {
-            DoScriptText(SAY_SUMMON30, me);
-            DoCastVictim( SPELL_FROST_SPECTRES);
-            Spectrals55 = true;
-        }
-
-
-        if (!Spectrals30 && HealthBelowPct(30))
-        {
-           DoScriptText(SAY_SUMMON30, me);
-           DoCastVictim(SPELL_FROST_SPECTRES);
-           Spectrals30 = true;
-        }
-
-        DoMeleeAttackIfReady();
+        return new boss_amnennar_the_coldbringerAI(pCreature);
     }
 };
 
-CreatureAI* GetAI_boss_amnennar_the_coldbringer(Creature* pCreature)
-{
-    return new boss_amnennar_the_coldbringerAI (pCreature);
-}
-
 void AddSC_boss_amnennar_the_coldbringer()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_amnennar_the_coldbringer";
-    newscript->GetAI = &GetAI_boss_amnennar_the_coldbringer;
-    newscript->RegisterSelf();
+    new boss_amnennar_the_coldbringer();
 }
 

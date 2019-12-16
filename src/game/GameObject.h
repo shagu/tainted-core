@@ -852,6 +852,7 @@ class GameObject : public WorldObject, public GridObject<GameObject>
         Player* GetOriginalLootRecipient() const;           // ignore group changes/etc, not for looting
 
         uint32 GetDisplayId() const { return GetUInt32Value(GAMEOBJECT_DISPLAYID); }
+        virtual uint32 GetScriptId() const { return GetGOInfo()->ScriptId; }
     protected:
         bool AIM_Initialize();
         uint32      m_spellId;

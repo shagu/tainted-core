@@ -232,7 +232,7 @@ bool Group::AddInvite(Player* player, bool isLeader)
     player->SetGroupInvite(this);
 
     if (!isLeader)
-        sScriptMgr.OnGroupPlayerInvited(this, player);
+        sScriptMgr.OnGroupInviteMember(this, player);
 
     // used by eluna
     sEluna->OnInviteMember(this, player->GetGUID());
@@ -306,7 +306,7 @@ bool Group::AddMember(const uint64& guid, const char* name)
                 player->SetDifficulty(m_difficulty);
                 player->SendDungeonDifficulty(true);
             }
-            sScriptMgr.OnGroupPlayerJoined(this, player);
+            sScriptMgr.OnGroupMemberJoin(this, player);
         }
         player->SetGroupUpdateFlag(GROUP_UPDATE_FULL);
         UpdatePlayerOutOfRange(player);
@@ -331,7 +331,7 @@ uint32 Group::RemoveMember(const uint64& guid, const RemoveMethod& method /* = G
         {
             WorldPacket data;
 
-            sScriptMgr.OnGroupPlayerRemoved(this, player, method, kicker, reason);
+            sScriptMgr.OnGroupRemoveMember(this, player, method, kicker, reason);
 
             if (method == GROUP_REMOVEMETHOD_KICK)
             {
@@ -384,7 +384,7 @@ void Group::ChangeLeader(const uint64& guid)
     Player* newLeader = sObjectMgr.GetPlayer(guid);
 
     if (oldLeader && newLeader)
-        sScriptMgr.OnGroupLeaderChanged(this, oldLeader, newLeader);
+        sScriptMgr.OnGroupChangeLeader(this, oldLeader, newLeader);
 
     // used by eluna
     sEluna->OnChangeLeader(this, newLeader->GetGUID(), oldLeader->GetGUID());
@@ -400,7 +400,7 @@ void Group::Disband(bool hideDestroy)
     Player* player = sObjectMgr.GetPlayer(this->GetLeaderGUID());
     
     if (player && player->GetSession())
-        sScriptMgr.OnGroupDisbanded(this, player);
+        sScriptMgr.OnGroupDisband(this, player);
 
     for (member_citerator citr = m_memberSlots.begin(); citr != m_memberSlots.end(); ++citr)
     {

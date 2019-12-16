@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Pyroguard_Emberseer
-SD%Complete: 100
-SDComment: Event to activate Emberseer NYI
-SDCategory: Blackrock Spire
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Pyroguard_Emberseer
+ SD%Complete: 100
+ SDComment: Event to activate Emberseer NYI
+ SDCategory: Blackrock Spire
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -29,70 +29,74 @@ EndScriptData */
 #define SPELL_FLAMEBUFFET       23341
 #define SPELL_PYROBLAST         17274
 
-struct boss_pyroguard_emberseerAI : public ScriptedAI
+class boss_pyroguard_emberseer : public CreatureScript
 {
-    boss_pyroguard_emberseerAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_pyroguard_emberseer() : CreatureScript("boss_pyroguard_emberseer") { }
 
-    uint32 FireNova_Timer;
-    uint32 FlameBuffet_Timer;
-    uint32 PyroBlast_Timer;
-
-    void Reset()
+    struct boss_pyroguard_emberseerAI : public ScriptedAI
     {
-        FireNova_Timer = 6000;
-        FlameBuffet_Timer = 3000;
-        PyroBlast_Timer = 14000;
-    }
+        boss_pyroguard_emberseerAI(Creature* c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* /*who*/)
-    {
-    }
+        uint32 FireNova_Timer;
+        uint32 FlameBuffet_Timer;
+        uint32 PyroBlast_Timer;
 
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //FireNova_Timer
-        if (FireNova_Timer <= diff)
+        void Reset()
         {
-            DoCastVictim( SPELL_FIRENOVA);
             FireNova_Timer = 6000;
+            FlameBuffet_Timer = 3000;
+            PyroBlast_Timer = 14000;
         }
-        else FireNova_Timer -= diff;
 
-        //FlameBuffet_Timer
-        if (FlameBuffet_Timer <= diff)
+        void EnterCombat(Unit* /*who*/)
         {
-            DoCastVictim( SPELL_FLAMEBUFFET);
-            FlameBuffet_Timer = 14000;
         }
-        else FlameBuffet_Timer -= diff;
 
-        //PyroBlast_Timer
-        if (PyroBlast_Timer <= diff)
+        void UpdateAI(const uint32 diff)
         {
-            if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
-                DoCast(pTarget, SPELL_PYROBLAST);
-            PyroBlast_Timer = 15000;
-        }
-        else PyroBlast_Timer -= diff;
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
 
-        DoMeleeAttackIfReady();
+            //FireNova_Timer
+            if (FireNova_Timer <= diff)
+            {
+                DoCastVictim(SPELL_FIRENOVA);
+                FireNova_Timer = 6000;
+            }
+            else FireNova_Timer -= diff;
+
+            //FlameBuffet_Timer
+            if (FlameBuffet_Timer <= diff)
+            {
+                DoCastVictim(SPELL_FLAMEBUFFET);
+                FlameBuffet_Timer = 14000;
+            }
+            else FlameBuffet_Timer -= diff;
+
+            //PyroBlast_Timer
+            if (PyroBlast_Timer <= diff)
+            {
+                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 100, true))
+                    DoCast(pTarget, SPELL_PYROBLAST);
+                PyroBlast_Timer = 15000;
+            }
+            else PyroBlast_Timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_pyroguard_emberseerAI(pCreature);
     }
+
 };
-CreatureAI* GetAI_boss_pyroguard_emberseer(Creature* pCreature)
-{
-    return new boss_pyroguard_emberseerAI (pCreature);
-}
 
 void AddSC_boss_pyroguard_emberseer()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_pyroguard_emberseer";
-    newscript->GetAI = &GetAI_boss_pyroguard_emberseer;
-    newscript->RegisterSelf();
+    new boss_pyroguard_emberseer();
 }
 
