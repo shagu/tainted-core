@@ -113,250 +113,273 @@ static CouncilYells CouncilEnrage[] =
 
 #define SPELL_BERSERK              45078
 
-struct mob_blood_elf_council_voice_triggerAI : public ScriptedAI
+class mob_blood_elf_council_voice_trigger : public CreatureScript
 {
-    mob_blood_elf_council_voice_triggerAI(Creature* c) : ScriptedAI(c)
+public:
+    mob_blood_elf_council_voice_trigger() : CreatureScript("mob_blood_elf_council_voice_trigger") { }
+    struct mob_blood_elf_council_voice_triggerAI : public ScriptedAI
     {
-        for (uint8 i = 0; i < 4; ++i)
-            Council[i] = 0;
-    }
-
-    uint64 Council[4];
-
-    uint32 EnrageTimer;
-    uint32 AggroYellTimer;
-
-    uint8 YellCounter;                                      // Serves as the counter for both the aggro and enrage yells
-
-    bool EventStarted;
-
-    void Reset()
-    {
-        EnrageTimer = 900000;                               // 15 minutes
-        AggroYellTimer = 500;
-
-        YellCounter = 0;
-
-        EventStarted = false;
-    }
-
-    // finds and stores the GUIDs for each Council member using instance data system.
-    void LoadCouncilGUIDs()
-    {
-        if (ScriptedInstance* pInstance = (ScriptedInstance*)me->GetInstanceData())
+        mob_blood_elf_council_voice_triggerAI(Creature* c) : ScriptedAI(c)
         {
-            Council[0] = pInstance->GetData64(DATA_GATHIOSTHESHATTERER);
-            Council[1] = pInstance->GetData64(DATA_VERASDARKSHADOW);
-            Council[2] = pInstance->GetData64(DATA_LADYMALANDE);
-            Council[3] = pInstance->GetData64(DATA_HIGHNETHERMANCERZEREVOR);
+            for (uint8 i = 0; i < 4; ++i)
+                Council[i] = 0;
         }
-        else error_log(ERROR_INST_DATA);
-    }
 
-    void EnterCombat(Unit* /*who*/) {}
+        uint64 Council[4];
 
-    void AttackStart(Unit* /*who*/) {}
-    void MoveInLineOfSight(Unit* /*who*/) {}
+        uint32 EnrageTimer;
+        uint32 AggroYellTimer;
 
-    void UpdateAI(const uint32 diff)
-    {
-        if (!EventStarted)
-            return;
+        uint8 YellCounter;                                      // Serves as the counter for both the aggro and enrage yells
 
-        if (YellCounter > 3)
-            return;
+        bool EventStarted;
 
-        if (AggroYellTimer)
+        void Reset()
         {
-            if (AggroYellTimer <= diff)
+            EnrageTimer = 900000;                               // 15 minutes
+            AggroYellTimer = 500;
+
+            YellCounter = 0;
+
+            EventStarted = false;
+        }
+
+        // finds and stores the GUIDs for each Council member using instance data system.
+        void LoadCouncilGUIDs()
+        {
+            if (ScriptedInstance* pInstance = (ScriptedInstance*)me->GetInstanceData())
             {
-                if (Unit* pMember = Unit::GetUnit(*me, Council[YellCounter]))
-                {
-                    DoScriptText(CouncilAggro[YellCounter].entry, pMember);
-                    AggroYellTimer = CouncilAggro[YellCounter].timer;
-                }
-                ++YellCounter;
-                if (YellCounter > 3)
-                    YellCounter = 0;                            // Reuse for Enrage Yells
+                Council[0] = pInstance->GetData64(DATA_GATHIOSTHESHATTERER);
+                Council[1] = pInstance->GetData64(DATA_VERASDARKSHADOW);
+                Council[2] = pInstance->GetData64(DATA_LADYMALANDE);
+                Council[3] = pInstance->GetData64(DATA_HIGHNETHERMANCERZEREVOR);
             }
-            else AggroYellTimer -= diff;
+            else error_log(ERROR_INST_DATA);
         }
 
-        if (EnrageTimer)
+        void EnterCombat(Unit* /*who*/) {}
+
+        void AttackStart(Unit* /*who*/) {}
+        void MoveInLineOfSight(Unit* /*who*/) {}
+
+        void UpdateAI(const uint32 diff)
         {
-            if (EnrageTimer <= diff)
+            if (!EventStarted)
+                return;
+
+            if (YellCounter > 3)
+                return;
+
+            if (AggroYellTimer)
             {
-                if (Unit* pMember = Unit::GetUnit(*me, Council[YellCounter]))
+                if (AggroYellTimer <= diff)
                 {
-                    pMember->CastSpell(pMember, SPELL_BERSERK, true);
-                    DoScriptText(CouncilEnrage[YellCounter].entry, pMember);
-                    EnrageTimer = CouncilEnrage[YellCounter].timer;
+                    if (Unit* pMember = Unit::GetUnit(*me, Council[YellCounter]))
+                    {
+                        DoScriptText(CouncilAggro[YellCounter].entry, pMember);
+                        AggroYellTimer = CouncilAggro[YellCounter].timer;
+                    }
+                    ++YellCounter;
+                    if (YellCounter > 3)
+                        YellCounter = 0;                            // Reuse for Enrage Yells
                 }
-                ++YellCounter;
+                else AggroYellTimer -= diff;
             }
-            else EnrageTimer -= diff;
+
+            if (EnrageTimer)
+            {
+                if (EnrageTimer <= diff)
+                {
+                    if (Unit* pMember = Unit::GetUnit(*me, Council[YellCounter]))
+                    {
+                        pMember->CastSpell(pMember, SPELL_BERSERK, true);
+                        DoScriptText(CouncilEnrage[YellCounter].entry, pMember);
+                        EnrageTimer = CouncilEnrage[YellCounter].timer;
+                    }
+                    ++YellCounter;
+                }
+                else EnrageTimer -= diff;
+            }
         }
+    };
+
+    CreatureAI* GetAI(Creature* c) const
+    {
+        return new mob_blood_elf_council_voice_triggerAI(c);
     }
 };
 
-struct mob_illidari_councilAI : public ScriptedAI
+
+class mob_illidari_council : public CreatureScript
 {
-    mob_illidari_councilAI(Creature* c) : ScriptedAI(c)
+public:
+    mob_illidari_council() : CreatureScript("mob_illidari_council") { }
+    struct mob_illidari_councilAI : public ScriptedAI
     {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
-        for (uint8 i = 0; i < 4; ++i)
-            Council[i] = 0;
-    }
-
-    ScriptedInstance* pInstance;
-
-    uint64 Council[4];
-
-    uint32 CheckTimer;
-    uint32 EndEventTimer;
-
-    uint8 DeathCount;
-
-    bool EventBegun;
-
-    void Reset()
-    {
-        CheckTimer    = 2000;
-        EndEventTimer = 0;
-
-        DeathCount = 0;
-
-        Creature* pMember = NULL;
-        for (uint8 i = 0; i < 4; ++i)
+        mob_illidari_councilAI(Creature* c) : ScriptedAI(c)
         {
-            if ((pMember = (Unit::GetCreature((*me), Council[i]))))
-            {
-                if (!pMember->IsAlive())
-                {
-                    pMember->RemoveCorpse();
-                    pMember->Respawn();
-                }
-                pMember->AI()->EnterEvadeMode();
-            }
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
+            for (uint8 i = 0; i < 4; ++i)
+                Council[i] = 0;
         }
 
-        if (pInstance)
+        ScriptedInstance* pInstance;
+
+        uint64 Council[4];
+
+        uint32 CheckTimer;
+        uint32 EndEventTimer;
+
+        uint8 DeathCount;
+
+        bool EventBegun;
+
+        void Reset()
         {
-            pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, NOT_STARTED);
-            if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
-                VoiceTrigger->AI()->EnterEvadeMode();
-        }
+            CheckTimer = 2000;
+            EndEventTimer = 0;
 
-        EventBegun = false;
+            DeathCount = 0;
 
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-        me->SetDisplayId(11686);
-    }
-
-    void EnterCombat(Unit* /*who*/) {}
-    void AttackStart(Unit* /*who*/) {}
-    void MoveInLineOfSight(Unit* /*who*/) {}
-
-    void StartEvent(Unit* pTarget)
-    {
-        if (!pInstance)
-            return;
-
-        if (pTarget && pTarget->IsAlive())
-        {
-            Council[0] = pInstance->GetData64(DATA_GATHIOSTHESHATTERER);
-            Council[1] = pInstance->GetData64(DATA_HIGHNETHERMANCERZEREVOR);
-            Council[2] = pInstance->GetData64(DATA_LADYMALANDE);
-            Council[3] = pInstance->GetData64(DATA_VERASDARKSHADOW);
-
-            // Start the event for the Voice Trigger
-            if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
-            {
-                CAST_AI(mob_blood_elf_council_voice_triggerAI, VoiceTrigger->AI())->LoadCouncilGUIDs();
-                CAST_AI(mob_blood_elf_council_voice_triggerAI, VoiceTrigger->AI())->EventStarted = true;
-            }
-
+            Creature* pMember = NULL;
             for (uint8 i = 0; i < 4; ++i)
             {
-                Unit* Member = NULL;
-                if (Council[i])
+                if ((pMember = (Unit::GetCreature((*me), Council[i]))))
                 {
-                    Member = Unit::GetUnit((*me), Council[i]);
-                    if (Member && Member->IsAlive())
-                        CAST_CRE(Member)->AI()->AttackStart(pTarget);
-                }
-            }
-
-            pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, IN_PROGRESS);
-
-            EventBegun = true;
-        }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!EventBegun) return;
-
-        if (EndEventTimer)
-        {
-            if (EndEventTimer <= diff)
-            {
-                if (DeathCount > 3)
-                {
-                    if (pInstance)
+                    if (!pMember->IsAlive())
                     {
-                        if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
-                            VoiceTrigger->DealDamage(VoiceTrigger, VoiceTrigger->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                        pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, DONE);
+                        pMember->RemoveCorpse();
+                        pMember->Respawn();
                     }
-                    me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    return;
+                    pMember->AI()->EnterEvadeMode();
                 }
-
-                Creature* pMember = (Unit::GetCreature(*me, Council[DeathCount]));
-                if (pMember && pMember->IsAlive())
-                    pMember->DealDamage(pMember, pMember->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                ++DeathCount;
-                EndEventTimer = 1500;
             }
-            else EndEventTimer -= diff;
+
+            if (pInstance)
+            {
+                pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, NOT_STARTED);
+                if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
+                    VoiceTrigger->AI()->EnterEvadeMode();
+            }
+
+            EventBegun = false;
+
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            me->SetDisplayId(11686);
         }
 
-        if (CheckTimer)
+        void EnterCombat(Unit* /*who*/) {}
+        void AttackStart(Unit* /*who*/) {}
+        void MoveInLineOfSight(Unit* /*who*/) {}
+
+        void StartEvent(Unit* pTarget)
         {
-            if (CheckTimer <= diff)
+            if (!pInstance)
+                return;
+
+            if (pTarget && pTarget->IsAlive())
             {
-                uint8 EvadeCheck = 0;
+                Council[0] = pInstance->GetData64(DATA_GATHIOSTHESHATTERER);
+                Council[1] = pInstance->GetData64(DATA_HIGHNETHERMANCERZEREVOR);
+                Council[2] = pInstance->GetData64(DATA_LADYMALANDE);
+                Council[3] = pInstance->GetData64(DATA_VERASDARKSHADOW);
+
+                // Start the event for the Voice Trigger
+                if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
+                {
+                    CAST_AI(mob_blood_elf_council_voice_trigger::mob_blood_elf_council_voice_triggerAI, VoiceTrigger->AI())->LoadCouncilGUIDs();
+                    CAST_AI(mob_blood_elf_council_voice_trigger::mob_blood_elf_council_voice_triggerAI, VoiceTrigger->AI())->EventStarted = true;
+                }
+
                 for (uint8 i = 0; i < 4; ++i)
                 {
+                    Unit* Member = NULL;
                     if (Council[i])
                     {
-                        if (Creature* Member = (Unit::GetCreature((*me), Council[i])))
+                        Member = Unit::GetUnit((*me), Council[i]);
+                        if (Member && Member->IsAlive())
+                            CAST_CRE(Member)->AI()->AttackStart(pTarget);
+                    }
+                }
+
+                pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, IN_PROGRESS);
+
+                EventBegun = true;
+            }
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!EventBegun) return;
+
+            if (EndEventTimer)
+            {
+                if (EndEventTimer <= diff)
+                {
+                    if (DeathCount > 3)
+                    {
+                        if (pInstance)
                         {
-                            // This is the evade/death check.
-                            if (Member->IsAlive() && !Member->GetVictim())
-                                ++EvadeCheck;                   //If all members evade, we reset so that players can properly reset the event
-                            else if (!Member->IsAlive())         // If even one member dies, kill the rest, set instance data, and kill self.
+                            if (Creature* VoiceTrigger = (Unit::GetCreature(*me, pInstance->GetData64(DATA_BLOOD_ELF_COUNCIL_VOICE))))
+                                VoiceTrigger->DealDamage(VoiceTrigger, VoiceTrigger->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                            pInstance->SetData(DATA_ILLIDARICOUNCILEVENT, DONE);
+                        }
+                        me->DealDamage(me, me->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                        return;
+                    }
+
+                    Creature* pMember = (Unit::GetCreature(*me, Council[DeathCount]));
+                    if (pMember && pMember->IsAlive())
+                        pMember->DealDamage(pMember, pMember->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    ++DeathCount;
+                    EndEventTimer = 1500;
+                }
+                else EndEventTimer -= diff;
+            }
+
+            if (CheckTimer)
+            {
+                if (CheckTimer <= diff)
+                {
+                    uint8 EvadeCheck = 0;
+                    for (uint8 i = 0; i < 4; ++i)
+                    {
+                        if (Council[i])
+                        {
+                            if (Creature* Member = (Unit::GetCreature((*me), Council[i])))
                             {
-                                EndEventTimer = 1000;
-                                CheckTimer = 0;
-                                return;
+                                // This is the evade/death check.
+                                if (Member->IsAlive() && !Member->GetVictim())
+                                    ++EvadeCheck;                   //If all members evade, we reset so that players can properly reset the event
+                                else if (!Member->IsAlive())         // If even one member dies, kill the rest, set instance data, and kill self.
+                                {
+                                    EndEventTimer = 1000;
+                                    CheckTimer = 0;
+                                    return;
+                                }
                             }
                         }
                     }
+
+                    if (EvadeCheck > 3)
+                        Reset();
+
+                    CheckTimer = 2000;
                 }
-
-                if (EvadeCheck > 3)
-                    Reset();
-
-                CheckTimer = 2000;
+                else CheckTimer -= diff;
             }
-            else CheckTimer -= diff;
-        }
 
+        }
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return GetInstanceAI<mob_illidari_councilAI>(pCreature);
     }
+
 };
+
 
 struct boss_illidari_councilAI : public ScriptedAI
 {
@@ -380,7 +403,7 @@ struct boss_illidari_councilAI : public ScriptedAI
         {
             Creature* Controller = (Unit::GetCreature(*me, pInstance->GetData64(DATA_ILLIDARICOUNCIL)));
             if (Controller)
-                CAST_AI(mob_illidari_councilAI, Controller->AI())->StartEvent(who);
+                CAST_AI(mob_illidari_council::mob_illidari_councilAI, Controller->AI())->StartEvent(who);
         }
         else
         {
@@ -461,497 +484,487 @@ struct boss_illidari_councilAI : public ScriptedAI
     }
 };
 
-struct boss_gathios_the_shattererAI : public boss_illidari_councilAI
+
+
+
+class boss_gathios_the_shatterer : public CreatureScript
 {
-    boss_gathios_the_shattererAI(Creature* c) : boss_illidari_councilAI(c) {}
-
-    uint32 ConsecrationTimer;
-    uint32 HammerOfJusticeTimer;
-    uint32 SealTimer;
-    uint32 AuraTimer;
-    uint32 BlessingTimer;
-    uint32 JudgeTimer;
-
-    void Reset()
+public: 
+    boss_gathios_the_shatterer() : CreatureScript("boss_gathios_the_shatterer") { }
+    struct boss_gathios_the_shattererAI : public boss_illidari_councilAI
     {
-        ConsecrationTimer = 40000;
-        HammerOfJusticeTimer = 10000;
-        SealTimer = 40000;
-        AuraTimer = 90000;
-        BlessingTimer = 60000;
-        JudgeTimer = 45000;
-    }
-
-    void KilledUnit(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_GATH_SLAY, me);
-    }
-
-    void JustDied(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_GATH_DEATH, me);
-    }
-
-    Unit* SelectCouncilMember()
-    {
-        Unit* pUnit = me;
-        uint32 member = 0;                                  // He chooses Lady Malande most often
-
-        if (rand() % 10 == 0)                                // But there is a chance he picks someone else.
-            member = urand(1, 3);
-
-        if (member != 2)                                     // No need to create another pointer to us using Unit::GetUnit
-            pUnit = Unit::GetUnit((*me), Council[member]);
-        return pUnit;
-    }
-
-    void CastAuraOnCouncil()
-    {
-        uint32 spellid = 0;
-        switch (urand(0, 1))
+        boss_gathios_the_shattererAI(Creature* c) : boss_illidari_councilAI(c) {}
+    
+        uint32 ConsecrationTimer;
+        uint32 HammerOfJusticeTimer;
+        uint32 SealTimer;
+        uint32 AuraTimer;
+        uint32 BlessingTimer;
+        uint32 JudgeTimer;
+    
+        void Reset()
         {
-        case 0:
-            spellid = SPELL_DEVOTION_AURA;
-            break;
-        case 1:
-            spellid = SPELL_CHROMATIC_AURA;
-            break;
+            ConsecrationTimer = 40000;
+            HammerOfJusticeTimer = 10000;
+            SealTimer = 40000;
+            AuraTimer = 90000;
+            BlessingTimer = 60000;
+            JudgeTimer = 45000;
         }
-        for (uint8 i = 0; i < 4; ++i)
+    
+        void KilledUnit(Unit* /*victim*/)
         {
-            Unit* pUnit = Unit::GetUnit((*me), Council[i]);
-            if (pUnit)
-                pUnit->CastSpell(pUnit, spellid, true, 0, 0, me->GetGUID());
+            DoScriptText(SAY_GATH_SLAY, me);
         }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (BlessingTimer <= diff)
+    
+        void JustDied(Unit* /*victim*/)
         {
-            if (!me->IsNonMeleeSpellCast(false))
+            DoScriptText(SAY_GATH_DEATH, me);
+        }
+    
+        Unit* SelectCouncilMember()
+        {
+            Unit* pUnit = me;
+            uint32 member = 0;                                  // He chooses Lady Malande most often
+    
+            if (rand() % 10 == 0)                                // But there is a chance he picks someone else.
+                member = urand(1, 3);
+    
+            if (member != 2)                                     // No need to create another pointer to us using Unit::GetUnit
+                pUnit = Unit::GetUnit((*me), Council[member]);
+            return pUnit;
+        }
+    
+        void CastAuraOnCouncil()
+        {
+            uint32 spellid = 0;
+            switch (urand(0, 1))
             {
-                if (Unit* pUnit = SelectCouncilMember())
+            case 0:
+                spellid = SPELL_DEVOTION_AURA;
+                break;
+            case 1:
+                spellid = SPELL_CHROMATIC_AURA;
+                break;
+            }
+            for (uint8 i = 0; i < 4; ++i)
+            {
+                Unit* pUnit = Unit::GetUnit((*me), Council[i]);
+                if (pUnit)
+                    pUnit->CastSpell(pUnit, spellid, true, 0, 0, me->GetGUID());
+            }
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (BlessingTimer <= diff)
+            {
+                if (!me->IsNonMeleeSpellCast(false))
                 {
-
+                    if (Unit* pUnit = SelectCouncilMember())
+                    {
+    
+                        switch (rand() % 2)
+                        {
+                        case 0:
+                            DoCast(pUnit, SPELL_BLESS_SPELLWARD);
+                            break;
+                        case 1:
+                            DoCast(pUnit, SPELL_BLESS_PROTECTION);
+                            break;
+                        }
+                    }
+                    BlessingTimer = 15000;
+                }
+            }
+            else BlessingTimer -= diff;
+    
+            if (JudgeTimer <= diff)
+            {
+                if (!me->IsNonMeleeSpellCast(false))
+                {
+                    if (me->HasAura(SPELL_SEAL_OF_COMMAND, 0))
+                    {
+                        if (TryDoCast(me->GetVictim(), SPELL_JUDGEMENT_OF_COMMAND))
+                        {
+                            me->RemoveAurasDueToSpell(SPELL_SEAL_OF_COMMAND);
+                            JudgeTimer = 45000;
+                        }
+                    }
+                    if (me->HasAura(SPELL_SEAL_OF_BLOOD, 0))
+                    {
+                        if (TryDoCast(me->GetVictim(), SPELL_JUDGEMENT_OF_BLOOD))
+                        {
+                            me->RemoveAurasDueToSpell(SPELL_SEAL_OF_BLOOD);
+                            JudgeTimer = 45000;
+                        }
+                    }
+                    JudgeTimer = 15000;
+                }
+            }
+            else JudgeTimer -= diff;
+    
+            if (ConsecrationTimer <= diff)
+            {
+                if (TryDoCast(me, SPELL_CONSECRATION))
+                    ConsecrationTimer = 30000;
+            }
+            else ConsecrationTimer -= diff;
+    
+            if (HammerOfJusticeTimer <= diff)
+            {
+                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                {
+                    // is in ~10-40 yd range
+                    if (me->GetDistance2d(pTarget) > 10)
+                    {
+                        if (TryDoCast(pTarget, SPELL_HAMMER_OF_JUSTICE))
+                            HammerOfJusticeTimer = 20000;
+                    }
+                }
+            }
+            else HammerOfJusticeTimer -= diff;
+    
+            if (SealTimer <= diff)
+            {
+                if (!me->IsNonMeleeSpellCast(false))
+                {
                     switch (rand() % 2)
                     {
                     case 0:
-                        DoCast(pUnit, SPELL_BLESS_SPELLWARD);
+                        DoCast(me, SPELL_SEAL_OF_COMMAND);
                         break;
                     case 1:
-                        DoCast(pUnit, SPELL_BLESS_PROTECTION);
+                        DoCast(me, SPELL_SEAL_OF_BLOOD);
                         break;
                     }
+                    SealTimer = 30000;
                 }
-                BlessingTimer = 15000;
             }
-        }
-        else BlessingTimer -= diff;
-
-        if (JudgeTimer <= diff)
-        {
-            if (!me->IsNonMeleeSpellCast(false))
+            else SealTimer -= diff;
+    
+            if (AuraTimer <= diff)
             {
-                if (me->HasAura(SPELL_SEAL_OF_COMMAND, 0))
+                if (!me->IsNonMeleeSpellCast(false))
                 {
-                    if (TryDoCast(me->GetVictim(), SPELL_JUDGEMENT_OF_COMMAND))
-                    {
-                        me->RemoveAurasDueToSpell(SPELL_SEAL_OF_COMMAND);
-                        JudgeTimer = 45000;
-                    }
-                }
-                if (me->HasAura(SPELL_SEAL_OF_BLOOD, 0))
-                {
-                    if (TryDoCast(me->GetVictim(), SPELL_JUDGEMENT_OF_BLOOD))
-                    {
-                        me->RemoveAurasDueToSpell(SPELL_SEAL_OF_BLOOD);
-                        JudgeTimer = 45000;
-                    }
-                }
-                JudgeTimer = 15000;
-            }
-        }
-        else JudgeTimer -= diff;
-
-        if (ConsecrationTimer <= diff)
-        {
-            if (TryDoCast(me, SPELL_CONSECRATION))
-                ConsecrationTimer = 30000;
-        }
-        else ConsecrationTimer -= diff;
-
-        if (HammerOfJusticeTimer <= diff)
-        {
-            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-            {
-                // is in ~10-40 yd range
-                if (me->GetDistance2d(pTarget) > 10)
-                {
-                    if (TryDoCast(pTarget, SPELL_HAMMER_OF_JUSTICE))
-                        HammerOfJusticeTimer = 20000;
+                    CastAuraOnCouncil();
+                    AuraTimer = 60000;
                 }
             }
-        }
-        else HammerOfJusticeTimer -= diff;
-
-        if (SealTimer <= diff)
-        {
-            if (!me->IsNonMeleeSpellCast(false))
-            {
-                switch (rand() % 2)
-                {
-                case 0:
-                    DoCast(me, SPELL_SEAL_OF_COMMAND);
-                    break;
-                case 1:
-                    DoCast(me, SPELL_SEAL_OF_BLOOD);
-                    break;
-                }
-                SealTimer = 30000;
-            }
-        }
-        else SealTimer -= diff;
-
-        if (AuraTimer <= diff)
-        {
-            if (!me->IsNonMeleeSpellCast(false))
-            {
-                CastAuraOnCouncil();
-                AuraTimer = 60000;
-            }
-        }
-        else AuraTimer -= diff;
-
-        DoMeleeAttackIfReady();
-    }
-};
-
-struct boss_high_nethermancer_zerevorAI : public boss_illidari_councilAI
-{
-    boss_high_nethermancer_zerevorAI(Creature* c) : boss_illidari_councilAI(c) {}
-
-    uint32 BlizzardTimer;
-    uint32 FlamestrikeTimer;
-    uint32 ArcaneBoltTimer;
-    uint32 DampenMagicTimer;
-    uint32 ArcaneExplosionTimer;
-
-    void Reset()
-    {
-        BlizzardTimer = 30000 + rand() % 20 * 1000;
-        FlamestrikeTimer = 30000 + rand() % 20 * 1000;
-        ArcaneBoltTimer = 500;
-        DampenMagicTimer = 200;
-        ArcaneExplosionTimer = 14000;
-    }
-
-    void KilledUnit(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_ZERE_SLAY, me);
-    }
-
-    void JustDied(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_ZERE_DEATH, me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (DampenMagicTimer <= diff)
-        {
-            if (!me->IsNonMeleeSpellCast(false))
-            {
-                DoCast(me, SPELL_DAMPEN_MAGIC);
-                DampenMagicTimer = 30000;
-                ArcaneBoltTimer += 1000;                        // Give the Mage some time to spellsteal Dampen.
-            }
-        }
-        else DampenMagicTimer -= diff;
-
-        if (ArcaneExplosionTimer <= diff)
-        {
-            if (!me->IsNonMeleeSpellCast(false))
-            {
-                if (me->GetDistance2d(me->GetVictim()) <= 5)
-                {
-                    DoCastVictim( SPELL_ARCANE_EXPLOSION);
-                    ArcaneExplosionTimer = 14000;
-                }
-            }
-        }
-        else ArcaneExplosionTimer -= diff;
-
-        if (ArcaneBoltTimer <= diff)
-        {
-            if (!me->IsNonMeleeSpellCast(false))
-            {
-                DoCastVictim( SPELL_ARCANE_BOLT);
-                ArcaneBoltTimer = 500;
-            }
-        }
-        else ArcaneBoltTimer -= diff;
-
-        if (BlizzardTimer <= diff)
-        {
-            if (!me->IsNonMeleeSpellCast(false))
-            {
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                {
-                    DoCast(pTarget, SPELL_BLIZZARD);
-                    BlizzardTimer = 45000;
-                    FlamestrikeTimer += 10000;
-                }
-            }
-        }
-        else BlizzardTimer -= diff;
-
-        if (FlamestrikeTimer <= diff)
-        {
-            if (!me->IsNonMeleeSpellCast(false))
-            {
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                {
-                    DoCast(pTarget, SPELL_FLAMESTRIKE);
-                    FlamestrikeTimer = 45000;
-                    BlizzardTimer += 10000;
-                }
-            }
-        }
-        else FlamestrikeTimer -= diff;
-    }
-};
-
-struct boss_lady_malandeAI : public boss_illidari_councilAI
-{
-    boss_lady_malandeAI(Creature* c) : boss_illidari_councilAI(c) {}
-
-    uint32 EmpoweredSmiteTimer;
-    uint32 CircleOfHealingTimer;
-    uint32 DivineWrathTimer;
-    uint32 ReflectiveShieldTimer;
-
-    void Reset()
-    {
-        EmpoweredSmiteTimer = 18000;
-        CircleOfHealingTimer = 20000;
-        DivineWrathTimer = 40000;
-        ReflectiveShieldTimer = 15000;
-    }
-
-    void KilledUnit(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_MALA_SLAY, me);
-    }
-
-    void JustDied(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_MALA_DEATH, me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (EmpoweredSmiteTimer <= diff)
-        {
-            if (!me->IsNonMeleeSpellCast(false))
-            {
-                DoCastVictim( SPELL_EMPOWERED_SMITE);
-                EmpoweredSmiteTimer = 30000;
-            }
-        }
-        else EmpoweredSmiteTimer -= diff;
-
-        if (CircleOfHealingTimer <= diff)
-        {
-            if (TryDoCast(me, SPELL_CIRCLE_OF_HEALING))
-                CircleOfHealingTimer = 30000;
-        }
-        else CircleOfHealingTimer -= diff;
-
-        if (DivineWrathTimer <= diff)
-        {
-            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-            {
-                if (TryDoCast(pTarget, SPELL_DIVINE_WRATH))
-                    DivineWrathTimer = 20000 + rand() % 20 * 1000;
-            }
-        }
-        else DivineWrathTimer -= diff;
-
-        if (ReflectiveShieldTimer <= diff)
-        {
-            if (TryDoCast(me, SPELL_REFLECTIVE_SHIELD))
-                ReflectiveShieldTimer = 45000;
-        }
-        else ReflectiveShieldTimer -= diff;
-
-        DoMeleeAttackIfReady();
-    }
-};
-
-struct boss_veras_darkshadowAI : public boss_illidari_councilAI
-{
-    boss_veras_darkshadowAI(Creature* c) : boss_illidari_councilAI(c) {}
-
-    uint64 EnvenomTargetGUID;
-
-    uint32 DeadlyPoisonTimer;
-    uint32 VanishTimer;
-    uint32 AppearEnvenomTimer;
-    uint32 EnvenomTimer;
-
-    bool HasVanished;
-
-    void Reset()
-    {
-        EnvenomTargetGUID = 0;
-
-        DeadlyPoisonTimer = 20000;
-        VanishTimer = 10000;
-        EnvenomTimer = 3000;
-
-        HasVanished = false;
-        me->SetVisible(true);
-        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-    }
-
-    void SpellHitTarget(Unit* pTarget, const SpellEntry* spell)
-    {
-        if (spell->Id != 41485)
-        {
-            if (pTarget->GetTypeId() == TYPEID_PLAYER)
-            {
-                EnvenomTargetGUID = pTarget->GetGUID();
-                EnvenomTimer = 3000;
-            }
-        }
-    }
-
-    void KilledUnit(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_VERA_SLAY, me);
-    }
-
-    void JustDied(Unit* /*victim*/)
-    {
-        DoScriptText(SAY_VERA_DEATH, me);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        if (!me->HasAura(SPELL_VANISH, 0))
-        {
-            if (VanishTimer <= diff)
-            {
-                if (/*Unit* pTarget = */SelectUnit(SELECT_TARGET_RANDOM, 0))
-                {
-                    DoCast(me, SPELL_DEADLY_POISON_TRIGGER, true);
-                    DoCast(me, SPELL_VANISH, false);
-
-                    VanishTimer = 25000;
-                    DoResetThreat();
-                    return;
-                }
-            }
-            else VanishTimer -= diff;
-
+            else AuraTimer -= diff;
+    
             DoMeleeAttackIfReady();
         }
-        else
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_gathios_the_shattererAI (pCreature);
+    }
+};
+
+class boss_lady_malande : public CreatureScript
+{
+public: 
+    boss_lady_malande() : CreatureScript("boss_lady_malande") { }
+    struct boss_lady_malandeAI : public boss_illidari_councilAI
+    {
+        boss_lady_malandeAI(Creature* c) : boss_illidari_councilAI(c) {}
+    
+        uint32 EmpoweredSmiteTimer;
+        uint32 CircleOfHealingTimer;
+        uint32 DivineWrathTimer;
+        uint32 ReflectiveShieldTimer;
+    
+        void Reset()
         {
-            if (EnvenomTimer <= diff)
+            EmpoweredSmiteTimer = 18000;
+            CircleOfHealingTimer = 20000;
+            DivineWrathTimer = 40000;
+            ReflectiveShieldTimer = 15000;
+        }
+    
+        void KilledUnit(Unit* /*victim*/)
+        {
+            DoScriptText(SAY_MALA_SLAY, me);
+        }
+    
+        void JustDied(Unit* /*victim*/)
+        {
+            DoScriptText(SAY_MALA_DEATH, me);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (EmpoweredSmiteTimer <= diff)
             {
-                if (EnvenomTargetGUID)
+                if (!me->IsNonMeleeSpellCast(false))
                 {
-                    if (Unit* pTarget = Unit::GetUnit((*me), EnvenomTargetGUID))
+                    DoCastVictim( SPELL_EMPOWERED_SMITE);
+                    EmpoweredSmiteTimer = 30000;
+                }
+            }
+            else EmpoweredSmiteTimer -= diff;
+    
+            if (CircleOfHealingTimer <= diff)
+            {
+                if (TryDoCast(me, SPELL_CIRCLE_OF_HEALING))
+                    CircleOfHealingTimer = 30000;
+            }
+            else CircleOfHealingTimer -= diff;
+    
+            if (DivineWrathTimer <= diff)
+            {
+                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                {
+                    if (TryDoCast(pTarget, SPELL_DIVINE_WRATH))
+                        DivineWrathTimer = 20000 + rand() % 20 * 1000;
+                }
+            }
+            else DivineWrathTimer -= diff;
+    
+            if (ReflectiveShieldTimer <= diff)
+            {
+                if (TryDoCast(me, SPELL_REFLECTIVE_SHIELD))
+                    ReflectiveShieldTimer = 45000;
+            }
+            else ReflectiveShieldTimer -= diff;
+    
+            DoMeleeAttackIfReady();
+        }
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_lady_malandeAI (pCreature);
+    }
+};
+
+class boss_veras_darkshadow : public CreatureScript
+{
+public: 
+    boss_veras_darkshadow() : CreatureScript("boss_veras_darkshadow") { }
+    struct boss_veras_darkshadowAI : public boss_illidari_councilAI
+    {
+        boss_veras_darkshadowAI(Creature* c) : boss_illidari_councilAI(c) {}
+    
+        uint64 EnvenomTargetGUID;
+    
+        uint32 DeadlyPoisonTimer;
+        uint32 VanishTimer;
+        uint32 AppearEnvenomTimer;
+        uint32 EnvenomTimer;
+    
+        bool HasVanished;
+    
+        void Reset()
+        {
+            EnvenomTargetGUID = 0;
+    
+            DeadlyPoisonTimer = 20000;
+            VanishTimer = 10000;
+            EnvenomTimer = 3000;
+    
+            HasVanished = false;
+            me->SetVisible(true);
+            me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        }
+    
+        void SpellHitTarget(Unit* pTarget, const SpellEntry* spell)
+        {
+            if (spell->Id != 41485)
+            {
+                if (pTarget->GetTypeId() == TYPEID_PLAYER)
+                {
+                    EnvenomTargetGUID = pTarget->GetGUID();
+                    EnvenomTimer = 3000;
+                }
+            }
+        }
+    
+        void KilledUnit(Unit* /*victim*/)
+        {
+            DoScriptText(SAY_VERA_SLAY, me);
+        }
+    
+        void JustDied(Unit* /*victim*/)
+        {
+            DoScriptText(SAY_VERA_DEATH, me);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (!me->HasAura(SPELL_VANISH, 0))
+            {
+                if (VanishTimer <= diff)
+                {
+                    if (/*Unit* pTarget = */SelectUnit(SELECT_TARGET_RANDOM, 0))
                     {
-                        if (pTarget->HasAura(SPELL_DEADLY_POISON, 0))
+                        DoCast(me, SPELL_DEADLY_POISON_TRIGGER, true);
+                        DoCast(me, SPELL_VANISH, false);
+    
+                        VanishTimer = 25000;
+                        DoResetThreat();
+                        return;
+                    }
+                }
+                else VanishTimer -= diff;
+    
+                DoMeleeAttackIfReady();
+            }
+            else
+            {
+                if (EnvenomTimer <= diff)
+                {
+                    if (EnvenomTargetGUID)
+                    {
+                        if (Unit* pTarget = Unit::GetUnit((*me), EnvenomTargetGUID))
                         {
-                            if (rand() % 3 == 0)
-                                DoCast(pTarget, SPELL_ENVENOM);
+                            if (pTarget->HasAura(SPELL_DEADLY_POISON, 0))
+                            {
+                                if (rand() % 3 == 0)
+                                    DoCast(pTarget, SPELL_ENVENOM);
+                            }
                         }
                     }
                 }
+                else EnvenomTimer -= diff;
             }
-            else EnvenomTimer -= diff;
         }
+    };
+
+     CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_veras_darkshadowAI (pCreature);
     }
 };
 
-CreatureAI* GetAI_mob_blood_elf_council_voice_trigger(Creature* c)
+class boss_high_nethermancer_zerevor : public CreatureScript
 {
-    return new mob_blood_elf_council_voice_triggerAI(c);
-}
+public: 
+    boss_high_nethermancer_zerevor() : CreatureScript("boss_high_nethermancer_zerevor") { }
+    struct boss_high_nethermancer_zerevorAI : public boss_illidari_councilAI
+    {
+        boss_high_nethermancer_zerevorAI(Creature* c) : boss_illidari_councilAI(c) {}
+    
+        uint32 BlizzardTimer;
+        uint32 FlamestrikeTimer;
+        uint32 ArcaneBoltTimer;
+        uint32 DampenMagicTimer;
+        uint32 ArcaneExplosionTimer;
+    
+        void Reset()
+        {
+            BlizzardTimer = 30000 + rand() % 20 * 1000;
+            FlamestrikeTimer = 30000 + rand() % 20 * 1000;
+            ArcaneBoltTimer = 500;
+            DampenMagicTimer = 200;
+            ArcaneExplosionTimer = 14000;
+        }
+    
+        void KilledUnit(Unit* /*victim*/)
+        {
+            DoScriptText(SAY_ZERE_SLAY, me);
+        }
+    
+        void JustDied(Unit* /*victim*/)
+        {
+            DoScriptText(SAY_ZERE_DEATH, me);
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+    
+            if (DampenMagicTimer <= diff)
+            {
+                if (!me->IsNonMeleeSpellCast(false))
+                {
+                    DoCast(me, SPELL_DAMPEN_MAGIC);
+                    DampenMagicTimer = 30000;
+                    ArcaneBoltTimer += 1000;                        // Give the Mage some time to spellsteal Dampen.
+                }
+            }
+            else DampenMagicTimer -= diff;
+    
+            if (ArcaneExplosionTimer <= diff)
+            {
+                if (!me->IsNonMeleeSpellCast(false))
+                {
+                    if (me->GetDistance2d(me->GetVictim()) <= 5)
+                    {
+                        DoCastVictim( SPELL_ARCANE_EXPLOSION);
+                        ArcaneExplosionTimer = 14000;
+                    }
+                }
+            }
+            else ArcaneExplosionTimer -= diff;
+    
+            if (ArcaneBoltTimer <= diff)
+            {
+                if (!me->IsNonMeleeSpellCast(false))
+                {
+                    DoCastVictim( SPELL_ARCANE_BOLT);
+                    ArcaneBoltTimer = 500;
+                }
+            }
+            else ArcaneBoltTimer -= diff;
+    
+            if (BlizzardTimer <= diff)
+            {
+                if (!me->IsNonMeleeSpellCast(false))
+                {
+                    if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                    {
+                        DoCast(pTarget, SPELL_BLIZZARD);
+                        BlizzardTimer = 45000;
+                        FlamestrikeTimer += 10000;
+                    }
+                }
+            }
+            else BlizzardTimer -= diff;
+    
+            if (FlamestrikeTimer <= diff)
+            {
+                if (!me->IsNonMeleeSpellCast(false))
+                {
+                    if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                    {
+                        DoCast(pTarget, SPELL_FLAMESTRIKE);
+                        FlamestrikeTimer = 45000;
+                        BlizzardTimer += 10000;
+                    }
+                }
+            }
+            else FlamestrikeTimer -= diff;
+        }
+    };
 
-CreatureAI* GetAI_mob_illidari_council(Creature* pCreature)
-{
-    return GetInstanceAI<mob_illidari_councilAI>(pCreature);
-}
+     CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_high_nethermancer_zerevorAI (pCreature);
+    }
+};
 
-CreatureAI* GetAI_boss_gathios_the_shatterer(Creature* pCreature)
-{
-    return new boss_gathios_the_shattererAI (pCreature);
-}
-
-CreatureAI* GetAI_boss_lady_malande(Creature* pCreature)
-{
-    return new boss_lady_malandeAI (pCreature);
-}
-
-CreatureAI* GetAI_boss_veras_darkshadow(Creature* pCreature)
-{
-    return new boss_veras_darkshadowAI (pCreature);
-}
-
-CreatureAI* GetAI_boss_high_nethermancer_zerevor(Creature* pCreature)
-{
-    return new boss_high_nethermancer_zerevorAI (pCreature);
-}
 
 void AddSC_boss_illidari_council()
 {
-    Script* newscript;
+    new mob_illidari_council();
+    new mob_blood_elf_council_voice_trigger();
+    new boss_gathios_the_shatterer();
+    new boss_lady_malande();
+    new boss_veras_darkshadow();
+    new boss_high_nethermancer_zerevor();
 
-    newscript = new Script;
-    newscript->Name = "mob_illidari_council";
-    newscript->GetAI = &GetAI_mob_illidari_council;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "mob_blood_elf_council_voice_trigger";
-    newscript->GetAI = &GetAI_mob_blood_elf_council_voice_trigger;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "boss_gathios_the_shatterer";
-    newscript->GetAI = &GetAI_boss_gathios_the_shatterer;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "boss_lady_malande";
-    newscript->GetAI = &GetAI_boss_lady_malande;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "boss_veras_darkshadow";
-    newscript->GetAI = &GetAI_boss_veras_darkshadow;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "boss_high_nethermancer_zerevor";
-    newscript->GetAI = &GetAI_boss_high_nethermancer_zerevor;
-    newscript->RegisterSelf();
 }
 

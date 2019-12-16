@@ -40,38 +40,9 @@ EndContentData */
 #define GOSSIP_SELECT_KW1  "Continue please"
 #define GOSSIP_SELECT_KW2  "Let me confer with my colleagues"
 
-bool GossipHello_npc_kalaran_windblade(Player* pPlayer, Creature* pCreature)
-{
-    if (pCreature->IsQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
 
-    if (pPlayer->GetQuestStatus(3441) == QUEST_STATUS_INCOMPLETE)
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_KW, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
 
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
-    return true;
-}
-
-bool GossipSelect_npc_kalaran_windblade(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    switch (uiAction)
-    {
-    case GOSSIP_ACTION_INFO_DEF:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT_KW1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        pPlayer->SEND_GOSSIP_MENU(1954, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+1:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT_KW2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-        pPlayer->SEND_GOSSIP_MENU(1955, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+2:
-        pPlayer->CLOSE_GOSSIP_MENU();
-        pPlayer->AreaExploredOrEventHappens(3441);
-        break;
-    }
-    return true;
-}
 
 /*######
 ## npc_lothos_riftwaker
@@ -79,29 +50,9 @@ bool GossipSelect_npc_kalaran_windblade(Player* pPlayer, Creature* pCreature, ui
 
 #define GOSSIP_HELLO_LR "Teleport me to the Molten Core"
 
-bool GossipHello_npc_lothos_riftwaker(Player* pPlayer, Creature* pCreature)
-{
-    if (pCreature->IsQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
 
-    if (pPlayer->GetQuestRewardStatus(7487) || pPlayer->GetQuestRewardStatus(7848))
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_LR, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
-    return true;
-}
-
-bool GossipSelect_npc_lothos_riftwaker(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction)
-{
-    if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-    {
-        pPlayer->CLOSE_GOSSIP_MENU();
-        pPlayer->TeleportTo(409, 1096, -467, -104.6f, 3.64f);
-    }
-
-    return true;
-}
 
 /*######
 ## npc_zamael_lunthistle
@@ -111,62 +62,143 @@ bool GossipSelect_npc_lothos_riftwaker(Player* pPlayer, Creature* /*pCreature*/,
 #define GOSSIP_SELECT_ZL1   "Please continue..."
 #define GOSSIP_SELECT_ZL2   "Goodbye"
 
-bool GossipHello_npc_zamael_lunthistle(Player* pPlayer, Creature* pCreature)
-{
-    if (pCreature->IsQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
 
-    if (pPlayer->GetQuestStatus(3377) == QUEST_STATUS_INCOMPLETE)
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_ZL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
 
-    pPlayer->SEND_GOSSIP_MENU(1920, pCreature->GetGUID());
 
-    return true;
-}
-
-bool GossipSelect_npc_zamael_lunthistle(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    switch (uiAction)
-    {
-    case GOSSIP_ACTION_INFO_DEF:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT_ZL1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        pPlayer->SEND_GOSSIP_MENU(1921, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+1:
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT_ZL2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-        pPlayer->SEND_GOSSIP_MENU(1922, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+2:
-        pPlayer->CLOSE_GOSSIP_MENU();
-        pPlayer->AreaExploredOrEventHappens(3377);
-        break;
-    }
-    return true;
-}
 
 /*######
 ##
 ######*/
 
+
+
+class npc_kalaran_windblade : public CreatureScript
+{
+public: 
+    npc_kalaran_windblade() : CreatureScript("npc_kalaran_windblade") { }
+    
+    
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        if (pCreature->IsQuestGiver())
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+    
+        if (pPlayer->GetQuestStatus(3441) == QUEST_STATUS_INCOMPLETE)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_KW, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+    
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    
+        return true;
+    }
+    
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        switch (uiAction)
+        {
+        case GOSSIP_ACTION_INFO_DEF:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT_KW1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            pPlayer->SEND_GOSSIP_MENU(1954, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT_KW2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            pPlayer->SEND_GOSSIP_MENU(1955, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->AreaExploredOrEventHappens(3441);
+            break;
+        }
+        return true;
+    }
+    
+    
+    
+};
+
+class npc_lothos_riftwaker : public CreatureScript
+{
+public: 
+    npc_lothos_riftwaker() : CreatureScript("npc_lothos_riftwaker") { }
+    
+    
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        if (pCreature->IsQuestGiver())
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+    
+        if (pPlayer->GetQuestRewardStatus(7487) || pPlayer->GetQuestRewardStatus(7848))
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_LR, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    
+        return true;
+    }
+    
+    bool OnGossipSelect(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+        {
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->TeleportTo(409, 1096, -467, -104.6f, 3.64f);
+        }
+    
+        return true;
+    }
+    
+    
+    
+};
+
+class npc_zamael_lunthistle : public CreatureScript
+{
+public: 
+    npc_zamael_lunthistle() : CreatureScript("npc_zamael_lunthistle") { }
+    
+    
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        if (pCreature->IsQuestGiver())
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+    
+        if (pPlayer->GetQuestStatus(3377) == QUEST_STATUS_INCOMPLETE)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HELLO_ZL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+    
+        pPlayer->SEND_GOSSIP_MENU(1920, pCreature->GetGUID());
+    
+        return true;
+    }
+    
+    
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        switch (uiAction)
+        {
+        case GOSSIP_ACTION_INFO_DEF:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT_ZL1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+            pPlayer->SEND_GOSSIP_MENU(1921, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SELECT_ZL2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            pPlayer->SEND_GOSSIP_MENU(1922, pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->AreaExploredOrEventHappens(3377);
+            break;
+        }
+        return true;
+    }
+    
+    
+    
+};
+
+
 void AddSC_searing_gorge()
 {
-    Script* newscript;
+    new npc_kalaran_windblade();
+    new npc_lothos_riftwaker();
+    new npc_zamael_lunthistle();
 
-    newscript = new Script;
-    newscript->Name = "npc_kalaran_windblade";
-    newscript->pGossipHello =  &GossipHello_npc_kalaran_windblade;
-    newscript->pGossipSelect = &GossipSelect_npc_kalaran_windblade;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_lothos_riftwaker";
-    newscript->pGossipHello          = &GossipHello_npc_lothos_riftwaker;
-    newscript->pGossipSelect         = &GossipSelect_npc_lothos_riftwaker;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_zamael_lunthistle";
-    newscript->pGossipHello =  &GossipHello_npc_zamael_lunthistle;
-    newscript->pGossipSelect = &GossipSelect_npc_zamael_lunthistle;
-    newscript->RegisterSelf();
 }
+

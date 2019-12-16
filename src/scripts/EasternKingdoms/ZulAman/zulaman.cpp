@@ -42,84 +42,8 @@ enum //Misc
     ENTRY_FOREST_FROG          = 24396
 };
 
-struct npc_forest_frogAI : public ScriptedAI
-{
-    npc_forest_frogAI(Creature* c) : ScriptedAI(c)
-    {
-        pInstance = (ScriptedInstance*)c->GetInstanceData();
-    }
 
-    ScriptedInstance* pInstance;
 
-    void Reset() {}
-
-    void EnterCombat(Unit* /*who*/) {}
-
-    void DoSpawnRandom()
-    {
-        if (pInstance)
-        {
-            uint32 cEntry = 0;
-            switch (rand() % 10)
-            {
-            case 0:
-                cEntry = 24397;
-                break;          //Mannuth
-            case 1:
-                cEntry = 24403;
-                break;          //Deez
-            case 2:
-                cEntry = 24404;
-                break;          //Galathryn
-            case 3:
-                cEntry = 24405;
-                break;          //Adarrah
-            case 4:
-                cEntry = 24406;
-                break;          //Fudgerick
-            case 5:
-                cEntry = 24407;
-                break;          //Darwen
-            case 6:
-                cEntry = 24445;
-                break;          //Mitzi
-            case 7:
-                cEntry = 24448;
-                break;          //Christian
-            case 8:
-                cEntry = 24453;
-                break;          //Brennan
-            case 9:
-                cEntry = 24455;
-                break;          //Hollee
-            }
-
-            if (!pInstance->GetData(ENCOUNTER_RAND_VENDOR_1))
-                if (rand() % 10 == 1) cEntry = 24408;    //Gunter
-            if (!pInstance->GetData(ENCOUNTER_RAND_VENDOR_2))
-                if (rand() % 10 == 1) cEntry = 24409;    //Kyren
-
-            if (cEntry) me->UpdateEntry(cEntry);
-
-            if (cEntry == 24408) pInstance->SetData(ENCOUNTER_RAND_VENDOR_1, DONE);
-            if (cEntry == 24409) pInstance->SetData(ENCOUNTER_RAND_VENDOR_2, DONE);
-        }
-    }
-
-    void SpellHit(Unit* caster, const SpellEntry* spell)
-    {
-        if (spell->Id == SPELL_REMOVE_AMANI_CURSE && caster->GetTypeId() == TYPEID_PLAYER && me->GetEntry() == ENTRY_FOREST_FROG)
-        {
-            //increase or decrease chance of mojo?
-            if (rand() % 99 == 50) DoCast(caster, SPELL_PUSH_MOJO, true);
-            else DoSpawnRandom();
-        }
-    }
-};
-CreatureAI* GetAI_npc_forest_frog(Creature* pCreature)
-{
-    return new npc_forest_frogAI (pCreature);
-}
 
 /*######
 ## npc_zulaman_hostage
@@ -130,77 +54,10 @@ static char GOSSIP_HOSTAGE1[] = "I am glad to have helped you.";
 static uint32 HostageEntry[] = {23790, 23999, 24001, 24024};
 static uint32 ChestEntry[] = {186648, 187021, 186672, 186667};
 
-struct npc_zulaman_hostageAI : public ScriptedAI
-{
-    npc_zulaman_hostageAI(Creature* c) : ScriptedAI(c)
-    {
-        IsLoot = false;
-    }
-    bool IsLoot;
-    uint64 PlayerGUID;
-    void Reset() {}
-    void EnterCombat(Unit* /*who*/) {}
-    void JustDied(Unit* /*who*/)
-    {
-        Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
-        if (pPlayer) pPlayer->SendLoot(me->GetGUID(), LOOT_CORPSE);
-    }
-    void UpdateAI(const uint32 /*diff*/)
-    {
-        if (IsLoot)
-            DoCast(me, 7, false);
-    }
-};
 
-bool GossipHello_npc_zulaman_hostage(Player* pPlayer, Creature* pCreature)
-{
-    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HOSTAGE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-    return true;
-}
 
-bool GossipSelect_npc_zulaman_hostage(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-        pPlayer->CLOSE_GOSSIP_MENU();
 
-    if (!pCreature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
-        return true;
-    pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
-    ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-    if (pInstance)
-    {
-        uint8 progress = pInstance->GetData(ENCOUNTER_CHESTLOOTED);
-        pInstance->SetData(ENCOUNTER_CHESTLOOTED, progress + 1);
-        float x, y, z;
-        pCreature->GetPosition(x, y, z);
-        uint32 entry = pCreature->GetEntry();
-        for (uint8 i = 0; i < 4; ++i)
-        {
-            if (HostageEntry[i] == entry)
-            {
-                pCreature->SummonGameObject(ChestEntry[i], x - 2, y, z, 0, 0, 0, 0, 0, 0);
-                break;
-            }
-        }
-        /*Creature* summon = pCreature->SummonCreature(HostageInfo[progress], x-2, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
-        if (summon)
-        {
-            CAST_AI(npc_zulaman_hostageAI, summon->AI())->PlayerGUID = pPlayer->GetGUID();
-            CAST_AI(npc_zulaman_hostageAI, summon->AI())->IsLoot = true;
-            summon->SetDisplayId(10056);
-            summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            summon->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-        }*/
-    }
-    return true;
-}
-
-CreatureAI* GetAI_npc_zulaman_hostage(Creature* pCreature)
-{
-    return new npc_zulaman_hostageAI(pCreature);
-}
 
 /* npc_harrison_jones */
 
@@ -212,103 +69,264 @@ static char YELL_HARRISON_UNK2[] = "I've researched this site extensively and I 
 static char YELL_HARRISON_UNK3[] = "In fact, it would be best if you just stay here. You'd only get in my way....";
 static float HarrisonsWay[3] = { 131.81f, 1642.91f, 42.021595f };
 
-struct npc_harrison_jonesAI : public ScriptedAI
+class npc_forest_frog : public CreatureScript
 {
-    npc_harrison_jonesAI(Creature* pCreature) : ScriptedAI(pCreature)
+public: 
+    npc_forest_frog() : CreatureScript("npc_forest_frog") { }
+    struct npc_forest_frogAI : public ScriptedAI
     {
-        instance = (ScriptedInstance*)pCreature->GetInstanceData();
-        handleGossips = !!instance;
-
-        if (handleGossips)
+        npc_forest_frogAI(Creature* c) : ScriptedAI(c)
         {
-            me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-            me->SetSpeed(MOVE_RUN, 1);
-            //me->RemoveUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
+            pInstance = (ScriptedInstance*)c->GetInstanceData();
         }
-    }
-
-    bool GossipHello(Player* player)
-    {
-        if (!handleGossips)
-            return false;
-
-        Group* group = player->GetGroup();
-
-        if (!group || group->IsLeader(player->GetGUID()) || player->IsGameMaster())
+    
+        ScriptedInstance* pInstance;
+    
+        void Reset() {}
+    
+        void EnterCombat(Unit* /*who*/) {}
+    
+        void DoSpawnRandom()
         {
-            player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HARRISON, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-            player->SEND_GOSSIP_MENU(player->GetGossipTextId(me), me->GetGUID());
+            if (pInstance)
+            {
+                uint32 cEntry = 0;
+                switch (rand() % 10)
+                {
+                case 0:
+                    cEntry = 24397;
+                    break;          //Mannuth
+                case 1:
+                    cEntry = 24403;
+                    break;          //Deez
+                case 2:
+                    cEntry = 24404;
+                    break;          //Galathryn
+                case 3:
+                    cEntry = 24405;
+                    break;          //Adarrah
+                case 4:
+                    cEntry = 24406;
+                    break;          //Fudgerick
+                case 5:
+                    cEntry = 24407;
+                    break;          //Darwen
+                case 6:
+                    cEntry = 24445;
+                    break;          //Mitzi
+                case 7:
+                    cEntry = 24448;
+                    break;          //Christian
+                case 8:
+                    cEntry = 24453;
+                    break;          //Brennan
+                case 9:
+                    cEntry = 24455;
+                    break;          //Hollee
+                }
+    
+                if (!pInstance->GetData(ENCOUNTER_RAND_VENDOR_1))
+                    if (rand() % 10 == 1) cEntry = 24408;    //Gunter
+                if (!pInstance->GetData(ENCOUNTER_RAND_VENDOR_2))
+                    if (rand() % 10 == 1) cEntry = 24409;    //Kyren
+    
+                if (cEntry) me->UpdateEntry(cEntry);
+    
+                if (cEntry == 24408) pInstance->SetData(ENCOUNTER_RAND_VENDOR_1, DONE);
+                if (cEntry == 24409) pInstance->SetData(ENCOUNTER_RAND_VENDOR_2, DONE);
+            }
         }
-        return true;
-    }
+    
+        void SpellHit(Unit* caster, const SpellEntry* spell)
+        {
+            if (spell->Id == SPELL_REMOVE_AMANI_CURSE && caster->GetTypeId() == TYPEID_PLAYER && me->GetEntry() == ENTRY_FOREST_FROG)
+            {
+                //increase or decrease chance of mojo?
+                if (rand() % 99 == 50) DoCast(caster, SPELL_PUSH_MOJO, true);
+                else DoSpawnRandom();
+            }
+        }
+    };
 
-    bool GossipSelect()
+     CreatureAI* GetAI(Creature* pCreature) const
     {
-        me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-        me->GetMotionMaster()->MovePoint(0, HarrisonsWay[0], HarrisonsWay[1], HarrisonsWay[2]);
-        me->MonsterYell(YELL_HARRISON_FOLLOWME, LANG_UNIVERSAL, 0);
-        return true;
+        return new npc_forest_frogAI (pCreature);
     }
-
-    void MovementInform(uint32 type, uint32 id)
-    {
-        if (type != POINT_MOTION_TYPE || id != 0)
-            return;
-
-        me->Say("Gong Event is not implemented, yet. Skipping the event...", LANG_UNIVERSAL, 0);
-        instance->SetData(ENCOUNTER_GONG, DONE);
-    }
-
-    void Update(uint32 /*diff*/)
-    {
-    }
-
-    ScriptedInstance* instance;
-    bool handleGossips;
+    
 };
 
-static bool GossipHello_npc_harrison_jones(Player* pPlayer, Creature* pCreature)
+class npc_zulaman_hostage : public CreatureScript
 {
-    if (npc_harrison_jonesAI* ai = dynamic_cast <npc_harrison_jonesAI*> (pCreature->AI()))
-        return ai->GossipHello(pPlayer);
+public: 
+    npc_zulaman_hostage() : CreatureScript("npc_zulaman_hostage") { }
+    struct npc_zulaman_hostageAI : public ScriptedAI
+    {
+        npc_zulaman_hostageAI(Creature* c) : ScriptedAI(c)
+        {
+            IsLoot = false;
+        }
+        bool IsLoot;
+        uint64 PlayerGUID;
+        void Reset() {}
+        void EnterCombat(Unit* /*who*/) {}
+        void JustDied(Unit* /*who*/)
+        {
+            Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID);
+            if (pPlayer) pPlayer->SendLoot(me->GetGUID(), LOOT_CORPSE);
+        }
+        void UpdateAI(const uint32 /*diff*/)
+        {
+            if (IsLoot)
+                DoCast(me, 7, false);
+        }
+    };
 
-    return false;
-}
+     CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_zulaman_hostageAI(pCreature);
+    }
+ 
 
-static bool GossipSelect_npc_harrison_jones(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HOSTAGE1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+        return true;
+    }
+
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
+            pPlayer->CLOSE_GOSSIP_MENU();
+
+        if (!pCreature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP))
+            return true;
+        pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+
+        ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        if (pInstance)
+        {
+            uint8 progress = pInstance->GetData(ENCOUNTER_CHESTLOOTED);
+            pInstance->SetData(ENCOUNTER_CHESTLOOTED, progress + 1);
+            float x, y, z;
+            pCreature->GetPosition(x, y, z);
+            uint32 entry = pCreature->GetEntry();
+            for (uint8 i = 0; i < 4; ++i)
+            {
+                if (HostageEntry[i] == entry)
+                {
+                    pCreature->SummonGameObject(ChestEntry[i], x - 2, y, z, 0, 0, 0, 0, 0, 0);
+                    break;
+                }
+            }
+            /*Creature* summon = pCreature->SummonCreature(HostageInfo[progress], x-2, y, z, 0, TEMPSUMMON_DEAD_DESPAWN, 0);
+            if (summon)
+            {
+                CAST_AI(npc_zulaman_hostageAI, summon->AI())->PlayerGUID = pPlayer->GetGUID();
+                CAST_AI(npc_zulaman_hostageAI, summon->AI())->IsLoot = true;
+                summon->SetDisplayId(10056);
+                summon->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                summon->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            }*/
+        }
+        return true;
+    }
+};
+
+class npc_harrison_jones : public CreatureScript
 {
-    if (npc_harrison_jonesAI* ai = dynamic_cast <npc_harrison_jonesAI*> (pCreature->AI()))
-        return ai->GossipSelect();
+public: 
+    npc_harrison_jones() : CreatureScript("npc_harrison_jones") { }
+    struct npc_harrison_jonesAI : public ScriptedAI
+    {
+        npc_harrison_jonesAI(Creature* pCreature) : ScriptedAI(pCreature)
+        {
+            instance = (ScriptedInstance*)pCreature->GetInstanceData();
+            handleGossips = !!instance;
+    
+            if (handleGossips)
+            {
+                me->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+                me->SetSpeed(MOVE_RUN, 1);
+                //me->RemoveUnitMovementFlag(MOVEMENTFLAG_WALK_MODE);
+            }
+        }
+    
+        bool GossipHello(Player* player)
+        {
+            if (!handleGossips)
+                return false;
+    
+            Group* group = player->GetGroup();
+    
+            if (!group || group->IsLeader(player->GetGUID()) || player->IsGameMaster())
+            {
+                player->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HARRISON, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+                player->SEND_GOSSIP_MENU(player->GetGossipTextId(me), me->GetGUID());
+            }
+            return true;
+        }
+    
+        bool GossipSelect()
+        {
+            me->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
+            me->GetMotionMaster()->MovePoint(0, HarrisonsWay[0], HarrisonsWay[1], HarrisonsWay[2]);
+            me->MonsterYell(YELL_HARRISON_FOLLOWME, LANG_UNIVERSAL, 0);
+            return true;
+        }
+    
+        void MovementInform(uint32 type, uint32 id)
+        {
+            if (type != POINT_MOTION_TYPE || id != 0)
+                return;
+    
+            me->Say("Gong Event is not implemented, yet. Skipping the event...", LANG_UNIVERSAL, 0);
+            instance->SetData(ENCOUNTER_GONG, DONE);
+        }
+    
+        void Update(uint32 /*diff*/)
+        {
+        }
+    
+        ScriptedInstance* instance;
+        bool handleGossips;
+    };
 
-    return false;
-}
+     CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_harrison_jonesAI(pCreature);
+    }
 
-CreatureAI* GetAI_npc_harrison_jones(Creature* pCreature)
-{
-    return new npc_harrison_jonesAI(pCreature);
-}
+    
+
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        if (npc_harrison_jonesAI* ai = dynamic_cast <npc_harrison_jonesAI*> (pCreature->AI())) 
+            return ai->GossipHello(pPlayer);
+    
+        return false;
+    }
+
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        if (npc_harrison_jonesAI* ai = dynamic_cast <npc_harrison_jonesAI*> (pCreature->AI()))
+            return ai->GossipSelect();
+    
+        return false;
+    }
+
+    
+
+    
+};
+
 
 void AddSC_zulaman()
 {
-    Script* newscript;
+    new npc_forest_frog();
+    new npc_zulaman_hostage();
+    new npc_harrison_jones();
 
-    newscript = new Script;
-    newscript->Name = "npc_forest_frog";
-    newscript->GetAI = &GetAI_npc_forest_frog;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_zulaman_hostage";
-    newscript->GetAI = &GetAI_npc_zulaman_hostage;
-    newscript->pGossipHello = &GossipHello_npc_zulaman_hostage;
-    newscript->pGossipSelect = &GossipSelect_npc_zulaman_hostage;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_harrison_jones";
-    newscript->GetAI = &GetAI_npc_harrison_jones;
-    newscript->pGossipHello = &GossipHello_npc_harrison_jones;
-    newscript->pGossipSelect = &GossipSelect_npc_harrison_jones;
-    newscript->RegisterSelf();
 }
 

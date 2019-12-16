@@ -15,124 +15,127 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_General_Angerforge
-SD%Complete: 100
-SDComment:
-SDCategory: Blackrock Depths
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_General_Angerforge
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Blackrock Depths
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
 enum Spells
 {
-    SPELL_MIGHTYBLOW                                       = 14099,
-    SPELL_HAMSTRING                                        = 9080,
-    SPELL_CLEAVE                                           = 20691
+    SPELL_MIGHTYBLOW = 14099,
+    SPELL_HAMSTRING = 9080,
+    SPELL_CLEAVE = 20691
 };
 
-struct boss_general_angerforgeAI : public ScriptedAI
+class boss_general_angerforge : public CreatureScript
 {
-    boss_general_angerforgeAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_general_angerforge() : CreatureScript("boss_general_angerforge") { }
 
-    uint32 MightyBlow_Timer;
-    uint32 HamString_Timer;
-    uint32 Cleave_Timer;
-    uint32 Adds_Timer;
-    bool Medics;
-
-    void Reset()
+    struct boss_general_angerforgeAI : public ScriptedAI
     {
-        MightyBlow_Timer = 8000;
-        HamString_Timer = 12000;
-        Cleave_Timer = 16000;
-        Adds_Timer = 0;
-        Medics = false;
-    }
+        boss_general_angerforgeAI(Creature* c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* /*who*/)
-    {
-    }
+        uint32 MightyBlow_Timer;
+        uint32 HamString_Timer;
+        uint32 Cleave_Timer;
+        uint32 Adds_Timer;
+        bool Medics;
 
-    void SummonAdds(Unit* victim)
-    {
-        if (Creature* SummonedAdd = DoSpawnCreature(8901, irand(-14, 14), irand(-14, 14), 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 120000))
-            SummonedAdd->AI()->AttackStart(victim);
-    }
-
-    void SummonMedics(Unit* victim)
-    {
-        if (Creature* SummonedMedic = DoSpawnCreature(8894, irand(-9, 9), irand(-9, 9), 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 120000))
-            SummonedMedic->AI()->AttackStart(victim);
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        //Return since we have no target
-        if (!UpdateVictim())
-            return;
-
-        //MightyBlow_Timer
-        if (MightyBlow_Timer <= diff)
+        void Reset()
         {
-            DoCastVictim( SPELL_MIGHTYBLOW);
-            MightyBlow_Timer = 18000;
+            MightyBlow_Timer = 8000;
+            HamString_Timer = 12000;
+            Cleave_Timer = 16000;
+            Adds_Timer = 0;
+            Medics = false;
         }
-        else MightyBlow_Timer -= diff;
 
-        //HamString_Timer
-        if (HamString_Timer <= diff)
+        void EnterCombat(Unit* /*who*/)
         {
-            DoCastVictim( SPELL_HAMSTRING);
-            HamString_Timer = 15000;
         }
-        else HamString_Timer -= diff;
 
-        //Cleave_Timer
-        if (Cleave_Timer <= diff)
+        void SummonAdds(Unit* victim)
         {
-            DoCastVictim( SPELL_CLEAVE);
-            Cleave_Timer = 9000;
+            if (Creature* SummonedAdd = DoSpawnCreature(8901, irand(-14, 14), irand(-14, 14), 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 120000))
+                SummonedAdd->AI()->AttackStart(victim);
         }
-        else Cleave_Timer -= diff;
 
-        //Adds_Timer
-        if (HealthBelowPct(20))
+        void SummonMedics(Unit* victim)
         {
-            if (Adds_Timer <= diff)
+            if (Creature* SummonedMedic = DoSpawnCreature(8894, irand(-9, 9), irand(-9, 9), 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 120000))
+                SummonedMedic->AI()->AttackStart(victim);
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            //Return since we have no target
+            if (!UpdateVictim())
+                return;
+
+            //MightyBlow_Timer
+            if (MightyBlow_Timer <= diff)
             {
-                // summon 3 Adds every 25s
-                SummonAdds(me->GetVictim());
-                SummonAdds(me->GetVictim());
-                SummonAdds(me->GetVictim());
-
-                Adds_Timer = 25000;
+                DoCastVictim(SPELL_MIGHTYBLOW);
+                MightyBlow_Timer = 18000;
             }
-            else Adds_Timer -= diff;
-        }
+            else MightyBlow_Timer -= diff;
 
-        //Summon Medics
-        if (!Medics && HealthBelowPct(20))
-        {
-            SummonMedics(me->GetVictim());
-            SummonMedics(me->GetVictim());
-            Medics = true;
-        }
+            //HamString_Timer
+            if (HamString_Timer <= diff)
+            {
+                DoCastVictim(SPELL_HAMSTRING);
+                HamString_Timer = 15000;
+            }
+            else HamString_Timer -= diff;
 
-        DoMeleeAttackIfReady();
+            //Cleave_Timer
+            if (Cleave_Timer <= diff)
+            {
+                DoCastVictim(SPELL_CLEAVE);
+                Cleave_Timer = 9000;
+            }
+            else Cleave_Timer -= diff;
+
+            //Adds_Timer
+            if (HealthBelowPct(20))
+            {
+                if (Adds_Timer <= diff)
+                {
+                    // summon 3 Adds every 25s
+                    SummonAdds(me->GetVictim());
+                    SummonAdds(me->GetVictim());
+                    SummonAdds(me->GetVictim());
+
+                    Adds_Timer = 25000;
+                }
+                else Adds_Timer -= diff;
+            }
+
+            //Summon Medics
+            if (!Medics && HealthBelowPct(20))
+            {
+                SummonMedics(me->GetVictim());
+                SummonMedics(me->GetVictim());
+                Medics = true;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_general_angerforgeAI(pCreature);
     }
 };
-CreatureAI* GetAI_boss_general_angerforge(Creature* pCreature)
-{
-    return new boss_general_angerforgeAI (pCreature);
-}
 
 void AddSC_boss_general_angerforge()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_general_angerforge";
-    newscript->GetAI = &GetAI_boss_general_angerforge;
-    newscript->RegisterSelf();
+    new boss_general_angerforge();
 }

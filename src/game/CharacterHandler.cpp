@@ -586,9 +586,11 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
 
     pCurrChar->SendInitialPacketsBeforeAddToMap();
 
+    bool firstlogin = false;
     //Show cinematic at the first time that player login
     if (!pCurrChar->getCinematic())
     {
+        firstlogin = true;
         pCurrChar->setCinematic(1);
 
         if (ChrRacesEntry const* rEntry = sChrRacesStore.LookupEntry(pCurrChar->getRace()))
@@ -773,7 +775,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     m_playerLoading = false;
 
     //Hook for OnLogin Event
-    sScriptMgr.OnLogin(pCurrChar);
+    sScriptMgr.OnPlayerLogin(pCurrChar, firstlogin);
 
     delete holder;
 }

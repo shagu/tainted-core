@@ -15,22 +15,22 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Blades_Edge_Mountains
-SD%Complete: 90
-SDComment: Quest support: 10556, 10609, 10682, 10980, 10512. Ogri'la->Skettis Flight. (npc_daranelle needs bit more work before consider complete)
-SDCategory: Blade's Edge Mountains
-EndScriptData */
+ /* ScriptData
+ SDName: Blades_Edge_Mountains
+ SD%Complete: 90
+ SDComment: Quest support: 10556, 10609, 10682, 10980, 10512. Ogri'la->Skettis Flight. (npc_daranelle needs bit more work before consider complete)
+ SDCategory: Blade's Edge Mountains
+ EndScriptData */
 
-/* ContentData
-mobs_nether_drake
-npc_daranelle
-npc_overseer_nuaar
-npc_saikkal_the_elder
-npc_ogre_brute
-npc_bloodmaul_brutebane
-npc_light_orb_collector
-EndContentData */
+ /* ContentData
+ mobs_nether_drake
+ npc_daranelle
+ npc_overseer_nuaar
+ npc_saikkal_the_elder
+ npc_ogre_brute
+ npc_bloodmaul_brutebane
+ npc_light_orb_collector
+ EndContentData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -39,134 +39,76 @@ EndContentData */
 #include "ScriptedGossip.h"
 #include "ScriptedFollowerAI.h"
 
-/*######
-## mobs_nether_drake
-######*/
+ /*######
+ ## mobs_nether_drake
+ ######*/
 
 enum eDrake
 {
-    SAY_NIHIL_1                 = -1000169,
-    SAY_NIHIL_2                 = -1000170,
-    SAY_NIHIL_3                 = -1000171,
-    SAY_NIHIL_4                 = -1000172,
-    SAY_NIHIL_INTERRUPT         = -1000173,
+    SAY_NIHIL_1 = -1000169,
+    SAY_NIHIL_2 = -1000170,
+    SAY_NIHIL_3 = -1000171,
+    SAY_NIHIL_4 = -1000172,
+    SAY_NIHIL_INTERRUPT = -1000173,
 
-    ENTRY_WHELP                 = 20021,
-    ENTRY_PROTO                 = 21821,
-    ENTRY_ADOLE                 = 21817,
-    ENTRY_MATUR                 = 21820,
-    ENTRY_NIHIL                 = 21823,
+    ENTRY_WHELP = 20021,
+    ENTRY_PROTO = 21821,
+    ENTRY_ADOLE = 21817,
+    ENTRY_MATUR = 21820,
+    ENTRY_NIHIL = 21823,
 
-    SPELL_T_PHASE_MODULATOR     = 37573,
+    SPELL_T_PHASE_MODULATOR = 37573,
 
-    SPELL_ARCANE_BLAST          = 38881,
-    SPELL_MANA_BURN             = 38884,
-    SPELL_INTANGIBLE_PRESENCE   = 36513
+    SPELL_ARCANE_BLAST = 38881,
+    SPELL_MANA_BURN = 38884,
+    SPELL_INTANGIBLE_PRESENCE = 36513
 };
 
-struct mobs_nether_drakeAI : public ScriptedAI
+class mobs_nether_drake : CreatureScript
 {
-    mobs_nether_drakeAI(Creature* c) : ScriptedAI(c) {}
+public:
+    mobs_nether_drake() : CreatureScript("mobs_nether_drake") {}
 
-    bool IsNihil;
-    uint32 NihilSpeech_Timer;
-    uint32 NihilSpeech_Phase;
-
-    uint32 ArcaneBlast_Timer;
-    uint32 ManaBurn_Timer;
-    uint32 IntangiblePresence_Timer;
-
-    void Reset()
+    struct mobs_nether_drakeAI : public ScriptedAI
     {
-        NihilSpeech_Timer = 2000;
-        IsNihil = false;
-        if (me->GetEntry() == ENTRY_NIHIL)
+        mobs_nether_drakeAI(Creature* c) : ScriptedAI(c) {}
+
+        bool IsNihil;
+        uint32 NihilSpeech_Timer;
+        uint32 NihilSpeech_Phase;
+
+        uint32 ArcaneBlast_Timer;
+        uint32 ManaBurn_Timer;
+        uint32 IntangiblePresence_Timer;
+
+        void Reset()
         {
-            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            IsNihil = true;
-        }
-        NihilSpeech_Phase = 1;
-
-        ArcaneBlast_Timer = 7500;
-        ManaBurn_Timer = 10000;
-        IntangiblePresence_Timer = 15000;
-    }
-
-    void EnterCombat(Unit* /*who*/) { }
-
-    void SpellHit(Unit* caster, const SpellEntry* spell)
-    {
-        if (spell->Id == SPELL_T_PHASE_MODULATOR && caster->GetTypeId() == TYPEID_PLAYER)
-        {
-            uint32 cEntry = 0;
-
-            switch (me->GetEntry())
+            NihilSpeech_Timer = 2000;
+            IsNihil = false;
+            if (me->GetEntry() == ENTRY_NIHIL)
             {
-            case ENTRY_WHELP:
-                switch (rand() % 4)
+                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                IsNihil = true;
+            }
+            NihilSpeech_Phase = 1;
+
+            ArcaneBlast_Timer = 7500;
+            ManaBurn_Timer = 10000;
+            IntangiblePresence_Timer = 15000;
+        }
+
+        void EnterCombat(Unit* /*who*/) { }
+
+        void SpellHit(Unit* caster, const SpellEntry* spell)
+        {
+            if (spell->Id == SPELL_T_PHASE_MODULATOR && caster->GetTypeId() == TYPEID_PLAYER)
+            {
+                uint32 cEntry = 0;
+
+                switch (me->GetEntry())
                 {
-                case 0:
-                    cEntry = ENTRY_PROTO;
-                    break;
-                case 1:
-                    cEntry = ENTRY_ADOLE;
-                    break;
-                case 2:
-                    cEntry = ENTRY_MATUR;
-                    break;
-                case 3:
-                    cEntry = ENTRY_NIHIL;
-                    break;
-                }
-                break;
-            case ENTRY_PROTO:
-                switch (rand() % 3)
-                {
-                case 0:
-                    cEntry = ENTRY_ADOLE;
-                    break;
-                case 1:
-                    cEntry = ENTRY_MATUR;
-                    break;
-                case 2:
-                    cEntry = ENTRY_NIHIL;
-                    break;
-                }
-                break;
-            case ENTRY_ADOLE:
-                switch (rand() % 3)
-                {
-                case 0:
-                    cEntry = ENTRY_PROTO;
-                    break;
-                case 1:
-                    cEntry = ENTRY_MATUR;
-                    break;
-                case 2:
-                    cEntry = ENTRY_NIHIL;
-                    break;
-                }
-                break;
-            case ENTRY_MATUR:
-                switch (rand() % 3)
-                {
-                case 0:
-                    cEntry = ENTRY_PROTO;
-                    break;
-                case 1:
-                    cEntry = ENTRY_ADOLE;
-                    break;
-                case 2:
-                    cEntry = ENTRY_NIHIL;
-                    break;
-                }
-                break;
-            case ENTRY_NIHIL:
-                if (NihilSpeech_Phase)
-                {
-                    DoScriptText(SAY_NIHIL_INTERRUPT, me);
-                    IsNihil = false;
-                    switch (rand() % 3)
+                case ENTRY_WHELP:
+                    switch (rand() % 4)
                     {
                     case 0:
                         cEntry = ENTRY_PROTO;
@@ -177,105 +119,171 @@ struct mobs_nether_drakeAI : public ScriptedAI
                     case 2:
                         cEntry = ENTRY_MATUR;
                         break;
+                    case 3:
+                        cEntry = ENTRY_NIHIL;
+                        break;
                     }
-                }
-                break;
-            }
-
-            if (cEntry)
-            {
-                me->UpdateEntry(cEntry);
-
-                if (cEntry == ENTRY_NIHIL)
-                {
-                    me->InterruptNonMeleeSpells(true);
-                    me->RemoveAllAuras();
-                    me->DeleteThreatList();
-                    me->CombatStop(true);
-                    Reset();
-                }
-            }
-        }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (IsNihil)
-        {
-            if (NihilSpeech_Phase)
-            {
-                if (NihilSpeech_Timer <= diff)
-                {
-                    switch (NihilSpeech_Phase)
+                    break;
+                case ENTRY_PROTO:
+                    switch (rand() % 3)
                     {
+                    case 0:
+                        cEntry = ENTRY_ADOLE;
+                        break;
                     case 1:
-                        DoScriptText(SAY_NIHIL_1, me);
-                        ++NihilSpeech_Phase;
+                        cEntry = ENTRY_MATUR;
                         break;
                     case 2:
-                        DoScriptText(SAY_NIHIL_2, me);
-                        ++NihilSpeech_Phase;
-                        break;
-                    case 3:
-                        DoScriptText(SAY_NIHIL_3, me);
-                        ++NihilSpeech_Phase;
-                        break;
-                    case 4:
-                        DoScriptText(SAY_NIHIL_4, me);
-                        ++NihilSpeech_Phase;
-                        break;
-                    case 5:
-                        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                        me->SetLevitate(true);
-                        //then take off to random location. creature is initially summoned, so don't bother do anything else.
-                        me->GetMotionMaster()->MovePoint(0, me->GetPositionX() + 100, me->GetPositionY(), me->GetPositionZ() + 100);
-						++NihilSpeech_Phase;
-                        break;
-					case 6:
-						me->ForcedDespawn();
-                        NihilSpeech_Phase = 0;
+                        cEntry = ENTRY_NIHIL;
                         break;
                     }
-                    NihilSpeech_Timer = 5000;
+                    break;
+                case ENTRY_ADOLE:
+                    switch (rand() % 3)
+                    {
+                    case 0:
+                        cEntry = ENTRY_PROTO;
+                        break;
+                    case 1:
+                        cEntry = ENTRY_MATUR;
+                        break;
+                    case 2:
+                        cEntry = ENTRY_NIHIL;
+                        break;
+                    }
+                    break;
+                case ENTRY_MATUR:
+                    switch (rand() % 3)
+                    {
+                    case 0:
+                        cEntry = ENTRY_PROTO;
+                        break;
+                    case 1:
+                        cEntry = ENTRY_ADOLE;
+                        break;
+                    case 2:
+                        cEntry = ENTRY_NIHIL;
+                        break;
+                    }
+                    break;
+                case ENTRY_NIHIL:
+                    if (NihilSpeech_Phase)
+                    {
+                        DoScriptText(SAY_NIHIL_INTERRUPT, me);
+                        IsNihil = false;
+                        switch (rand() % 3)
+                        {
+                        case 0:
+                            cEntry = ENTRY_PROTO;
+                            break;
+                        case 1:
+                            cEntry = ENTRY_ADOLE;
+                            break;
+                        case 2:
+                            cEntry = ENTRY_MATUR;
+                            break;
+                        }
+                    }
+                    break;
                 }
-                else NihilSpeech_Timer -= diff;
+
+                if (cEntry)
+                {
+                    me->UpdateEntry(cEntry);
+
+                    if (cEntry == ENTRY_NIHIL)
+                    {
+                        me->InterruptNonMeleeSpells(true);
+                        me->RemoveAllAuras();
+                        me->DeleteThreatList();
+                        me->CombatStop(true);
+                        Reset();
+                    }
+                }
             }
-            return;                                         //anything below here is not interesting for Nihil, so skip it
         }
 
-        if (!UpdateVictim())
-            return;
-
-        if (IntangiblePresence_Timer <= diff)
+        void UpdateAI(const uint32 diff)
         {
-            DoCastVictim(SPELL_INTANGIBLE_PRESENCE);
-            IntangiblePresence_Timer = 15000 + rand() % 15000;
-        }
-        else IntangiblePresence_Timer -= diff;
+            if (IsNihil)
+            {
+                if (NihilSpeech_Phase)
+                {
+                    if (NihilSpeech_Timer <= diff)
+                    {
+                        switch (NihilSpeech_Phase)
+                        {
+                        case 1:
+                            DoScriptText(SAY_NIHIL_1, me);
+                            ++NihilSpeech_Phase;
+                            break;
+                        case 2:
+                            DoScriptText(SAY_NIHIL_2, me);
+                            ++NihilSpeech_Phase;
+                            break;
+                        case 3:
+                            DoScriptText(SAY_NIHIL_3, me);
+                            ++NihilSpeech_Phase;
+                            break;
+                        case 4:
+                            DoScriptText(SAY_NIHIL_4, me);
+                            ++NihilSpeech_Phase;
+                            break;
+                        case 5:
+                            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                            me->SetLevitate(true);
+                            //then take off to random location. creature is initially summoned, so don't bother do anything else.
+                            me->GetMotionMaster()->MovePoint(0, me->GetPositionX() + 100, me->GetPositionY(), me->GetPositionZ() + 100);
+                            ++NihilSpeech_Phase;
+                            break;
+                        case 6:
+                            me->ForcedDespawn();
+                            NihilSpeech_Phase = 0;
+                            break;
+                        }
+                        NihilSpeech_Timer = 5000;
+                    }
+                    else NihilSpeech_Timer -= diff;
+                }
+                return;                                         //anything below here is not interesting for Nihil, so skip it
+            }
 
-        if (ManaBurn_Timer <= diff)
-        {
-            Unit* pTarget = me->GetVictim();
-            if (pTarget && pTarget->getPowerType() == POWER_MANA)
-                DoCast(pTarget, SPELL_MANA_BURN);
-            ManaBurn_Timer = 8000 + rand() % 8000;
-        }
-        else ManaBurn_Timer -= diff;
+            if (!UpdateVictim())
+                return;
 
-        if (ArcaneBlast_Timer <= diff)
-        {
-            DoCastVictim(SPELL_ARCANE_BLAST);
-            ArcaneBlast_Timer = 2500 + rand() % 5000;
-        }
-        else ArcaneBlast_Timer -= diff;
+            if (IntangiblePresence_Timer <= diff)
+            {
+                DoCastVictim(SPELL_INTANGIBLE_PRESENCE);
+                IntangiblePresence_Timer = 15000 + rand() % 15000;
+            }
+            else IntangiblePresence_Timer -= diff;
 
-        DoMeleeAttackIfReady();
+            if (ManaBurn_Timer <= diff)
+            {
+                Unit* pTarget = me->GetVictim();
+                if (pTarget && pTarget->getPowerType() == POWER_MANA)
+                    DoCast(pTarget, SPELL_MANA_BURN);
+                ManaBurn_Timer = 8000 + rand() % 8000;
+            }
+            else ManaBurn_Timer -= diff;
+
+            if (ArcaneBlast_Timer <= diff)
+            {
+                DoCastVictim(SPELL_ARCANE_BLAST);
+                ArcaneBlast_Timer = 2500 + rand() % 5000;
+            }
+            else ArcaneBlast_Timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new mobs_nether_drakeAI(pCreature);
     }
 };
-CreatureAI* GetAI_mobs_nether_drake(Creature* pCreature)
-{
-    return new mobs_nether_drakeAI (pCreature);
-}
+
+
 
 /*######
 ## npc_daranelle
@@ -283,34 +291,40 @@ CreatureAI* GetAI_mobs_nether_drake(Creature* pCreature)
 
 #define SAY_DARANELLE -1000174
 
-struct npc_daranelleAI : public ScriptedAI
+class npc_darnell : CreatureScript
 {
-    npc_daranelleAI(Creature* c) : ScriptedAI(c) {}
+public:
+    npc_darnell() : CreatureScript("npc_daranelle") {}
 
-    void Reset() {}
+    struct npc_daranelleAI : public ScriptedAI
+    {
+        npc_daranelleAI(Creature* c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* /*who*/) {}
+        void Reset() {}
 
-    void MoveInLineOfSight(Unit* who)
-    {      
-		if (Creature* kaliri = me->FindNearestCreature(21468, 15.0f, true))
-			kaliri->ForcedDespawn(1000);
+        void EnterCombat(Unit* /*who*/) {}
 
-        if (who->HasAura(36904, 0) && who->GetDistance(me) < 15.0f)
+        void MoveInLineOfSight(Unit* who)
         {
-			me->CastSpell(who, 37028, true);
-            DoScriptText(SAY_DARANELLE, me, who);
-            //@todo Move the below to updateAI and run if this statement == true
-            CAST_PLR(who)->KilledMonsterCredit(21511, me->GetGUID());
-            CAST_PLR(who)->RemoveAurasDueToSpell(36904);			
-        }      
+            if (Creature* kaliri = me->FindNearestCreature(21468, 15.0f, true))
+                kaliri->ForcedDespawn(1000);
+
+            if (who->HasAura(36904, 0) && who->GetDistance(me) < 15.0f)
+            {
+                me->CastSpell(who, 37028, true);
+                DoScriptText(SAY_DARANELLE, me, who);
+                //@todo Move the below to updateAI and run if this statement == true
+                CAST_PLR(who)->KilledMonsterCredit(21511, me->GetGUID());
+                CAST_PLR(who)->RemoveAurasDueToSpell(36904);
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_daranelleAI(pCreature);
     }
 };
-
-CreatureAI* GetAI_npc_daranelle(Creature* pCreature)
-{
-    return new npc_daranelleAI (pCreature);
-}
 
 /*######
 ## npc_overseer_nuaar
@@ -318,25 +332,31 @@ CreatureAI* GetAI_npc_daranelle(Creature* pCreature)
 
 #define GOSSIP_HON "Overseer, I am here to negotiate on behalf of the Cenarion Expedition."
 
-bool GossipHello_npc_overseer_nuaar(Player* player, Creature* pCreature)
+class npc_overseer_nuaar : CreatureScript
 {
-    if (player->GetQuestStatus(10682) == QUEST_STATUS_INCOMPLETE)
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_HON, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+public:
+    npc_overseer_nuaar() : CreatureScript("npc_overseer_nuaar") {}
 
-    player->SEND_GOSSIP_MENU(10532, pCreature->GetGUID());
-
-    return true;
-}
-
-bool GossipSelect_npc_overseer_nuaar(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-{
-    if (action == GOSSIP_ACTION_INFO_DEF + 1)
+    bool OnGossipHello(Player* player, Creature* creature)
     {
-        player->SEND_GOSSIP_MENU(10533, pCreature->GetGUID());
-        player->AreaExploredOrEventHappens(10682);
+        if (player->GetQuestStatus(10682) == QUEST_STATUS_INCOMPLETE)
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_HON, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+        player->SEND_GOSSIP_MENU(10532, creature->GetGUID());
+
+        return true;
     }
-    return true;
-}
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+    {
+        if (action == GOSSIP_ACTION_INFO_DEF + 1)
+        {
+            player->SEND_GOSSIP_MENU(10533, creature->GetGUID());
+            player->AreaExploredOrEventHappens(10682);
+        }
+        return true;
+    }
+};
+
 
 /*######
 ## npc_saikkal_the_elder
@@ -345,31 +365,37 @@ bool GossipSelect_npc_overseer_nuaar(Player* player, Creature* pCreature, uint32
 #define GOSSIP_HSTE "Yes... yes, it's me."
 #define GOSSIP_SSTE "Yes elder. Tell me more of the book."
 
-bool GossipHello_npc_saikkal_the_elder(Player* player, Creature* pCreature)
+class npc_saikkal_the_elder : CreatureScript
 {
-    if (player->GetQuestStatus(10980) == QUEST_STATUS_INCOMPLETE)
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_HSTE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+public:
+    npc_saikkal_the_elder() : CreatureScript("npc_saikkal_the_elder") {}
 
-    player->SEND_GOSSIP_MENU(10794, pCreature->GetGUID());
-
-    return true;
-}
-
-bool GossipSelect_npc_saikkal_the_elder(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-{
-    switch (action)
+    bool OnGossipHello(Player* player, Creature* creature)
     {
-    case GOSSIP_ACTION_INFO_DEF+1:
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_SSTE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-        player->SEND_GOSSIP_MENU(10795, pCreature->GetGUID());
-        break;
-    case GOSSIP_ACTION_INFO_DEF+2:
-        player->TalkedToCreature(pCreature->GetEntry(), pCreature->GetGUID());
-        player->SEND_GOSSIP_MENU(10796, pCreature->GetGUID());
-        break;
+        if (player->GetQuestStatus(10980) == QUEST_STATUS_INCOMPLETE)
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_HSTE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+        player->SEND_GOSSIP_MENU(10794, creature->GetGUID());
+
+        return true;
     }
-    return true;
-}
+
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+    {
+        switch (action)
+        {
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_SSTE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            player->SEND_GOSSIP_MENU(10795, creature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 2:
+            player->TalkedToCreature(creature->GetEntry(), creature->GetGUID());
+            player->SEND_GOSSIP_MENU(10796, creature->GetGUID());
+            break;
+        }
+        return true;
+    }
+};
 
 /*######
 ## npc_bloodmaul_brutebane
@@ -377,104 +403,116 @@ bool GossipSelect_npc_saikkal_the_elder(Player* player, Creature* pCreature, uin
 
 enum eBloodmaul
 {
-    NPC_OGRE_BRUTE        = 19995,
-    NPC_QUEST_CREDIT      = 21241,
-    GO_KEG                = 184315
+    NPC_OGRE_BRUTE = 19995,
+    NPC_QUEST_CREDIT = 21241,
+    GO_KEG = 184315
 };
 
-struct npc_bloodmaul_brutebaneAI : public ScriptedAI
+class npc_bloodmaul_brutebane : CreatureScript
 {
-    npc_bloodmaul_brutebaneAI(Creature* c) : ScriptedAI(c)
+public:
+    npc_bloodmaul_brutebane() : CreatureScript("npc_bloodmaul_brutebane") {}
+
+    struct npc_bloodmaul_brutebaneAI : public ScriptedAI
     {
-        if (Creature* pOgre = me->FindNearestCreature(NPC_OGRE_BRUTE, 50, true))
+        npc_bloodmaul_brutebaneAI(Creature* c) : ScriptedAI(c)
         {
-            pOgre->SetReactState(REACT_DEFENSIVE);
-            pOgre->GetMotionMaster()->MovePoint(1, me->GetPositionX() - 1, me->GetPositionY() + 1, me->GetPositionZ());
+            if (Creature* pOgre = me->FindNearestCreature(NPC_OGRE_BRUTE, 50, true))
+            {
+                pOgre->SetReactState(REACT_DEFENSIVE);
+                pOgre->GetMotionMaster()->MovePoint(1, me->GetPositionX() - 1, me->GetPositionY() + 1, me->GetPositionZ());
+            }
         }
-    }
 
-    uint64 OgreGUID;
+        uint64 OgreGUID;
 
-    void Reset()
+        void Reset()
+        {
+            OgreGUID = 0;
+        }
+
+        void UpdateAI(const uint32 /*uiDiff*/) {}
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        OgreGUID = 0;
+        return new npc_bloodmaul_brutebaneAI(pCreature);
     }
-
-    void UpdateAI(const uint32 /*uiDiff*/) {}
 };
-
-CreatureAI* GetAI_npc_bloodmaul_brutebane(Creature* pCreature)
-{
-    return new npc_bloodmaul_brutebaneAI (pCreature);
-}
 
 /*######
 ## npc_ogre_brute
 ######*/
 
-struct npc_ogre_bruteAI : public ScriptedAI
+class npc_ogre_brute : CreatureScript
 {
-    npc_ogre_bruteAI(Creature* c) : ScriptedAI(c) {}
+public:
+    npc_ogre_brute() : CreatureScript("npc_ogre_brute") {}
 
-    uint64 PlayerGUID;
-	uint32 cleave_timer;
-
-    void Reset()
+    struct npc_ogre_bruteAI : public ScriptedAI
     {
-        PlayerGUID = 0;
-		cleave_timer = 6000;
-    }
+        npc_ogre_bruteAI(Creature* c) : ScriptedAI(c) {}
 
-    void MoveInLineOfSight(Unit* pWho)
-    {
-        if (!pWho || (!pWho->IsAlive()))
-            return;
+        uint64 PlayerGUID;
+        uint32 cleave_timer;
 
-        if (me->IsWithinDistInMap(pWho, 50.0f) && (pWho->GetTypeId() == TYPEID_PLAYER) && pWho->ToPlayer()->GetQuestStatus(10512) == QUEST_STATUS_INCOMPLETE)
-            PlayerGUID = pWho->GetGUID();
-
-		if (me->IsWithinDistInMap(pWho, 50.0f) && (pWho->GetTypeId() == TYPEID_PLAYER) && pWho->ToPlayer()->GetQuestStatus(10545) == QUEST_STATUS_INCOMPLETE)
-			PlayerGUID = pWho->GetGUID();
-    }
-
-    void MovementInform(uint32 /*uiMotionType*/, uint32 uiPointId)
-    {
-        if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
+        void Reset()
         {
-            if (uiPointId == 1)
+            PlayerGUID = 0;
+            cleave_timer = 6000;
+        }
+
+        void MoveInLineOfSight(Unit* pWho)
+        {
+            if (!pWho || (!pWho->IsAlive()))
+                return;
+
+            if (me->IsWithinDistInMap(pWho, 50.0f) && (pWho->GetTypeId() == TYPEID_PLAYER) && pWho->ToPlayer()->GetQuestStatus(10512) == QUEST_STATUS_INCOMPLETE)
+                PlayerGUID = pWho->GetGUID();
+
+            if (me->IsWithinDistInMap(pWho, 50.0f) && (pWho->GetTypeId() == TYPEID_PLAYER) && pWho->ToPlayer()->GetQuestStatus(10545) == QUEST_STATUS_INCOMPLETE)
+                PlayerGUID = pWho->GetGUID();
+        }
+
+        void MovementInform(uint32 /*uiMotionType*/, uint32 uiPointId)
+        {
+            if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
             {
-                if (GameObject* pKeg = me->FindNearestGameObject(GO_KEG, 20))
-                    pKeg->Delete();
-                me->HandleEmoteCommand(ANIM_EMOTE_EAT);
-                me->SetReactState(REACT_AGGRESSIVE);
-				DoCast(me, 37591);
-                me->GetMotionMaster()->MoveTargetedHome();
-                if (Creature* pCredit = me->FindNearestCreature(NPC_QUEST_CREDIT, 50, true))
-                    pPlayer->KilledMonsterCredit(NPC_QUEST_CREDIT, pCredit->GetGUID());
+                if (uiPointId == 1)
+                {
+                    if (GameObject* pKeg = me->FindNearestGameObject(GO_KEG, 20))
+                        pKeg->Delete();
+                    me->HandleEmoteCommand(ANIM_EMOTE_EAT);
+                    me->SetReactState(REACT_AGGRESSIVE);
+                    DoCast(me, 37591);
+                    me->GetMotionMaster()->MoveTargetedHome();
+                    if (Creature* pCredit = me->FindNearestCreature(NPC_QUEST_CREDIT, 50, true))
+                        pPlayer->KilledMonsterCredit(NPC_QUEST_CREDIT, pCredit->GetGUID());
+                }
             }
         }
-    }
 
-    void UpdateAI(const uint32 diff)
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            if (cleave_timer <= diff)
+            {
+                DoCastVictim(15496);
+                cleave_timer = 10000;
+            }
+            else cleave_timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
     {
-        if (!UpdateVictim())
-            return;
-
-		if (cleave_timer <= diff)
-		{
-			DoCastVictim(15496);
-			cleave_timer = 10000;
-		}
-		else cleave_timer -= diff;
-
-        DoMeleeAttackIfReady();
+        return new npc_ogre_bruteAI(pCreature);
     }
 };
-
-CreatureAI* GetAI_npc_ogre_brute(Creature* pCreature)
-{
-    return new npc_ogre_bruteAI(pCreature);
-}
 
 /*#########
 # go_thunderspike
@@ -484,28 +522,35 @@ CreatureAI* GetAI_npc_ogre_brute(Creature* pCreature)
 #define Q_THE_THUNDERSPIKE 10526
 #define GOR_GRIMGUT_ENTRY  21319
 
-bool GOUse_go_thunderspike(Player* player, GameObject* /*_GO*/)
+class go_thunderspike : GameObjectScript
 {
-    if (player->GetQuestStatus(Q_THE_THUNDERSPIKE) == QUEST_STATUS_INCOMPLETE)
-    {
-        // to prevent spawn spam :)
-        if (Creature* pGor = GetClosestCreatureWithEntry(player, GOR_GRIMGUT_ENTRY, 50.0f, true))
-        {
-            if (!pGor->GetVictim())
-                pGor->AI()->AttackStart(player);
+public:
+    go_thunderspike() : GameObjectScript("go_thunderspike") {}
 
-            return false;
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        if (player->GetQuestStatus(Q_THE_THUNDERSPIKE) == QUEST_STATUS_INCOMPLETE)
+        {
+            // to prevent spawn spam :)
+            if (Creature* pGor = GetClosestCreatureWithEntry(player, GOR_GRIMGUT_ENTRY, 50.0f, true))
+            {
+                if (!pGor->GetVictim())
+                    pGor->AI()->AttackStart(player);
+
+                return false;
+            }
+
+            Position dest;
+            //player->GetValidPointInAngle(dest, 5.0f, frand(0.0f, 2*M_PI), true);
+            dest = player->GetPosition();
+            if (Creature* pGor = player->SummonCreature(GOR_GRIMGUT_ENTRY, dest.m_positionX, dest.m_positionY, dest.m_positionZ, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000))
+                pGor->AI()->AttackStart(player);
         }
 
-        Position dest;
-        //player->GetValidPointInAngle(dest, 5.0f, frand(0.0f, 2*M_PI), true);
-        dest = player->GetPosition();
-        if (Creature* pGor = player->SummonCreature(GOR_GRIMGUT_ENTRY, dest.m_positionX, dest.m_positionY, dest.m_positionZ, 0.0f, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 60000))
-            pGor->AI()->AttackStart(player);
+        return false;
     }
+};
 
-    return false;
-}
 
 /*######
 ## npc_light_orb_collector
@@ -514,107 +559,113 @@ bool GOUse_go_thunderspike(Player* player, GameObject* /*_GO*/)
 enum RazaniLightOrb
 {
     // Creatures
-    NPC_LIGHT_ORB_MINI          = 20771,
-    NPC_KILL_CREDIT_TRIGGER     = 21929,
+    NPC_LIGHT_ORB_MINI = 20771,
+    NPC_KILL_CREDIT_TRIGGER = 21929,
 
     // Quests
-    QUEST_LIGHT_FANTASTIC       = 10674,
-    QUEST_GATHER_THE_ORBS       = 10859,
+    QUEST_LIGHT_FANTASTIC = 10674,
+    QUEST_GATHER_THE_ORBS = 10859,
 
     // Misc
-    MAX_PULL_DISTANCE           = 20
+    MAX_PULL_DISTANCE = 20
 };
 
-struct npc_light_orb_collectorAI : public ScriptedAI
+class npc_light_orb_collector : CreatureScript
 {
-    npc_light_orb_collectorAI(Creature* c) : ScriptedAI(c)
+public:
+    npc_light_orb_collector() : CreatureScript("npc_light_orb_collector") {}
+
+    struct npc_light_orb_collectorAI : public ScriptedAI
     {
-        Reset();
-    }
-
-    uint64 selectedOrbGUID;
-    bool orbPulled;
-    uint32 startTimer;
-
-    void Reset()
-    {
-        orbPulled    = false;
-        startTimer  = 0;
-    }
-
-    void RewardCredit(uint64 playerGUID)
-    { 
-        Map* map = me->GetMap();
-        Map::PlayerList const &PlayerList = map->GetPlayers();
-
-        for (Map::PlayerList::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
-            if (Player* player = itr->GetSource())
-                if (player->GetGUID() == playerGUID)
-                    if (me->IsWithinDistInMap(player, 15.0f))
-                        if (player->GetQuestStatus(QUEST_LIGHT_FANTASTIC) || player->GetQuestStatus(QUEST_GATHER_THE_ORBS) == QUEST_STATUS_INCOMPLETE)
-                            player->KilledMonsterCredit(NPC_KILL_CREDIT_TRIGGER, me->GetGUID());
-    }
-
-    void MoveInLineOfSight(Unit* who)
-    {
-        if (who->GetTypeId() != TYPEID_UNIT || who->GetEntry() != NPC_LIGHT_ORB_MINI)
-            return;
-
-        // Select an nearby orb to collect
-        if (!startTimer && !orbPulled)
+        npc_light_orb_collectorAI(Creature* c) : ScriptedAI(c)
         {
-            if (me->GetDistance(who) <= MAX_PULL_DISTANCE)
+            Reset();
+        }
+
+        uint64 selectedOrbGUID;
+        bool orbPulled;
+        uint32 startTimer;
+
+        void Reset()
+        {
+            orbPulled = false;
+            startTimer = 0;
+        }
+
+        void RewardCredit(uint64 playerGUID)
+        {
+            Map* map = me->GetMap();
+            Map::PlayerList const &PlayerList = map->GetPlayers();
+
+            for (Map::PlayerList::const_iterator itr = PlayerList.begin(); itr != PlayerList.end(); ++itr)
+                if (Player* player = itr->GetSource())
+                    if (player->GetGUID() == playerGUID)
+                        if (me->IsWithinDistInMap(player, 15.0f))
+                            if (player->GetQuestStatus(QUEST_LIGHT_FANTASTIC) || player->GetQuestStatus(QUEST_GATHER_THE_ORBS) == QUEST_STATUS_INCOMPLETE)
+                                player->KilledMonsterCredit(NPC_KILL_CREDIT_TRIGGER, me->GetGUID());
+        }
+
+        void MoveInLineOfSight(Unit* who)
+        {
+            if (who->GetTypeId() != TYPEID_UNIT || who->GetEntry() != NPC_LIGHT_ORB_MINI)
+                return;
+
+            // Select an nearby orb to collect
+            if (!startTimer && !orbPulled)
             {
-                selectedOrbGUID = who->GetGUID();
-                startTimer = 2000;
+                if (me->GetDistance(who) <= MAX_PULL_DISTANCE)
+                {
+                    selectedOrbGUID = who->GetGUID();
+                    startTimer = 2000;
+                }
+            }
+            else if (orbPulled && who->GetGUID() == selectedOrbGUID && me->IsWithinDistInMap(who, 15.5f))
+            {
+                // Despawn the collected orb if close enough
+                ((Creature*)who)->ForcedDespawn();
+
+                // Give kill credit to the player
+                RewardCredit(who->GetOwnerGUID());
+
+                // Despawn collector
+                me->ForcedDespawn();
             }
         }
-        else if (orbPulled && who->GetGUID() == selectedOrbGUID && me->IsWithinDistInMap(who, 15.5f))
+
+        void UpdateAI(const uint32 diff)
         {
-            // Despawn the collected orb if close enough
-            ((Creature*)who)->ForcedDespawn();
-
-            // Give kill credit to the player
-            RewardCredit(who->GetOwnerGUID());
-
-            // Despawn collector
-            me->ForcedDespawn();
-        }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (startTimer)
-        {
-            // Start collecting after some delay
-            if (startTimer <= diff)
+            if (startTimer)
             {
-                Creature* selectedOrb = me->GetMap()->GetCreature(selectedOrbGUID);
-                if (!selectedOrb)
-                    return;
+                // Start collecting after some delay
+                if (startTimer <= diff)
+                {
+                    Creature* selectedOrb = me->GetMap()->GetCreature(selectedOrbGUID);
+                    if (!selectedOrb)
+                        return;
 
-                // Orb is pulled fast
-                selectedOrb->SetWalk(false);
+                    // Orb is pulled fast
+                    selectedOrb->SetWalk(false);
 
-                // Move orb to the collector
-                float fX, fY, fZ;;
-                selectedOrb->GetMotionMaster()->MoveIdle();
-                me->GetContactPoint(selectedOrb, fX, fY, fZ);
-                selectedOrb->GetMotionMaster()->MovePoint(0, fX, fY, fZ);
+                    // Move orb to the collector
+                    float fX, fY, fZ;;
+                    selectedOrb->GetMotionMaster()->MoveIdle();
+                    me->GetContactPoint(selectedOrb, fX, fY, fZ);
+                    selectedOrb->GetMotionMaster()->MovePoint(0, fX, fY, fZ);
 
-                orbPulled = true;
-                startTimer = 0;
+                    orbPulled = true;
+                    startTimer = 0;
+                }
+                else
+                    startTimer -= diff;
             }
-            else
-                startTimer -= diff;
         }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const
+    {
+        return new npc_light_orb_collectorAI(creature);
     }
 };
-
-CreatureAI* GetAI_npc_light_orb_collector(Creature* creature)
-{
-    return new npc_light_orb_collectorAI(creature);
-}
 
 /*######
 ## Q 10821
@@ -622,142 +673,160 @@ CreatureAI* GetAI_npc_light_orb_collector(Creature* creature)
 
 enum
 {
-	SPELL_GREEN_BEAM = 35846,
+    SPELL_GREEN_BEAM = 35846,
 
-	QUEST_FIRED = 10821,
+    QUEST_FIRED = 10821,
 
-	NPC_ANGER = 22422,
-	NPC_INVISB = 20736,
-	NPC_DOOMCRYER = 19963
+    NPC_ANGER = 22422,
+    NPC_INVISB = 20736,
+    NPC_DOOMCRYER = 19963
 };
 
-struct npc_anger_campAI : public ScriptedAI
+class npc_anger_camp : CreatureScript
 {
-	npc_anger_campAI(Creature* creature) : ScriptedAI(creature) {}
+public:
+    npc_anger_camp() : CreatureScript("npc_anger_camp") {}
 
-	uint8 Count;
+    struct npc_anger_campAI : public ScriptedAI
+    {
+        npc_anger_campAI(Creature* creature) : ScriptedAI(creature) {}
 
-	void Reset()
-	{
-		Count = 0;
-	}
+        uint8 Count;
 
-	void Activate()
-	{
-		++Count;
+        void Reset()
+        {
+            Count = 0;
+        }
 
-		if (Count == 5)
-		{
-			me->SummonCreature(NPC_DOOMCRYER, 2878.467f, 4817.107f, 282.800f, 0.329514f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
-			Reset();
-		}
-	}
+        void Activate()
+        {
+            ++Count;
+
+            if (Count == 5)
+            {
+                me->SummonCreature(NPC_DOOMCRYER, 2878.467f, 4817.107f, 282.800f, 0.329514f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+                Reset();
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* creature) const
+    {
+        return new npc_anger_campAI(creature);
+    }
 };
 
-CreatureAI* GetAI_npc_anger_camp(Creature* creature)
+class go_obeliks : GameObjectScript
 {
-	return new npc_anger_campAI(creature);
-}
+public:
+    go_obeliks() : GameObjectScript("go_obeliks") {}
 
-bool GOUse_go_obeliks(Player* player, GameObject* go)
-{
-	if (player->GetQuestStatus(QUEST_FIRED) == QUEST_STATUS_INCOMPLETE)
-	{
-		Map* tmpMap = go->GetMap();
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        if (player->GetQuestStatus(QUEST_FIRED) == QUEST_STATUS_INCOMPLETE)
+        {
+            Map* tmpMap = go->GetMap();
 
-		if (!tmpMap)
-			return true;
+            if (!tmpMap)
+                return true;
 
-		Creature* trigger = go->FindNearestCreature(NPC_INVISB, 10.0f, true);
-		if (!trigger)
-		{
-			if (Creature* bunny = go->SummonCreature(NPC_INVISB, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), go->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 181000))
-			{
-				if (Creature* anger = bunny->FindNearestCreature(NPC_ANGER, 100.0f, true))
-				{
-					bunny->CastSpell(anger, SPELL_GREEN_BEAM, true);
-					CAST_AI(npc_anger_campAI, anger->AI())->Activate();
-				}
-			}
-		}
-	}
-	return false;
-}
-
-struct npc_bloodmaul_direwolfAI : public ScriptedAI
-{
-	npc_bloodmaul_direwolfAI(Creature* pCreature) : ScriptedAI(pCreature) { }
-
-	void Reset()
-	{
-		spellHit = false;
-		me->SetFaction(1781);
-
-		rend_timer = 6000;
-		PlayerGUID = 0;
-		reset_timer = 0;
-	}
-
-	bool spellHit;
-	uint32 reset_timer;
-	uint32 rend_timer;
-	uint64  PlayerGUID;
-
-	void MoveInLineOfSight(Unit* pWho)
-	{
-		if (!pWho || (!pWho->IsAlive()))
-			return;
-
-		if (me->IsWithinDistInMap(pWho, 50.0f) && (pWho->GetTypeId() == TYPEID_PLAYER) && pWho->ToPlayer()->GetQuestStatus(10506) == QUEST_STATUS_INCOMPLETE)
-			PlayerGUID = pWho->GetGUID();
-	}
-
-	void SpellHit(Unit* Hitter, const SpellEntry* Spellkind)
-	{
-		if (Spellkind->Id == 36310 && !spellHit)
-		{
-			if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
-			{
-				if (Creature* pCredit = me->FindNearestCreature(21176, 50, true))
-					pPlayer->KilledMonsterCredit(21176, pCredit->GetGUID());
-
-				me->SetFaction(35);
-				me->CombatStop();
-				spellHit = true;
-				reset_timer = 60000;
-			}
-		}
-	}
-
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-		{
-			if (reset_timer <= diff)
-			{
-				Reset();
-			}
-			reset_timer -= diff;
-		}
-
-		if (UpdateVictim())
-		{
-			if (rend_timer <= diff)
-			{
-				DoCastVictim(13443);
-				rend_timer = 15000;
-			}
-			rend_timer -= diff;
-		}
-		
-		DoMeleeAttackIfReady();
-	}
+            Creature* trigger = go->FindNearestCreature(NPC_INVISB, 10.0f, true);
+            if (!trigger)
+            {
+                if (Creature* bunny = go->SummonCreature(NPC_INVISB, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), go->GetOrientation(), TEMPSUMMON_TIMED_DESPAWN, 181000))
+                {
+                    if (Creature* anger = bunny->FindNearestCreature(NPC_ANGER, 100.0f, true))
+                    {
+                        bunny->CastSpell(anger, SPELL_GREEN_BEAM, true);
+                        CAST_AI(npc_anger_camp::npc_anger_campAI, anger->AI())->Activate();
+                    }
+                }
+            }
+        }
+        return false;
+    }
 };
 
-CreatureAI* GetAI_npc_bloodmaul_direwolf(Creature* pCreature)
+class npc_bloodmaul_direwolf : CreatureScript
 {
-	return new npc_bloodmaul_direwolfAI(pCreature);
-}
+public:
+    npc_bloodmaul_direwolf() : CreatureScript("npc_bloodmaul_direwolf") {}
+
+    struct npc_bloodmaul_direwolfAI : public ScriptedAI
+    {
+        npc_bloodmaul_direwolfAI(Creature* pCreature) : ScriptedAI(pCreature) { }
+
+        void Reset()
+        {
+            spellHit = false;
+            me->SetFaction(1781);
+
+            rend_timer = 6000;
+            PlayerGUID = 0;
+            reset_timer = 0;
+        }
+
+        bool spellHit;
+        uint32 reset_timer;
+        uint32 rend_timer;
+        uint64  PlayerGUID;
+
+        void MoveInLineOfSight(Unit* pWho)
+        {
+            if (!pWho || (!pWho->IsAlive()))
+                return;
+
+            if (me->IsWithinDistInMap(pWho, 50.0f) && (pWho->GetTypeId() == TYPEID_PLAYER) && pWho->ToPlayer()->GetQuestStatus(10506) == QUEST_STATUS_INCOMPLETE)
+                PlayerGUID = pWho->GetGUID();
+        }
+
+        void SpellHit(Unit* Hitter, const SpellEntry* Spellkind)
+        {
+            if (Spellkind->Id == 36310 && !spellHit)
+            {
+                if (Player* pPlayer = Unit::GetPlayer(*me, PlayerGUID))
+                {
+                    if (Creature* pCredit = me->FindNearestCreature(21176, 50, true))
+                        pPlayer->KilledMonsterCredit(21176, pCredit->GetGUID());
+
+                    me->SetFaction(35);
+                    me->CombatStop();
+                    spellHit = true;
+                    reset_timer = 60000;
+                }
+            }
+        }
+
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+            {
+                if (reset_timer <= diff)
+                {
+                    Reset();
+                }
+                reset_timer -= diff;
+            }
+
+            if (UpdateVictim())
+            {
+                if (rend_timer <= diff)
+                {
+                    DoCastVictim(13443);
+                    rend_timer = 15000;
+                }
+                rend_timer -= diff;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_bloodmaul_direwolfAI(pCreature);
+    }
+};
 
 /*########
 # npc_kolphis_darkscale
@@ -769,150 +838,174 @@ CreatureAI* GetAI_npc_bloodmaul_direwolf(Creature* pCreature)
 #define GOSSIP_ITEM_KOLPHIS4 "Impressive. When do we attack?"
 #define GOSSIP_ITEM_KOLPHIS5 "Absolutely!"
 
-bool GossipHello_npc_kolphis_darkscale(Player* player, Creature* creature)
+class npc_kolphis_darkscale : CreatureScript
 {
-	if (creature->IsQuestGiver())
-		player->PrepareQuestMenu(creature->GetGUID());
-	if (player->GetQuestStatus(10722) == QUEST_STATUS_INCOMPLETE)
-		player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-	player->SEND_GOSSIP_MENU(10539, creature->GetGUID());
+public:
+    npc_kolphis_darkscale() : CreatureScript("npc_kolphis_darkscale") {}
 
-	return true;
-}
+    bool OnGossipHello(Player* player, Creature* creature)
+    {
+        if (creature->IsQuestGiver())
+            player->PrepareQuestMenu(creature->GetGUID());
+        if (player->GetQuestStatus(10722) == QUEST_STATUS_INCOMPLETE)
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        player->SEND_GOSSIP_MENU(10539, creature->GetGUID());
 
-bool GossipSelect_npc_kolphis_darkscale(Player* player, Creature* creature, uint32 sender, uint32 action)
-{
-	switch (action)
-	{
-	case GOSSIP_ACTION_INFO_DEF + 1:
-		player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-		player->SEND_GOSSIP_MENU(10541, creature->GetGUID());
-		break;
-	case GOSSIP_ACTION_INFO_DEF + 2:
-		player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-		player->SEND_GOSSIP_MENU(10542, creature->GetGUID());
-		break;
-	case GOSSIP_ACTION_INFO_DEF + 3:
-		player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-		player->SEND_GOSSIP_MENU(10543, creature->GetGUID());
-		break;
-	case GOSSIP_ACTION_INFO_DEF + 4:
-		player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
-		player->SEND_GOSSIP_MENU(10544, creature->GetGUID());
-		break;
-	case GOSSIP_ACTION_INFO_DEF + 5:
-		player->CompleteQuest(10722);
-		player->SEND_GOSSIP_MENU(10545, creature->GetGUID());
-		break;
-	}
-	return true;
-}
+        return true;
+    }
 
+    bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action)
+    {
+        switch (action)
+        {
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
+            player->SEND_GOSSIP_MENU(10541, creature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 2:
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
+            player->SEND_GOSSIP_MENU(10542, creature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 3:
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
+            player->SEND_GOSSIP_MENU(10543, creature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 4:
+            player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_KOLPHIS5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
+            player->SEND_GOSSIP_MENU(10544, creature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF + 5:
+            player->CompleteQuest(10722);
+            player->SEND_GOSSIP_MENU(10545, creature->GetGUID());
+            break;
+        }
+        return true;
+    }
+};
 
 /*#########
 # npc_prophecy_trigger
 #########*/
 
-struct npc_prophecy_triggerAI : public ScriptedAI
+class npc_prophecy_trigger : CreatureScript
 {
-	npc_prophecy_triggerAI(Creature *c) : ScriptedAI(c)
-	{
-		me->SetReactState(REACT_AGGRESSIVE);
-	}
+public:
+    npc_prophecy_trigger() : CreatureScript("npc_prophecy_trigger") {}
 
-	void MoveInLineOfSight(Unit *pWho)
-	{
-		if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
-		{
-			if (plWho->GetQuestStatus(10607) == QUEST_STATUS_INCOMPLETE && plWho->HasAura(37642, 0) && plWho->GetDistance(me) < 20.0f)
-			{
-				switch (me->GetEntry())
-				{
-				case 22798:
-					me->Whisper("From the darkest night shall rise again the raven, shall take flight in the shadows, shall reveal the nature of its kind. Prepare yourself for its coming, for the faithful shall be elevated to take flight with the raven, the rest be forgotten to walk upon the ground, clipped wings and shame.", plWho->GetGUID());
-					break;
-				case 22799:
-					me->Whisper("Steel your minds and guard your thoughts. The dark wings will cloud and consume the minds of the weak, a flock of thralls whose feet may never leave the ground.", plWho->GetGUID());
-					break;
-				case 22800:
-					me->Whisper("The old blood will flow once again with the coming of the raven, the return of the darkness in the skies. Scarlet night, and the rise of the old.", plWho->GetGUID());
-					break;
-				case 22801:
-					me->Whisper("The raven was struck down once for flying too high, unready. The eons have prepared the Dark Watcher for its ascent, to draw the dark cloak across the horizon.", plWho->GetGUID());
-					break;
-				}
+    struct npc_prophecy_triggerAI : public ScriptedAI
+    {
+        npc_prophecy_triggerAI(Creature *c) : ScriptedAI(c)
+        {
+            me->SetReactState(REACT_AGGRESSIVE);
+        }
 
-				plWho->KilledMonsterCredit(me->GetEntry(), me->GetGUID());
-				me->DisappearAndDie();
-			}
-		}
-	}
+        void MoveInLineOfSight(Unit *pWho)
+        {
+            if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
+            {
+                if (plWho->GetQuestStatus(10607) == QUEST_STATUS_INCOMPLETE && plWho->HasAura(37642, 0) && plWho->GetDistance(me) < 20.0f)
+                {
+                    switch (me->GetEntry())
+                    {
+                    case 22798:
+                        me->Whisper("From the darkest night shall rise again the raven, shall take flight in the shadows, shall reveal the nature of its kind. Prepare yourself for its coming, for the faithful shall be elevated to take flight with the raven, the rest be forgotten to walk upon the ground, clipped wings and shame.", plWho->GetGUID());
+                        break;
+                    case 22799:
+                        me->Whisper("Steel your minds and guard your thoughts. The dark wings will cloud and consume the minds of the weak, a flock of thralls whose feet may never leave the ground.", plWho->GetGUID());
+                        break;
+                    case 22800:
+                        me->Whisper("The old blood will flow once again with the coming of the raven, the return of the darkness in the skies. Scarlet night, and the rise of the old.", plWho->GetGUID());
+                        break;
+                    case 22801:
+                        me->Whisper("The raven was struck down once for flying too high, unready. The eons have prepared the Dark Watcher for its ascent, to draw the dark cloak across the horizon.", plWho->GetGUID());
+                        break;
+                    }
+
+                    plWho->KilledMonsterCredit(me->GetEntry(), me->GetGUID());
+                    me->DisappearAndDie();
+                }
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature *_Creature) const
+    {
+        return new npc_prophecy_triggerAI(_Creature);
+    }
 };
 
-CreatureAI* GetAI_npc_prophecy_trigger(Creature *_Creature)
+class go_prophecy : GameObjectScript
 {
-	return new npc_prophecy_triggerAI(_Creature);
-}
+public:
+    go_prophecy() : GameObjectScript("go_prophecy") {}
 
-bool GOUse_go_prophecy(Player* player, GameObject* go)
-{
-	if (player->GetQuestStatus(10607) == QUEST_STATUS_INCOMPLETE && player->HasAura(37642, 0))
-	{
-		if (Creature* prophecy = player->FindNearestCreature(22798, 5.0f, true))
-		{
-			CAST_AI(npc_prophecy_triggerAI, prophecy->AI())->MoveInLineOfSight(player);
-		}
-		else
-			if (Creature* prophecy = player->FindNearestCreature(22799, 5.0f, true))
-			{
-				CAST_AI(npc_prophecy_triggerAI, prophecy->AI())->MoveInLineOfSight(player);
-			}
-			else
-				if (Creature* prophecy = player->FindNearestCreature(22800, 5.0f, true))
-				{
-					CAST_AI(npc_prophecy_triggerAI, prophecy->AI())->MoveInLineOfSight(player);
-				}
-				else
-					if (Creature* prophecy = player->FindNearestCreature(22801, 5.0f, true))
-					{
-						CAST_AI(npc_prophecy_triggerAI, prophecy->AI())->MoveInLineOfSight(player);
-					}
-	}
-	return false;
-}
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        if (player->GetQuestStatus(10607) == QUEST_STATUS_INCOMPLETE && player->HasAura(37642, 0))
+        {
+            if (Creature* prophecy = player->FindNearestCreature(22798, 5.0f, true))
+            {
+                CAST_AI(npc_prophecy_trigger::npc_prophecy_triggerAI, prophecy->AI())->MoveInLineOfSight(player);
+            }
+            else
+                if (Creature* prophecy = player->FindNearestCreature(22799, 5.0f, true))
+                {
+                    CAST_AI(npc_prophecy_trigger::npc_prophecy_triggerAI, prophecy->AI())->MoveInLineOfSight(player);
+                }
+                else
+                    if (Creature* prophecy = player->FindNearestCreature(22800, 5.0f, true))
+                    {
+                        CAST_AI(npc_prophecy_trigger::npc_prophecy_triggerAI, prophecy->AI())->MoveInLineOfSight(player);
+                    }
+                    else
+                        if (Creature* prophecy = player->FindNearestCreature(22801, 5.0f, true))
+                        {
+                            CAST_AI(npc_prophecy_trigger::npc_prophecy_triggerAI, prophecy->AI())->MoveInLineOfSight(player);
+                        }
+        }
+        return false;
+    }
+};
 
 /*######
 ## npc_grishna_arakkoa
 ######*/
 
-struct npc_grishna_arakkoaAI : public ScriptedAI
+class npc_grishna_arakkoa : CreatureScript
 {
-	npc_grishna_arakkoaAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_grishna_arakkoa() : CreatureScript("npc_grishna_arakkoa") {}
 
-	void Reset() { }
+    struct npc_grishna_arakkoaAI : public ScriptedAI
+    {
+        npc_grishna_arakkoaAI(Creature *c) : ScriptedAI(c) {}
 
-	void JustDied(Unit* killer)
-	{
-		if (Player *plWho = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
-		{
-			if (plWho->GetQuestStatus(10607) == QUEST_STATUS_INCOMPLETE)
-				if (urand(0, 2))
-					plWho->CastSpell(plWho, 37642, true, 0, 0, 0);
-		}
-	}
+        void Reset() { }
 
-	void UpdateAI(const uint32 /*diff*/)
-	{
-		if (!UpdateVictim())
-			return;
-		DoMeleeAttackIfReady();
-	}
+        void JustDied(Unit* killer)
+        {
+            if (Player *plWho = killer->GetCharmerOrOwnerPlayerOrPlayerItself())
+            {
+                if (plWho->GetQuestStatus(10607) == QUEST_STATUS_INCOMPLETE)
+                    if (urand(0, 2))
+                        plWho->CastSpell(plWho, 37642, true, 0, 0, 0);
+            }
+        }
+
+        void UpdateAI(const uint32 /*diff*/)
+        {
+            if (!UpdateVictim())
+                return;
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_grishna_arakkoaAI(pCreature);
+    }
+
 };
-
-CreatureAI* GetAI_npc_grishna_arakkoa(Creature* pCreature)
-{
-	return new npc_grishna_arakkoaAI(pCreature);
-}
 
 /*######
 ## npc_koikoi_spirit
@@ -921,46 +1014,54 @@ CreatureAI* GetAI_npc_grishna_arakkoa(Creature* pCreature)
 #define EMOTE_THANKS -1910171
 #define SPELL_GHOSTLY_STRIKE 36093
 
-struct npc_koikoi_spiritAI : public ScriptedAI
+class npc_koikoi_spirit : CreatureScript
 {
-	npc_koikoi_spiritAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_koikoi_spirit() : CreatureScript("npc_koikoi_spirit") {}
 
-	void Reset() 
-	{
-		ghostlystrike_timer = 3000;
-	}
+    struct npc_koikoi_spiritAI : public ScriptedAI
+    {
+        npc_koikoi_spiritAI(Creature *c) : ScriptedAI(c) {}
 
-	uint32 ghostlystrike_timer;
+        void Reset()
+        {
+            ghostlystrike_timer = 3000;
+        }
 
-	void JustDied(Unit* killer)
-	{
-		if (Creature* leafbeard = me->FindNearestCreature(21326, 15.0f, true))
-		{
-			leafbeard->SetFaction(35);
-			DoScriptText(EMOTE_THANKS, leafbeard);
-		}
-	}
+        uint32 ghostlystrike_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        void JustDied(Unit* killer)
+        {
+            if (Creature* leafbeard = me->FindNearestCreature(21326, 15.0f, true))
+            {
+                leafbeard->SetFaction(35);
+                DoScriptText(EMOTE_THANKS, leafbeard);
+            }
+        }
 
-		if (ghostlystrike_timer <= diff)
-		{
-			DoCastVictim(SPELL_GHOSTLY_STRIKE);
-			ghostlystrike_timer = 8000;
-		}
-		else ghostlystrike_timer -= diff;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
 
-		DoMeleeAttackIfReady();
-	}
+            if (ghostlystrike_timer <= diff)
+            {
+                DoCastVictim(SPELL_GHOSTLY_STRIKE);
+                ghostlystrike_timer = 8000;
+            }
+            else ghostlystrike_timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_koikoi_spiritAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_koikoi_spirit(Creature* pCreature)
-{
-	return new npc_koikoi_spiritAI(pCreature);
-}
+
 
 /*######
 ## npc_raven_leafbeard
@@ -968,57 +1069,63 @@ CreatureAI* GetAI_npc_koikoi_spirit(Creature* pCreature)
 
 #define SPELL_FORCE_OF_NATURE 37696
 
-struct npc_raven_leafbeardAI : public ScriptedAI
+class npc_raven_leafbeard : CreatureScript
 {
-	npc_raven_leafbeardAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_raven_leafbeard() : CreatureScript("npc_raven_leafbeard") {}
 
-	void Reset()
-	{
-		me->SetFaction(1846);
-		reset_timer = 0;
-		summon_timer = 5000;
-	}
+    struct npc_raven_leafbeardAI : public ScriptedAI
+    {
+        npc_raven_leafbeardAI(Creature *c) : ScriptedAI(c) {}
 
-	uint32 reset_timer;
-	uint32 summon_timer;
+        void Reset()
+        {
+            me->SetFaction(1846);
+            reset_timer = 0;
+            summon_timer = 5000;
+        }
 
-	void JustDied(Unit* killer) { }
+        uint32 reset_timer;
+        uint32 summon_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-		{
-			if (me->FindNearestCreature(22226, 20.0f, false))
-			{
-				reset_timer = 60000;
-				me->CombatStop();
-			}
+        void JustDied(Unit* killer) { }
 
-			if (reset_timer <= diff)
-			{
-				Reset();
-			}
-			else reset_timer -= diff;
-		}
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+            {
+                if (me->FindNearestCreature(22226, 20.0f, false))
+                {
+                    reset_timer = 60000;
+                    me->CombatStop();
+                }
 
-		if (UpdateVictim())
-		{
-			if (summon_timer <= diff)
-			{
-				DoCast(SPELL_FORCE_OF_NATURE);
-				summon_timer = 45000;
-			}
-			else summon_timer -= diff;
-		}
+                if (reset_timer <= diff)
+                {
+                    Reset();
+                }
+                else reset_timer -= diff;
+            }
 
-		DoMeleeAttackIfReady();
-	}
+            if (UpdateVictim())
+            {
+                if (summon_timer <= diff)
+                {
+                    DoCast(SPELL_FORCE_OF_NATURE);
+                    summon_timer = 45000;
+                }
+                else summon_timer -= diff;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_raven_leafbeardAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_npc_raven_leafbeard(Creature* pCreature)
-{
-	return new npc_raven_leafbeardAI(pCreature);
-}
 
 /*######
 ## npc_wyrmkult_zealot
@@ -1030,63 +1137,70 @@ CreatureAI* GetAI_npc_raven_leafbeard(Creature* pCreature)
 #define NPC_DRAGONKIN 21492
 #define NPC_ZEALOT 21382
 
-struct npc_wyrmkult_zealotAI : public ScriptedAI
+class npc_wyrmkult_zealot : CreatureScript
 {
-	npc_wyrmkult_zealotAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_wyrmkult_zealot() : CreatureScript("npc_wyrmkult_zealot") {}
 
-	void Reset()
-	{
-		enraged = false;
-		transformed = false;
-		updated = false;
+    struct npc_wyrmkult_zealotAI : public ScriptedAI
+    {
+        npc_wyrmkult_zealotAI(Creature *c) : ScriptedAI(c) {}
 
-		wait_timer = 0;
+        void Reset()
+        {
+            enraged = false;
+            transformed = false;
+            updated = false;
 
-		if (me->GetEntry() == NPC_DRAGONKIN)
-			me->UpdateEntry(NPC_ZEALOT);
-	}
+            wait_timer = 0;
 
-	bool enraged;
-	bool transformed;
-	bool updated;
+            if (me->GetEntry() == NPC_DRAGONKIN)
+                me->UpdateEntry(NPC_ZEALOT);
+        }
 
-	uint32 wait_timer;
+        bool enraged;
+        bool transformed;
+        bool updated;
 
-	void JustDied(Unit* killer) { }
+        uint32 wait_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        void JustDied(Unit* killer) { }
 
-		if (HealthBelowPct(50) && enraged == false)
-		{
-			DoCast(me, SPELL_ZEALOT_ENRAGE);
-			enraged = true;
-		}
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
 
-		if (HealthBelowPct(20) && transformed == false)
-		{
-			DoCast(me, SPELL_BLESSING_OF_THE_BLACK);
-			transformed = true;	
-			wait_timer = 4000;
-		}
-			
-		if (transformed == true && wait_timer <= diff && updated == false)
-		{
-			me->UpdateEntry(21492);
-			updated = true;
-		}
-		else wait_timer -= diff;
+            if (HealthBelowPct(50) && enraged == false)
+            {
+                DoCast(me, SPELL_ZEALOT_ENRAGE);
+                enraged = true;
+            }
 
-		DoMeleeAttackIfReady();
-	}
+            if (HealthBelowPct(20) && transformed == false)
+            {
+                DoCast(me, SPELL_BLESSING_OF_THE_BLACK);
+                transformed = true;
+                wait_timer = 4000;
+            }
+
+            if (transformed == true && wait_timer <= diff && updated == false)
+            {
+                me->UpdateEntry(21492);
+                updated = true;
+            }
+            else wait_timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_wyrmkult_zealotAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_wyrmkult_zealot(Creature* pCreature)
-{
-	return new npc_wyrmkult_zealotAI(pCreature);
-}
 
 /*######
 ## npc_wyrmkult_acolyte
@@ -1099,73 +1213,80 @@ CreatureAI* GetAI_npc_wyrmkult_zealot(Creature* pCreature)
 #define NPC_DRAGONKIN 21492
 #define NPC_ACOLYTE 21383
 
-struct npc_wyrmkult_acolyteAI : public ScriptedAI
+class npc_wyrmkult_acolyte : CreatureScript
 {
-	npc_wyrmkult_acolyteAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_wyrmkult_acolyte() : CreatureScript("npc_wyrmkult_acolyte") {}
 
-	void Reset()
-	{
-		transformed = false;
-		updated = false;
+    struct npc_wyrmkult_acolyteAI : public ScriptedAI
+    {
+        npc_wyrmkult_acolyteAI(Creature *c) : ScriptedAI(c) {}
 
-		wait_timer = 0;
-		shield_timer = 6000;
-		fireball_timer = 7500;
+        void Reset()
+        {
+            transformed = false;
+            updated = false;
 
-		if (me->GetEntry() == NPC_DRAGONKIN)
-			me->UpdateEntry(NPC_ACOLYTE);
-	}
+            wait_timer = 0;
+            shield_timer = 6000;
+            fireball_timer = 7500;
 
-	bool transformed;
-	bool updated;
+            if (me->GetEntry() == NPC_DRAGONKIN)
+                me->UpdateEntry(NPC_ACOLYTE);
+        }
 
-	uint32 wait_timer;
-	uint32 shield_timer;
-	uint32 fireball_timer;
+        bool transformed;
+        bool updated;
 
-	void JustDied(Unit* killer) { }
+        uint32 wait_timer;
+        uint32 shield_timer;
+        uint32 fireball_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        void JustDied(Unit* killer) { }
 
-		if (fireball_timer <= diff)
-		{
-			DoCastVictim(SPELL_FIREBALL_ACOLYTE);
-			fireball_timer = 8000;
-		}
-		else fireball_timer -= diff;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
 
-		if (shield_timer <= diff)
-		{
-			DoCast(me, SPELL_POWER_WORD_SHIELD);
-			shield_timer = 20000;
-		}
-		else shield_timer -= diff;
+            if (fireball_timer <= diff)
+            {
+                DoCastVictim(SPELL_FIREBALL_ACOLYTE);
+                fireball_timer = 8000;
+            }
+            else fireball_timer -= diff;
 
-		if (HealthBelowPct(20) && transformed == false)
-		{
-			DoCast(me, SPELL_BLESSING_OF_THE_BLACK);
-			transformed = true;
-			wait_timer = 4500;
-		}
+            if (shield_timer <= diff)
+            {
+                DoCast(me, SPELL_POWER_WORD_SHIELD);
+                shield_timer = 20000;
+            }
+            else shield_timer -= diff;
 
-		if (transformed == true && wait_timer <= diff && updated == false)
-		{
-			me->UpdateEntry(21492);
-			updated = true;
-		}
-		else wait_timer -= diff;
+            if (HealthBelowPct(20) && transformed == false)
+            {
+                DoCast(me, SPELL_BLESSING_OF_THE_BLACK);
+                transformed = true;
+                wait_timer = 4500;
+            }
 
-		DoMeleeAttackIfReady();
-	}
+            if (transformed == true && wait_timer <= diff && updated == false)
+            {
+                me->UpdateEntry(21492);
+                updated = true;
+            }
+            else wait_timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_wyrmkult_acolyteAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_wyrmkult_acolyte(Creature* pCreature)
-{
-	return new npc_wyrmkult_acolyteAI(pCreature);
-}
 
 /*######
 ## npc_evergrove_ancient
@@ -1173,47 +1294,55 @@ CreatureAI* GetAI_npc_wyrmkult_acolyte(Creature* pCreature)
 
 #define SPELL_TRAMPLE 39274
 
-struct npc_evergrove_ancientAI : public ScriptedAI
+class npc_evergrove_ancient : CreatureScript
 {
-	npc_evergrove_ancientAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_evergrove_ancient() : CreatureScript("npc_evergrove_ancient") {}
 
-	void Reset()
-	{
-		trample_timer = 6000;
-		me->SetFaction(113);
-		me->SetReactState(REACT_AGGRESSIVE);
-	}
+    struct npc_evergrove_ancientAI : public ScriptedAI
+    {
+        npc_evergrove_ancientAI(Creature *c) : ScriptedAI(c) {}
 
-	uint32 trample_timer;
+        void Reset()
+        {
+            trample_timer = 6000;
+            me->SetFaction(113);
+            me->SetReactState(REACT_AGGRESSIVE);
+        }
 
-	void JustDied(Unit* killer) { }
+        uint32 trample_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        void JustDied(Unit* killer) { }
 
-		if (Creature* baelmon = me->FindNearestCreature(19747, 30.0f, true))
-		{
-			if (!baelmon->GetVictim())
-				me->AI()->AttackStart(baelmon);
-		}
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
 
-		if (trample_timer <= diff)
-		{
-			DoCast(SPELL_TRAMPLE);
-			trample_timer = 15000;
-		}
-		else trample_timer -= diff;
+            if (Creature* baelmon = me->FindNearestCreature(19747, 30.0f, true))
+            {
+                if (!baelmon->GetVictim())
+                    me->AI()->AttackStart(baelmon);
+            }
 
-		DoMeleeAttackIfReady();
-	}
+            if (trample_timer <= diff)
+            {
+                DoCast(SPELL_TRAMPLE);
+                trample_timer = 15000;
+            }
+            else trample_timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_evergrove_ancientAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_evergrove_ancient(Creature* pCreature)
-{
-	return new npc_evergrove_ancientAI(pCreature);
-}
+
 
 /*######
 ## npc_baelmon
@@ -1227,127 +1356,141 @@ CreatureAI* GetAI_npc_evergrove_ancient(Creature* pCreature)
 #define SPELL_SUMMON_WRATH_HOUND	39272
 #define SPELL_ETHEREAL_CHANNEL		35518
 
-struct npc_baelmonAI : public ScriptedAI
+class npc_baelmon : CreatureScript
 {
-	npc_baelmonAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_baelmon() : CreatureScript("npc_baelmon") {}
 
-	void Reset()
-	{
-		cripple_timer = 2000;
-		rainoffire_timer = 18000;
-		SummonHound = false;	
-	}
+    struct npc_baelmonAI : public ScriptedAI
+    {
+        npc_baelmonAI(Creature *c) : ScriptedAI(c) {}
 
-	uint32 cripple_timer;
-	uint32 rainoffire_timer;
+        void Reset()
+        {
+            cripple_timer = 2000;
+            rainoffire_timer = 18000;
+            SummonHound = false;
+        }
 
-	bool SummonHound;
+        uint32 cripple_timer;
+        uint32 rainoffire_timer;
 
-	void EnterCombat(Unit* /*who*/)
-	{
-		DoScriptText(SAY_BAELMON_AGGRO, me);
-	}
+        bool SummonHound;
 
-	void JustDied(Unit* killer) { }
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoScriptText(SAY_BAELMON_AGGRO, me);
+        }
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-		{
-			if (Creature* channel = me->FindNearestCreature(20736, 40.0f, true))
-			{
-				DoCast(channel, SPELL_ETHEREAL_CHANNEL);
-			}
-		}
+        void JustDied(Unit* killer) { }
 
-		if (UpdateVictim())
-		{
-			if (HealthBelowPct(20) && SummonHound == false)
-			{
-				DoScriptText(SAY_SUMMON_HOUND, me);
-				DoCast(SPELL_SUMMON_WRATH_HOUND);
-				SummonHound = true;
-			}
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+            {
+                if (Creature* channel = me->FindNearestCreature(20736, 40.0f, true))
+                {
+                    DoCast(channel, SPELL_ETHEREAL_CHANNEL);
+                }
+            }
 
-			if (cripple_timer <= diff)
-			{
-				DoCastVictim(SPELL_CRIPPLE);
-				cripple_timer = 17000;
-			}
-			else cripple_timer -= diff;
+            if (UpdateVictim())
+            {
+                if (HealthBelowPct(20) && SummonHound == false)
+                {
+                    DoScriptText(SAY_SUMMON_HOUND, me);
+                    DoCast(SPELL_SUMMON_WRATH_HOUND);
+                    SummonHound = true;
+                }
 
-			if (rainoffire_timer <= diff)
-			{
-				DoCast(SPELL_RAINOFFIRE);
-				rainoffire_timer = 30000;
-			}
-			else rainoffire_timer -= diff;
-		}
+                if (cripple_timer <= diff)
+                {
+                    DoCastVictim(SPELL_CRIPPLE);
+                    cripple_timer = 17000;
+                }
+                else cripple_timer -= diff;
 
-		DoMeleeAttackIfReady();
-	}
+                if (rainoffire_timer <= diff)
+                {
+                    DoCast(SPELL_RAINOFFIRE);
+                    rainoffire_timer = 30000;
+                }
+                else rainoffire_timer -= diff;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_baelmonAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_baelmon(Creature* pCreature)
-{
-	return new npc_baelmonAI(pCreature);
-}
+
 
 /*#########
 # npc_groc_trigger
 #########*/
 
-struct npc_groc_triggerAI : public ScriptedAI
+class npc_groc_trigger : CreatureScript
 {
-	npc_groc_triggerAI(Creature *c) : ScriptedAI(c)
-	{
-		me->SetReactState(REACT_AGGRESSIVE);
-	}
+public:
+    npc_groc_trigger() : CreatureScript("npc_groc_trigger") {}
 
-	void Reset()
-	{
-		summoned = false;
-	}
+    struct npc_groc_triggerAI : public ScriptedAI
+    {
+        npc_groc_triggerAI(Creature *c) : ScriptedAI(c)
+        {
+            me->SetReactState(REACT_AGGRESSIVE);
+        }
 
-	bool summoned;
+        void Reset()
+        {
+            summoned = false;
+        }
 
-	void MoveInLineOfSight(Unit *pWho)
-	{
-		if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
-		{
-			if (plWho->GetQuestStatus(10806) == QUEST_STATUS_INCOMPLETE && plWho->HasItemCount(31808, 1, false) && plWho->GetDistance(me) < 5.0f)
-			{
-				switch (me->GetEntry())
-				{
-				case 61002:
-					me->SummonCreature(20555, 3713.08f, 5396.28f, -3.85f, 4.94f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000), plWho->GetGUID();
-					me->SummonCreature(22473, 3718.914f, 5357.06f, -8.11f, 1.82f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 35000), plWho->GetGUID();
-					summoned = true;
-					me->DisappearAndDie();
-					break;
-				}
-			}
+        bool summoned;
 
-			if (plWho->GetQuestStatus(10742) == QUEST_STATUS_INCOMPLETE && plWho->HasItemCount(31146, 1, false) && plWho->GetDistance(me) < 5.0f)
-			{
-				switch (me->GetEntry())
-				{
-				case 61002:
-					me->SummonCreature(20555, 3713.08f, 5396.28f, -3.85f, 4.94f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000), plWho->GetGUID();
-					me->SummonCreature(22448, 3718.914f, 5357.06f, -8.11f, 1.82f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 35000), plWho->GetGUID();
-					summoned = true;
-					me->DisappearAndDie();
-					break;
-				}
-			}
-		}
-	}
+        void MoveInLineOfSight(Unit *pWho)
+        {
+            if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
+            {
+                if (plWho->GetQuestStatus(10806) == QUEST_STATUS_INCOMPLETE && plWho->HasItemCount(31808, 1, false) && plWho->GetDistance(me) < 5.0f)
+                {
+                    switch (me->GetEntry())
+                    {
+                    case 61002:
+                        me->SummonCreature(20555, 3713.08f, 5396.28f, -3.85f, 4.94f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000), plWho->GetGUID();
+                        me->SummonCreature(22473, 3718.914f, 5357.06f, -8.11f, 1.82f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 35000), plWho->GetGUID();
+                        summoned = true;
+                        me->DisappearAndDie();
+                        break;
+                    }
+                }
+
+                if (plWho->GetQuestStatus(10742) == QUEST_STATUS_INCOMPLETE && plWho->HasItemCount(31146, 1, false) && plWho->GetDistance(me) < 5.0f)
+                {
+                    switch (me->GetEntry())
+                    {
+                    case 61002:
+                        me->SummonCreature(20555, 3713.08f, 5396.28f, -3.85f, 4.94f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000), plWho->GetGUID();
+                        me->SummonCreature(22448, 3718.914f, 5357.06f, -8.11f, 1.82f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 35000), plWho->GetGUID();
+                        summoned = true;
+                        me->DisappearAndDie();
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature *_Creature) const
+    {
+        return new npc_groc_triggerAI(_Creature);
+    }
 };
-
-CreatureAI* GetAI_npc_groc_trigger(Creature *_Creature)
-{
-	return new npc_groc_triggerAI(_Creature);
-}
 
 /*######
 ## npc_goc
@@ -1362,105 +1505,112 @@ CreatureAI* GetAI_npc_groc_trigger(Creature *_Creature)
 #define SPELL_GROUND_SMASH 38784
 #define SPELL_BOULDER_VOLLEY 38783		
 
-struct npc_gocAI : public ScriptedAI
+class npc_goc : CreatureScript
 {
-	npc_gocAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_goc() : CreatureScript("npc_goc") {}
 
-	void Reset()
-	{
-		smash_timer = 12000;
-		boulder_timer = 3000;
+    struct npc_gocAI : public ScriptedAI
+    {
+        npc_gocAI(Creature *c) : ScriptedAI(c) {}
 
-		uiSumTimer = 5000;
-		uiStepsTimer = 0;
-		uiSteps = 0;
+        void Reset()
+        {
+            smash_timer = 12000;
+            boulder_timer = 3000;
 
-		Event = true;
-	}
+            uiSumTimer = 5000;
+            uiStepsTimer = 0;
+            uiSteps = 0;
 
-	bool Event;
+            Event = true;
+        }
 
-	uint32 uiSumTimer;
-	uint32 uiStepsTimer;
-	uint32 uiSteps;
+        bool Event;
 
-	uint32 smash_timer;
-	uint32 boulder_timer;
+        uint32 uiSumTimer;
+        uint32 uiStepsTimer;
+        uint32 uiSteps;
 
-	int32 NextStep(uint32 uiSteps)
-	{
-		switch (uiSteps)
-		{
-		case 1:
-			me->SetVisible(true);		
-			return 100;
-		case 2:
-			DoScriptText(SAY_GROC_ENTRY, me, 0);
-			me->HandleEmoteCommand(ANIM_EMOTE_ROAR);
-			return 14000;
-		case 3:
-			DoScriptText(SAY_GROC_NAME, me, 0);
-			me->HandleEmoteCommand(ANIM_EMOTE_ROAR);
-			return 10000;
-		case 4:
-			me->SetFaction(14);
-			me->GetMotionMaster()->MovePath(600600600, false);
-			me->SetReactState(REACT_AGGRESSIVE);
-			return 1000;
-		default:
-			return 0;
-		}
-	}
+        uint32 smash_timer;
+        uint32 boulder_timer;
 
-	void EnterCombat(Unit* /*who*/)
-	{
-		me->Say(SAY_GROC_CRUSH, LANG_UNIVERSAL, 0);
-	}
+        int32 NextStep(uint32 uiSteps)
+        {
+            switch (uiSteps)
+            {
+            case 1:
+                me->SetVisible(true);
+                return 100;
+            case 2:
+                DoScriptText(SAY_GROC_ENTRY, me, 0);
+                me->HandleEmoteCommand(ANIM_EMOTE_ROAR);
+                return 14000;
+            case 3:
+                DoScriptText(SAY_GROC_NAME, me, 0);
+                me->HandleEmoteCommand(ANIM_EMOTE_ROAR);
+                return 10000;
+            case 4:
+                me->SetFaction(14);
+                me->GetMotionMaster()->MovePath(600600600, false);
+                me->SetReactState(REACT_AGGRESSIVE);
+                return 1000;
+            default:
+                return 0;
+            }
+        }
 
-	void JustDied(Unit* killer)
-	{
-		if (Creature* sabelian = me->FindNearestCreature(22496, 50.0f, true))
-			DoScriptText(SAY_GOC_DIED, sabelian, 0);
+        void EnterCombat(Unit* /*who*/)
+        {
+            me->Say(SAY_GROC_CRUSH, LANG_UNIVERSAL, 0);
+        }
 
-		if (Creature* rexxar = me->FindNearestCreature(22448, 50.0f, true))
-			DoScriptText(SAY_GOC_DIED2, rexxar, 0);
-	}
+        void JustDied(Unit* killer)
+        {
+            if (Creature* sabelian = me->FindNearestCreature(22496, 50.0f, true))
+                DoScriptText(SAY_GOC_DIED, sabelian, 0);
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (uiStepsTimer <= diff)
-		{
-			if (Event)
-				uiStepsTimer = NextStep(++uiSteps);
-		}
-		else uiStepsTimer -= diff;
+            if (Creature* rexxar = me->FindNearestCreature(22448, 50.0f, true))
+                DoScriptText(SAY_GOC_DIED2, rexxar, 0);
+        }
 
-		if (!UpdateVictim())
-			return;
+        void UpdateAI(const uint32 diff)
+        {
+            if (uiStepsTimer <= diff)
+            {
+                if (Event)
+                    uiStepsTimer = NextStep(++uiSteps);
+            }
+            else uiStepsTimer -= diff;
 
-		if (smash_timer <= diff)
-		{
-			DoCast(SPELL_GROUND_SMASH);
-			smash_timer = 15000;
-		}
-		else smash_timer -= diff;
+            if (!UpdateVictim())
+                return;
 
-		if (boulder_timer <= diff)
-		{
-			if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 40, true))
-			DoCast(pTarget, SPELL_BOULDER_VOLLEY);
-			boulder_timer = 18000;
-		}
-		else boulder_timer -= diff;
+            if (smash_timer <= diff)
+            {
+                DoCast(SPELL_GROUND_SMASH);
+                smash_timer = 15000;
+            }
+            else smash_timer -= diff;
 
-		DoMeleeAttackIfReady();
-	}
+            if (boulder_timer <= diff)
+            {
+                if (Unit* pTarget = SelectTarget(SELECT_TARGET_RANDOM, 0, 40, true))
+                    DoCast(pTarget, SPELL_BOULDER_VOLLEY);
+                boulder_timer = 18000;
+            }
+            else boulder_timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_gocAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_goc(Creature* pCreature)
-{
-	return new npc_gocAI(pCreature);
-}
 
 /*######
 ## npc_sabelian_human
@@ -1472,152 +1622,166 @@ CreatureAI* GetAI_npc_goc(Creature* pCreature)
 #define SABELIAN_TRANSFORM_YELL -1910180
 #define SABELIAN_TRANSFORM_EMOTE -1910181
 
-struct npc_sabelian_humanAI : public ScriptedAI
+class npc_sabelian_human : CreatureScript
 {
-	npc_sabelian_humanAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_sabelian_human() : CreatureScript("npc_sabelian_human") {}
 
-	void Reset()
-	{
-		me->SetFaction(35);
-		transform_timer = 50000;
-		summoned = false;
-		transformed = false;
-		GocEvent = false;
-		SayLine1 = false;
-		SayLine2 = false;
-		Say = false;
-	}
+    struct npc_sabelian_humanAI : public ScriptedAI
+    {
+        npc_sabelian_humanAI(Creature *c) : ScriptedAI(c) {}
 
-	uint32 transform_timer;
+        void Reset()
+        {
+            me->SetFaction(35);
+            transform_timer = 50000;
+            summoned = false;
+            transformed = false;
+            GocEvent = false;
+            SayLine1 = false;
+            SayLine2 = false;
+            Say = false;
+        }
 
-	uint32 conversation_timer;
-	uint32 conv_timer;
-	uint32 conversa_timer;
-	uint32 summon_timer;
+        uint32 transform_timer;
 
-	bool SayLine1;
-	bool SayLine2;
-	bool Say;
-	bool transformed;
-	bool GocEvent;
-	bool summoned;
+        uint32 conversation_timer;
+        uint32 conv_timer;
+        uint32 conversa_timer;
+        uint32 summon_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-		{
-			if (!GocEvent)
-			{
-				if (Creature* goc = me->FindNearestCreature(20555, 50.0f, true))
-				{
-					GocEvent = true;
-					conversa_timer = 5000;
-				}
-			}
-		
-			if (conversa_timer <= diff && GocEvent == true && Say == false)
-			{
-				DoScriptText(YELL_SABELIAN_LINE_1, me);
-				me->HandleEmoteCommand(ANIM_EMOTE_POINT);
-				conversation_timer = 12000;
-				Say = true;
-			}
-			else conversa_timer -= diff;
+        bool SayLine1;
+        bool SayLine2;
+        bool Say;
+        bool transformed;
+        bool GocEvent;
+        bool summoned;
 
-			if (conversation_timer <= diff && SayLine1 == false && GocEvent == true)
-			{
-				DoScriptText(YELL_SABELIAN_LINE_2, me);
-				me->HandleEmoteCommand(ANIM_EMOTE_POINT);
-				SayLine1 = true;
-				conv_timer = 6000;
-			}
-			else conversation_timer -= diff;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+            {
+                if (!GocEvent)
+                {
+                    if (Creature* goc = me->FindNearestCreature(20555, 50.0f, true))
+                    {
+                        GocEvent = true;
+                        conversa_timer = 5000;
+                    }
+                }
 
-			if (conv_timer <= diff && SayLine2 == false && GocEvent == true && SayLine1 == true)
-			{
-				DoScriptText(YELL_SABELIAN_LINE_3, me);
-				me->HandleEmoteCommand(ANIM_EMOTE_ROAR);
-				me->SetReactState(REACT_AGGRESSIVE);
-				me->SetFaction(11);
-				SayLine2 = true;
-			}
-			else conv_timer -= diff;			
-		}
-		
-		if (transformed == false && transform_timer <= diff)
-		{
-			DoScriptText(SABELIAN_TRANSFORM_YELL, me);
-			DoScriptText(SABELIAN_TRANSFORM_EMOTE, me);
-			DoCast(me, 39255);
-			transformed = true;
-			summon_timer = 5000;
-		}
-		else transform_timer -= diff;
+                if (conversa_timer <= diff && GocEvent == true && Say == false)
+                {
+                    DoScriptText(YELL_SABELIAN_LINE_1, me);
+                    me->HandleEmoteCommand(ANIM_EMOTE_POINT);
+                    conversation_timer = 12000;
+                    Say = true;
+                }
+                else conversa_timer -= diff;
 
-		if (summoned == false && transformed == true && summon_timer <= diff)
-		{
-			me->SummonCreature(22496, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000);
-			me->DisappearAndDie();
-			summoned = true;
-		}
-		else summon_timer -= diff;
+                if (conversation_timer <= diff && SayLine1 == false && GocEvent == true)
+                {
+                    DoScriptText(YELL_SABELIAN_LINE_2, me);
+                    me->HandleEmoteCommand(ANIM_EMOTE_POINT);
+                    SayLine1 = true;
+                    conv_timer = 6000;
+                }
+                else conversation_timer -= diff;
 
-		DoMeleeAttackIfReady();
-	}
+                if (conv_timer <= diff && SayLine2 == false && GocEvent == true && SayLine1 == true)
+                {
+                    DoScriptText(YELL_SABELIAN_LINE_3, me);
+                    me->HandleEmoteCommand(ANIM_EMOTE_ROAR);
+                    me->SetReactState(REACT_AGGRESSIVE);
+                    me->SetFaction(11);
+                    SayLine2 = true;
+                }
+                else conv_timer -= diff;
+            }
+
+            if (transformed == false && transform_timer <= diff)
+            {
+                DoScriptText(SABELIAN_TRANSFORM_YELL, me);
+                DoScriptText(SABELIAN_TRANSFORM_EMOTE, me);
+                DoCast(me, 39255);
+                transformed = true;
+                summon_timer = 5000;
+            }
+            else transform_timer -= diff;
+
+            if (summoned == false && transformed == true && summon_timer <= diff)
+            {
+                me->SummonCreature(22496, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 15000);
+                me->DisappearAndDie();
+                summoned = true;
+            }
+            else summon_timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_sabelian_humanAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_npc_sabelian_human(Creature* pCreature)
-{
-	return new npc_sabelian_humanAI(pCreature);
-}
 
 /*######
 ## npc_sabelian_dragon
 ######*/
 
-struct npc_sabelian_dragonAI : public ScriptedAI
+class npc_sabelian_dragon : CreatureScript
 {
-	npc_sabelian_dragonAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_sabelian_dragon() : CreatureScript("npc_sabelian_dragon") {}
 
-	void Reset()
-	{
-		knockdown_timer = 10000;
-		flamebreath_timer = 6000;
+    struct npc_sabelian_dragonAI : public ScriptedAI
+    {
+        npc_sabelian_dragonAI(Creature *c) : ScriptedAI(c) {}
 
-		me->SetFaction(11);
-		me->SetReactState(REACT_AGGRESSIVE);
-	}
+        void Reset()
+        {
+            knockdown_timer = 10000;
+            flamebreath_timer = 6000;
 
-	uint32 knockdown_timer;
-	uint32 flamebreath_timer;
+            me->SetFaction(11);
+            me->SetReactState(REACT_AGGRESSIVE);
+        }
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        uint32 knockdown_timer;
+        uint32 flamebreath_timer;
 
-		if (flamebreath_timer <= diff)
-		{
-			DoCastVictim(43582);
-			flamebreath_timer = 20000;
-		}
-		else flamebreath_timer -= diff;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
 
-		if (knockdown_timer <= diff)
-		{
-			DoCastVictim(35783);
-			knockdown_timer = 23000;
-		}
-		else knockdown_timer -= diff;
-		
-		DoMeleeAttackIfReady();
-	}
+            if (flamebreath_timer <= diff)
+            {
+                DoCastVictim(43582);
+                flamebreath_timer = 20000;
+            }
+            else flamebreath_timer -= diff;
+
+            if (knockdown_timer <= diff)
+            {
+                DoCastVictim(35783);
+                knockdown_timer = 23000;
+            }
+            else knockdown_timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_sabelian_dragonAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_sabelian_dragon(Creature* pCreature)
-{
-	return new npc_sabelian_dragonAI(pCreature);
-}
+
 
 /*######
 ## npc_rexxar
@@ -1630,104 +1794,112 @@ CreatureAI* GetAI_npc_sabelian_dragon(Creature* pCreature)
 #define SPELL_SUMMON_HUFFER 39251
 #define SPELL_SUMMON_MISHA 39269
 
-struct npc_rexxarAI : public ScriptedAI
+class npc_rexxar : CreatureScript
 {
-	npc_rexxarAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_rexxar() : CreatureScript("npc_rexxar") {}
 
-	void Reset()
-	{
-		me->SetFaction(83);
-		summoned = false;
-		summoned2 = false;
-		GocEvent = false;
-		SayLine1 = false;
-		SayLine2 = false;
-		Say = false;
+    struct npc_rexxarAI : public ScriptedAI
+    {
+        npc_rexxarAI(Creature *c) : ScriptedAI(c) {}
 
-		summon_timer = 35000;
-		summon_timer2 = 50000;
-	}
+        void Reset()
+        {
+            me->SetFaction(83);
+            summoned = false;
+            summoned2 = false;
+            GocEvent = false;
+            SayLine1 = false;
+            SayLine2 = false;
+            Say = false;
 
-	uint32 conversation_timer;
-	uint32 conv_timer;
-	uint32 conversa_timer;
-	uint32 summon_timer;
-	uint32 summon_timer2;
+            summon_timer = 35000;
+            summon_timer2 = 50000;
+        }
 
-	bool SayLine1;
-	bool SayLine2;
-	bool Say;
-	bool GocEvent;
-	bool summoned;
-	bool summoned2;
+        uint32 conversation_timer;
+        uint32 conv_timer;
+        uint32 conversa_timer;
+        uint32 summon_timer;
+        uint32 summon_timer2;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-		{
-			if (!GocEvent)
-			{
-				if (Creature* goc = me->FindNearestCreature(20555, 50.0f, true))
-				{
-					GocEvent = true;
-					conversa_timer = 5000;
-				}
-			}
+        bool SayLine1;
+        bool SayLine2;
+        bool Say;
+        bool GocEvent;
+        bool summoned;
+        bool summoned2;
 
-			if (conversa_timer <= diff && GocEvent == true && Say == false)
-			{
-				DoScriptText(SAY_REXXAR_1, me);
-				me->HandleEmoteCommand(ANIM_EMOTE_POINT);
-				conversation_timer = 7000;
-				Say = true;
-			}
-			else conversa_timer -= diff;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+            {
+                if (!GocEvent)
+                {
+                    if (Creature* goc = me->FindNearestCreature(20555, 50.0f, true))
+                    {
+                        GocEvent = true;
+                        conversa_timer = 5000;
+                    }
+                }
 
-			if (conversation_timer <= diff && SayLine1 == false && GocEvent == true)
-			{
-				DoScriptText(SAY_REXXAR_2, me);
-				me->HandleEmoteCommand(ANIM_EMOTE_POINT);
-				SayLine1 = true;
-				conv_timer = 11000;
-			}
-			else conversation_timer -= diff;
+                if (conversa_timer <= diff && GocEvent == true && Say == false)
+                {
+                    DoScriptText(SAY_REXXAR_1, me);
+                    me->HandleEmoteCommand(ANIM_EMOTE_POINT);
+                    conversation_timer = 7000;
+                    Say = true;
+                }
+                else conversa_timer -= diff;
 
-			if (conv_timer <= diff && SayLine2 == false && GocEvent == true && SayLine1 == true)
-			{
-				DoScriptText(SAY_REXXAR_3, me);
-				me->HandleEmoteCommand(ANIM_EMOTE_ROAR);
-				me->SetReactState(REACT_AGGRESSIVE);
-				me->SetFaction(85);
-				SayLine2 = true;
-			}
-			else conv_timer -= diff;
-		}
+                if (conversation_timer <= diff && SayLine1 == false && GocEvent == true)
+                {
+                    DoScriptText(SAY_REXXAR_2, me);
+                    me->HandleEmoteCommand(ANIM_EMOTE_POINT);
+                    SayLine1 = true;
+                    conv_timer = 11000;
+                }
+                else conversation_timer -= diff;
 
-		if (UpdateVictim())
-		{
-			if (!summoned && summon_timer <= diff)
-			{
-				DoCast(SPELL_SUMMON_HUFFER);
-				summoned = true;
-			}
-			else summon_timer -= diff;
+                if (conv_timer <= diff && SayLine2 == false && GocEvent == true && SayLine1 == true)
+                {
+                    DoScriptText(SAY_REXXAR_3, me);
+                    me->HandleEmoteCommand(ANIM_EMOTE_ROAR);
+                    me->SetReactState(REACT_AGGRESSIVE);
+                    me->SetFaction(85);
+                    SayLine2 = true;
+                }
+                else conv_timer -= diff;
+            }
 
-			if (!summoned2 && summon_timer2 <= diff)
-			{
-				DoCast(SPELL_SUMMON_MISHA);
-				summoned2 = true;
-			}
-			else summon_timer2 -= diff;
-		}
+            if (UpdateVictim())
+            {
+                if (!summoned && summon_timer <= diff)
+                {
+                    DoCast(SPELL_SUMMON_HUFFER);
+                    summoned = true;
+                }
+                else summon_timer -= diff;
 
-		DoMeleeAttackIfReady();
-	}
+                if (!summoned2 && summon_timer2 <= diff)
+                {
+                    DoCast(SPELL_SUMMON_MISHA);
+                    summoned2 = true;
+                }
+                else summon_timer2 -= diff;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_rexxarAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_rexxar(Creature* pCreature)
-{
-	return new npc_rexxarAI(pCreature);
-}
+
 
 /*######
 ## npc_grimgut
@@ -1735,30 +1907,36 @@ CreatureAI* GetAI_npc_rexxar(Creature* pCreature)
 
 #define SAY_PICKUP_SPEAR -1910182
 
-struct npc_grimgutAI : public ScriptedAI
+class npc_grimgut : CreatureScript
 {
-	npc_grimgutAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_grimgut() : CreatureScript("npc_grimgut") {}
 
-	void Reset() { }
+    struct npc_grimgutAI : public ScriptedAI
+    {
+        npc_grimgutAI(Creature *c) : ScriptedAI(c) {}
 
-	void EnterCombat(Unit* /*who*/)
-	{
-		DoScriptText(SAY_PICKUP_SPEAR, me);
-	}
+        void Reset() { }
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        void EnterCombat(Unit* /*who*/)
+        {
+            DoScriptText(SAY_PICKUP_SPEAR, me);
+        }
 
-		DoMeleeAttackIfReady();
-	}
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_grimgutAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_npc_grimgut(Creature* pCreature)
-{
-	return new npc_grimgutAI(pCreature);
-}
 
 /*#########
 # npc_onspiritswings_trigger
@@ -1766,37 +1944,43 @@ CreatureAI* GetAI_npc_grimgut(Creature* pCreature)
 
 #define QUEST_ON_SPIRITS_WINGS 10714
 
-struct npc_onspiritswings_triggerAI : public ScriptedAI
+class npc_onspiritswings_trigger : CreatureScript
 {
-	npc_onspiritswings_triggerAI(Creature *c) : ScriptedAI(c)
-	{
-		me->SetReactState(REACT_AGGRESSIVE);
-	}
+public:
+    npc_onspiritswings_trigger() : CreatureScript("npc_onspiritswings_trigger") {}
 
-	void Reset() { }
+    struct npc_onspiritswings_triggerAI : public ScriptedAI
+    {
+        npc_onspiritswings_triggerAI(Creature *c) : ScriptedAI(c)
+        {
+            me->SetReactState(REACT_AGGRESSIVE);
+        }
 
-	void MoveInLineOfSight(Unit *pWho)
-	{
-		if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
-		{
-			if (plWho->GetQuestStatus(QUEST_ON_SPIRITS_WINGS) == QUEST_STATUS_INCOMPLETE && plWho->HasItemCount(31128, 1, false) && plWho->GetDistance(me) < 22.0f)
-			{
-				switch (me->GetEntry())
-				{
-				case 61004:
-					plWho->CompleteQuest(QUEST_ON_SPIRITS_WINGS);
-					me->SummonCreature(23134, 3085.1f, 5854.1f, -0.0f, 0.47f, TEMPSUMMON_TIMED_DESPAWN, 20000);
-					break;
-				}
-			}							
-		}
-	}
+        void Reset() { }
+
+        void MoveInLineOfSight(Unit *pWho)
+        {
+            if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
+            {
+                if (plWho->GetQuestStatus(QUEST_ON_SPIRITS_WINGS) == QUEST_STATUS_INCOMPLETE && plWho->HasItemCount(31128, 1, false) && plWho->GetDistance(me) < 22.0f)
+                {
+                    switch (me->GetEntry())
+                    {
+                    case 61004:
+                        plWho->CompleteQuest(QUEST_ON_SPIRITS_WINGS);
+                        me->SummonCreature(23134, 3085.1f, 5854.1f, -0.0f, 0.47f, TEMPSUMMON_TIMED_DESPAWN, 20000);
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_onspiritswings_triggerAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_npc_onspiritswings_trigger(Creature* pCreature)
-{
-	return new npc_onspiritswings_triggerAI(pCreature);
-}
 
 /*#########
 # Quest_The_Smallest_Creatures
@@ -1807,61 +1991,87 @@ CreatureAI* GetAI_npc_onspiritswings_trigger(Creature* pCreature)
 #define GREEN_TRIGGER 22356
 #define FERMENTED_TRIGGER 22368
 
-bool GOUse_go_moonshine_keg(Player* player, GameObject* go)
+class go_moonshine_keg : GameObjectScript
 {
-	if (player->GetQuestStatus(QUEST_THE_SMALLEST_CREATURES) == QUEST_STATUS_INCOMPLETE)
-	{
-		Creature* moonshine = go->FindNearestCreature(MOONSHINE_TRIGGER, 5.0f, true);
-		{
-			player->KilledMonsterCredit(MOONSHINE_TRIGGER, 0);
-		}
-	}
-	return false;
-}
+public:
+    go_moonshine_keg() : GameObjectScript("go_moonshine_keg") {}
 
-bool GOUse_go_greenspot_keg(Player* player, GameObject* go)
-{
-	if (player->GetQuestStatus(QUEST_THE_SMALLEST_CREATURES) == QUEST_STATUS_INCOMPLETE)
-	{
-		Creature* moonshine = go->FindNearestCreature(GREEN_TRIGGER, 5.0f, true);
-		{
-			player->KilledMonsterCredit(GREEN_TRIGGER, 0);
-		}
-	}
-	return false;
-}
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        if (player->GetQuestStatus(QUEST_THE_SMALLEST_CREATURES) == QUEST_STATUS_INCOMPLETE)
+        {
+            Creature* moonshine = go->FindNearestCreature(MOONSHINE_TRIGGER, 5.0f, true);
+            {
+                player->KilledMonsterCredit(MOONSHINE_TRIGGER, 0);
+            }
+        }
+        return false;
+    }
+};
 
-bool GOUse_go_fermentedseed_keg(Player* player, GameObject* go)
+class go_greenspot_keg : GameObjectScript
 {
-	if (player->GetQuestStatus(QUEST_THE_SMALLEST_CREATURES) == QUEST_STATUS_INCOMPLETE)
-	{
-		Creature* moonshine = go->FindNearestCreature(FERMENTED_TRIGGER, 5.0f, true);
-		{
-			player->KilledMonsterCredit(FERMENTED_TRIGGER, 0);
-		}
-	}
-	return false;
-}
+public:
+    go_greenspot_keg() : GameObjectScript("go_greenspot_keg") {}
+
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        if (player->GetQuestStatus(QUEST_THE_SMALLEST_CREATURES) == QUEST_STATUS_INCOMPLETE)
+        {
+            Creature* moonshine = go->FindNearestCreature(GREEN_TRIGGER, 5.0f, true);
+            {
+                player->KilledMonsterCredit(GREEN_TRIGGER, 0);
+            }
+        }
+        return false;
+    }
+};
+
+class go_fermentedseed_keg : GameObjectScript
+{
+public:
+    go_fermentedseed_keg() : GameObjectScript("go_fermentedseed_keg") {}
+
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        if (player->GetQuestStatus(QUEST_THE_SMALLEST_CREATURES) == QUEST_STATUS_INCOMPLETE)
+        {
+            Creature* moonshine = go->FindNearestCreature(FERMENTED_TRIGGER, 5.0f, true);
+            {
+                player->KilledMonsterCredit(FERMENTED_TRIGGER, 0);
+            }
+        }
+        return false;
+    }
+};
 
 /*######
 ## npc_huffer
 ######*/
 
-struct npc_hufferAI : public ScriptedAI
+class npc_huffer : CreatureScript
 {
-	npc_hufferAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_huffer() : CreatureScript("npc_huffer") {}
 
-	void Reset()
-	{
-		me->SetFaction(85);
-		me->GetMotionMaster()->MovePath(600600601, true);
-	}
+    struct npc_hufferAI : public ScriptedAI
+    {
+        npc_hufferAI(Creature *c) : ScriptedAI(c) {}
+
+        void Reset()
+        {
+            me->SetFaction(85);
+            me->GetMotionMaster()->MovePath(600600601, true);
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_hufferAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_huffer(Creature* pCreature)
-{
-	return new npc_hufferAI(pCreature);
-}
+
 
 /*######
 ## QUEST_PICKING_UP_SOME_POWER_CONVERTERS
@@ -1869,15 +2079,20 @@ CreatureAI* GetAI_npc_huffer(Creature* pCreature)
 
 #define QUEST_PICKING_UP_SOME_POWER_CONVERTERS 10584
 #define NPC_ENCASED_ELECTROMENTAL 21731
-
-bool GOUse_go_power_converter(Player* player, GameObject* go)
+class go_power_converter : GameObjectScript
 {
-	if (player->GetQuestStatus(QUEST_PICKING_UP_SOME_POWER_CONVERTERS) == QUEST_STATUS_INCOMPLETE)
-	{
-		go->SummonCreature(NPC_ENCASED_ELECTROMENTAL, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
-	}
-	return false;
-}
+public:
+    go_power_converter() : GameObjectScript("go_power_converter") {}
+
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        if (player->GetQuestStatus(QUEST_PICKING_UP_SOME_POWER_CONVERTERS) == QUEST_STATUS_INCOMPLETE)
+        {
+            go->SummonCreature(NPC_ENCASED_ELECTROMENTAL, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), 0, TEMPSUMMON_CORPSE_DESPAWN, 0);
+        }
+        return false;
+    }
+};
 
 /*######
 ## GO_NETHER_DRAKE_EGG
@@ -1886,14 +2101,20 @@ bool GOUse_go_power_converter(Player* player, GameObject* go)
 #define QUEST_WHAT_CAME_FIRST_THE_DRAKE_OR_THE_EGG 10609
 #define NPC_NETHER_WHELP 20021
 
-bool GOUse_go_netherdrake_egg(Player* player, GameObject* go)
+class go_netherdrake_egg : GameObjectScript
 {
-	if (player->GetQuestStatus(QUEST_WHAT_CAME_FIRST_THE_DRAKE_OR_THE_EGG) == QUEST_STATUS_INCOMPLETE)
-	{
-		go->SummonCreature(NPC_NETHER_WHELP, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 30000);
-	}
-	return false;
-}
+public:
+    go_netherdrake_egg() : GameObjectScript("go_netherdrake_egg") {}
+
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        if (player->GetQuestStatus(QUEST_WHAT_CAME_FIRST_THE_DRAKE_OR_THE_EGG) == QUEST_STATUS_INCOMPLETE)
+        {
+            go->SummonCreature(NPC_NETHER_WHELP, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 30000);
+        }
+        return false;
+    }
+};
 
 /*######
 ## npc_nexusprince_razaan
@@ -1902,108 +2123,126 @@ bool GOUse_go_netherdrake_egg(Player* player, GameObject* go)
 #define YELL_AGGRO "Who dares to interrupt my operation?"
 #define SPELL_ENERGY_FLUX 35925
 
-struct npc_nexusprince_razaanAI : public ScriptedAI
+class npc_nexusprince_razaan : CreatureScript
 {
-	npc_nexusprince_razaanAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_nexusprince_razaan() : CreatureScript("npc_nexusprince_razaan") {}
 
-	void Reset()
-	{
-		energy_timer = 5000;
-	}
+    struct npc_nexusprince_razaanAI : public ScriptedAI
+    {
+        npc_nexusprince_razaanAI(Creature *c) : ScriptedAI(c) {}
 
-	uint32 energy_timer;
+        void Reset()
+        {
+            energy_timer = 5000;
+        }
 
-	void EnterCombat(Unit* /*who*/)
-	{
-		me->Yell(YELL_AGGRO, LANG_UNIVERSAL, 0);
-	}
+        uint32 energy_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        void EnterCombat(Unit* /*who*/)
+        {
+            me->Yell(YELL_AGGRO, LANG_UNIVERSAL, 0);
+        }
 
-		if (energy_timer <= diff)
-		{
-			DoCastVictim(SPELL_ENERGY_FLUX);
-			energy_timer = 10000;
-		}
-		else energy_timer -= diff;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
 
-		DoMeleeAttackIfReady();
-	}
+            if (energy_timer <= diff)
+            {
+                DoCastVictim(SPELL_ENERGY_FLUX);
+                energy_timer = 10000;
+            }
+            else energy_timer -= diff;
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_nexusprince_razaanAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_npc_nexusprince_razaan(Creature* pCreature)
-{
-	return new npc_nexusprince_razaanAI(pCreature);
-}
 
 /*######
 ## npc_vimgol_circle_trigger
 ######*/
 
-struct npc_summon_circle_triggerAI : public ScriptedAI
+class npc_summon_circle_trigger : CreatureScript
 {
-	npc_summon_circle_triggerAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_summon_circle_trigger() : CreatureScript("npc_summon_circle_trigger") {}
 
-	uint8 Count;
+    struct npc_summon_circle_triggerAI : public ScriptedAI
+    {
+        npc_summon_circle_triggerAI(Creature *c) : ScriptedAI(c) {}
 
-	void Reset()
-	{
-		Count = 0;
-	}
+        uint8 Count;
 
-	void Activate()
-	{
-		++Count;
+        void Reset()
+        {
+            Count = 0;
+        }
 
-		if (Count == 5)
-		{
-			me->SummonCreature(22911, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
-			me->DisappearAndDie();
-		}
-	}
+        void Activate()
+        {
+            ++Count;
+
+            if (Count == 5)
+            {
+                me->SummonCreature(22911, me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
+                me->DisappearAndDie();
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_summon_circle_triggerAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_summon_circle_trigger(Creature* pCreature)
+class npc_vimgol_circle_trigger : CreatureScript
 {
-	return new npc_summon_circle_triggerAI(pCreature);
-}
+public:
+    npc_vimgol_circle_trigger() : CreatureScript("npc_vimgol_circle_trigger") {}
 
-struct npc_vimgol_circle_triggerAI : public ScriptedAI
-{
-	npc_vimgol_circle_triggerAI(Creature *c) : ScriptedAI(c) {}
+    struct npc_vimgol_circle_triggerAI : public ScriptedAI
+    {
+        npc_vimgol_circle_triggerAI(Creature *c) : ScriptedAI(c) {}
 
-	void Reset() { }
+        void Reset() { }
 
-	void MoveInLineOfSight(Unit *pWho)
-	{
-		Map* tmpMap = me->GetMap();
+        void MoveInLineOfSight(Unit *pWho)
+        {
+            Map* tmpMap = me->GetMap();
 
-		if (!tmpMap)
-			return;
+            if (!tmpMap)
+                return;
 
-		if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
-		{
-			if (plWho->IsAlive() && plWho->GetDistance(me) < 1.0f)
-			{
-				switch (me->GetEntry())
-				{
-				case 23040:
-					if (Creature* summontrigger = me->FindNearestCreature(23081, 25.0f, true))				
-						CAST_AI(npc_summon_circle_triggerAI, summontrigger->AI())->Activate();				
-					break;
-				}
-			}
-		}
-	}
+            if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
+            {
+                if (plWho->IsAlive() && plWho->GetDistance(me) < 1.0f)
+                {
+                    switch (me->GetEntry())
+                    {
+                    case 23040:
+                        if (Creature* summontrigger = me->FindNearestCreature(23081, 25.0f, true))
+                            CAST_AI(npc_summon_circle_trigger::npc_summon_circle_triggerAI, summontrigger->AI())->Activate();
+                        break;
+                    }
+                }
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_vimgol_circle_triggerAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_npc_vimgol_circle_trigger(Creature* pCreature)
-{
-	return new npc_vimgol_circle_triggerAI(pCreature);
-}
 
 /*######
 ## npc_vimgol_the_vile
@@ -2015,66 +2254,72 @@ CreatureAI* GetAI_npc_vimgol_circle_trigger(Creature* pCreature)
 #define SPELL_GROWTH 40545
 #define SPELL_BLOODLUST 28902
 
-struct npc_vimgol_the_vileAI : public ScriptedAI
+class npc_vimgol_the_vile : CreatureScript
 {
-	npc_vimgol_the_vileAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_vimgol_the_vile() : CreatureScript("npc_vimgol_the_vile") {}
 
-	void Reset()
-	{
-		enrage = false;
+    struct npc_vimgol_the_vileAI : public ScriptedAI
+    {
+        npc_vimgol_the_vileAI(Creature *c) : ScriptedAI(c) {}
 
-		volley_timer = 7000;
-		bloodlust_timer = 60000;
-	}
+        void Reset()
+        {
+            enrage = false;
 
-	bool enrage;
+            volley_timer = 7000;
+            bloodlust_timer = 60000;
+        }
 
-	uint32 volley_timer;
-	uint32 bloodlust_timer;
+        bool enrage;
 
-	void EnterCombat(Unit* /*who*/)
-	{
-		me->Yell(YELL_VIMGOL_AGGRO, LANG_UNIVERSAL, 0);
-	}
+        uint32 volley_timer;
+        uint32 bloodlust_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        void EnterCombat(Unit* /*who*/)
+        {
+            me->Yell(YELL_VIMGOL_AGGRO, LANG_UNIVERSAL, 0);
+        }
 
-		if (me->HasUnitState(UNIT_STATE_CASTING))
-			return;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
 
-		if (volley_timer <= diff)
-		{
-			DoCastVictim(SPELL_SHADOW_BOLT_VOLLEY);
-			volley_timer = 7000;
-		}
-		else volley_timer -= diff;
+            if (me->HasUnitState(UNIT_STATE_CASTING))
+                return;
 
-		if (bloodlust_timer <= diff)
-		{
-			DoCast(me, SPELL_BLOODLUST);
-			bloodlust_timer = 90000;
-		}
-		else bloodlust_timer -= diff;
+            if (volley_timer <= diff)
+            {
+                DoCastVictim(SPELL_SHADOW_BOLT_VOLLEY);
+                volley_timer = 7000;
+            }
+            else volley_timer -= diff;
 
-		if (!enrage && HealthBelowPct(50))
-		{
-			me->GetMotionMaster()->MovePoint(1, 3280.1f, 4640.3f, 216.5f);
-			me->Yell(YELL_ENRAGE, LANG_UNIVERSAL, 0);
-			DoCast(me, SPELL_GROWTH);
-			enrage = true;
-		}
+            if (bloodlust_timer <= diff)
+            {
+                DoCast(me, SPELL_BLOODLUST);
+                bloodlust_timer = 90000;
+            }
+            else bloodlust_timer -= diff;
 
-		DoMeleeAttackIfReady();
-	}
+            if (!enrage && HealthBelowPct(50))
+            {
+                me->GetMotionMaster()->MovePoint(1, 3280.1f, 4640.3f, 216.5f);
+                me->Yell(YELL_ENRAGE, LANG_UNIVERSAL, 0);
+                DoCast(me, SPELL_GROWTH);
+                enrage = true;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_vimgol_the_vileAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_npc_vimgol_the_vile(Creature* pCreature)
-{
-	return new npc_vimgol_the_vileAI(pCreature);
-}
 
 /*######
 ## the_soulgrinder
@@ -2104,571 +2349,599 @@ CreatureAI* GetAI_npc_vimgol_the_vile(Creature* pCreature)
 #define SUMMON_LOC_3 3546.4f, 5603.3f, -3.1f, 4.0f
 #define SUMMONED_GO_LOC 3538.8f, 5594.4f, -2.3f, 4.0f
 
-struct the_soulgrinderAI : public ScriptedAI
+class the_soulgrinder : CreatureScript
 {
-	the_soulgrinderAI(Creature *c) : ScriptedAI(c) {}
+public:
+    the_soulgrinder() : CreatureScript("the_soulgrinder") {}
 
-	void Reset()
-	{
-		me->SetReactState(REACT_AGGRESSIVE);
+    struct the_soulgrinderAI : public ScriptedAI
+    {
+        the_soulgrinderAI(Creature *c) : ScriptedAI(c) {}
 
-		summoned = false;
-	}
+        void Reset()
+        {
+            me->SetReactState(REACT_AGGRESSIVE);
 
-	bool summoned;
+            summoned = false;
+        }
 
-	void CastVisual()
-	{
-		if (Creature* visual_1 = me->FindNearestCreature(NPC_BUNNY_1, 100.0f, true))
-		{
-			DoCast(visual_1, CHANNEL_VISUAL, true);
-		}
-	}
+        bool summoned;
 
-	void MoveInLineOfSight(Unit *pWho)
-	{
-		if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
-		{
-			if (plWho->GetQuestStatus(QUEST_INTO_THE_SOULGRINDER) == QUEST_STATUS_INCOMPLETE && plWho->GetDistance(me) < 5.0f)
-			{
-				switch (me->GetEntry())
-				{
-				case 23019:
-					if (!summoned)
-					{
-						DoCast(me, 39918);
-						me->SummonCreature(NPC_SKULLOC, SKULLOC_LOC, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 300000);
-						summoned = true;
-					}
-					break;
-				}
-			}
-		}
-	}
+        void CastVisual()
+        {
+            if (Creature* visual_1 = me->FindNearestCreature(NPC_BUNNY_1, 100.0f, true))
+            {
+                DoCast(visual_1, CHANNEL_VISUAL, true);
+            }
+        }
 
-	void JustDied(Unit* /*killer*/)
-	{
-		if (Creature* skulloc = me->FindNearestCreature(NPC_SKULLOC, 120.0f, true))
-		{
-			skulloc->DisappearAndDie();
-		}
+        void MoveInLineOfSight(Unit *pWho)
+        {
+            if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
+            {
+                if (plWho->GetQuestStatus(QUEST_INTO_THE_SOULGRINDER) == QUEST_STATUS_INCOMPLETE && plWho->GetDistance(me) < 5.0f)
+                {
+                    switch (me->GetEntry())
+                    {
+                    case 23019:
+                        if (!summoned)
+                        {
+                            DoCast(me, 39918);
+                            me->SummonCreature(NPC_SKULLOC, SKULLOC_LOC, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 300000);
+                            summoned = true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
 
-		if (Creature* visual_1 = me->FindNearestCreature(NPC_HELPER_1, 75.0f, true))
-		{
-			visual_1->DisappearAndDie();
-		}
+        void JustDied(Unit* /*killer*/)
+        {
+            if (Creature* skulloc = me->FindNearestCreature(NPC_SKULLOC, 120.0f, true))
+            {
+                skulloc->DisappearAndDie();
+            }
 
-		if (Creature* visual_2 = me->FindNearestCreature(NPC_HELPER_2, 75.0f, true))
-		{
-			visual_2->DisappearAndDie();
-		}
+            if (Creature* visual_1 = me->FindNearestCreature(NPC_HELPER_1, 75.0f, true))
+            {
+                visual_1->DisappearAndDie();
+            }
 
-		if (Creature* visual_3 = me->FindNearestCreature(NPC_HELPER_3, 75.0f, true))
-		{
-			visual_3->DisappearAndDie();
-		}
-	}
+            if (Creature* visual_2 = me->FindNearestCreature(NPC_HELPER_2, 75.0f, true))
+            {
+                visual_2->DisappearAndDie();
+            }
+
+            if (Creature* visual_3 = me->FindNearestCreature(NPC_HELPER_3, 75.0f, true))
+            {
+                visual_3->DisappearAndDie();
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new the_soulgrinderAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_the_soulgrinder(Creature* pCreature)
+class helper_bunny_1 : CreatureScript
 {
-	return new the_soulgrinderAI(pCreature);
-}
+public:
+    helper_bunny_1() : CreatureScript("helper_bunny_1") {}
 
-struct helper_bunny_1AI : public ScriptedAI
-{
-	helper_bunny_1AI(Creature *c) : ScriptedAI(c) {}
+    struct helper_bunny_1AI : public ScriptedAI
+    {
+        helper_bunny_1AI(Creature *c) : ScriptedAI(c) {}
 
-	void Reset() { }
+        void Reset() { }
 
-	void CastVisual1()
-	{
-		if (Creature* visual_2 = me->FindNearestCreature(NPC_BUNNY_2, 100.0f, true))
-		{
-			DoCast(visual_2, CHANNEL_VISUAL, true);
-		}
-	}
+        void CastVisual1()
+        {
+            if (Creature* visual_2 = me->FindNearestCreature(NPC_BUNNY_2, 100.0f, true))
+            {
+                DoCast(visual_2, CHANNEL_VISUAL, true);
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new helper_bunny_1AI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_helper_bunny_1(Creature* pCreature)
+class helper_bunny_2 : CreatureScript
 {
-	return new helper_bunny_1AI(pCreature);
-}
+public:
+    helper_bunny_2() : CreatureScript("helper_bunny_2") {}
 
-struct helper_bunny_2AI : public ScriptedAI
-{
-	helper_bunny_2AI(Creature *c) : ScriptedAI(c) {}
+    struct helper_bunny_2AI : public ScriptedAI
+    {
+        helper_bunny_2AI(Creature *c) : ScriptedAI(c) {}
 
-	void Reset() { }
+        void Reset() { }
 
-	void CastVisual2()
-	{
-		if (Creature* visual_3 = me->FindNearestCreature(NPC_BUNNY_3, 100.0f, true))
-		{
-			DoCast(visual_3, CHANNEL_VISUAL, true);
-		}
-	}
+        void CastVisual2()
+        {
+            if (Creature* visual_3 = me->FindNearestCreature(NPC_BUNNY_3, 100.0f, true))
+            {
+                DoCast(visual_3, CHANNEL_VISUAL, true);
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new helper_bunny_2AI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_helper_bunny_2(Creature* pCreature)
+class helper_bunny_3 : CreatureScript
 {
-	return new helper_bunny_2AI(pCreature);
-}
+public:
+    helper_bunny_3() : CreatureScript("helper_bunny_3") {}
 
-struct helper_bunny_3AI : public ScriptedAI
-{
-	helper_bunny_3AI(Creature *c) : ScriptedAI(c) {}
+    struct helper_bunny_3AI : public ScriptedAI
+    {
+        helper_bunny_3AI(Creature *c) : ScriptedAI(c) {}
 
-	void Reset() { }
+        void Reset() { }
 
-	void CastVisual3()
-	{
-		if (Creature* visual_4 = me->FindNearestCreature(NPC_BUNNY_4, 100.0f, true))
-		{
-			DoCast(visual_4, CHANNEL_VISUAL, true);
-		}
-	}
+        void CastVisual3()
+        {
+            if (Creature* visual_4 = me->FindNearestCreature(NPC_BUNNY_4, 100.0f, true))
+            {
+                DoCast(visual_4, CHANNEL_VISUAL, true);
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new helper_bunny_3AI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_helper_bunny_3(Creature* pCreature)
-{
-	return new helper_bunny_3AI(pCreature);
-}
 
 /*######
 ## skulloc_soulgrinder
 ######*/
 
-struct skulloc_soulgrinderAI : public ScriptedAI
+class skulloc_soulgrinder : CreatureScript
 {
-	skulloc_soulgrinderAI(Creature *c) : ScriptedAI(c) {}
+public:
+    skulloc_soulgrinder() : CreatureScript("skulloc_soulgrinder") {}
 
-	void Reset()
-	{
-		me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-		me->SetReactState(REACT_AGGRESSIVE);
-		me->SetFaction(35);
+    struct skulloc_soulgrinderAI : public ScriptedAI
+    {
+        skulloc_soulgrinderAI(Creature *c) : ScriptedAI(c) {}
 
-		DoCast(me, 39947);
+        void Reset()
+        {
+            me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            me->SetReactState(REACT_AGGRESSIVE);
+            me->SetFaction(35);
 
-		//Event
-		EventStart = true;
-		Yelled = false;
+            DoCast(me, 39947);
 
-		summoned_spirit1 = false;
-		summoned_spirit2 = false;
-		summoned_spirit3 = false;
-		summoned_spirit4 = false;
-		summoned_spirit5 = false;
-		summoned_spirit6 = false;
-		summoned_spirit7 = false;
-		summoned_spirit8 = false;
-		summoned_spirit9 = false;
-		summoned_spirit10 = false;
-		summoned_spirit11 = false;
-		summoned_spirit12 = false;
-		summoned_spirit13 = false;
-		summoned_spirit14 = false;
-		summoned_spirit15 = false;
-		summoned_spirit16 = false;
-		summoned_spirit17 = false;
-		summoned_spirit18 = false;
-		summoned_spirit19 = false;
-		summoned_spirit20 = false;
+            //Event
+            EventStart = true;
+            Yelled = false;
 
-		//Skills
-		banish_timer = 15000;
-		corruption_timer = 5000;
-		help_timer = 45000;
+            summoned_spirit1 = false;
+            summoned_spirit2 = false;
+            summoned_spirit3 = false;
+            summoned_spirit4 = false;
+            summoned_spirit5 = false;
+            summoned_spirit6 = false;
+            summoned_spirit7 = false;
+            summoned_spirit8 = false;
+            summoned_spirit9 = false;
+            summoned_spirit10 = false;
+            summoned_spirit11 = false;
+            summoned_spirit12 = false;
+            summoned_spirit13 = false;
+            summoned_spirit14 = false;
+            summoned_spirit15 = false;
+            summoned_spirit16 = false;
+            summoned_spirit17 = false;
+            summoned_spirit18 = false;
+            summoned_spirit19 = false;
+            summoned_spirit20 = false;
 
-		Summoned_Help = false;
-	}
+            //Skills
+            banish_timer = 15000;
+            corruption_timer = 5000;
+            help_timer = 45000;
 
-	//Event
-	bool EventStart;
-	bool Yelled;
+            Summoned_Help = false;
+        }
 
-	bool summoned_spirit1;
-	bool summoned_spirit2;
-	bool summoned_spirit3;
-	bool summoned_spirit4;
-	bool summoned_spirit5;
-	bool summoned_spirit6;
-	bool summoned_spirit7;
-	bool summoned_spirit8;
-	bool summoned_spirit9;
-	bool summoned_spirit10;
-	bool summoned_spirit11;
-	bool summoned_spirit12;
-	bool summoned_spirit13;
-	bool summoned_spirit14;
-	bool summoned_spirit15;
-	bool summoned_spirit16;
-	bool summoned_spirit17;
-	bool summoned_spirit18;
-	bool summoned_spirit19;
-	bool summoned_spirit20;
+        //Event
+        bool EventStart;
+        bool Yelled;
 
-	uint32 skulloc_attack_timer;
+        bool summoned_spirit1;
+        bool summoned_spirit2;
+        bool summoned_spirit3;
+        bool summoned_spirit4;
+        bool summoned_spirit5;
+        bool summoned_spirit6;
+        bool summoned_spirit7;
+        bool summoned_spirit8;
+        bool summoned_spirit9;
+        bool summoned_spirit10;
+        bool summoned_spirit11;
+        bool summoned_spirit12;
+        bool summoned_spirit13;
+        bool summoned_spirit14;
+        bool summoned_spirit15;
+        bool summoned_spirit16;
+        bool summoned_spirit17;
+        bool summoned_spirit18;
+        bool summoned_spirit19;
+        bool summoned_spirit20;
 
-	uint32 summon_timer;
-	uint32 summon_timer2;
-	uint32 summon_timer3;
-	uint32 summon_timer4;
-	uint32 summon_timer5;
-	uint32 summon_timer6;
-	uint32 summon_timer7;
-	uint32 summon_timer8;
-	uint32 summon_timer9;
-	uint32 summon_timer10;
-	uint32 summon_timer11;
-	uint32 summon_timer12;
-	uint32 summon_timer13;
-	uint32 summon_timer14;
-	uint32 summon_timer15;
-	uint32 summon_timer16;
-	uint32 summon_timer17;
-	uint32 summon_timer18;
-	uint32 summon_timer19;
+        uint32 skulloc_attack_timer;
 
-	//Skills
-	uint32 banish_timer;
-	uint32 corruption_timer;
-	uint32 help_timer;
+        uint32 summon_timer;
+        uint32 summon_timer2;
+        uint32 summon_timer3;
+        uint32 summon_timer4;
+        uint32 summon_timer5;
+        uint32 summon_timer6;
+        uint32 summon_timer7;
+        uint32 summon_timer8;
+        uint32 summon_timer9;
+        uint32 summon_timer10;
+        uint32 summon_timer11;
+        uint32 summon_timer12;
+        uint32 summon_timer13;
+        uint32 summon_timer14;
+        uint32 summon_timer15;
+        uint32 summon_timer16;
+        uint32 summon_timer17;
+        uint32 summon_timer18;
+        uint32 summon_timer19;
 
-	bool Summoned_Help;
+        //Skills
+        uint32 banish_timer;
+        uint32 corruption_timer;
+        uint32 help_timer;
 
-	void JustSummoned(Creature* pSummoned)
-	{
-		if (Creature* soulgrinder = me->FindNearestCreature(23019, 100.0f, true))
-		{
-			pSummoned->AI()->AttackStart(soulgrinder);
-		}
-	}
+        bool Summoned_Help;
 
-	void JustDied(Unit* /*killer*/)
-	{
-		if (Creature* soulgrinder = me->FindNearestCreature(23019, 200.0f, true))
-		{
-			soulgrinder->DisappearAndDie();
-		}
+        void JustSummoned(Creature* pSummoned)
+        {
+            if (Creature* soulgrinder = me->FindNearestCreature(23019, 100.0f, true))
+            {
+                pSummoned->AI()->AttackStart(soulgrinder);
+            }
+        }
 
-		DoCast(39909);
-	}
+        void JustDied(Unit* /*killer*/)
+        {
+            if (Creature* soulgrinder = me->FindNearestCreature(23019, 200.0f, true))
+            {
+                soulgrinder->DisappearAndDie();
+            }
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-		{
-			if (!summoned_spirit1 && EventStart == true)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer = 10000;
-				summoned_spirit1 = true;
-			}
+            DoCast(39909);
+        }
 
-			if (!summoned_spirit2 && summoned_spirit1 == true && summon_timer <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer2 = 10000;
-				summoned_spirit2 = true;
-			}
-			else summon_timer -= diff;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+            {
+                if (!summoned_spirit1 && EventStart == true)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer = 10000;
+                    summoned_spirit1 = true;
+                }
 
-			if (!summoned_spirit3 && summoned_spirit2 == true && summon_timer2 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer3 = 10000;
-				summoned_spirit3 = true;
-			}
-			else summon_timer2 -= diff;
+                if (!summoned_spirit2 && summoned_spirit1 == true && summon_timer <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer2 = 10000;
+                    summoned_spirit2 = true;
+                }
+                else summon_timer -= diff;
 
-			if (!summoned_spirit4 && summoned_spirit3 == true && summon_timer3 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer4 = 10000;
-				summoned_spirit4 = true;
-			}
-			else summon_timer3 -= diff;
+                if (!summoned_spirit3 && summoned_spirit2 == true && summon_timer2 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer3 = 10000;
+                    summoned_spirit3 = true;
+                }
+                else summon_timer2 -= diff;
 
-			if (!summoned_spirit5 && summoned_spirit4 == true && summon_timer4 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer5 = 10000;
-				summoned_spirit5 = true;	
+                if (!summoned_spirit4 && summoned_spirit3 == true && summon_timer3 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer4 = 10000;
+                    summoned_spirit4 = true;
+                }
+                else summon_timer3 -= diff;
 
-				if (Creature* soulgrinder = me->FindNearestCreature(23019, 100.0f, true))
-				{
-					CAST_AI(the_soulgrinderAI, soulgrinder->AI())->CastVisual();
-				}
-			}
-			else summon_timer4 -= diff;
+                if (!summoned_spirit5 && summoned_spirit4 == true && summon_timer4 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer5 = 10000;
+                    summoned_spirit5 = true;
 
-			if (!summoned_spirit6 && summoned_spirit5 == true && summon_timer5 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer6 = 10000;
-				summoned_spirit6 = true;
-			}
-			else summon_timer5 -= diff;
+                    if (Creature* soulgrinder = me->FindNearestCreature(23019, 100.0f, true))
+                    {
+                        CAST_AI(the_soulgrinder::the_soulgrinderAI, soulgrinder->AI())->CastVisual();
+                    }
+                }
+                else summon_timer4 -= diff;
 
-			if (!summoned_spirit7 && summoned_spirit6 == true && summon_timer6 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer7 = 10000;
-				summoned_spirit7 = true;
-			}
-			else summon_timer6 -= diff;
+                if (!summoned_spirit6 && summoned_spirit5 == true && summon_timer5 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer6 = 10000;
+                    summoned_spirit6 = true;
+                }
+                else summon_timer5 -= diff;
 
-			if (!summoned_spirit8 && summoned_spirit7 == true && summon_timer7 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer8 = 10000;
-				summoned_spirit8 = true;
-			}
-			else summon_timer7 -= diff;
+                if (!summoned_spirit7 && summoned_spirit6 == true && summon_timer6 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer7 = 10000;
+                    summoned_spirit7 = true;
+                }
+                else summon_timer6 -= diff;
 
-			if (!summoned_spirit9 && summoned_spirit8 == true && summon_timer8 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer9 = 10000;
-				summoned_spirit9 = true;
-			}
-			else summon_timer8 -= diff;
+                if (!summoned_spirit8 && summoned_spirit7 == true && summon_timer7 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer8 = 10000;
+                    summoned_spirit8 = true;
+                }
+                else summon_timer7 -= diff;
 
-			if (!summoned_spirit10 && summoned_spirit9 == true && summon_timer9 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer10 = 10000;
-				summoned_spirit10 = true;
+                if (!summoned_spirit9 && summoned_spirit8 == true && summon_timer8 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer9 = 10000;
+                    summoned_spirit9 = true;
+                }
+                else summon_timer8 -= diff;
 
-				if (Creature* helper = me->FindNearestCreature(61009, 100.0f, true))
-				{
-					CAST_AI(helper_bunny_1AI, helper->AI())->CastVisual1();
-				}
-			}
-			else summon_timer9 -= diff;
+                if (!summoned_spirit10 && summoned_spirit9 == true && summon_timer9 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer10 = 10000;
+                    summoned_spirit10 = true;
 
-			if (!summoned_spirit11 && summoned_spirit10 == true && summon_timer10 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer11 = 10000;
-				summoned_spirit11 = true;
-			}
-			else summon_timer10 -= diff;
+                    if (Creature* helper = me->FindNearestCreature(61009, 100.0f, true))
+                    {
+                        CAST_AI(helper_bunny_1::helper_bunny_1AI, helper->AI())->CastVisual1();
+                    }
+                }
+                else summon_timer9 -= diff;
 
-			if (!summoned_spirit12 && summoned_spirit11 == true && summon_timer11 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer12 = 10000;
-				summoned_spirit12 = true;
-			}
-			else summon_timer11 -= diff;
+                if (!summoned_spirit11 && summoned_spirit10 == true && summon_timer10 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer11 = 10000;
+                    summoned_spirit11 = true;
+                }
+                else summon_timer10 -= diff;
 
-			if (!summoned_spirit13 && summoned_spirit12 == true && summon_timer12 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer13 = 10000;
-				summoned_spirit13 = true;
-			}
-			else summon_timer12 -= diff;
+                if (!summoned_spirit12 && summoned_spirit11 == true && summon_timer11 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer12 = 10000;
+                    summoned_spirit12 = true;
+                }
+                else summon_timer11 -= diff;
 
-			if (!summoned_spirit14 && summoned_spirit13 == true && summon_timer13 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer14 = 10000;
-				summoned_spirit14 = true;
-			}
-			else summon_timer13 -= diff;
+                if (!summoned_spirit13 && summoned_spirit12 == true && summon_timer12 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer13 = 10000;
+                    summoned_spirit13 = true;
+                }
+                else summon_timer12 -= diff;
 
-			if (!summoned_spirit15 && summoned_spirit14 == true && summon_timer14 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer15 = 10000;
-				summoned_spirit15 = true;
+                if (!summoned_spirit14 && summoned_spirit13 == true && summon_timer13 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer14 = 10000;
+                    summoned_spirit14 = true;
+                }
+                else summon_timer13 -= diff;
 
-				if (Creature* helper2 = me->FindNearestCreature(61010, 100.0f, true))
-				{
-					CAST_AI(helper_bunny_2AI, helper2->AI())->CastVisual2();
-				}
-			}
-			else summon_timer14 -= diff;
+                if (!summoned_spirit15 && summoned_spirit14 == true && summon_timer14 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer15 = 10000;
+                    summoned_spirit15 = true;
 
-			if (!summoned_spirit16 && summoned_spirit15 == true && summon_timer15 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer16 = 10000;
-				summoned_spirit16 = true;
-			}
-			else summon_timer15 -= diff;
+                    if (Creature* helper2 = me->FindNearestCreature(61010, 100.0f, true))
+                    {
+                        CAST_AI(helper_bunny_2::helper_bunny_2AI, helper2->AI())->CastVisual2();
+                    }
+                }
+                else summon_timer14 -= diff;
 
-			if (!summoned_spirit17 && summoned_spirit16 == true && summon_timer16 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer17 = 10000;
-				summoned_spirit17 = true;
-			}
-			else summon_timer16 -= diff;
+                if (!summoned_spirit16 && summoned_spirit15 == true && summon_timer15 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer16 = 10000;
+                    summoned_spirit16 = true;
+                }
+                else summon_timer15 -= diff;
 
-			if (!summoned_spirit18 && summoned_spirit17 == true && summon_timer17 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer18 = 10000;
-				summoned_spirit18 = true;
-			}
-			else summon_timer17 -= diff;
+                if (!summoned_spirit17 && summoned_spirit16 == true && summon_timer16 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer17 = 10000;
+                    summoned_spirit17 = true;
+                }
+                else summon_timer16 -= diff;
 
-			if (!summoned_spirit19 && summoned_spirit18 == true && summon_timer18 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				summon_timer19 = 10000;
-				summoned_spirit19 = true;
-			}
-			else summon_timer18 -= diff;
+                if (!summoned_spirit18 && summoned_spirit17 == true && summon_timer17 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer18 = 10000;
+                    summoned_spirit18 = true;
+                }
+                else summon_timer17 -= diff;
 
-			if (!summoned_spirit20 && summoned_spirit19 == true && summon_timer19 <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
-				skulloc_attack_timer = 8000;
-				summoned_spirit20 = true;
+                if (!summoned_spirit19 && summoned_spirit18 == true && summon_timer18 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    summon_timer19 = 10000;
+                    summoned_spirit19 = true;
+                }
+                else summon_timer18 -= diff;
 
-				if (Creature* helper3 = me->FindNearestCreature(61011, 100.0f, true))
-				{
-					CAST_AI(helper_bunny_3AI, helper3->AI())->CastVisual3();
-				}
-			}
-			else summon_timer19 -= diff;
+                if (!summoned_spirit20 && summoned_spirit19 == true && summon_timer19 <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 45000);
+                    skulloc_attack_timer = 8000;
+                    summoned_spirit20 = true;
 
-			if (!Yelled && skulloc_attack_timer <= diff && summoned_spirit20 == true)
-			{
-				me->SetFaction(14);
-				me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-				me->Yell(YELL_SKULLOC_AGGRO, LANG_UNIVERSAL, 0);
-				Yelled = true;
-			}
-			else skulloc_attack_timer -= diff;
-		}
+                    if (Creature* helper3 = me->FindNearestCreature(61011, 100.0f, true))
+                    {
+                        CAST_AI(helper_bunny_3::helper_bunny_3AI, helper3->AI())->CastVisual3();
+                    }
+                }
+                else summon_timer19 -= diff;
 
-		if (UpdateVictim())
-		{
-			if (banish_timer <= diff)
-			{
-				if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1))
-				DoCast(target, SPELL_BANISH);
-				banish_timer = 25000;
-			}
-			else banish_timer -= diff;
+                if (!Yelled && skulloc_attack_timer <= diff && summoned_spirit20 == true)
+                {
+                    me->SetFaction(14);
+                    me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                    me->Yell(YELL_SKULLOC_AGGRO, LANG_UNIVERSAL, 0);
+                    Yelled = true;
+                }
+                else skulloc_attack_timer -= diff;
+            }
 
-			if (corruption_timer <= diff)
-			{
-				if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
-				DoCast(target, SPELL_CORRUPTION);
-				corruption_timer = 12000;
-			}
-			else corruption_timer -= diff;
+            if (UpdateVictim())
+            {
+                if (banish_timer <= diff)
+                {
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 1))
+                        DoCast(target, SPELL_BANISH);
+                    banish_timer = 25000;
+                }
+                else banish_timer -= diff;
 
-			if (!Summoned_Help && help_timer <= diff)
-			{
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
-				me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
+                if (corruption_timer <= diff)
+                {
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                        DoCast(target, SPELL_CORRUPTION);
+                    corruption_timer = 12000;
+                }
+                else corruption_timer -= diff;
 
-				Summoned_Help = true;
-			}
-			else help_timer -= diff;
-		}
-		
-		DoMeleeAttackIfReady();
-	}
+                if (!Summoned_Help && help_timer <= diff)
+                {
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_1, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_2, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
+                    me->SummonCreature(NPC_SUNDERED_SPIRIT, SUMMON_LOC_3, TEMPSUMMON_TIMED_OR_DEAD_DESPAWN, 120000);
+
+                    Summoned_Help = true;
+                }
+                else help_timer -= diff;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new skulloc_soulgrinderAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_skulloc_soulgrinder(Creature* pCreature)
-{
-	return new skulloc_soulgrinderAI(pCreature);
-}
 
 enum ApexisRelic
 {
-	NPC_SIMON_BUNNY = 22923,
-	NPC_APEXIS_GUARDIAN = 22275,
+    NPC_SIMON_BUNNY = 22923,
+    NPC_APEXIS_GUARDIAN = 22275,
 
-	GO_APEXIS_MONUMENT = 185944,
+    GO_APEXIS_MONUMENT = 185944,
 
-	QUEST_CRYSTALS = 11058,
-	QUEST_EMNATION = 11080,
-	GOSSIP_TEXT_ID = 10948,
+    QUEST_CRYSTALS = 11058,
+    QUEST_EMNATION = 11080,
+    GOSSIP_TEXT_ID = 10948,
 
-	ITEM_APEXIS_SHARD = 32569,
+    ITEM_APEXIS_SHARD = 32569,
 };
 
 #define GOSSIP_S_GUARDIAN   "Insert 35 Apexis Shards, and begin!"
 #define GOSSIP_APEXIS   "Insert an Apexis Shard, and begin!"
 
-bool GossipHello_go_apexis_monument(Player *player, GameObject* _GO)
-{	
-	player->ADD_GOSSIP_ITEM(0, GOSSIP_S_GUARDIAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-
-	player->SEND_GOSSIP_MENU(10949, _GO->GetGUID());
-	return true;
-}
-
-void SendActionMenu_go_apexis_monument(Player *player, GameObject* go, uint32 action)
+class go_apexis_monument : GameObjectScript
 {
-	switch (action)
-	{
-	case GOSSIP_ACTION_INFO_DEF + 1:
-		if (player->HasItemCount(ITEM_APEXIS_SHARD, 35))
-		{
-			player->DestroyItemCount(ITEM_APEXIS_SHARD, 35, true);
-			player->SummonCreature(NPC_APEXIS_GUARDIAN, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
-		}
-		break;
-	}
-}
+public:
+    go_apexis_monument() : GameObjectScript("go_apexis_monument") {}
 
-bool GossipSelect_go_apexis_monument(Player *player, GameObject* _GO, uint32 sender, uint32 action)
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_S_GUARDIAN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+
+        player->SEND_GOSSIP_MENU(10949, go->GetGUID());
+        return true;
+    }
+
+    bool OnGossipSelect(Player* player, GameObject* go, uint32 sender, uint32 action)
+    {
+        switch (action)
+        {
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            if (player->HasItemCount(ITEM_APEXIS_SHARD, 35))
+            {
+                player->DestroyItemCount(ITEM_APEXIS_SHARD, 35, true);
+                player->SummonCreature(NPC_APEXIS_GUARDIAN, go->GetPositionX(), go->GetPositionY(), go->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 120000);
+            }
+            break;
+        }
+        return true;
+    }
+};
+
+class go_apexis_relic : GameObjectScript
 {
-	switch (sender)
-	{
-	case GOSSIP_SENDER_MAIN:    SendActionMenu_go_apexis_monument(player, _GO, action); break;
-	}
-	return true;
-}
+public:
+    go_apexis_relic() : GameObjectScript("go_apexis_relic") {}
 
-bool GossipHello_go_apexis_relic(Player *player, GameObject* _GO)
-{
-	player->ADD_GOSSIP_ITEM(0, GOSSIP_APEXIS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_APEXIS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
-	player->SEND_GOSSIP_MENU(GOSSIP_TEXT_ID, _GO->GetGUID());
-	return true;
-}
+        player->SEND_GOSSIP_MENU(GOSSIP_TEXT_ID, go->GetGUID());
+        return true;
+    }
 
-void SendActionMenu_go_apexis_relic(Player *player, GameObject* go, uint32 action)
-{
-	switch (action)
-	{
-	case GOSSIP_ACTION_INFO_DEF + 1:
-		if (player->HasItemCount(ITEM_APEXIS_SHARD, 1))
-		{
-			player->DestroyItemCount(ITEM_APEXIS_SHARD, 1, true);
-			player->CompleteQuest(QUEST_CRYSTALS);
-			player->CompleteQuest(QUEST_EMNATION);
-		}
-		break;
-	}
-}
+    bool OnGossipSelect(Player* player, GameObject* go, uint32 sender, uint32 action)
+    {
+        switch (action)
+        {
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            if (player->HasItemCount(ITEM_APEXIS_SHARD, 1))
+            {
+                player->DestroyItemCount(ITEM_APEXIS_SHARD, 1, true);
+                player->CompleteQuest(QUEST_CRYSTALS);
+                player->CompleteQuest(QUEST_EMNATION);
+            }
+            break;
+        }
+        return true;
+    }
+};
 
-bool GossipSelect_go_apexis_relic(Player *player, GameObject* _GO, uint32 sender, uint32 action)
-{
-	switch (sender)
-	{
-	case GOSSIP_SENDER_MAIN:    SendActionMenu_go_apexis_relic(player, _GO, action); break;
-	}
-	return true;
-}
 
 /*######
 ## QUEST_A_FEL_WHIP_FOR_GAZH
@@ -2677,524 +2950,342 @@ bool GossipSelect_go_apexis_relic(Player *player, GameObject* _GO, uint32 sender
 #define GOSSIP_PRISM_CRYSTAL "Place 35 Apexis Shards into the prison."
 #define NPC_GALVANOTH 22281
 
-bool GossipHello_go_fel_crystal_prism(Player *player, GameObject* _GO)
+class go_fel_crystal_prism : GameObjectScript
 {
-	player->ADD_GOSSIP_ITEM(0, GOSSIP_PRISM_CRYSTAL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+public:
+    go_fel_crystal_prism() : GameObjectScript("go_fel_crystal_prism") {}
 
-	player->SEND_GOSSIP_MENU(10951, _GO->GetGUID());
-	return true;
-}
+    bool OnGossipHello(Player* player, GameObject* go)
+    {
+        player->ADD_GOSSIP_ITEM(0, GOSSIP_PRISM_CRYSTAL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
 
-void SendActionMenu_go_fel_crystal_prism(Player *player, GameObject* go, uint32 action)
-{
-	switch (action)
-	{
-	case GOSSIP_ACTION_INFO_DEF + 1:
-		if (player->HasItemCount(ITEM_APEXIS_SHARD, 35))
-		{
-			player->DestroyItemCount(ITEM_APEXIS_SHARD, 35, true);
-			player->SummonCreature(NPC_GALVANOTH, go->GetPositionX() -5, go->GetPositionY() -5, go->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 300000);
-		}
-		break;
-	}
-}
+        player->SEND_GOSSIP_MENU(10951, go->GetGUID());
+        return true;
+    }
 
-bool GossipSelect_go_fel_crystal_prism(Player *player, GameObject* _GO, uint32 sender, uint32 action)
-{
-	switch (sender)
-	{
-	case GOSSIP_SENDER_MAIN:    SendActionMenu_go_fel_crystal_prism(player, _GO, action); break;
-	}
-	return true;
-}
+    bool OnGossipSelect(Player* player, GameObject* go, uint32 sender, uint32 action)
+    {
+        switch (action)
+        {
+        case GOSSIP_ACTION_INFO_DEF + 1:
+            if (player->HasItemCount(ITEM_APEXIS_SHARD, 35))
+            {
+                player->DestroyItemCount(ITEM_APEXIS_SHARD, 35, true);
+                player->SummonCreature(NPC_GALVANOTH, go->GetPositionX() - 5, go->GetPositionY() - 5, go->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 300000);
+            }
+            break;
+        }
+        return true;
+    }
+};
 
 /*######
 ## npc_aether_ray
 ######*/
 
-struct npc_aether_rayAI : public ScriptedAI
+class npc_aether_ray : CreatureScript
 {
-	npc_aether_rayAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_aether_ray() : CreatureScript("npc_aether_ray") {}
 
-	void Reset() 
-	{
-		spellHit = false;
-		tailswipe_timer = 8000;
-	}
+    struct npc_aether_rayAI : public ScriptedAI
+    {
+        npc_aether_rayAI(Creature *c) : ScriptedAI(c) {}
 
-	bool spellHit;
-	uint32 tailswipe_timer;
+        void Reset()
+        {
+            spellHit = false;
+            tailswipe_timer = 8000;
+        }
 
-	void SpellHit(Unit* Hitter, const SpellEntry* Spellkind)
-	{
-		if (Spellkind->Id == 40856 && !spellHit)
-		{
-			if (Player *plWho = Hitter->GetCharmerOrOwnerPlayerOrPlayerItself())
-			{
-				if (Creature* pCredit = me->FindNearestCreature(22181, 15, true))
-					plWho->KilledMonsterCredit(22181, pCredit->GetGUID());
-				me->CastSpell(plWho, 40917, true);
-				me->ForcedDespawn(2000);
-				spellHit = true;			
-			}
-		}
-	}
+        bool spellHit;
+        uint32 tailswipe_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        void SpellHit(Unit* Hitter, const SpellEntry* Spellkind)
+        {
+            if (Spellkind->Id == 40856 && !spellHit)
+            {
+                if (Player *plWho = Hitter->GetCharmerOrOwnerPlayerOrPlayerItself())
+                {
+                    if (Creature* pCredit = me->FindNearestCreature(22181, 15, true))
+                        plWho->KilledMonsterCredit(22181, pCredit->GetGUID());
+                    me->CastSpell(plWho, 40917, true);
+                    me->ForcedDespawn(2000);
+                    spellHit = true;
+                }
+            }
+        }
 
-		if (tailswipe_timer <= diff)
-		{
-			DoCastVictim(35333);
-			tailswipe_timer = 9000;
-		}
-		else tailswipe_timer -= diff;
-	}
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
+
+            if (tailswipe_timer <= diff)
+            {
+                DoCastVictim(35333);
+                tailswipe_timer = 9000;
+            }
+            else tailswipe_timer -= diff;
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_aether_rayAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_aether_ray(Creature* pCreature)
+class  npc_felburn_trigger : CreatureScript
 {
-	return new npc_aether_rayAI(pCreature);
-}
+public:
+    npc_felburn_trigger() : CreatureScript("npc_felburn_trigger") {}
 
-struct npc_felburn_triggerAI : public ScriptedAI
-{
-	npc_felburn_triggerAI(Creature *c) : ScriptedAI(c) {}
+    struct npc_felburn_triggerAI : public ScriptedAI
+    {
+        npc_felburn_triggerAI(Creature *c) : ScriptedAI(c) {}
 
-	void Reset()
-	{
-		spellHit = false;
-		me->SetCanFly(true);
-		me->CanFly();
-	}
+        void Reset()
+        {
+            spellHit = false;
+            me->SetCanFly(true);
+            me->CanFly();
+        }
 
-	bool spellHit;
+        bool spellHit;
 
-	void SpellHit(Unit* Hitter, const SpellEntry* Spellkind)
-	{
-		if (Spellkind->Id == 40672 && !spellHit)
-		{						
-			DoCast(41603);
-			me->ForcedDespawn(10000);
-			spellHit = true;
-		}
-	}
+        void SpellHit(Unit* Hitter, const SpellEntry* Spellkind)
+        {
+            if (Spellkind->Id == 40672 && !spellHit)
+            {
+                DoCast(41603);
+                me->ForcedDespawn(10000);
+                spellHit = true;
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_felburn_triggerAI(pCreature);
+    }
 };
-
-CreatureAI* GetAI_npc_felburn_trigger(Creature* pCreature)
-{
-	return new npc_felburn_triggerAI(pCreature);
-}
 
 #define NPC_FELBURN_TRIGGER 61013
 
-struct npc_legion_flak_cannonAI : public ScriptedAI
+class npc_legion_flak_cannon : CreatureScript
 {
-	npc_legion_flak_cannonAI(Creature *c) : ScriptedAI(c) {}
+public:
+    npc_legion_flak_cannon() : CreatureScript("npc_legion_flak_cannon") {}
 
-	void Reset()
-	{
-		summoned = false;
-		Blaze_Timer = 10000;
-		reset_timer = 0;
+    struct npc_legion_flak_cannonAI : public ScriptedAI
+    {
+        npc_legion_flak_cannonAI(Creature *c) : ScriptedAI(c) {}
 
-		me->SetUnitMovementFlags(MOVEMENTFLAG_ROOT);
-	}
+        void Reset()
+        {
+            summoned = false;
+            Blaze_Timer = 10000;
+            reset_timer = 0;
 
-	bool summoned;
-	uint32 Blaze_Timer;
-	uint32 reset_timer;
+            me->SetUnitMovementFlags(MOVEMENTFLAG_ROOT);
+        }
 
-	void MoveInLineOfSight(Unit *pWho)
-	{
-		if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
-		{
-			if (plWho->GetDistance(me) < 45.0f)
-			{
-				switch (me->GetEntry())
-				{
-				case 23076:		
-					if (!summoned)
-					{
-						float x, y, z;
-						plWho->GetPosition(x, y, z);
-						Creature* summon = me->SummonCreature(NPC_FELBURN_TRIGGER, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 10000);
-						reset_timer = 5000;
-					}
-				break;
-				}
-			}
-		}
-	}
+        bool summoned;
+        uint32 Blaze_Timer;
+        uint32 reset_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-		{		
-			if (Creature* felburn = me->FindNearestCreature(NPC_FELBURN_TRIGGER, 45.0f, true))
-			{
-				DoCast(felburn, 40672);
-			}
+        void MoveInLineOfSight(Unit *pWho)
+        {
+            if (Player *plWho = pWho->GetCharmerOrOwnerPlayerOrPlayerItself())
+            {
+                if (plWho->GetDistance(me) < 45.0f)
+                {
+                    switch (me->GetEntry())
+                    {
+                    case 23076:
+                        if (!summoned)
+                        {
+                            float x, y, z;
+                            plWho->GetPosition(x, y, z);
+                            Creature* summon = me->SummonCreature(NPC_FELBURN_TRIGGER, x, y, z, 0, TEMPSUMMON_TIMED_DESPAWN, 10000);
+                            reset_timer = 5000;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
 
-			if (reset_timer <= diff)
-			{
-				Reset();
-			}
-			else reset_timer -= diff;
-		}
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+            {
+                if (Creature* felburn = me->FindNearestCreature(NPC_FELBURN_TRIGGER, 45.0f, true))
+                {
+                    DoCast(felburn, 40672);
+                }
 
-		if (UpdateVictim())
-		{
-			if (Blaze_Timer <= diff)
-			{
-				if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
-				{
-					float x, y, z;
-					target->GetPosition(x, y, z);
-					Creature* summon = me->SummonCreature(NPC_FELBURN_TRIGGER, x, y, z, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
-				}
-				Blaze_Timer = 10000;
-			}
-			else
-				Blaze_Timer -= diff;
-		}
-	}	
+                if (reset_timer <= diff)
+                {
+                    Reset();
+                }
+                else reset_timer -= diff;
+            }
+
+            if (UpdateVictim())
+            {
+                if (Blaze_Timer <= diff)
+                {
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                    {
+                        float x, y, z;
+                        target->GetPosition(x, y, z);
+                        Creature* summon = me->SummonCreature(NPC_FELBURN_TRIGGER, x, y, z, 0, TEMPSUMMON_MANUAL_DESPAWN, 0);
+                    }
+                    Blaze_Timer = 10000;
+                }
+                else
+                    Blaze_Timer -= diff;
+            }
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_legion_flak_cannonAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_legion_flak_cannon(Creature* pCreature)
+
+class npc_abyssal_flamebringer : CreatureScript
 {
-	return new npc_legion_flak_cannonAI(pCreature);
-}
+public:
+    npc_abyssal_flamebringer() : CreatureScript("npc_abyssal_flamebringer") {}
 
-struct npc_abyssal_flamebringerAI : public ScriptedAI
-{
-	npc_abyssal_flamebringerAI(Creature *c) : ScriptedAI(c) {}
+    struct npc_abyssal_flamebringerAI : public ScriptedAI
+    {
+        npc_abyssal_flamebringerAI(Creature *c) : ScriptedAI(c) {}
 
-	void Reset()
-	{
-		me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
+        void Reset()
+        {
+            me->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FIRE, true);
 
-		abyssal_timer = 8000;
-		immo_timer = 2000;
+            abyssal_timer = 8000;
+            immo_timer = 2000;
 
-		// Poisons 
-		me->ApplySpellImmune(0, IMMUNITY_ID, 27282, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 26892, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 26786, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 27283, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 26969, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 25347, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 11343, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 13230, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 11358, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 11400, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 11342, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 3421, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 13229, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 11357, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 11341, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 13228, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 8694, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 2837, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 8691, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 13220, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 2835, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 8687, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 5763, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 8681, true);
-		me->ApplySpellImmune(0, IMMUNITY_ID, 3420, true);
-	}
+            // Poisons 
+            me->ApplySpellImmune(0, IMMUNITY_ID, 27282, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 26892, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 26786, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 27283, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 26969, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 25347, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 11343, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 13230, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 11358, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 11400, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 11342, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 3421, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 13229, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 11357, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 11341, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 13228, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 8694, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 2837, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 8691, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 13220, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 2835, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 8687, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 5763, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 8681, true);
+            me->ApplySpellImmune(0, IMMUNITY_ID, 3420, true);
+        }
 
-	uint32 abyssal_timer;
-	uint32 immo_timer;
+        uint32 abyssal_timer;
+        uint32 immo_timer;
 
-	void UpdateAI(const uint32 diff)
-	{
-		if (!UpdateVictim())
-			return;
+        void UpdateAI(const uint32 diff)
+        {
+            if (!UpdateVictim())
+                return;
 
-		if (abyssal_timer <= diff)
-		{
-			DoCastVictim(37633);
-			abyssal_timer = 13000;
-		}
-		else abyssal_timer -= diff;
+            if (abyssal_timer <= diff)
+            {
+                DoCastVictim(37633);
+                abyssal_timer = 13000;
+            }
+            else abyssal_timer -= diff;
 
-		if (immo_timer <= diff)
-		{
-			DoCastVictim(38999);
-			immo_timer = 2000;
-		}
-		else immo_timer -= diff;
+            if (immo_timer <= diff)
+            {
+                DoCastVictim(38999);
+                immo_timer = 2000;
+            }
+            else immo_timer -= diff;
 
-		DoMeleeAttackIfReady();
-	}
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_abyssal_flamebringerAI(pCreature);
+    }
 };
 
-CreatureAI* GetAI_npc_abyssal_flamebringer(Creature* pCreature)
-{
-	return new npc_abyssal_flamebringerAI(pCreature);
-}
 
 void AddSC_blades_edge_mountains()
 {
-    Script* newscript;
+    new mobs_nether_drake();
+    new npc_darnell();
+    new npc_overseer_nuaar();
+    new npc_saikkal_the_elder();
+    new npc_bloodmaul_brutebane();
+    new npc_ogre_brute();
+    new go_thunderspike();
+    new npc_light_orb_collector();
+    new npc_anger_camp();
+    new go_obeliks();
+    new npc_bloodmaul_direwolf();
+    new npc_kolphis_darkscale();
+    new npc_prophecy_trigger();
+    new go_prophecy();
+    new npc_grishna_arakkoa();
+    new npc_koikoi_spirit();
+    new npc_raven_leafbeard();
+    new npc_wyrmkult_zealot();
+    new npc_wyrmkult_acolyte();
+    new npc_evergrove_ancient();
+    new npc_baelmon();
+    new npc_groc_trigger();
+    new npc_goc();
+    new npc_sabelian_dragon();
+    new npc_sabelian_human();
+    new npc_rexxar();
+    new npc_grimgut();
+    new npc_onspiritswings_trigger();
+    new go_moonshine_keg();
+    new go_greenspot_keg();
+    new go_fermentedseed_keg();
+    new npc_huffer();
+    new go_power_converter();
+    new go_netherdrake_egg();
+    new npc_nexusprince_razaan();
+    new npc_summon_circle_trigger();
+    new npc_vimgol_circle_trigger();
+    new npc_vimgol_the_vile();
+    new the_soulgrinder();
+    new skulloc_soulgrinder();
+    new helper_bunny_1();
+    new helper_bunny_2();
+    new helper_bunny_3();
+    new go_apexis_monument();
+    new go_apexis_relic();
+    new go_fel_crystal_prism();
+    new npc_aether_ray();
+    new npc_felburn_trigger();
+    new npc_legion_flak_cannon();
+    new npc_abyssal_flamebringer();
 
-    newscript = new Script;
-    newscript->Name = "mobs_nether_drake";
-    newscript->GetAI = &GetAI_mobs_nether_drake;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_daranelle";
-    newscript->GetAI = &GetAI_npc_daranelle;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_overseer_nuaar";
-    newscript->pGossipHello = &GossipHello_npc_overseer_nuaar;
-    newscript->pGossipSelect = &GossipSelect_npc_overseer_nuaar;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_saikkal_the_elder";
-    newscript->pGossipHello = &GossipHello_npc_saikkal_the_elder;
-    newscript->pGossipSelect = &GossipSelect_npc_saikkal_the_elder;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_bloodmaul_brutebane";
-    newscript->GetAI = &GetAI_npc_bloodmaul_brutebane;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_ogre_brute";
-    newscript->GetAI = &GetAI_npc_ogre_brute;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "go_thunderspike";
-    newscript->pGOHello = &GOUse_go_thunderspike;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_light_orb_collector";
-    newscript->GetAI = &GetAI_npc_light_orb_collector;
-    newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_anger_camp";
-	newscript->GetAI = &GetAI_npc_anger_camp;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_obeliks";
-	newscript->pGOHello = &GOUse_go_obeliks;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_bloodmaul_direwolf";
-	newscript->GetAI = &GetAI_npc_bloodmaul_direwolf;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_kolphis_darkscale";
-	newscript->pGossipHello = &GossipHello_npc_kolphis_darkscale;
-	newscript->pGossipSelect = &GossipSelect_npc_kolphis_darkscale;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_prophecy_trigger";
-	newscript->GetAI = &GetAI_npc_prophecy_trigger;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_prophecy";
-	newscript->pGOHello = &GOUse_go_prophecy;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_grishna_arakkoa";
-	newscript->GetAI = &GetAI_npc_grishna_arakkoa;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_koikoi_spirit";
-	newscript->GetAI = &GetAI_npc_koikoi_spirit;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_raven_leafbeard";
-	newscript->GetAI = &GetAI_npc_raven_leafbeard;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_wyrmkult_zealot";
-	newscript->GetAI = &GetAI_npc_wyrmkult_zealot;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_wyrmkult_acolyte";
-	newscript->GetAI = &GetAI_npc_wyrmkult_acolyte;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_evergrove_ancient";
-	newscript->GetAI = &GetAI_npc_evergrove_ancient;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_baelmon";
-	newscript->GetAI = &GetAI_npc_baelmon;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_groc_trigger";
-	newscript->GetAI = &GetAI_npc_groc_trigger;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_goc";
-	newscript->GetAI = &GetAI_npc_goc;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_sabelian_human";
-	newscript->GetAI = &GetAI_npc_sabelian_human;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_sabelian_dragon";
-	newscript->GetAI = &GetAI_npc_sabelian_dragon;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_rexxar";
-	newscript->GetAI = &GetAI_npc_rexxar;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_grimgut";
-	newscript->GetAI = &GetAI_npc_grimgut;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_onspiritswings_trigger";
-	newscript->GetAI = &GetAI_npc_onspiritswings_trigger;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_moonshine_keg";
-	newscript->pGOHello = &GOUse_go_moonshine_keg;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_greenspot_keg";
-	newscript->pGOHello = &GOUse_go_greenspot_keg;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_fermentedseed_keg";
-	newscript->pGOHello = &GOUse_go_fermentedseed_keg;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_huffer";
-	newscript->GetAI = &GetAI_npc_huffer;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_power_converter";
-	newscript->pGOHello = &GOUse_go_power_converter;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_netherdrake_egg";
-	newscript->pGOHello = &GOUse_go_netherdrake_egg;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_nexusprince_razaan";
-	newscript->GetAI = &GetAI_npc_nexusprince_razaan;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_summon_circle_trigger";
-	newscript->GetAI = &GetAI_npc_summon_circle_trigger;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_vimgol_circle_trigger";
-	newscript->GetAI = &GetAI_npc_vimgol_circle_trigger;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_vimgol_the_vile";
-	newscript->GetAI = &GetAI_npc_vimgol_the_vile;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "the_soulgrinder";
-	newscript->GetAI = &GetAI_the_soulgrinder;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "skulloc_soulgrinder";
-	newscript->GetAI = &GetAI_skulloc_soulgrinder;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "helper_bunny_1";
-	newscript->GetAI = &GetAI_helper_bunny_1;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "helper_bunny_2";
-	newscript->GetAI = &GetAI_helper_bunny_2;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "helper_bunny_3";
-	newscript->GetAI = &GetAI_helper_bunny_3;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_apexis_monument";
-	newscript->pGOHello = &GossipHello_go_apexis_monument;
-	newscript->pGOSelect = &GossipSelect_go_apexis_monument;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_apexis_relic";
-	newscript->pGOHello = &GossipHello_go_apexis_relic;
-	newscript->pGOSelect = &GossipSelect_go_apexis_relic;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "go_fel_crystal_prism";
-	newscript->pGOHello = &GossipHello_go_fel_crystal_prism;
-	newscript->pGOSelect = &GossipSelect_go_fel_crystal_prism;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_aether_ray";
-	newscript->GetAI = &GetAI_npc_aether_ray;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_felburn_trigger";
-	newscript->GetAI = &GetAI_npc_felburn_trigger;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_legion_flak_cannon";
-	newscript->GetAI = &GetAI_npc_legion_flak_cannon;
-	newscript->RegisterSelf();
-
-	newscript = new Script;
-	newscript->Name = "npc_abyssal_flamebringer";
-	newscript->GetAI = &GetAI_npc_abyssal_flamebringer;
-	newscript->RegisterSelf();
 }

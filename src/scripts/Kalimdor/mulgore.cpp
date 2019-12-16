@@ -38,26 +38,9 @@ EndContentData */
 
 #define GOSSIP_SW "Tell me a story, Skorn."
 
-bool GossipHello_npc_skorn_whitecloud(Player* pPlayer, Creature* pCreature)
-{
-    if (pCreature->IsQuestGiver())
-        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
 
-    if (!pPlayer->GetQuestRewardStatus(770))
-        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SW, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
 
-    pPlayer->SEND_GOSSIP_MENU(522, pCreature->GetGUID());
 
-    return true;
-}
-
-bool GossipSelect_npc_skorn_whitecloud(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-{
-    if (uiAction == GOSSIP_ACTION_INFO_DEF)
-        pPlayer->SEND_GOSSIP_MENU(523, pCreature->GetGUID());
-
-    return true;
-}
 
 enum eKyle
 {
@@ -71,116 +54,9 @@ enum eKyle
     POINT_ID                = 1
 };
 
-struct npc_kyle_the_frenziedAI : public ScriptedAI
-{
-    npc_kyle_the_frenziedAI(Creature* pCreature) : ScriptedAI(pCreature)
-    {
-        Reset();
-    }
 
-    bool m_bEvent;
-    bool m_bIsMovingToLunch;
-    uint64 m_uiPlayerGUID;
-    uint32 m_uiEventTimer;
-    uint8 m_uiEventPhase;
 
-    void Reset()
-    {
-        m_bEvent = false;
-        m_bIsMovingToLunch = false;
-        m_uiPlayerGUID = 0;
-        m_uiEventTimer = 5000;
-        m_uiEventPhase = 0;
 
-        if (me->GetEntry() == NPC_KYLE_FRIENDLY)
-            me->UpdateEntry(NPC_KYLE_FRENZIED);
-    }
-
-    void SpellHit(Unit* pCaster, SpellEntry const* pSpell)
-    {
-        if (!me->GetVictim() && !m_bEvent && pSpell->Id == SPELL_LUNCH)
-        {
-            if (pCaster->GetTypeId() == TYPEID_PLAYER)
-                m_uiPlayerGUID = pCaster->GetGUID();
-
-            if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == WAYPOINT_MOTION_TYPE)
-            {
-                me->GetMotionMaster()->MovementExpired();
-                me->GetMotionMaster()->MoveIdle();
-                me->StopMoving();
-            }
-
-            m_bEvent = true;
-            DoScriptText(EMOTE_SEE_LUNCH, me);
-            me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_CREATURE_SPECIAL);
-        }
-    }
-
-    void MovementInform(uint32 uiType, uint32 uiPointId)
-    {
-        if (uiType != POINT_MOTION_TYPE || !m_bEvent)
-            return;
-
-        if (uiPointId == POINT_ID)
-            m_bIsMovingToLunch = false;
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        if (m_bEvent)
-        {
-            if (m_bIsMovingToLunch)
-                return;
-
-            if (m_uiEventTimer < diff)
-            {
-                m_uiEventTimer = 5000;
-                ++m_uiEventPhase;
-
-                switch (m_uiEventPhase)
-                {
-                case 1:
-                    if (/*Player* pPlayer = */Unit::GetPlayer(*me, m_uiPlayerGUID))
-                    {
-                        if (GameObject* pGo = GameObject::GetGameObject(*me, SPELL_LUNCH))
-                        {
-                            m_bIsMovingToLunch = true;
-                            me->GetMotionMaster()->MovePoint(POINT_ID, pGo->GetPositionX(), pGo->GetPositionY(), pGo->GetPositionZ());
-                        }
-                    }
-                    break;
-                case 2:
-                    DoScriptText(EMOTE_EAT_LUNCH, me);
-                    me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_USESTANDING);
-                    break;
-                case 3:
-                    if (Player* pPlayer = Unit::GetPlayer(*me, m_uiPlayerGUID))
-                        pPlayer->TalkedToCreature(me->GetEntry(), me->GetGUID());
-
-                    me->UpdateEntry(NPC_KYLE_FRIENDLY);
-                    break;
-                case 4:
-                    m_uiEventTimer = 30000;
-                    DoScriptText(EMOTE_DANCE, me);
-                    me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCESPECIAL);
-                    break;
-                case 5:
-                    me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_NONE);
-                    Reset();
-                    me->GetMotionMaster()->Clear();
-                    break;
-                }
-            }
-            else
-                m_uiEventTimer -= diff;
-        }
-    }
-};
-
-CreatureAI* GetAI_npc_kyle_the_frenzied(Creature* pCreature)
-{
-    return new npc_kyle_the_frenziedAI(pCreature);
-}
 
 
 /*#####
@@ -241,77 +117,260 @@ float wp_plain_vision[50][3] =
     { -1508.68f,  366.822f,    62.733f}
 };
 
-struct npc_plains_visionAI  : public ScriptedAI
-{
-    npc_plains_visionAI(Creature* c) : ScriptedAI(c) {}
 
-    bool newWaypoint;
-    uint8 WayPointId;
-    uint8 amountWP;
 
-    void Reset()
-    {
-        WayPointId = 0;
-        newWaypoint = true;
-        amountWP  = 49;
-    }
 
-    void EnterCombat(Unit* /*who*/) {}
-
-    void MovementInform(uint32 type, uint32 id)
-    {
-        if (type != POINT_MOTION_TYPE)
-            return;
-
-        if (id < amountWP)
-        {
-            ++WayPointId;
-            newWaypoint = true;
-        }
-        else
-        {
-            me->setDeathState(JUST_DIED);
-            me->RemoveCorpse();
-        }
-    }
-
-    void UpdateAI(const uint32 /*diff*/)
-    {
-        if (newWaypoint)
-        {
-            me->GetMotionMaster()->MovePoint(WayPointId, wp_plain_vision[WayPointId][0], wp_plain_vision[WayPointId][1], wp_plain_vision[WayPointId][2]);
-            newWaypoint = false;
-        }
-    }
-};
-
-CreatureAI* GetAI_npc_plains_vision(Creature* pCreature)
-{
-    return new npc_plains_visionAI (pCreature);
-}
 
 /*#####
 #
 ######*/
 
+
+
+
+class npc_skorn_whitecloud : public CreatureScript
+{
+public: 
+    npc_skorn_whitecloud() : CreatureScript("npc_skorn_whitecloud") { }
+    
+
+    
+
+    bool OnGossipHello(Player* pPlayer, Creature* pCreature) override
+    {
+        if (pCreature->IsQuestGiver())
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+    
+        if (!pPlayer->GetQuestRewardStatus(770))
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SW, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+    
+        pPlayer->SEND_GOSSIP_MENU(522, pCreature->GetGUID());
+    
+        return true;
+    }
+    
+
+    bool GossipHello_npc_skorn_whitecloud(Player* pPlayer, Creature* pCreature)
+    {
+        if (pCreature->IsQuestGiver())
+            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+    
+        if (!pPlayer->GetQuestRewardStatus(770))
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SW, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
+    
+        pPlayer->SEND_GOSSIP_MENU(522, pCreature->GetGUID());
+    
+        return true;
+    }
+    
+
+    bool GossipSelect_npc_skorn_whitecloud(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
+    {
+        if (uiAction == GOSSIP_ACTION_INFO_DEF)
+            pPlayer->SEND_GOSSIP_MENU(523, pCreature->GetGUID());
+    
+        return true;
+    }
+    
+
+    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
+    {
+        if (uiAction == GOSSIP_ACTION_INFO_DEF)
+            pPlayer->SEND_GOSSIP_MENU(523, pCreature->GetGUID());
+    
+        return true;
+    }
+    
+
+    
+
+    
+};
+
+class npc_kyle_the_frenzied : public CreatureScript
+{
+public: 
+    npc_kyle_the_frenzied() : CreatureScript("npc_kyle_the_frenzied") { }
+    struct npc_kyle_the_frenziedAI : public ScriptedAI
+    {
+        npc_kyle_the_frenziedAI(Creature* pCreature) : ScriptedAI(pCreature)
+        {
+            Reset();
+        }
+    
+        bool m_bEvent;
+        bool m_bIsMovingToLunch;
+        uint64 m_uiPlayerGUID;
+        uint32 m_uiEventTimer;
+        uint8 m_uiEventPhase;
+    
+        void Reset()
+        {
+            m_bEvent = false;
+            m_bIsMovingToLunch = false;
+            m_uiPlayerGUID = 0;
+            m_uiEventTimer = 5000;
+            m_uiEventPhase = 0;
+    
+            if (me->GetEntry() == NPC_KYLE_FRIENDLY)
+                me->UpdateEntry(NPC_KYLE_FRENZIED);
+        }
+    
+        void SpellHit(Unit* pCaster, SpellEntry const* pSpell)
+        {
+            if (!me->GetVictim() && !m_bEvent && pSpell->Id == SPELL_LUNCH)
+            {
+                if (pCaster->GetTypeId() == TYPEID_PLAYER)
+                    m_uiPlayerGUID = pCaster->GetGUID();
+    
+                if (me->GetMotionMaster()->GetCurrentMovementGeneratorType() == WAYPOINT_MOTION_TYPE)
+                {
+                    me->GetMotionMaster()->MovementExpired();
+                    me->GetMotionMaster()->MoveIdle();
+                    me->StopMoving();
+                }
+    
+                m_bEvent = true;
+                DoScriptText(EMOTE_SEE_LUNCH, me);
+                me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_ONESHOT_CREATURE_SPECIAL);
+            }
+        }
+    
+        void MovementInform(uint32 uiType, uint32 uiPointId)
+        {
+            if (uiType != POINT_MOTION_TYPE || !m_bEvent)
+                return;
+    
+            if (uiPointId == POINT_ID)
+                m_bIsMovingToLunch = false;
+        }
+    
+        void UpdateAI(const uint32 diff)
+        {
+            if (m_bEvent)
+            {
+                if (m_bIsMovingToLunch)
+                    return;
+    
+                if (m_uiEventTimer < diff)
+                {
+                    m_uiEventTimer = 5000;
+                    ++m_uiEventPhase;
+    
+                    switch (m_uiEventPhase)
+                    {
+                    case 1:
+                        if (/*Player* pPlayer = */Unit::GetPlayer(*me, m_uiPlayerGUID))
+                        {
+                            if (GameObject* pGo = GameObject::GetGameObject(*me, SPELL_LUNCH))
+                            {
+                                m_bIsMovingToLunch = true;
+                                me->GetMotionMaster()->MovePoint(POINT_ID, pGo->GetPositionX(), pGo->GetPositionY(), pGo->GetPositionZ());
+                            }
+                        }
+                        break;
+                    case 2:
+                        DoScriptText(EMOTE_EAT_LUNCH, me);
+                        me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_USESTANDING);
+                        break;
+                    case 3:
+                        if (Player* pPlayer = Unit::GetPlayer(*me, m_uiPlayerGUID))
+                            pPlayer->TalkedToCreature(me->GetEntry(), me->GetGUID());
+    
+                        me->UpdateEntry(NPC_KYLE_FRIENDLY);
+                        break;
+                    case 4:
+                        m_uiEventTimer = 30000;
+                        DoScriptText(EMOTE_DANCE, me);
+                        me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_DANCESPECIAL);
+                        break;
+                    case 5:
+                        me->SetUInt32Value(UNIT_NPC_EMOTESTATE, EMOTE_STATE_NONE);
+                        Reset();
+                        me->GetMotionMaster()->Clear();
+                        break;
+                    }
+                }
+                else
+                    m_uiEventTimer -= diff;
+            }
+        }
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_kyle_the_frenziedAI(pCreature);
+    }
+
+    
+
+    
+};
+
+class npc_plains_vision : public CreatureScript
+{
+public: 
+    npc_plains_vision() : CreatureScript("npc_plains_vision") { }
+    struct npc_plains_visionAI  : public ScriptedAI
+    {
+        npc_plains_visionAI(Creature* c) : ScriptedAI(c) {}
+    
+        bool newWaypoint;
+        uint8 WayPointId;
+        uint8 amountWP;
+    
+        void Reset()
+        {
+            WayPointId = 0;
+            newWaypoint = true;
+            amountWP  = 49;
+        }
+    
+        void EnterCombat(Unit* /*who*/) {}
+    
+        void MovementInform(uint32 type, uint32 id)
+        {
+            if (type != POINT_MOTION_TYPE)
+                return;
+    
+            if (id < amountWP)
+            {
+                ++WayPointId;
+                newWaypoint = true;
+            }
+            else
+            {
+                me->setDeathState(JUST_DIED);
+                me->RemoveCorpse();
+            }
+        }
+    
+        void UpdateAI(const uint32 /*diff*/)
+        {
+            if (newWaypoint)
+            {
+                me->GetMotionMaster()->MovePoint(WayPointId, wp_plain_vision[WayPointId][0], wp_plain_vision[WayPointId][1], wp_plain_vision[WayPointId][2]);
+                newWaypoint = false;
+            }
+        }
+    };
+
+    
+
+     CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new npc_plains_visionAI (pCreature);
+    }
+};
+
+
 void AddSC_mulgore()
 {
-    Script* newscript;
+    new npc_skorn_whitecloud();
+    new npc_kyle_the_frenzied();
+    new npc_plains_vision();
 
-    newscript = new Script;
-    newscript->Name = "npc_skorn_whitecloud";
-    newscript->pGossipHello = &GossipHello_npc_skorn_whitecloud;
-    newscript->pGossipSelect = &GossipSelect_npc_skorn_whitecloud;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_kyle_the_frenzied";
-    newscript->GetAI = &GetAI_npc_kyle_the_frenzied;
-    newscript->RegisterSelf();
-
-    newscript = new Script;
-    newscript->Name = "npc_plains_vision";
-    newscript->GetAI = &GetAI_npc_plains_vision;
-    newscript->RegisterSelf();
 }
 

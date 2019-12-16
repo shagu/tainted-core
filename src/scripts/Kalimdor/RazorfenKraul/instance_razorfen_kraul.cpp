@@ -28,98 +28,102 @@ EndScriptData */
 
 #define WARD_KEEPERS_NR 2
 
-struct instance_razorfen_kraul : public ScriptedInstance
+
+class instance_razorfen_kraul : public InstanceMapScript
 {
-    instance_razorfen_kraul(Map* pMap) : ScriptedInstance(pMap)
+public: 
+    instance_razorfen_kraul() : InstanceMapScript("instance_razorfen_kraul", 47) { }
+    struct instance_razorfen_kraulAI : public ScriptedInstance
     {
-        Initialize();
+        instance_razorfen_kraulAI(Map* pMap) : ScriptedInstance(pMap)
+        {
+            Initialize();
+        };
+    
+        uint64 DoorWardGUID;
+        uint32 WardCheck_Timer;
+        int WardKeeperAlive;
+    
+        void Initialize()
+        {
+            WardKeeperAlive = 2;
+            WardCheck_Timer = 4000;
+            DoorWardGUID = 0;
+        }
+    
+        Player* GetPlayerInMap()
+        {
+            Map::PlayerList const& players = instance->GetPlayers();
+    
+            if (!players.isEmpty())
+            {
+                for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                {
+                    if (Player* plr = itr->GetSource())
+                        return plr;
+                }
+            }
+            debug_log("OSCR: Instance Razorfen Kraul: GetPlayerInMap, but PlayerList is empty!");
+            return NULL;
+        }
+    
+        void OnGameObjectCreate(GameObject* pGo, bool /*apply*/)
+        {
+            switch (pGo->GetEntry())
+            {
+            case 21099:
+                DoorWardGUID = pGo->GetGUID();
+                break;
+            }
+        }
+    
+        void OnCreatureDeath(Creature* pCreature)
+        {
+            switch (pCreature->GetEntry())
+            {
+            case 4625:
+                --WardKeeperAlive;
+                break;
+            }
+        }
+    
+        void Update(uint32 diff)
+        {
+            if (WardKeeperAlive == 0)
+            {
+                if (WardCheck_Timer <= diff)
+                {
+                    HandleGameObject(DoorWardGUID, true);
+                    WardKeeperAlive = 0;
+                    WardCheck_Timer = 4000;
+                }
+                else
+                    WardCheck_Timer -= diff;
+            }
+        }
+    
+        void SetData(uint32 type, uint32 data)
+        {
+            switch (type)
+            {
+            case TYPE_WARD_KEEPERS:
+                if (data == NOT_STARTED)
+                    WardKeeperAlive = 1;
+                break;
+            }
+        }
+    
     };
-
-    uint64 DoorWardGUID;
-    uint32 WardCheck_Timer;
-    int WardKeeperAlive;
-
-    void Initialize()
+    
+    InstanceData* GetInstanceScript(InstanceMap* pMap) const override
     {
-        WardKeeperAlive = 2;
-        WardCheck_Timer = 4000;
-        DoorWardGUID = 0;
+        return new instance_razorfen_kraulAI(pMap);
     }
-
-    Player* GetPlayerInMap()
-    {
-        Map::PlayerList const& players = instance->GetPlayers();
-
-        if (!players.isEmpty())
-        {
-            for (Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
-            {
-                if (Player* plr = itr->GetSource())
-                    return plr;
-            }
-        }
-        debug_log("OSCR: Instance Razorfen Kraul: GetPlayerInMap, but PlayerList is empty!");
-        return NULL;
-    }
-
-    void OnGameObjectCreate(GameObject* pGo, bool /*apply*/)
-    {
-        switch (pGo->GetEntry())
-        {
-        case 21099:
-            DoorWardGUID = pGo->GetGUID();
-            break;
-        }
-    }
-
-    void OnCreatureDeath(Creature* pCreature)
-    {
-        switch (pCreature->GetEntry())
-        {
-        case 4625:
-            --WardKeeperAlive;
-            break;
-        }
-    }
-
-    void Update(uint32 diff)
-    {
-        if (WardKeeperAlive == 0)
-        {
-            if (WardCheck_Timer <= diff)
-            {
-                HandleGameObject(DoorWardGUID, true);
-                WardKeeperAlive = 0;
-                WardCheck_Timer = 4000;
-            }
-            else
-                WardCheck_Timer -= diff;
-        }
-    }
-
-    void SetData(uint32 type, uint32 data)
-    {
-        switch (type)
-        {
-        case TYPE_WARD_KEEPERS:
-            if (data == NOT_STARTED)
-                WardKeeperAlive = 1;
-            break;
-        }
-    }
-
+    
+    
 };
-
-InstanceData* GetInstanceData_instance_razorfen_kraul(Map* pMap)
-{
-    return new instance_razorfen_kraul(pMap);
-}
-
 void AddSC_instance_razorfen_kraul()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "instance_razorfen_kraul";
-    newscript->GetInstanceData = &GetInstanceData_instance_razorfen_kraul;
-    newscript->RegisterSelf();
+    new instance_razorfen_kraul();
 }
+

@@ -2799,6 +2799,15 @@ enum DungeonStatusFlag
     RAID_STATUSFLAG_25MAN = 0x08,
 };
 
+enum XPColorChar
+{
+    XP_RED,
+    XP_ORANGE,
+    XP_YELLOW,
+    XP_GREEN,
+    XP_GRAY
+};
+
 // we need to stick to 1 version or half of the stuff will work for someone
 // others will not and opposite
 // will only support WoW and WoW:TBC 2.4.3 client build 8606...

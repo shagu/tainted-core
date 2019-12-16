@@ -32,6 +32,7 @@
 #include "UpdateMask.h"
 #include "MapManager.h"
 #include "SpellMgr.h"
+#include "ScriptMgr.h"
 
 bool ChatHandler::load_command_table = true;
 
@@ -862,6 +863,15 @@ void ChatHandler::PSendSysMessage(const char* format, ...)
     SendSysMessage(str);
 }
 
+bool ChatHandler::ExecuteCommandInTables(std::vector<ChatCommand*>& tables, const char* text, const std::string& fullcmd)
+{
+    for (std::vector<ChatCommand*>::iterator it = tables.begin(); it != tables.end(); ++it)
+        if (ExecuteCommandInTable((*it), text, fullcmd))
+            return true;
+
+    return false;
+}
+
 bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, const std::string& fullcmd)
 {
     char const* oldtext = text;
@@ -939,6 +949,9 @@ int ChatHandler::ParseCommands(const char* text)
 
     std::string fullcmd = text;
 
+    if (m_session && m_session->GetSecurity() <= SEC_PLAYER)
+        return 0;
+
     // chat case (.command or !command format)
     if (m_session)
     {
@@ -961,9 +974,13 @@ int ChatHandler::ParseCommands(const char* text)
 
     if (!ExecuteCommandInTable(getCommandTable(), text, fullcmd))
     {
-        if (m_session && m_session->GetSecurity() == SEC_PLAYER)
-            return 0;
-        SendSysMessage(LANG_NO_CMD);
+        std::vector<ChatCommand*> table = sScriptMgr.GetChatCommands();
+        if (!ExecuteCommandInTables(table, text, fullcmd))
+        {
+            if (m_session && m_session->GetSecurity() == SEC_PLAYER)
+                return 0;
+            SendSysMessage(LANG_NO_CMD);
+        }
     }
     return 1;
 }

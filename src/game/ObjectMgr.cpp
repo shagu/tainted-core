@@ -7540,9 +7540,6 @@ void ObjectMgr::LoadScriptNames()
         while (result->NextRow());
     }
 
-    //OnEvent Changes
-    m_scriptNames.push_back("scripted_on_events");
-
     std::sort(m_scriptNames.begin(), m_scriptNames.end());
 }
 

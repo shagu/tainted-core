@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Landslide
-SD%Complete: 100
-SDComment:
-SDCategory: Maraudon
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Landslide
+ SD%Complete: 100
+ SDComment:
+ SDCategory: Maraudon
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -29,72 +29,76 @@ EndScriptData */
 #define SPELL_TRAMPLE           5568
 #define SPELL_LANDSLIDE         21808
 
-struct boss_landslideAI : public ScriptedAI
+class boss_landslide : public CreatureScript
 {
-    boss_landslideAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_landslide() : CreatureScript("boss_landslide") { }
 
-    uint32 KnockAway_Timer;
-    uint32 Trample_Timer;
-    uint32 Landslide_Timer;
-
-    void Reset()
+    struct boss_landslideAI : public ScriptedAI
     {
-        KnockAway_Timer = 8000;
-        Trample_Timer = 2000;
-        Landslide_Timer = 0;
-    }
+        boss_landslideAI(Creature* c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* /*who*/)
-    {
-    }
+        uint32 KnockAway_Timer;
+        uint32 Trample_Timer;
+        uint32 Landslide_Timer;
 
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        //KnockAway_Timer
-        if (KnockAway_Timer <= diff)
+        void Reset()
         {
-            DoCastVictim( SPELL_KNOCKAWAY);
-            KnockAway_Timer = 15000;
+            KnockAway_Timer = 8000;
+            Trample_Timer = 2000;
+            Landslide_Timer = 0;
         }
-        else KnockAway_Timer -= diff;
 
-        //Trample_Timer
-        if (Trample_Timer <= diff)
+        void EnterCombat(Unit* /*who*/)
         {
-            DoCast(me, SPELL_TRAMPLE);
-            Trample_Timer = 8000;
         }
-        else Trample_Timer -= diff;
 
-        //Landslide
-        if (HealthBelowPct(50))
+        void UpdateAI(const uint32 diff)
         {
-            if (Landslide_Timer <= diff)
+            if (!UpdateVictim())
+                return;
+
+            //KnockAway_Timer
+            if (KnockAway_Timer <= diff)
             {
-                me->InterruptNonMeleeSpells(false);
-                DoCast(me, SPELL_LANDSLIDE);
-                Landslide_Timer = 60000;
+                DoCastVictim(SPELL_KNOCKAWAY);
+                KnockAway_Timer = 15000;
             }
-            else Landslide_Timer -= diff;
-        }
+            else KnockAway_Timer -= diff;
 
-        DoMeleeAttackIfReady();
+            //Trample_Timer
+            if (Trample_Timer <= diff)
+            {
+                DoCast(me, SPELL_TRAMPLE);
+                Trample_Timer = 8000;
+            }
+            else Trample_Timer -= diff;
+
+            //Landslide
+            if (HealthBelowPct(50))
+            {
+                if (Landslide_Timer <= diff)
+                {
+                    me->InterruptNonMeleeSpells(false);
+                    DoCast(me, SPELL_LANDSLIDE);
+                    Landslide_Timer = 60000;
+                }
+                else Landslide_Timer -= diff;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_landslideAI(pCreature);
     }
+
 };
-CreatureAI* GetAI_boss_landslide(Creature* pCreature)
-{
-    return new boss_landslideAI (pCreature);
-}
 
 void AddSC_boss_landslide()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_landslide";
-    newscript->GetAI = &GetAI_boss_landslide;
-    newscript->RegisterSelf();
+    new boss_landslide();
 }
 

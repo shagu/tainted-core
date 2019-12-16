@@ -15,12 +15,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* ScriptData
-SDName: Boss_Ebonroc
-SD%Complete: 50
-SDComment: Shadow of Ebonroc needs core support
-SDCategory: Blackwing Lair
-EndScriptData */
+ /* ScriptData
+ SDName: Boss_Ebonroc
+ SD%Complete: 50
+ SDComment: Shadow of Ebonroc needs core support
+ SDCategory: Blackwing Lair
+ EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
@@ -30,81 +30,86 @@ EndScriptData */
 #define SPELL_SHADOWOFEBONROC       23340
 #define SPELL_HEAL                  41386                   //Thea Heal spell of his Shadow
 
-struct boss_ebonrocAI : public ScriptedAI
+
+class boss_ebonroc : public CreatureScript
 {
-    boss_ebonrocAI(Creature* c) : ScriptedAI(c) {}
+public:
+    boss_ebonroc() : CreatureScript("boss_ebonroc") { }
 
-    uint32 ShadowFlame_Timer;
-    uint32 WingBuffet_Timer;
-    uint32 ShadowOfEbonroc_Timer;
-    uint32 Heal_Timer;
-
-    void Reset()
+    struct boss_ebonrocAI : public ScriptedAI
     {
-        ShadowFlame_Timer = 15000;                          //These times are probably wrong
-        WingBuffet_Timer = 30000;
-        ShadowOfEbonroc_Timer = 45000;
-        Heal_Timer = 1000;
-    }
+        boss_ebonrocAI(Creature* c) : ScriptedAI(c) {}
 
-    void EnterCombat(Unit* /*who*/)
-    {
-        DoZoneInCombat();
-    }
+        uint32 ShadowFlame_Timer;
+        uint32 WingBuffet_Timer;
+        uint32 ShadowOfEbonroc_Timer;
+        uint32 Heal_Timer;
 
-    void UpdateAI(const uint32 diff)
-    {
-        if (!UpdateVictim())
-            return;
-
-        //Shadowflame Timer
-        if (ShadowFlame_Timer <= diff)
+        void Reset()
         {
-            DoCastVictim( SPELL_SHADOWFLAME);
-            ShadowFlame_Timer = urand(12000, 15000);
+            ShadowFlame_Timer = 15000;                          //These times are probably wrong
+            WingBuffet_Timer = 30000;
+            ShadowOfEbonroc_Timer = 45000;
+            Heal_Timer = 1000;
         }
-        else ShadowFlame_Timer -= diff;
 
-        //Wing Buffet Timer
-        if (WingBuffet_Timer <= diff)
+        void EnterCombat(Unit* /*who*/)
         {
-            DoCastVictim( SPELL_WINGBUFFET);
-            WingBuffet_Timer = 25000;
+            DoZoneInCombat();
         }
-        else WingBuffet_Timer -= diff;
 
-        //Shadow of Ebonroc Timer
-        if (ShadowOfEbonroc_Timer <= diff)
+        void UpdateAI(const uint32 diff)
         {
-            DoCastVictim( SPELL_SHADOWOFEBONROC);
-            ShadowOfEbonroc_Timer = urand(25000, 350000);
-        }
-        else ShadowOfEbonroc_Timer -= diff;
+            if (!UpdateVictim())
+                return;
 
-        if (me->GetVictim()->HasAura(SPELL_SHADOWOFEBONROC, 0))
-        {
-            if (Heal_Timer <= diff)
+            //Shadowflame Timer
+            if (ShadowFlame_Timer <= diff)
             {
-                DoCast(me, SPELL_HEAL);
-                Heal_Timer = urand(1000, 3000);
+                DoCastVictim(SPELL_SHADOWFLAME);
+                ShadowFlame_Timer = urand(12000, 15000);
             }
-            else Heal_Timer -= diff;
-        }
+            else ShadowFlame_Timer -= diff;
 
-        DoMeleeAttackIfReady();
+            //Wing Buffet Timer
+            if (WingBuffet_Timer <= diff)
+            {
+                DoCastVictim(SPELL_WINGBUFFET);
+                WingBuffet_Timer = 25000;
+            }
+            else WingBuffet_Timer -= diff;
+
+            //Shadow of Ebonroc Timer
+            if (ShadowOfEbonroc_Timer <= diff)
+            {
+                DoCastVictim(SPELL_SHADOWOFEBONROC);
+                ShadowOfEbonroc_Timer = urand(25000, 350000);
+            }
+            else ShadowOfEbonroc_Timer -= diff;
+
+            if (me->GetVictim()->HasAura(SPELL_SHADOWOFEBONROC, 0))
+            {
+                if (Heal_Timer <= diff)
+                {
+                    DoCast(me, SPELL_HEAL);
+                    Heal_Timer = urand(1000, 3000);
+                }
+                else Heal_Timer -= diff;
+            }
+
+            DoMeleeAttackIfReady();
+        }
+    };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_ebonrocAI(pCreature);
     }
+
 };
-CreatureAI* GetAI_boss_ebonroc(Creature* pCreature)
-{
-    return new boss_ebonrocAI (pCreature);
-}
 
 void AddSC_boss_ebonroc()
 {
-    Script* newscript;
-    newscript = new Script;
-    newscript->Name = "boss_ebonroc";
-    newscript->GetAI = &GetAI_boss_ebonroc;
-    newscript->RegisterSelf();
+    new boss_ebonroc();
 }
 
