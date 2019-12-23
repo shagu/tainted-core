@@ -16405,6 +16405,9 @@ void Player::SaveToDB()
     DEBUG_LOG("The value of player %s at save: ", m_name.c_str());
     outDebugValues();
 
+
+	sScriptMgr.OnPlayerSave(this);
+
     // save state (after auras removing), if aura remove some flags then it must set it back by self)
     uint32 tmp_bytes = GetUInt32Value(UNIT_FIELD_BYTES_1);
     uint32 tmp_bytes2 = GetUInt32Value(UNIT_FIELD_BYTES_2);
