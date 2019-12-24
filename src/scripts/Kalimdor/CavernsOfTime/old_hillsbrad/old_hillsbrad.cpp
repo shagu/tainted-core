@@ -230,7 +230,7 @@ enum Thrall
 class npc_thrall_old_hillsbrad : public CreatureScript
 {
 public:
-    npc_thrall_old_hillsbrad() : CreatureScript("npc_thrall_old_hillsbra") { }
+    npc_thrall_old_hillsbrad() : CreatureScript("npc_thrall_old_hillsbrad") { }
 
 
     struct npc_thrall_old_hillsbradAI : public npc_escortAI

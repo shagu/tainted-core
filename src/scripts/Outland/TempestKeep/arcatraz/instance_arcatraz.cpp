@@ -37,7 +37,7 @@ EndScriptData */
 class instance_arcatraz : public InstanceMapScript
 {
 public: 
-    instance_arcatraz() : InstanceMapScript("instance_arcatraz") { }
+    instance_arcatraz() : InstanceMapScript("instance_arcatraz", 552) { }
     struct instance_arcatrazAI : public ScriptedInstance
     {
         instance_arcatrazAI(Map* map) : ScriptedInstance(map)

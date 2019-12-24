@@ -461,17 +461,6 @@ public:
     
         return true;
     }
-    
-
-
-    bool GossipSelect_npc_steward_of_time(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction)
-    {
-        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-            pPlayer->CastSpell(pPlayer, 34891, true);             //(Flight through Caverns)
-    
-        return true;
-    }
-    
 
     bool OnGossipSelect(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction) override
     {

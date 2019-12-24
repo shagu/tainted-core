@@ -1658,27 +1658,6 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
-
-    bool GossipHello_npc_anchorite_barada(Player* pPlayer, Creature* pCreature)
-    {
-        if (pPlayer->GetQuestStatus(QUEST_THE_EXORCIM) == QUEST_STATUS_INCOMPLETE)
-            pPlayer->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-        return true;
-    }
-    
-
-    bool GossipSelect_npc_anchorite_barada(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-    {
-        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-        {
-            ((npc_anchorite_baradaAI*)pCreature->AI())->Exorcim = true;
-            pPlayer->CLOSE_GOSSIP_MENU();
-        }
-        return true;
-    }
-    
 
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
@@ -2054,35 +2033,6 @@ public:
         return true;
     }
     
-
-    bool GossipHello_npc_demoniac_scryer(Player* pPlayer, Creature* pCreature)
-    {
-        if (npc_demoniac_scryerAI* pScryerAI = dynamic_cast<npc_demoniac_scryerAI*>(pCreature->AI()))
-        {
-            if (pScryerAI->IfIsComplete)
-            {
-                if (pPlayer->GetQuestStatus(QUEST_DEMONIAC) == QUEST_STATUS_INCOMPLETE)
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_ATTUNE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_ATTUNED, pCreature->GetGUID());
-                return true;
-            }
-        }
-        pPlayer->SEND_GOSSIP_MENU(GOSSIP_TEXTID_PROTECT, pCreature->GetGUID());
-        return true;
-    }
-    
-
-    bool GossipSelect_npc_demoniac_scryer(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-    {
-        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-        {
-            pPlayer->CLOSE_GOSSIP_MENU();
-            pCreature->CastSpell(pPlayer, SPELL_DEMONIAC_VISITATION, false);
-        }
-        return true;
-    }
-    
-
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
@@ -2824,39 +2774,7 @@ public:
     	pPlayer->SEND_GOSSIP_MENU(10103, pCreature->GetGUID());
     
     	return true;
-    }
-    
-
-    bool GossipHello_npc_dreghood_elder1(Player* pPlayer, Creature* pCreature)
-    {
-    
-    	if (pCreature->IsQuestGiver())
-    		pPlayer->PrepareQuestMenu(pCreature->GetGUID());
-    
-    	if (pPlayer->GetQuestStatus(10368) == QUEST_STATUS_INCOMPLETE)
-    	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    
-    	pPlayer->SEND_GOSSIP_MENU(10103, pCreature->GetGUID());
-    
-    	return true;
-    }
-    
-
-    bool GossipSelect_npc_dreghood_elder1(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-    {
-    	switch (uiAction)
-    	{
-    	case GOSSIP_ACTION_INFO_DEF + 1:
-    		pPlayer->CLOSE_GOSSIP_MENU();
-    
-    		DoScriptText(ELDER_SAY_1, pCreature, pPlayer);
-    		pPlayer->TalkedToCreature(20679, 86006);
-    		pCreature->SetStandState(UNIT_STAND_STATE_STAND);
-    		break;
-    	}
-    	return true;
-    }
-    
+    }  
 
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
@@ -2937,36 +2855,6 @@ public:
     
     	return true;
     }
-    
-
-    bool GossipHello_npc_dreghood_elder2(Player* pPlayer, Creature* pCreature)
-    {
-    	if (pCreature->IsQuestGiver())
-    		pPlayer->PrepareQuestMenu(pCreature->GetGUID());
-    
-    	if (pPlayer->GetQuestStatus(10368) == QUEST_STATUS_INCOMPLETE)
-    	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    
-    	pPlayer->SEND_GOSSIP_MENU(10104, pCreature->GetGUID());
-    
-    	return true;
-    }
-    
-
-    bool GossipSelect_npc_dreghood_elder2(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-    {
-    	switch (uiAction)
-    	{
-    	case GOSSIP_ACTION_INFO_DEF + 1:
-    		pPlayer->CLOSE_GOSSIP_MENU();
-    		pPlayer->TalkedToCreature(20678, 86008);
-    		DoScriptText(ELDER_SAY_2, pCreature, pPlayer);
-    		pCreature->SetStandState(UNIT_STAND_STATE_STAND);
-    		break;
-    	}
-    	return true;
-    }
-    
 
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
@@ -3046,38 +2934,7 @@ public:
     
     	return true;
     }
-    
-
-    bool GossipHello_npc_dreghood_elder3(Player* pPlayer, Creature* pCreature)
-    {
-    	if (pCreature->IsQuestGiver())
-    		pPlayer->PrepareQuestMenu(pCreature->GetGUID());
-    
-    	if (pPlayer->GetQuestStatus(10368) == QUEST_STATUS_INCOMPLETE)
-    	pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    
-    	pPlayer->SEND_GOSSIP_MENU(10105, pCreature->GetGUID());
-    
-    	return true;
-    }
-    
-
-    bool GossipSelect_npc_dreghood_elder3(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-    {
-    	switch (uiAction)
-    	{
-    	case GOSSIP_ACTION_INFO_DEF + 1:
-    		pPlayer->CLOSE_GOSSIP_MENU();
-    
-    		DoScriptText(ELDER_SAY_3, pCreature, pPlayer);
-    		pPlayer->TalkedToCreature(20677, 86007);
-    		pCreature->SetStandState(UNIT_STAND_STATE_STAND);
-    		break;
-    	}
-    	return true;
-    }
-    
-
+   
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
     	switch (uiAction)

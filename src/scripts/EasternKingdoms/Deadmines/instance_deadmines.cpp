@@ -51,7 +51,7 @@ class instance_deadmines : public InstanceMapScript
 {
 public: 
 
-    instance_deadmines() : InstanceMapScript("instance_deadmines") { }
+    instance_deadmines() : InstanceMapScript("instance_deadmines", 36) { }
     struct instance_deadminesAI : public ScriptedInstance
     {
         instance_deadminesAI(Map* pMap) : ScriptedInstance(pMap)

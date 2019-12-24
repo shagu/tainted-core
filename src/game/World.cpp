@@ -1073,6 +1073,10 @@ void World::LoadConfigSettings(bool reload)
     #else
         m_SQLUpdatesPath += '/';
     #endif
+
+	// call ScriptMgr if we're reloading the configuration
+	if (reload)
+		sScriptMgr.OnConfigLoad(reload);
 }
 
 void World::LoadSQLUpdates()

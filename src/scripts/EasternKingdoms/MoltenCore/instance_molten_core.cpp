@@ -44,7 +44,7 @@ EndScriptData */
 class instance_molten_core : public InstanceMapScript
 {
 public: 
-    instance_molten_core() : InstanceMapScript("instance_molten_core") { }
+    instance_molten_core() : InstanceMapScript("instance_molten_core", 409) { }
     struct instance_molten_coreAI : public ScriptedInstance
     {
         instance_molten_coreAI(Map* pMap) : ScriptedInstance(pMap)
