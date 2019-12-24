@@ -367,7 +367,7 @@ static Animation DemonTransformation[] =
 class mob_flame_of_azzinoth : public CreatureScript
 {
 public:
-    mob_flame_of_azzinoth() : CreatureScript("script_name") { }
+    mob_flame_of_azzinoth() : CreatureScript("mob_flame_of_azzinoth") { }
 
     struct flame_of_azzinothAI : public ScriptedAI
     {

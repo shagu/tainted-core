@@ -185,6 +185,9 @@ public:
     // Called when a world shutdown is cancelled.
     virtual void OnShutdownCancel() { }
 
+	// Called when the world is started.
+	virtual void OnStartup() { }
+
     // Called on every world tick (don't execute too heavy code here).
     virtual void OnUpdate(void* null, uint32 diff) { }
 };
@@ -704,6 +707,7 @@ public: /* WorldScript */
     void OnMotdChange(std::string& newMotd);
     void OnShutdown(ShutdownExitCode code, ShutdownMask mask);
     void OnShutdownCancel();
+	void OnStartup();
     void OnWorldUpdate(uint32 diff);
 
 public: /* FormulaScript */

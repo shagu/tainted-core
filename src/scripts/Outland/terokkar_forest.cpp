@@ -973,38 +973,7 @@ public:
     
         player->SEND_GOSSIP_MENU(9442, pCreature->GetGUID());
         return true;
-    }
-    
-
-    bool GossipHello_npc_floon(Player* player, Creature* pCreature)
-    {
-        if (player->GetQuestStatus(10009) == QUEST_STATUS_INCOMPLETE)
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_FLOON1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    
-        player->SEND_GOSSIP_MENU(9442, pCreature->GetGUID());
-        return true;
-    }
-    
-
-    bool GossipSelect_npc_floon(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-    	switch (action)
-        {
-    	case GOSSIP_ACTION_INFO_DEF + 1:
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_FLOON2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-            player->SEND_GOSSIP_MENU(9443, pCreature->GetGUID());
-    		break;
-    	case GOSSIP_ACTION_INFO_DEF + 2:
-            player->CLOSE_GOSSIP_MENU();
-    		pCreature->SetFaction(1738);
-            DoScriptText(SAY_FLOON_ATTACK, pCreature, player);
-            ((npc_floonAI*)pCreature->AI())->AttackStart(player);
-    		break;
-        }
-    
-        return true;
-    }
-    
+    }  
 
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
@@ -2168,21 +2137,6 @@ public:
     
     	return true;
     }
-    
-
-    bool GossipSelect_npc_scout_nefris(Player* player, Creature* /*pCreature*/, uint32 /*sender*/, uint32 action)
-    {
-    	if (action == GOSSIP_ACTION_INFO_DEF + 1)
-    	{
-    		player->CLOSE_GOSSIP_MENU();
-    		player->CastSpell(player, 32756, true);            // Give Another Disguise
-    		player->CastSpell(player, player->getGender() == GENDER_FEMALE ? 38081 : 38080, true); // Give Disguise
-    	}
-    
-    	return true;
-    }
-    
-
 
     bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
     {
@@ -2406,37 +2360,6 @@ public:
     	return true;
     }
     
-
-    bool GossipHello_npc_shadowy_advisor(Player* player, Creature* pCreature)
-    {
-    	if (player->GetQuestStatus(10040) == QUEST_STATUS_INCOMPLETE)
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_ADVISOR, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    		player->SEND_GOSSIP_MENU(9505, pCreature->GetGUID());
-    
-    	if (player->GetQuestStatus(10041) == QUEST_STATUS_INCOMPLETE)
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_ADVISOR, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    		player->SEND_GOSSIP_MENU(9505, pCreature->GetGUID());
-    
-    	return true;
-    }
-    
-
-    bool GossipSelect_npc_shadowy_advisor(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-    	if (action == GOSSIP_ACTION_INFO_DEF + 1)
-    	{
-    		if (Creature* advisor = pCreature->FindNearestCreature(18719, 5, true))
-    		{
-    			player->KilledMonsterCredit(18719, advisor->GetGUID());
-    		}
-    
-    		player->SEND_GOSSIP_MENU(9506, pCreature->GetGUID());
-    	}
-    
-    	return true;
-    }
-    
-
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
     	if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -2514,38 +2437,7 @@ public:
     	player->SEND_GOSSIP_MENU(9502, pCreature->GetGUID());
     
     	return true;
-    }
-    
-
-    bool GossipHello_npc_shadowy_initiate(Player* player, Creature* pCreature)
-    {
-    	if (player->GetQuestStatus(10040) == QUEST_STATUS_INCOMPLETE)
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_INITIATE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    	player->SEND_GOSSIP_MENU(9502, pCreature->GetGUID());
-    
-    	if (player->GetQuestStatus(10041) == QUEST_STATUS_INCOMPLETE)
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_INITIATE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    	player->SEND_GOSSIP_MENU(9502, pCreature->GetGUID());
-    
-    	return true;
-    }
-    
-
-    bool GossipSelect_npc_shadowy_initiate(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-    	if (action == GOSSIP_ACTION_INFO_DEF + 1)
-    	{
-    		if (Creature* initiate = pCreature->FindNearestCreature(18716, 5, true))
-    		{
-    			player->KilledMonsterCredit(18716, initiate->GetGUID());
-    		}
-    
-    		player->SEND_GOSSIP_MENU(9503, pCreature->GetGUID());
-    	}
-    
-    	return true;
-    }
-    
+    }   
 
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
@@ -2659,40 +2551,6 @@ public:
     
     	return true;
     }
-    
-
-    bool GossipHello_npc_empoor(Player* player, Creature* pCreature)
-    {
-    	if (pCreature->IsQuestGiver())
-    		player->PrepareQuestMenu(pCreature->GetGUID());
-    
-    	if (player->GetQuestStatus(9978) == QUEST_STATUS_COMPLETE)
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_EMPOOR, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    	player->SEND_GOSSIP_MENU(9405, pCreature->GetGUID());
-    
-    	return true;
-    }
-    
-
-    bool GossipSelect_npc_empoor(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-    	if (action == GOSSIP_ACTION_INFO_DEF + 1)
-    	{
-    		player->CLOSE_GOSSIP_MENU();
-    		DoScriptText(SAY_MEANING, pCreature, player);
-    		pCreature->SetFaction(14);
-    
-    		((npc_empoorAI*)pCreature->AI())->AttackStart(player);
-    
-    		if (Creature* guard = pCreature->FindNearestCreature(18483, 15, true))
-    		{
-    			guard->SetFaction(14);
-    		}
-    	}
-    
-    	return true;
-    }
-    
 
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {

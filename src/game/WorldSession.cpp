@@ -456,6 +456,9 @@ void WorldSession::LogoutPlayer(bool Save)
         ///- used by eluna
         sEluna->OnLogout(_player);
 
+		//! Call script hook before deletion
+		sScriptMgr.OnPlayerLogout(_player);
+
         // Remove the player from the world
         // the player may not be in the world when logging out
         // e.g if he got disconnected during a transfer to another map

@@ -37,6 +37,7 @@
 #include "BattlegroundMgr.h"
 #include "CreatureGroups.h"
 #include "Database/DatabaseEnv.h"
+#include "ScriptMgr.h"
 
 #ifdef _WIN32
 #include "ServiceWin32.h"
@@ -155,6 +156,8 @@ int Master::Run(bool runTests)
         // Launch CliRunnable thread
         cliThread = new ACE_Based::Thread(new Console::CliRunnable);
     }
+
+	sScriptMgr.OnStartup();
 
     ACE_Based::Thread rar_thread(new RARunnable);
 

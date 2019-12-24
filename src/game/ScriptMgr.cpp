@@ -365,6 +365,11 @@ void ScriptMgr::OnMotdChange(std::string& newMotd)
     FOREACH_SCRIPT(WorldScript)->OnMotdChange(newMotd);
 }
 
+void ScriptMgr::OnStartup()
+{
+	FOREACH_SCRIPT(WorldScript)->OnStartup();
+}
+
 void ScriptMgr::OnShutdown(ShutdownExitCode code, ShutdownMask mask)
 {
     FOREACH_SCRIPT(WorldScript)->OnShutdown(code, mask);

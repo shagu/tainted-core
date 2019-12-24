@@ -43,7 +43,7 @@ EndContentData */
 class npc_royal_historian_archesonus : public CreatureScript
 {
 public:
-    npc_royal_historian_archesonus() : CreatureScript("script_name") { }
+    npc_royal_historian_archesonus() : CreatureScript("npc_royal_historian_archesonus") { }
 
 
     struct npc_royal_historian_archesonusAI : public ScriptedAI

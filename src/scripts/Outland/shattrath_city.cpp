@@ -291,31 +291,6 @@ public:
         return true;
     }
     
-
-    bool GossipHello_npc_raliq_the_drunk(Player* player, Creature* pCreature)
-    {
-        if (player->GetQuestStatus(10009) == QUEST_STATUS_INCOMPLETE)
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_RALIQ, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    
-        player->SEND_GOSSIP_MENU(9440, pCreature->GetGUID());
-    
-        return true;
-    }
-    
-
-    bool GossipSelect_npc_raliq_the_drunk(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-        if (action == GOSSIP_ACTION_INFO_DEF + 1)
-        {
-            player->CLOSE_GOSSIP_MENU();
-    		DoScriptText(SAY_NOWAY, pCreature);
-            pCreature->SetFaction(45);
-            ((npc_raliq_the_drunkAI*)pCreature->AI())->AttackStart(player);
-        }
-        return true;
-    }
-    
-
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         if (action == GOSSIP_ACTION_INFO_DEF + 1)
@@ -461,34 +436,6 @@ public:
     	return true;
     }
     
-
-    bool GossipHello_npc_salsalabim(Player* player, Creature* pCreature)
-    {
-    	if (pCreature->IsQuestGiver())
-    		player->PrepareQuestMenu(pCreature->GetGUID());
-    
-    	if (player->GetQuestStatus(QUEST_10004) == QUEST_STATUS_INCOMPLETE)	
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_SALADIM, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    	
-    		player->SEND_GOSSIP_MENU(9435, pCreature->GetGUID());
-    	
-    	return true;
-    }
-    
-
-    bool GossipSelect_npc_salsalabim(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-    	if (action == GOSSIP_ACTION_INFO_DEF + 1)
-    	{
-    		player->CLOSE_GOSSIP_MENU();
-    		DoScriptText(SAY_DEMONIC, pCreature);
-    		pCreature->SetFaction(FACTION_HOSTILE_SA);
-    		((npc_salsalabimAI*)pCreature->AI())->AttackStart(player);
-    	}
-    	return true;
-    }
-    
-
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
     	if (action == GOSSIP_ACTION_INFO_DEF + 1)

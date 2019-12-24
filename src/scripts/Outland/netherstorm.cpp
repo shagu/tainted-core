@@ -1310,19 +1310,6 @@ public:
     
         return true;
     }
-    
-
-    bool GossipSelect_npc_professor_dabiri(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-        if (action == GOSSIP_ACTION_INFO_DEF + 1)
-        {
-            pCreature->CastSpell(player, SPELL_PHASE_DISTRUPTOR, false);
-            player->CLOSE_GOSSIP_MENU();
-        }
-    
-        return true;
-    }
-    
 
     bool OnQuestAccept(Player* player, Creature* creature, Quest const* quest) override
     {
@@ -3441,34 +3428,6 @@ public:
     
     	return true;
     }
-    
-
-    bool GossipHello_adyen_lightwarden(Player* player, Creature* creature)
-    {
-    	if (creature->IsQuestGiver())
-    		player->PrepareQuestMenu(creature->GetGUID());
-    
-    	if (player->GetQuestStatus(QUEST_DEATHBLOW_TO_THE_LEGION) == QUEST_STATUS_INCOMPLETE)
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_ALDOR_EVENT_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    	player->SEND_GOSSIP_MENU(23022, creature->GetGUID());
-    
-    	return true;
-    }
-    
-
-    bool GossipSelect_adyen_lightwarden(Player* player, Creature* creature, uint32 sender, uint32 action)
-    {
-    	switch (action)
-    	{
-    	case GOSSIP_ACTION_INFO_DEF + 1:
-    		CAST_AI(adyen_lightwardenAI, creature->AI())->EventStart = true;
-    		CAST_AI(adyen_lightwardenAI, creature->AI())->EventStarted1 = false;
-    		CAST_AI(adyen_lightwardenAI, creature->AI())->PlayerGUID = player->GetGUID();
-    		break;
-    	}
-    	return true;
-    }
-    
 
     bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
@@ -4039,36 +3998,7 @@ public:
     	player->SEND_GOSSIP_MENU(9971, creature->GetGUID());
     
     	return true;
-    }
-    
-
-    bool GossipHello_npc_windtrader_marid(Player* player, Creature* creature)
-    {
-    	if (creature->IsQuestGiver())
-    		player->PrepareQuestMenu(creature->GetGUID());
-    
-    	if (player->GetQuestStatus(QUEST_TROUBLESOME_DISTRACTIONS) == QUEST_STATUS_INCOMPLETE)
-    		player->ADD_GOSSIP_ITEM(0, GOSSIP_ITEM_MARID_EVENT_START, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    	player->SEND_GOSSIP_MENU(9971, creature->GetGUID());
-    
-    	return true;
-    }
-    
-
-    bool GossipSelect_npc_windtrader_marid(Player* player, Creature* creature, uint32 sender, uint32 action)
-    {
-    	switch (action)
-    	{
-    	case GOSSIP_ACTION_INFO_DEF + 1:
-    		DoScriptText(MARID_START_SAY, creature, player);
-    		CAST_AI(npc_windtrader_maridAI, creature->AI())->MaridEventStart = true;
-    		CAST_AI(npc_windtrader_maridAI, creature->AI())->PlayerGUID = player->GetGUID();
-    		player->CLOSE_GOSSIP_MENU();
-    		break;
-    	}
-    	return true;
-    }
-    
+    }  
 
     bool OnGossipSelect(Player* player, Creature* creature, uint32 sender, uint32 action) override
     {
