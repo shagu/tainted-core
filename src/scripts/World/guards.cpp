@@ -4185,52 +4185,6 @@ public:
         return true;
     }
     
-
-    bool GossipHello_guard_silvermoon(Player* player, Creature* pCreature)
-    {
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_AUCTIONHOUSE   , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BANK           , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_GUILDMASTER    , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_INN            , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_MAILBOX        , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_STABLEMASTER   , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_WEAPONMASTER   , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 7);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_WINDRIDER      , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 8);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_BATTLEMASTER   , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 9);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_CLASSTRAINER   , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 10);
-        player->ADD_GOSSIP_ITEM(0, GOSSIP_TEXT_PROFTRAINER    , GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 11);
-        player->SEND_GOSSIP_MENU(9316, pCreature->GetGUID());
-        return true;
-    }
-    
-
-    bool GossipSelect_guard_silvermoon(Player* player, Creature* pCreature, uint32 sender, uint32 action)
-    {
-        switch (sender)
-        {
-        case GOSSIP_SENDER_MAIN:
-            SendDefaultMenu_guard_silvermoon(player, pCreature, action);
-            break;
-        case GOSSIP_SENDER_SEC_AUCTIONHOUSE:
-            SendAuctionhouseMenu_guard_silvermoon(player, pCreature, action);
-            break;
-        case GOSSIP_SENDER_SEC_INN:
-            SendInnMenu_guard_silvermoon(player, pCreature, action);
-            break;
-        case GOSSIP_SENDER_SEC_CLASSTRAIN:
-            SendClassTrainerMenu_guard_silvermoon(player, pCreature, action);
-            break;
-        case GOSSIP_SENDER_SEC_PROFTRAIN:
-            SendProfTrainerMenu_guard_silvermoon(player, pCreature, action);
-            break;
-        case GOSSIP_SENDER_SEC_BATTLEINFO:
-            SendBattleMasterMenu_guard_silvermoon(player, pCreature, action);
-            break;
-        }
-        return true;
-    }
-    
-
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 sender, uint32 action) override
     {
         switch (sender)

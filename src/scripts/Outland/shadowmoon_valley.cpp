@@ -1453,66 +1453,6 @@ public:
         return true;
     }
     
-
-    bool GossipHello_npc_oronok_tornheart(Player* player, Creature* pCreature)
-    {
-        if (pCreature->IsQuestGiver())
-            player->PrepareQuestMenu(pCreature->GetGUID());
-        if (pCreature->IsVendor())
-            player->ADD_GOSSIP_ITEM(1, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
-    
-        if (player->GetQuestStatus(10519) == QUEST_STATUS_INCOMPLETE)
-        {
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
-            player->SEND_GOSSIP_MENU(10312, pCreature->GetGUID());
-        }
-        else
-            player->SEND_GOSSIP_MENU(player->GetGossipTextId(pCreature), pCreature->GetGUID());
-    
-        return true;
-    }
-    
-
-    bool GossipSelect_npc_oronok_tornheart(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-        switch (action)
-        {
-        case GOSSIP_ACTION_TRADE:
-            player->SEND_VENDORLIST(pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-            player->SEND_GOSSIP_MENU(10313, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF+1:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-            player->SEND_GOSSIP_MENU(10314, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF+2:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK4, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-            player->SEND_GOSSIP_MENU(10315, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF+3:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK5, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 4);
-            player->SEND_GOSSIP_MENU(10316, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF+4:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK6, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 5);
-            player->SEND_GOSSIP_MENU(10317, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF+5:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_ORONOK7, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 6);
-            player->SEND_GOSSIP_MENU(10318, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF+6:
-            player->CLOSE_GOSSIP_MENU();
-            player->AreaExploredOrEventHappens(10519);
-            break;
-        }
-        return true;
-    }
-    
-
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)
@@ -4624,34 +4564,6 @@ public:
     	return true;
     }
     
-
-    bool GossipHello_npc_oronok(Player* player, Creature* _Creature)
-    {
-    	if (_Creature->FindNearestCreature(NPC_GULDAN, 9.0f, true))
-    	{
-    		if (player->GetQuestStatus(QUEST_CIPHER_OF_DAMNATION) == QUEST_STATUS_INCOMPLETE)
-    			player->ADD_GOSSIP_ITEM(0, GOSSIP_OSE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    
-    		player->SEND_GOSSIP_MENU(10421, _Creature->GetGUID());
-    	}
-    	return true;
-    }
-    
-
-    bool GossipSelect_npc_oronok(Player* player, Creature* _Creature, uint32 sender, uint32 action)
-    {
-    	switch (action)
-    	{
-    	case GOSSIP_ACTION_INFO_DEF + 1:
-    		_Creature->MonsterYell(ORONOK_3, LANG_UNIVERSAL, 0);
-    		CAST_AI(npc_oronokAI, _Creature->AI())->EventResume = true;
-    		player->CLOSE_GOSSIP_MENU();
-    		break;
-    	}
-    	return true;
-    }
-    
-
     bool OnGossipSelect(Player* player, Creature* _Creature, uint32 sender, uint32 action) override
     {
     	switch (action)

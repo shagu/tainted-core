@@ -641,42 +641,6 @@ public:
     }
     
 
-    bool GossipHello_mob_lump(Player* player, Creature* pCreature)
-    {
-        if (player->GetQuestStatus(9918) == QUEST_STATUS_INCOMPLETE)
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_HL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
-    
-        player->SEND_GOSSIP_MENU(9352, pCreature->GetGUID());
-    
-        return true;
-    }
-    
-
-    bool GossipSelect_mob_lump(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-        switch (action)
-        {
-        case GOSSIP_ACTION_INFO_DEF:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_SL1, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-            player->SEND_GOSSIP_MENU(9353, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF+1:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_SL2, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 2);
-            player->SEND_GOSSIP_MENU(9354, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF+2:
-            player->ADD_GOSSIP_ITEM(0, GOSSIP_SL3, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 3);
-            player->SEND_GOSSIP_MENU(9355, pCreature->GetGUID());
-            break;
-        case GOSSIP_ACTION_INFO_DEF+3:
-            player->SEND_GOSSIP_MENU(9356, pCreature->GetGUID());
-            player->TalkedToCreature(18354, pCreature->GetGUID());
-            break;
-        }
-        return true;
-    }
-    
-
     bool OnGossipSelect(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action) override
     {
         switch (action)

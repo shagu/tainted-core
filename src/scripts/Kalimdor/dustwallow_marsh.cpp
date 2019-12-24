@@ -361,49 +361,6 @@ public:
         return true;
     }
 
-
-    bool GossipHello_npc_deserter_agitator(Player* pPlayer, Creature* pCreature)
-    {
-        if (pPlayer->GetQuestStatus(QUEST_TRAITORS_AMONG_US) == QUEST_STATUS_INCOMPLETE)
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_DESERTER, GOSSIP_SENDER_MAIN, GOSSIP_SENDER_INFO);
-
-        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-
-        return true;
-    }
-
-
-    bool GossipSelect_npc_deserter_agitator(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-    {
-        pPlayer->PlayerTalkClass->ClearMenus();
-
-        if (uiAction == GOSSIP_SENDER_INFO)
-        {
-            pPlayer->CLOSE_GOSSIP_MENU();
-            switch (urand(0, 1))
-            {
-            case 0:
-                pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                pCreature->SetFaction(14);
-                pCreature->AI()->AttackStart(pPlayer);
-                pCreature->MonsterSay(SAY_1, LANG_COMMON, 0);
-                break;
-            case 1:
-                pPlayer->KilledMonsterCredit(NPC_THERAMORE_DESERTER, 0);
-                pCreature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
-                pCreature->SetSpeed(MOVE_RUN, pCreature->GetSpeedRate(MOVE_RUN), true);
-                pCreature->SetFaction(35);
-                pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC | UNIT_FLAG_NON_ATTACKABLE);
-                pCreature->SetReactState(REACT_PASSIVE);
-                pCreature->GetMotionMaster()->MovePoint(1, DeserterDisappearPos);
-                break;
-            }
-        }
-
-        return true;
-    }
-
-
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         pPlayer->PlayerTalkClass->ClearMenus();
@@ -693,18 +650,6 @@ public:
         }
         return true;
     }
-
-
-    bool GossipSelect_npc_lady_jaina_proudmoore(Player* player, Creature* pCreature, uint32 /*sender*/, uint32 action)
-    {
-        if (action == GOSSIP_SENDER_INFO)
-        {
-            player->SEND_GOSSIP_MENU(7012, pCreature->GetGUID());
-            player->CastSpell(player, 23122, false);
-        }
-        return true;
-    }
-
 
     bool OnQuestComplete(Player *player, Creature *pCreature, const Quest *_Quest) override
     {

@@ -108,34 +108,6 @@ public:
     
         return true;
     }
-    
-
-    bool GossipHello_npc_blood_knight_dawnstar(Player* pPlayer, Creature* pCreature)
-    {
-        if (pPlayer->GetQuestStatus(9692) == QUEST_STATUS_INCOMPLETE && !pPlayer->HasItemCount(24226, 1, true))
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_H_BKD, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-    
-        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-    
-        return true;
-    }
-    
-
-    bool GossipSelect_npc_blood_knight_dawnstar(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction)
-    {
-        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-        {
-            ItemPosCountVec dest;
-            uint8 msg = pPlayer->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 24226, 1, NULL);
-            if (msg == EQUIP_ERR_OK)
-            {
-                pPlayer->StoreNewItem(dest, 24226, 1, true);
-                pPlayer->PlayerTalkClass->ClearMenus();
-            }
-        }
-        return true;
-    }
-    
 
     bool OnGossipSelect(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction) override
     {
@@ -178,31 +150,6 @@ public:
         return true;
     }
     
-
-    bool GossipHello_npc_budd_nedreck(Player* pPlayer, Creature* pCreature)
-    {
-        if (pCreature->IsQuestGiver())
-            pPlayer->PrepareQuestMenu(pCreature->GetGUID());
-    
-        if (pPlayer->GetQuestStatus(11166) == QUEST_STATUS_INCOMPLETE)
-            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_HBN, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF);
-    
-        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-        return true;
-    }
-    
-
-    bool GossipSelect_npc_budd_nedreck(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction)
-    {
-        if (uiAction == GOSSIP_ACTION_INFO_DEF)
-        {
-            pPlayer->CLOSE_GOSSIP_MENU();
-            pCreature->CastSpell(pPlayer, 42540, false);
-        }
-        return true;
-    }
-    
-
     bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
     {
         if (uiAction == GOSSIP_ACTION_INFO_DEF)

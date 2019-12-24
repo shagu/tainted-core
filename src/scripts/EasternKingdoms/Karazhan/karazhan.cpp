@@ -592,31 +592,6 @@ public:
         pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
         return true;
     }
-    
-
-    bool GossipHello_npc_berthold(Player* pPlayer, Creature* pCreature)
-    {
-        if (ScriptedInstance* pInstance = (ScriptedInstance*)pCreature->GetInstanceData())
-        {
-            // Check if Shade of Aran event is done
-            if (pInstance->GetData(TYPE_ARAN) == DONE)
-                pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TELEPORT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-        }
-    
-        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
-        return true;
-    }
-    
-
-    bool GossipSelect_npc_berthold(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction)
-    {
-        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-            pPlayer->CastSpell(pPlayer, SPELL_TELEPORT, true);
-    
-        pPlayer->CLOSE_GOSSIP_MENU();
-        return true;
-    }
-    
 
     bool OnGossipSelect(Player* pPlayer, Creature* /*pCreature*/, uint32 /*uiSender*/, uint32 uiAction) override
     {
