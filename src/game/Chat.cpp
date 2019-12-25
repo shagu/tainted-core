@@ -743,8 +743,7 @@ ChatCommand* ChatHandler::getCommandTable()
                         }
                     }
                 }
-            }
-            while (result->NextRow());
+            } while (result->NextRow());
         }
     }
 
@@ -849,7 +848,7 @@ void ChatHandler::PSendSysMessage(int32 entry, ...)
 {
     const char* format = GetOregonString(entry);
     va_list ap;
-    char str [1024];
+    char str[1024];
     va_start(ap, entry);
     vsnprintf(str, 1024, format, ap);
     va_end(ap);
@@ -859,7 +858,7 @@ void ChatHandler::PSendSysMessage(int32 entry, ...)
 void ChatHandler::PSendSysMessage(const char* format, ...)
 {
     va_list ap;
-    char str [1024];
+    char str[1024];
     va_start(ap, format);
     vsnprintf(str, 1024, format, ap);
     va_end(ap);
@@ -928,8 +927,8 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, co
                     Player* p = m_session->GetPlayer();
                     ObjectGuid sel_guid = p->GetSelection();
                     sLog.outCommand(m_session->GetAccountId(), "Command: %s [Player: %s (Account: %u) X: %f Y: %f Z: %f Map: %u Selected: %s]",
-                                    fullcmd.c_str(), p->GetName(), m_session->GetAccountId(), p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), p->GetMapId(),
-                                    sel_guid.GetString().c_str());
+                        fullcmd.c_str(), p->GetName(), m_session->GetAccountId(), p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), p->GetMapId(),
+                        sel_guid.GetString().c_str());
                 }
             }
         }
@@ -954,9 +953,6 @@ int ChatHandler::ParseCommands(const char* text)
     ASSERT(*text);
 
     std::string fullcmd = text;
-
-    if (m_session && m_session->GetSecurity() <= SEC_PLAYER)
-        return 0;
 
     // chat case (.command or !command format)
     if (m_session)
@@ -988,6 +984,11 @@ int ChatHandler::ParseCommands(const char* text)
 
         SendSysMessage(LANG_NO_CMD);
         std::vector<ChatCommand*> table = sScriptMgr.GetChatCommands();
+
+        if (m_session && m_session->GetSecurity() == SEC_PLAYER)
+            return 0;
+        SendSysMessage(LANG_NO_CMD);
+
         if (!ExecuteCommandInTables(table, text, fullcmd))
         {
             if (m_session && m_session->GetSecurity() == SEC_PLAYER)
@@ -1075,18 +1076,18 @@ bool ChatHandler::isValidChatMessage(const char* message)
         }
         else if (reader.get() != '|')
         {
-            #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
             sLog.outBasic("ChatHandler::isValidChatMessage sequence aborted unexpectedly");
-            #endif
+#endif
             return false;
         }
 
         // pipe has always to be followed by at least one char
         if (reader.peek() == '\0')
         {
-            #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
             sLog.outBasic("ChatHandler::isValidChatMessage pipe followed by \\0");
-            #endif
+#endif
             return false;
         }
 
@@ -1109,18 +1110,18 @@ bool ChatHandler::isValidChatMessage(const char* message)
             }
             else
             {
-                #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                 sLog.outBasic("ChatHandler::isValidChatMessage invalid sequence, expected %c but got %c", *validSequenceIterator, commandChar);
-                #endif
+#endif
                 return false;
             }
-        }
+            }
         else if (validSequence != validSequenceIterator)
         {
             // no escaped pipes in sequences
-            #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
             sLog.outBasic("ChatHandler::isValidChatMessage got escaped pipe in sequence");
-            #endif
+#endif
             return false;
         }
 
@@ -1135,9 +1136,9 @@ bool ChatHandler::isValidChatMessage(const char* message)
                 reader >> c;
                 if (!c)
                 {
-                    #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                     sLog.outBasic("ChatHandler::isValidChatMessage got \\0 while reading color in |c command");
-                    #endif
+#endif
                     return false;
                 }
 
@@ -1153,11 +1154,11 @@ bool ChatHandler::isValidChatMessage(const char* message)
                     color |= 10 + c - 'a';
                     continue;
                 }
-                #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                 sLog.outBasic("ChatHandler::isValidChatMessage got non hex char '%c' while reading color", c);
-                #endif
+#endif
                 return false;
-            }
+                }
             break;
         case 'H':
             // read chars up to colon  = link type
@@ -1171,18 +1172,18 @@ bool ChatHandler::isValidChatMessage(const char* message)
                 linkedItem = sObjectMgr.GetItemTemplate(atoi(buffer));
                 if (!linkedItem)
                 {
-                    #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                     sLog.outBasic("ChatHandler::isValidChatMessage got invalid itemID %u in |item command", atoi(buffer));
-                    #endif
+#endif
                     return false;
                 }
 
                 if (color != ItemQualityColors[linkedItem->Quality])
                 {
-                    #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                     sLog.outBasic("ChatHandler::isValidChatMessage linked item has color %u, but user claims %u", ItemQualityColors[linkedItem->Quality],
-                                  color);
-                    #endif
+                        color);
+#endif
                     return false;
                 }
 
@@ -1194,7 +1195,7 @@ bool ChatHandler::isValidChatMessage(const char* message)
                     reader.ignore(1);
                     c = reader.peek();
                 }
-            }
+                }
             else if (strcmp(buffer, "quest") == 0)
             {
                 // no color check for questlinks, each client will adapt it anyway
@@ -1213,9 +1214,9 @@ bool ChatHandler::isValidChatMessage(const char* message)
 
                 if (!linkedQuest)
                 {
-                    #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                     sLog.outBasic("ChatHandler::isValidChatMessage Questtemplate %u not found", questid);
-                    #endif
+#endif
                     return false;
                 }
                 c = reader.peek();
@@ -1225,7 +1226,7 @@ bool ChatHandler::isValidChatMessage(const char* message)
                     reader.ignore(1);
                     c = reader.peek();
                 }
-            }
+                }
             else if (strcmp(buffer, "talent") == 0)
             {
                 // talent links are always supposed to be blue
@@ -1290,9 +1291,9 @@ bool ChatHandler::isValidChatMessage(const char* message)
             }
             else
             {
-                #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                 sLog.outBasic("ChatHandler::isValidChatMessage user sent unsupported link type '%s'", buffer);
-                #endif
+#endif
                 return false;
             }
             break;
@@ -1303,9 +1304,9 @@ bool ChatHandler::isValidChatMessage(const char* message)
                 // links start with '['
                 if (reader.get() != '[')
                 {
-                    #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                     sLog.outBasic("ChatHandler::isValidChatMessage link caption doesn't start with '['");
-                    #endif
+#endif
                     return false;
                 }
                 reader.getline(buffer, 256, ']');
@@ -1364,9 +1365,9 @@ bool ChatHandler::isValidChatMessage(const char* message)
 
                         if (!ql)
                         {
-                            #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                             sLog.outBasic("ChatHandler::isValidChatMessage default questname didn't match and there is no locale");
-                            #endif
+#endif
                             return false;
                         }
 
@@ -1381,13 +1382,13 @@ bool ChatHandler::isValidChatMessage(const char* message)
                         }
                         if (!foundName)
                         {
-                            #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                             sLog.outBasic("ChatHandler::isValidChatMessage no quest locale title matched");
-                            #endif
+#endif
                             return false;
                         }
-                    }
                 }
+            }
                 else if (linkedItem)
                 {
                     if (strcmp(linkedItem->Name1, buffer) != 0)
@@ -1396,9 +1397,9 @@ bool ChatHandler::isValidChatMessage(const char* message)
 
                         if (!il)
                         {
-                            #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                             sLog.outBasic("ChatHandler::isValidChatMessage linked item name doesn't is wrong and there is no localization");
-                            #endif
+#endif
                             return false;
                         }
 
@@ -1413,13 +1414,13 @@ bool ChatHandler::isValidChatMessage(const char* message)
                         }
                         if (!foundName)
                         {
-                            #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
                             sLog.outBasic("ChatHandler::isValidChatMessage linked item name wasn't found in any localization");
-                            #endif
+#endif
                             return false;
                         }
-                    }
                 }
+            }
                 // that place should never be reached - if nothing linked has been set in |H
                 // it will return false before
                 else
@@ -1431,20 +1432,20 @@ bool ChatHandler::isValidChatMessage(const char* message)
             // no further payload
             break;
         default:
-            #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
             sLog.outBasic("ChatHandler::isValidChatMessage got invalid command |%c", commandChar);
-            #endif
+#endif
             return false;
         }
-    }
+        }
 
     // check if every opened sequence was also closed properly
-    #ifdef OREGON_DEBUG
+#ifdef OREGON_DEBUG
     if (validSequence != validSequenceIterator)
         sLog.outBasic("ChatHandler::isValidChatMessage EOF in active sequence");
-    #endif
+#endif
     return validSequence == validSequenceIterator;
-}
+        }
 
 bool ChatHandler::ShowHelpForSubCommands(ChatCommand* table, char const* cmd, char const* subcmd)
 {
@@ -1579,23 +1580,23 @@ void ChatHandler::FillMessageData(WorldPacket* data, WorldSession* session, uint
     case CHAT_MSG_MONSTER_EMOTE:
     case CHAT_MSG_RAID_BOSS_WHISPER:
     case CHAT_MSG_RAID_BOSS_EMOTE:
+    {
+        *data << uint64(speaker->GetGUID());
+        *data << uint32(0);                             // 2.1.0
+        *data << uint32(strlen(speaker->GetName()) + 1);
+        *data << speaker->GetName();
+        uint64 listener_guid = 0;
+        *data << uint64(listener_guid);
+        if (listener_guid && !IS_PLAYER_GUID(listener_guid))
         {
-            *data << uint64(speaker->GetGUID());
-            *data << uint32(0);                             // 2.1.0
-            *data << uint32(strlen(speaker->GetName()) + 1);
-            *data << speaker->GetName();
-            uint64 listener_guid = 0;
-            *data << uint64(listener_guid);
-            if (listener_guid && !IS_PLAYER_GUID(listener_guid))
-            {
-                *data << uint32(1);                         // string listener_name_length
-                *data << uint8(0);                          // string listener_name
-            }
-            *data << uint32(messageLength);
-            *data << message;
-            *data << uint8(0);
-            return;
+            *data << uint32(1);                         // string listener_name_length
+            *data << uint8(0);                          // string listener_name
         }
+        *data << uint32(messageLength);
+        *data << message;
+        *data << uint8(0);
+        return;
+    }
     default:
         if (type != CHAT_MSG_REPLY && type != CHAT_MSG_IGNORED && type != CHAT_MSG_DND && type != CHAT_MSG_AFK)
             target_guid = 0;                            // only for CHAT_MSG_WHISPER_INFORM used original value target_guid
@@ -1625,7 +1626,7 @@ Player* ChatHandler::getSelectedPlayer()
     if (!m_session)
         return NULL;
 
-    uint64 guid  = m_session->GetPlayer()->GetSelection();
+    uint64 guid = m_session->GetPlayer()->GetSelection();
 
     if (guid == 0)
         return m_session->GetPlayer();
@@ -1937,7 +1938,7 @@ bool CliHandler::needReportToTarget(Player* /*chr*/) const
 
 bool ChatHandler::GetPlayerGroupAndGUIDByName(const char* cname, Player*& plr, Group*& group, uint64& guid, bool offline)
 {
-    plr  = NULL;
+    plr = NULL;
     guid = 0;
 
     if (cname)
@@ -1972,7 +1973,7 @@ bool ChatHandler::GetPlayerGroupAndGUIDByName(const char* cname, Player*& plr, G
             plr = m_session->GetPlayer();
 
         if (!guid || !offline)
-            guid  = plr->GetGUID();
+            guid = plr->GetGUID();
         group = plr->GetGroup();
     }
 
