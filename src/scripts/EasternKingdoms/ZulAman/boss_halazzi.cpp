@@ -375,6 +375,11 @@ public:
             DoPlaySoundToSet(me, SOUND_DEATH);
         }
     };
+
+    CreatureAI* GetAI(Creature* pCreature) const
+    {
+        return new boss_halazziAI(pCreature);
+    }
 };
 
 class mob_halazzi_lynx : public CreatureScript
