@@ -1107,7 +1107,7 @@ void World::LoadConfigSettings(bool reload)
         // call ScriptMgr if we're reloading the configuration
         sScriptMgr.OnConfigLoad(reload);
     }
-    #endif
+
     // module
     m_ModSQLUpdatesPath = sConfig.GetStringDefault("DatabaseUpdater.ModPathToUpdates", "");
     if (!m_ModSQLUpdatesPath.size() || (*m_ModSQLUpdatesPath.rbegin() != '\\' && *m_ModSQLUpdatesPath.rbegin() != '/'))
