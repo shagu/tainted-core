@@ -9,6 +9,10 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 # Enable precompiled headers when using the GCC compiler.
+CU_RUN_HOOK(BEFORE_SCRIPTS_LIBRARY)
+
+CU_SET_PATH("AC_SCRIPTS_DIR" "${CMAKE_CURRENT_LIST_DIR}")
+
 if( USE_SCRIPTPCH )
   include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
@@ -31,6 +35,7 @@ endif()
 
 set(scripts_STAT_SRCS
   ${scripts_STAT_SRCS}
+  ${BUILDDIR}/GenLoader.cpp
   ../game/ScriptedEscortAI.cpp
   ../game/ScriptedGuardAI.cpp
   ../game/ScriptedCreature.cpp
@@ -38,8 +43,15 @@ set(scripts_STAT_SRCS
   ../game/ScriptedSimpleAI.cpp
 )
 
+CU_SET_PATH("CMAKE_AC_MODULE_DIR" "${CMAKE_CURRENT_LIST_DIR}")
+
+CU_GET_GLOBAL("AC_ADD_SCRIPTS_LIST")
+CU_GET_GLOBAL("AC_ADD_SCRIPTS_INCLUDE")
+CU_GET_GLOBAL("AC_SCRIPTS_SOURCES")
+
 if(SCRIPTS)
   set(scripts_STAT_SRCS
+    ${AC_SCRIPTS_SOURCES}
     ${scripts_STAT_SRCS}
     ${scripts_custom}
     ${scripts_easternplaguelands}
@@ -49,6 +61,14 @@ if(SCRIPTS)
     ${scripts_world}
   )
 endif()
+
+set("AC_SCRIPTS_INCLUDES" "")
+
+FOREACH (include ${AC_ADD_SCRIPTS_INCLUDE})
+    set("AC_SCRIPTS_INCLUDES" "#include \"${include}\"\n${AC_SCRIPTS_INCLUDES}")
+ENDFOREACH()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/GenLoader.cpp.cmake ${BUILDDIR}/GenLoader.cpp)
 
 include_directories(
   ${CMAKE_BINARY_DIR}
