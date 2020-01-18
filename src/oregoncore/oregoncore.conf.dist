@@ -2100,10 +2100,19 @@ RAF.GrantableLevelsPerLevel = 0.5
 #        Example: (unix) "/home/oregon/oregoncore/sql/updates"
 #                 (win)  "C:\oregoncore\sql\updates"
 #
+#    DatabaseUpdater.ModPathToUpdates
+#        The path to modules, if not set modules sql updater won't work.
+#        The path may be absolute, or relative to directory core runs in.
+#        Directory must be like modules/mod_xxx/sql/reamld or characters or world
+#        Default: ""
+#        Example: (unix) "/home/oregon/oregoncore/modules"
+#                 (win)  "C:\oregoncore\modules"
+#
 ###############################################################################
 
 DatabaseUpdater.Enabled = 0
 DatabaseUpdater.PathToUpdates = ""
+DatabaseUpdater.ModPathToUpdates = ""
 
 ###################################################################################################################
 #  ELUNA SETTINGS
