@@ -1,1 +1,0 @@
-delete from `updates` where `update` = '2020_01_17_char_mod_test.sql';
