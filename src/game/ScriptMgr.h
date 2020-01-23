@@ -170,6 +170,8 @@ protected:
 
 public:
 
+	virtual void OnLoadCustomDatabaseTable() { }
+
     // Called when the open/closed state of the world changes.
     virtual void OnOpenStateChange(bool open) { }
 
@@ -702,6 +704,7 @@ public: /* ServerScript */
 
 public: /* WorldScript */
 
+	void OnLoadCustomDatabaseTable();
     void OnOpenStateChange(bool open);
     void OnConfigLoad(bool reload);
     void OnMotdChange(std::string& newMotd);

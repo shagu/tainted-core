@@ -348,6 +348,11 @@ void ScriptMgr::OnUnknownPacketReceive(WorldSocket* socket, WorldPacket& packet)
     FOREACH_SCRIPT(ServerScript)->OnUnknownPacketReceive(socket, packet);
 }
 
+void ScriptMgr::OnLoadCustomDatabaseTable()
+{
+	FOREACH_SCRIPT(WorldScript)->OnLoadCustomDatabaseTable();
+}
+
 void ScriptMgr::OnOpenStateChange(bool open)
 {
     FOREACH_SCRIPT(WorldScript)->OnOpenStateChange(open);
