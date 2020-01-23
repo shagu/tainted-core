@@ -1768,6 +1768,9 @@ void World::SetInitialWorldSettings()
     sConsole.SetLoadingLabel("Initializing Scripts...");
     sScriptMgr.ScriptsInit();
 
+	sConsole.SetLoadingLabel("Loading ScriptLoader Module WorldScripts...");
+	sScriptMgr.OnLoadCustomDatabaseTable();
+
     // Initialize game time and timers
     sLog.outDebug("DEBUG:: Initialize game time and timers");
     m_gameTime = time(NULL);

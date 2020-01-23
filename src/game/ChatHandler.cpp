@@ -34,6 +34,7 @@
 #include "SpellAuras.h"
 #include "CreatureAI.h"
 #include "Utilities/Util.h"
+#include "ScriptMgr.h"
 
 bool WorldSession::processChatmessageFurtherAfterSecurityChecks(std::string& msg, uint32 lang)
 {
@@ -112,6 +113,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 sLog.outDebug("Player %s send empty addon msg", GetPlayer()->GetName());
                 return;
             }
+
+			sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg);
 
             sLog.outChat("[ADDON] Player %s sends: %s",
                          GetPlayer()->GetName(), msg.c_str());
@@ -237,12 +240,15 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
     case CHAT_MSG_EMOTE:
     case CHAT_MSG_YELL:
         {
+        sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg);
+
             if (type == CHAT_MSG_SAY)
                 GetPlayer()->Say(msg, lang);
             else if (type == CHAT_MSG_EMOTE)
                 GetPlayer()->TextEmote(msg);
             else if (type == CHAT_MSG_YELL)
                 GetPlayer()->Yell(msg, lang);
+
         }
         break;
 
@@ -257,6 +263,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             Player* player = sObjectMgr.GetPlayer(to.c_str(), true);
             uint32 tSecurity = GetSecurity();
             uint32 pSecurity = player ? player->GetSession()->GetSecurity() : uint32(SEC_PLAYER);
+
             if (!player || (lang != LANG_ADDON && tSecurity == SEC_PLAYER && pSecurity > SEC_PLAYER && !player->isAcceptWhispers()))
             {
                 SendPlayerNotFoundNotice(to);
@@ -280,6 +287,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 return;
             }
 
+            sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg, player);
+
             GetPlayer()->Whisper(msg, lang, player);
         }
         break;
@@ -295,6 +304,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                     return;
             }
 
+            sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg, group);
+
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, type, lang, NULL, 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false, group->GetMemberGroup(GetPlayer()->GetGUID()));
@@ -309,6 +320,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (GetPlayer()->GetGuildId())
             {
                 Guild* guild = sObjectMgr.GetGuildById(GetPlayer()->GetGuildId());
+
+                sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg, guild);
+
                 if (guild)
                     guild->BroadcastToGuild(this, msg, lang == LANG_ADDON ? LANG_ADDON : LANG_UNIVERSAL);
 
@@ -330,6 +344,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (GetPlayer()->GetGuildId())
             {
                 Guild* guild = sObjectMgr.GetGuildById(GetPlayer()->GetGuildId());
+
+                sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg, guild);
+
                 if (guild)
                     guild->BroadcastToOfficers(this, msg, lang == LANG_ADDON ? LANG_ADDON : LANG_UNIVERSAL);
 
@@ -347,6 +364,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if ((!group && !(group = GetPlayer()->GetGroup())) || group->isBGGroup() || !group->isRaidGroup())
                 return;
 
+            sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg, group);
+
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_RAID, lang, "", 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false);
@@ -360,8 +379,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
         {
             // if player is in battleground, he cannot say to battleground members by /ra
             Group* group = GetPlayer()->GetOriginalGroup();
+
             if ((!group && !(group = GetPlayer()->GetGroup())) || group->isBGGroup() || !group->isRaidGroup() || !group->IsLeader(GetPlayer()->GetGUID()))
                 return;
+
+            sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg, group);
 
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_RAID_LEADER, lang, "", 0, msg.c_str(), NULL);
@@ -377,6 +399,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             Group* group = GetPlayer()->GetGroup();
             if (!group || !group->isRaidGroup() || !(group->IsLeader(GetPlayer()->GetGUID()) || group->IsAssistant(GetPlayer()->GetGUID())) || group->isBGGroup())
                 return;
+
+            sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg, group);
 
             WorldPacket data;
             // in battleground, raid warning is sent only to players in battleground - code is ok
@@ -396,6 +420,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (!group || !group->isBGGroup())
                 return;
 
+            sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg, group);
+
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_BATTLEGROUND, lang, "", 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false);
@@ -413,6 +439,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             if (!group || !group->isBGGroup() || !group->IsLeader(GetPlayer()->GetGUID()))
                 return;
 
+            sScriptMgr.OnPlayerChat(GetPlayer(), type, lang, msg, group);
+
             WorldPacket data;
             ChatHandler::FillMessageData(&data, this, CHAT_MSG_BATTLEGROUND_LEADER, lang, "", 0, msg.c_str(), NULL);
             group->BroadcastPacket(&data, false);
@@ -429,6 +457,8 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             {
                 if (Channel* chn = cMgr->GetChannel(channel, _player))
                 {
+                    sScriptMgr.OnPlayerChat(_player, type, lang, msg, chn);
+
                     chn->Say(_player->GetGUID(), msg.c_str(), lang);
 
                     if ((chn->HasFlag(CHANNEL_FLAG_TRADE) ||
