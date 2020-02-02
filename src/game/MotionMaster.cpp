@@ -237,7 +237,7 @@ void
 MotionMaster::MoveChase(Unit* target, float dist, float angle)
 {
     // ignore movement request if target not exist
-    if (!target || target == i_owner)
+    if (!target || target == i_owner || i_owner->IsRooted())
         return;
 
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
@@ -262,7 +262,7 @@ void
 MotionMaster::MoveFollow(Unit* target, float dist, float angle, MovementSlot slot)
 {
     // ignore movement request if target not exist
-    if (!target || target == i_owner)
+    if (!target || target == i_owner || i_owner->IsRooted())
         return;
 
     if (i_owner->GetTypeId() == TYPEID_PLAYER)
@@ -368,7 +368,7 @@ MotionMaster::MoveSeekAssistance(float x, float y, float z)
 void
 MotionMaster::MoveToTarget(uint32 CreatureEntry, uint32 dist, bool Alive)
 {
-    if (i_owner->GetTypeId() == TYPEID_PLAYER)
+    if (i_owner->GetTypeId() == TYPEID_PLAYER || i_owner->IsRooted())
         return;
 
     Creature* creature = i_owner->FindNearestCreature(CreatureEntry, dist, Alive);

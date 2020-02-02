@@ -373,7 +373,7 @@ public:
             ArcaneShock_Timer = 10000;
             ArcaneExplosion_Timer = 20000;
 
-            me->SetRooted(true);
+
             //reset encounter
             if (pInstance)
                 pInstance->SetData(DATA_MAULGAREVENT, NOT_STARTED);
@@ -735,8 +735,8 @@ public:
             GreaterFireball_Timer = 1000;
             SpellShield_Timer = 1500;
             BlastWave_Timer = 20000;
+            me->SetRooted(false);
 
-            me->SetRooted(true);
             //reset encounter
             if (pInstance)
                 pInstance->SetData(DATA_MAULGAREVENT, NOT_STARTED);
@@ -790,6 +790,11 @@ public:
 
             me->ApplySpellImmune(0, IMMUNITY_ID, 11719, true);
             me->ApplySpellImmune(0, IMMUNITY_ID, 1714, true);
+
+            if (me->IsWithinDist(me->GetVictim(), 20.0f) && me->GetPowerPct(POWER_MANA) > 5.0f)
+                me->SetRooted(true);
+            else
+                me->SetRooted(false);
 
             //SpellShield_Timer
             if (SpellShield_Timer <= diff)
