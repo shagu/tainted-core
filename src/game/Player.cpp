@@ -19762,6 +19762,9 @@ void Player::SummonIfPossible(bool agree)
     if (Battleground* bg = GetBattleground())
         bg->EventPlayerDroppedFlag(this);
 
+    // Remove Auras is we are getting fly aura upon summon
+    RemoveSpellsCausingAura(SPELL_AURA_FLY);
+
     m_summon_expire = 0;
 
     TeleportTo(m_summon_mapid, m_summon_x, m_summon_y, m_summon_z, GetOrientation());
