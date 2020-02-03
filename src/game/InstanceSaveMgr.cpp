@@ -420,8 +420,7 @@ void InstanceSaveManager::LoadResetTimes()
                 uint32 mapid = (*result)[1].GetUInt32();
                 InstResetTime[id] = std::pair<uint32, uint64>(mapid, resettime);
             }
-        }
-        while (result->NextRow());
+        } while (result->NextRow());
 
         // update reset time for normal instances with the max creature respawn time + X hours
         result = WorldDatabase.Query("SELECT MAX(respawntime), instance FROM creature_respawn WHERE instance > 0 GROUP BY instance");
@@ -429,7 +428,7 @@ void InstanceSaveManager::LoadResetTimes()
         {
             do
             {
-                Field* fields = result->Fetch();
+                Field *fields = result->Fetch();
                 uint32 instance = fields[1].GetUInt32();
                 uint64 resettime = fields[0].GetUInt64() + 2 * HOUR;
                 ResetTimeMapType::iterator itr = InstResetTime.find(instance);
@@ -438,8 +437,7 @@ void InstanceSaveManager::LoadResetTimes()
                     CharacterDatabase.DirectPExecute("UPDATE instance SET resettime = '" UI64FMTD "' WHERE id = '%u'", resettime, instance);
                     itr->second.second = resettime;
                 }
-            }
-            while (result->NextRow());
+            } while (result->NextRow());
         }
 
         // schedule the reset times
@@ -449,16 +447,16 @@ void InstanceSaveManager::LoadResetTimes()
     }
 
     // load the global respawn times for raid/heroic instances
-    uint32 diff = sWorld.getConfig(CONFIG_INSTANCE_RESET_TIME_HOUR) * HOUR;
+    uint32 diff = sWorld.getConfig(RATE_INSTANCE_RESET_TIME) * HOUR;
     m_resetTimeByMapId.resize(sMapStore.GetNumRows() + 1);
     result = CharacterDatabase.Query("SELECT mapid, resettime FROM instance_reset");
     if (result)
     {
         do
         {
-            Field* fields = result->Fetch();
+            Field *fields = result->Fetch();
             uint32 mapid = fields[0].GetUInt32();
-            if (!sObjectMgr.GetInstanceTemplate(mapid))
+            if (!ObjectMgr::GetInstanceTemplate(mapid))
             {
                 sLog.outError("InstanceSaveManager::LoadResetTimes: invalid mapid %u in instance_reset!", mapid);
                 CharacterDatabase.DirectPExecute("DELETE FROM instance_reset WHERE mapid = '%u'", mapid);
@@ -472,30 +470,27 @@ void InstanceSaveManager::LoadResetTimes()
                 CharacterDatabase.DirectPExecute("UPDATE instance_reset SET resettime = '" UI64FMTD "' WHERE mapid = '%u'", newresettime, mapid);
 
             m_resetTimeByMapId[mapid] = newresettime;
-        }
-        while (result->NextRow());
+        } while (result->NextRow());
     }
 
     // clean expired instances, references to them will be deleted in CleanupInstances
     // must be done before calculating new reset times
-    _DelHelper(CharacterDatabase, "id, map, difficulty", "instance", "LEFT JOIN instance_reset ON mapid = map WHERE (instance.resettime < '" UI64FMTD "' AND instance.resettime > '0') OR (NOT instance_reset.resettime IS NULL AND instance_reset.resettime < '" UI64FMTD "')",  (uint64)now, (uint64)now);
+    _DelHelper(CharacterDatabase, "id, map, difficulty", "instance", "LEFT JOIN instance_reset ON mapid = map WHERE (instance.resettime < '" UI64FMTD "' AND instance.resettime > '0') OR (NOT instance_reset.resettime IS NULL AND instance_reset.resettime < '" UI64FMTD "')", (uint64)now, (uint64)now);
 
     // calculate new global reset times for expired instances and those that have never been reset yet
     // add the global reset times to the priority queue
     for (uint32 i = 0; i < sInstanceTemplate.MaxEntry; i++)
     {
-        InstanceTemplate* temp = (InstanceTemplate*)sObjectMgr.GetInstanceTemplate(i);
+        InstanceTemplate const* temp = sObjectMgr.GetInstanceTemplate(i);
         if (!temp) continue;
         // only raid/heroic maps have a global reset time
         const MapEntry* entry = sMapStore.LookupEntry(temp->map);
         if (!entry || !entry->HasResetTime())
             continue;
 
-        // the reset_delay must be at least one day
-        uint32 period = uint32(((temp->reset_delay * sWorld.getRate(RATE_INSTANCE_RESET_TIME))/DAY) * DAY);
-        if (period < DAY)
-            period = DAY;
-
+        uint32 period = (temp->reset_delay * DAY);
+        
+        ASSERT(period != 0);
         time_t t = m_resetTimeByMapId[temp->map];
         if (!t)
         {
@@ -515,13 +510,12 @@ void InstanceSaveManager::LoadResetTimes()
 
         m_resetTimeByMapId[temp->map] = t;
 
-        // schedule the global reset/warning
         uint8 type;
         for (type = 1; type < 4; ++type)
-            if (t - ResetTimeDelay[type-1] > now)
+            if (t - ResetTimeDelay[type - 1] > now)
                 break;
 
-        ScheduleReset(true, t - ResetTimeDelay[type-1], InstResetEvent(type, i));
+        ScheduleReset(true, t - ResetTimeDelay[type - 1], InstResetEvent(type, i));
     }
 }
 
@@ -673,9 +667,7 @@ void InstanceSaveManager::_ResetOrWarnAll(uint32 mapid, bool warn, time_t resetT
         uint32 diff = sWorld.getConfig(CONFIG_INSTANCE_RESET_TIME_HOUR) * HOUR;
 
         // the reset_delay must be at least one day
-        uint32 period = uint32(((temp->reset_delay * sWorld.getRate(RATE_INSTANCE_RESET_TIME))/DAY) * DAY);
-        if (period < DAY)
-            period = DAY;
+        uint32 period = (temp->reset_delay * DAY);
 
         uint64 next_reset = ((resetTime + MINUTE) / DAY * DAY) + period + diff;
 
