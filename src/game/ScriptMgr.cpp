@@ -565,7 +565,7 @@ void ScriptMgr::OnGossipSelect(Player* player, Item* item, uint32 sender, uint32
     ASSERT(player);
     ASSERT(item);
 
-    GET_SCRIPT(ItemScript, item->GetProto()->ScriptId, tmpscript, false);
+    GET_SCRIPT(ItemScript, item->GetProto()->ScriptId, tmpscript);
     tmpscript->OnGossipSelect(player, item, sender, action);
 }
 
