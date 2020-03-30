@@ -2006,7 +2006,6 @@ ProtectedOpcodeProperties const& World::GetProtectedOpcodeProperties(uint32 opco
     return _protectedOpcodesProperties[opcode];
 }
 
-//sModuleMgr.GetBool(std::string conf, bool, default)
 bool World::GetModuleBoolConfig(std::string conf, bool value)
 {
     auto it = _moduleConfig.find(conf.c_str());
@@ -2025,6 +2024,7 @@ bool World::GetModuleBoolConfig(std::string conf, bool value)
 std::string World::GetModuleStringConfig(std::string conf)
 {
     auto it = _moduleConfig.find(conf.c_str());
+
     ModuleConfig Mod = it->second;
 
     return Mod.value.c_str();
