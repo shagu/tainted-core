@@ -598,7 +598,7 @@ protected:
 public:
 
     // Should return a pointer to a valid command table (ChatCommand array) to be used by ChatHandler.
-    virtual ChatCommand* OnGetCommands() = 0;
+    virtual ChatCommand* GetCommands() const = 0;
 };
 
 class WeatherScript : public ScriptObject, public UpdatableScript<Weather>
