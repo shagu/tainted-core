@@ -122,6 +122,9 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
             DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %u not found.", guid);
             return;
         }
+		// used by eluna
+		sEluna->HandleGossipSelectOption(GetPlayer(), item, GetPlayer()->PlayerTalkClass->GossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(gossipListId), code);
+		return;
     }
     else if (IS_PLAYER_GUID(guid))
     {
@@ -130,6 +133,9 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
             DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %u not found.", guid);
             return;
         }
+		// used by eluna
+		sEluna->HandleGossipSelectOption(GetPlayer(), menuId, GetPlayer()->PlayerTalkClass->GossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(gossipListId), code);
+		return;
     }
     else
     {
