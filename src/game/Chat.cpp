@@ -35,34 +35,15 @@
 #include "ScriptMgr.h"
 #include "LuaEngine.h"
 
-bool ChatHandler::load_command_table = true;
 
+ // wrapper for old-style handlers
 template<bool (ChatHandler::*F)(const char*)>
 bool OldHandler(ChatHandler* chatHandler, const char* args)
 {
     return (chatHandler->*F)(args);
 }
 
-// get number of commands in table
-static size_t getCommandTableSize(const ChatCommand* commands)
-{
-    if (!commands)
-        return 0;
-    size_t count = 0;
-    while (commands[count].Name != NULL)
-        count++;
-    return count;
-}
-
-// append source command table to target, return number of appended commands
-static size_t appendCommandTable(ChatCommand* target, const ChatCommand* source)
-{
-    const size_t count = getCommandTableSize(source);
-    if (count)
-        memcpy(target, source, count * sizeof(ChatCommand));
-    return count;
-}
-
+bool ChatHandler::load_command_table = true;
 
 ChatCommand* ChatHandler::getCommandTable()
 {
@@ -737,44 +718,45 @@ ChatCommand* ChatHandler::getCommandTable()
         { NULL,             0,                  false, NULL,                                           "", NULL }
     };
 
-    static ChatCommand* commandTableCache = 0;
 
     if (load_command_table)
     {
         load_command_table = false;
-
-        {
-            // count total number of top-level commands
-            size_t total = getCommandTableSize(commandTable);
-            std::vector<ChatCommand*> const& dynamic = sScriptMgr.GetChatCommands();
-            for (std::vector<ChatCommand*>::const_iterator it = dynamic.begin(); it != dynamic.end(); ++it)
-                total += getCommandTableSize(*it);
-            total += 1; // ending zero
-
-            // cache top-level commands
-            commandTableCache = (ChatCommand*)malloc(sizeof(ChatCommand) * total);
-            memset(commandTableCache, 0, sizeof(ChatCommand) * total);
-            ACE_ASSERT(commandTableCache);
-            size_t added = appendCommandTable(commandTableCache, commandTable);
-            for (std::vector<ChatCommand*>::const_iterator it = dynamic.begin(); it != dynamic.end(); ++it)
-                added += appendCommandTable(commandTableCache + added, *it);
-        }
 
         QueryResult_AutoPtr result = WorldDatabase.Query("SELECT name,security,help FROM command");
         if (result)
         {
             do
             {
-                Field *fields = result->Fetch();
-                std::string name = fields[0].GetString();
-
-                SetDataForCommandInTable(commandTableCache, name.c_str(), fields[1].GetUInt16(), fields[2].GetString(), name);
-
+                Field* fields = result->Fetch();
+                std::string name = fields[0].GetCppString();
+                for (uint32 i = 0; commandTable[i].Name != NULL; i++)
+                {
+                    if (name == commandTable[i].Name)
+                    {
+                        commandTable[i].SecurityLevel = (uint16)fields[1].GetUInt16();
+                        commandTable[i].Help = fields[2].GetCppString();
+                    }
+                    if (commandTable[i].ChildCommands != NULL)
+                    {
+                        ChatCommand* ptable = commandTable[i].ChildCommands;
+                        for (uint32 j = 0; ptable[j].Name != NULL; j++)
+                        {
+                            // first case for "" named subcommand
+                            if ((ptable[j].Name[0] == '\0' && name == commandTable[i].Name) ||
+                                (name == fmtstring("%s %s", commandTable[i].Name, ptable[j].Name)))
+                            {
+                                ptable[j].SecurityLevel = (uint16)fields[1].GetUInt16();
+                                ptable[j].Help = fields[2].GetCppString();
+                            }
+                        }
+                    }
+                }
             } while (result->NextRow());
         }
     }
 
-    return commandTableCache;
+    return commandTable;
 }
 
 const char* ChatHandler::GetOregonString(int32 entry) const
@@ -974,61 +956,6 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, co
     return false;
 }
 
-bool ChatHandler::SetDataForCommandInTable(ChatCommand *table, const char* text, uint32 security, std::string const& help, std::string const& fullcommand)
-{
-    std::string cmd = "";
-
-    while (*text != ' ' && *text != '\0')
-    {
-        cmd += *text;
-        ++text;
-    }
-
-    while (*text == ' ') ++text;
-
-    for (uint32 i = 0; table[i].Name != NULL; i++)
-    {
-        // for data fill use full explicit command names
-        if (table[i].Name != cmd)
-            continue;
-
-        // select subcommand from child commands list (including "")
-        if (table[i].ChildCommands != NULL)
-        {
-            if (SetDataForCommandInTable(table[i].ChildCommands, text, security, help, fullcommand))
-                return true;
-            else if (*text)
-                return false;
-
-            // fail with "" subcommands, then use normal level up command instead
-        }
-        // expected subcommand by full name DB content
-        else if (*text)
-        {
-            sLog.outErrorDb("Table `command` have unexpected subcommand '%s' in command '%s', skip.", text, fullcommand.c_str());
-            return false;
-        }
-
-        if (table[i].SecurityLevel != security)
-            sLog.outDetail("Table `command` overwrite for command '%s' default security (%u) by %u", fullcommand.c_str(), table[i].SecurityLevel, security);
-
-        table[i].SecurityLevel = security;
-        table[i].Help = help;
-        return true;
-    }
-
-    // in case "" command let process by caller
-    if (!cmd.empty())
-    {
-        if (table == getCommandTable())
-            sLog.outErrorDb("Table `command` have not existed command '%s', skip.", cmd.c_str());
-        else
-            sLog.outErrorDb("Table `command` have not existed subcommand '%s' in command '%s', skip.", cmd.c_str(), fullcommand.c_str());
-    }
-
-    return false;
-}
-
 int ChatHandler::ParseCommands(const char* text)
 {
     ASSERT(text);
@@ -1056,16 +983,20 @@ int ChatHandler::ParseCommands(const char* text)
     if (text[0] == '!' || text[0] == '.')
         ++text;
 
-    std::vector<ChatCommand*> table = sScriptMgr.GetChatCommands();
-
     if (!ExecuteCommandInTable(getCommandTable(), text, fullcmd))
     {
         std::vector<ChatCommand*> table = sScriptMgr.GetChatCommands();
 
         if (m_session && m_session->GetSecurity() == SEC_PLAYER)
             return 0;
-
         SendSysMessage(LANG_NO_CMD);
+
+        if (!ExecuteCommandInTables(table, text, fullcmd))
+        {
+            if (m_session && m_session->GetSecurity() == SEC_PLAYER)
+                return 0;
+            SendSysMessage(LANG_NO_CMD);
+        }
     }
     return 1;
 }
@@ -1186,7 +1117,7 @@ bool ChatHandler::isValidChatMessage(const char* message)
 #endif
                 return false;
             }
-            }
+        }
         else if (validSequence != validSequenceIterator)
         {
             // no escaped pipes in sequences
@@ -1229,7 +1160,7 @@ bool ChatHandler::isValidChatMessage(const char* message)
                 sLog.outBasic("ChatHandler::isValidChatMessage got non hex char '%c' while reading color", c);
 #endif
                 return false;
-                }
+            }
             break;
         case 'H':
             // read chars up to colon  = link type
@@ -1266,7 +1197,7 @@ bool ChatHandler::isValidChatMessage(const char* message)
                     reader.ignore(1);
                     c = reader.peek();
                 }
-                }
+            }
             else if (strcmp(buffer, "quest") == 0)
             {
                 // no color check for questlinks, each client will adapt it anyway
@@ -1297,7 +1228,7 @@ bool ChatHandler::isValidChatMessage(const char* message)
                     reader.ignore(1);
                     c = reader.peek();
                 }
-                }
+            }
             else if (strcmp(buffer, "talent") == 0)
             {
                 // talent links are always supposed to be blue
@@ -1458,8 +1389,8 @@ bool ChatHandler::isValidChatMessage(const char* message)
 #endif
                             return false;
                         }
+                    }
                 }
-            }
                 else if (linkedItem)
                 {
                     if (strcmp(linkedItem->Name1, buffer) != 0)
@@ -1490,8 +1421,8 @@ bool ChatHandler::isValidChatMessage(const char* message)
 #endif
                             return false;
                         }
+                    }
                 }
-            }
                 // that place should never be reached - if nothing linked has been set in |H
                 // it will return false before
                 else
@@ -1508,7 +1439,7 @@ bool ChatHandler::isValidChatMessage(const char* message)
 #endif
             return false;
         }
-        }
+    }
 
     // check if every opened sequence was also closed properly
 #ifdef OREGON_DEBUG
@@ -1516,7 +1447,7 @@ bool ChatHandler::isValidChatMessage(const char* message)
         sLog.outBasic("ChatHandler::isValidChatMessage EOF in active sequence");
 #endif
     return validSequence == validSequenceIterator;
-        }
+}
 
 bool ChatHandler::ShowHelpForSubCommands(ChatCommand* table, char const* cmd, char const* subcmd)
 {
@@ -2050,4 +1981,3 @@ bool ChatHandler::GetPlayerGroupAndGUIDByName(const char* cname, Player*& plr, G
 
     return true;
 }
-
