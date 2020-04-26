@@ -708,6 +708,7 @@ void Map::ProcessRelocationNotifies(const uint32& diff)
 
 void Map::RemovePlayerFromMap(Player* player, bool remove)
 {
+
     player->RemoveFromWorld();
     SendRemoveTransports(player);
 
@@ -720,14 +721,13 @@ void Map::RemovePlayerFromMap(Player* player, bool remove)
     if (remove)
         DeleteFromWorld(player);
 
+    sEluna->OnPlayerLeave(this, player);
     sScriptMgr.OnPlayerLeave(this, player);
 }
 
 template<class T>
 void Map::RemoveFromMap(T *obj, bool remove)
 {
-    if (obj->ToPlayer());
-        sEluna->OnPlayerLeave(this, obj->ToPlayer());
 
     obj->RemoveFromWorld();
     if (obj->isActiveObject())
