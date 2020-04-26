@@ -935,9 +935,9 @@ public:
 
         bool SpellIsInRange(int idx, Unit* target)
         {
-            const SpellEntry* proto;
-            const SpellRangeEntry* EffectRange;
-            const SpellRadiusEntry* EffectRadius;
+            const SpellEntry* proto = 0;
+            const SpellRangeEntry* EffectRange = 0;
+            const SpellRadiusEntry* EffectRadius = 0;
 
             uint32 spellID = m_spells[idx].m_spellEntry;
             if (spellID && !m_spells[idx].m_positive) //check only negative targets here

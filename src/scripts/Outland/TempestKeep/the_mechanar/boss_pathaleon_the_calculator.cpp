@@ -75,7 +75,7 @@ public:
     {
         boss_pathaleon_the_calculatorAI(Creature* c) : ScriptedAI(c), summons(me)
         {
-            if (me->GetMap()->IsHeroic() ? wraith = 4 : wraith = 3);
+            me->GetMap()->IsHeroic() ? wraith == 4 : wraith == 3;
         }
 
         SummonList summons;
