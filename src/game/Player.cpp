@@ -20185,7 +20185,7 @@ void Player::UpdateCorpseReclaimDelay()
     if (now < m_deathExpireTime)
     {
         // full and partly periods 1..3
-        uint32 count = (m_deathExpireTime - now) / DEATH_EXPIRE_STEP + 1;
+        uint64 count = (m_deathExpireTime - now) / DEATH_EXPIRE_STEP + 1;
 
         if (count < MAX_DEATH_COUNT)
             m_deathExpireTime = now + (count + 1) * DEATH_EXPIRE_STEP;

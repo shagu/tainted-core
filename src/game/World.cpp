@@ -1104,7 +1104,7 @@ void World::LoadConfigSettings(bool reload)
     #endif
     // module
     m_ModSQLUpdatesPath = sConfig.GetStringDefault("DatabaseUpdater.ModPathToUpdates", "");
-    if (!m_ModSQLUpdatesPath.size() || (*m_ModSQLUpdatesPath.rbegin() != '\\' && *m_ModSQLUpdatesPath.rbegin() != '/'))
+    if ((!m_ModSQLUpdatesPath.size() || (*m_ModSQLUpdatesPath.rbegin() != '\\' && *m_ModSQLUpdatesPath.rbegin() != '/')) && !m_ModSQLUpdatesPath.empty())
 #if PLATFORM == PLATFORM_WINDOWS
         m_ModSQLUpdatesPath += '\\';
 #else
@@ -1210,6 +1210,9 @@ void World::LoadSQLUpdates()
 
 void World::LoadModSQLUpdates()
 {
+    if (!m_configs[CONFIG_SQLUPDATER_ENABLED])
+        return;
+
     const struct
     {
         // db pointer
@@ -1233,13 +1236,18 @@ void World::LoadModSQLUpdates()
     // already applied before (from db)
     std::set<std::string> alreadyAppliedFiles;
 
+    if (m_ModSQLUpdatesPath.empty()) {
+        outstring_log(">> Skipping modules SQL updates.");
+        return;
+    }
+
     // get folders in modules/
     if (ACE_DIR* dira = ACE_OS::opendir(m_ModSQLUpdatesPath.c_str()))
     {
         while (ACE_DIRENT* directory = ACE_OS::readdir(dira))
         {
             // Skip the ".." and "." files.
-            if (ACE::isdotdir(directory->d_name) == true)
+            if (directory->d_name[0] == '.' || ACE::isdotdir(directory->d_name))
                 continue;
 
             // refresh path
@@ -1307,7 +1315,7 @@ void World::LoadModSQLUpdates()
 
                     // Change current directory to modules/mod_xxx/sql(path)
                     if (-1 == ACE_OS::chdir(pathsql.c_str()))
-                        sLog.outFatal("Can't change directory to %s: %s", pathsql.c_str(), strerror(errno));
+                        continue;  
 
                     // get files in modules/mod_xxx/sql/(path)/ directory
                     if (ACE_DIR* dir = ACE_OS::opendir(pathsql.c_str()))
