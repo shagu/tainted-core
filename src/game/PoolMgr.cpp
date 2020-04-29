@@ -331,6 +331,8 @@ void PoolGroup<Creature>::Spawn1Object(PoolObject* obj)
                 delete creature;
                 return;
             }
+            else
+                map->AddToMap(creature);
         }
     }
 }

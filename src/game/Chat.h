@@ -87,6 +87,7 @@ public:
         return sentErrorMessage;
     }
     virtual char const* GetName() const;
+    virtual std::string GetNameLink() const { return GetNameLink(m_session->GetPlayer()); }
 protected:
     explicit ChatHandler() : m_session(NULL), sentErrorMessage(false) { }      // for CLI subclass
 
@@ -591,6 +592,9 @@ protected:
     void HandleCharacterDeletedListHelper(DeletedInfoList const& foundList);
     void HandleCharacterDeletedRestoreHelper(DeletedInfo const& delInfo);
 
+    std::string playerLink(std::string const& name) const { return m_session ? "|cffffffff|Hplayer:"+name+"|h["+name+"]|h|r" : name; }
+    std::string GetNameLink(Player* chr) const;
+
     void SetSentErrorMessage(bool val)
     {
         sentErrorMessage = val;
@@ -614,6 +618,7 @@ public:
     bool isAvailable(ChatCommand const& cmd) const;
     void SendSysMessage(const char* str);
     char const* GetName() const;
+    std::string GetNameLink() const override;
     bool needReportToTarget(Player* chr) const;
 
 private:
