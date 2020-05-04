@@ -70,28 +70,36 @@ public:
 
         uint32 checkTimer;
         uint32 DespawnTimer;
+        Unit* target = nullptr;
 
         void UpdateAI(const uint32 uiDiff) override
         {
             checkTimer += uiDiff;
             DespawnTimer += uiDiff;
 
-            if (DespawnTimer >= 3 * MINUTE*IN_MILLISECONDS)
+            if (DespawnTimer >= 3 * MINUTE*IN_MILLISECONDS || (target && !target->IsAlive()))
             {
                 me->Kill(me, false);
-                me->ForcedDespawn(5000);
+                me->ForcedDespawn(12000);
             }
 
-            if (checkTimer >= 1000)
+            if (checkTimer >= 1000 && me->IsAlive())
             {
                 checkTimer = 0;
-                if (Unit* target = me->SelectNearestTarget(30.0f))
+                
+                if (me->SelectNearestHostileUnitInAggroRange(true))
+                    target = me->SelectNearestHostileUnitInAggroRange(true);
+                else if (target = me->GetCharmerOrOwner()->ToPlayer()->getAttackerForHelper())
+                    if (!me->canAttack(target))
+                        target = nullptr;
+                if (target)
                 {
                     me->GetMotionMaster()->MoveChase(target);
                     if (me->GetDistance(target) < 3.0f)
                     {
                         me->CastSpell(me, SPELL_EXPLOSIVE_SHEEP, false);
-                        me->ForcedDespawn(500);
+                        me->Kill(me, false);
+                        me->ForcedDespawn(12000);
                     }
                 }
                 else if (!me->HasUnitState(FOLLOW_MOTION_TYPE))

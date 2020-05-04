@@ -252,6 +252,19 @@ void TempSummon::UnSummon(uint32 msTime)
     if (owner && owner->GetTypeId() == TYPEID_UNIT && owner->ToCreature()->IsAIEnabled)
         owner->ToCreature()->AI()->SummonedCreatureDespawn(this);
 
+    if (uint32 spellid = this->ToCreature()->GetUInt32Value(UNIT_CREATED_BY_SPELL))
+    {
+        RemoveAurasDueToSpell(spellid);
+        if (owner->GetTypeId() == TYPEID_PLAYER)
+        {
+            SpellEntry const* createBySpell = sSpellStore.LookupEntry(spellid);
+            // Need activate spell use for owner
+            if (createBySpell && createBySpell->Attributes & SPELL_ATTR0_DISABLED_WHILE_ACTIVE)
+                // note: item based cooldowns and cooldown spell mods with charges ignored (unknown existed cases)
+                owner->ToPlayer()->SendCooldownEvent(createBySpell);
+        }
+    }
+
     AddObjectToRemoveList();
 }
 
