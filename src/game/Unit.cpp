@@ -5327,14 +5327,14 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, Aura* triggeredByAur
                     if (ToPlayer()->GetReputationRank(932) == REP_EXALTED)
                     {
                         target = this;
-                        triggered_spell_id = 45432;
+                        triggered_spell_id = 45431;
                         break;
                     }
                     // Get Scryers reputation rank
                     if (ToPlayer()->GetReputationRank(934) == REP_EXALTED)
                     {
                         target = this;
-                        triggered_spell_id = 45431;
+                        triggered_spell_id = 45432;
                         break;
                     }
                     return false;
