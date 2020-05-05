@@ -1564,11 +1564,13 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
 {
     SpellEntry const* spellInfo_1 = sSpellStore.LookupEntry(spellId_1);
     SpellEntry const* spellInfo_2 = sSpellStore.LookupEntry(spellId_2);
+    SpellSpecific spellSpec_1 = GetSpellSpecific(spellInfo_1->Id);
+    SpellSpecific spellSpec_2 = GetSpellSpecific(spellInfo_2->Id);
 
     if (!spellInfo_1 || !spellInfo_2)
         return false;
 
-    SpellGroupStackRule stackRule = CheckSpellGroupStackRules(spellInfo_1->Id, spellInfo_2->Id);
+    SpellGroupStackRule stackRule = (CheckSpellGroupStackRules(spellInfo_1->Id, spellInfo_2->Id));
     if (stackRule)
     {
         if (stackRule == SPELL_GROUP_STACK_RULE_EXCLUSIVE)
@@ -1584,28 +1586,31 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
 
     if (!sameCaster)
     {
+        if (spellInfo_1->AttributesEx3 & SPELL_ATTR3_STACK_FOR_DIFF_CASTERS)
+            return false;
+
         // Iterate through effects
         for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-            if (spellInfo_1->Effect[i] == SPELL_EFFECT_APPLY_AURA
-                || spellInfo_1->Effect[i] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
-                // not area auras (shaman totem)
-                switch (spellInfo_1->EffectApplyAuraName[i])
-                {
+        {
+            switch (spellInfo_1->EffectApplyAuraName[i])
+            {
                 // DOT or HOT from different casters will stack
-                case SPELL_AURA_PERIODIC_DAMAGE:
-                case SPELL_AURA_PERIODIC_HEAL:
-                case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
-                case SPELL_AURA_PERIODIC_ENERGIZE:
-                case SPELL_AURA_PERIODIC_MANA_LEECH:
-                case SPELL_AURA_PERIODIC_LEECH:
-                case SPELL_AURA_POWER_BURN_MANA:
-                case SPELL_AURA_OBS_MOD_MANA:
-                case SPELL_AURA_OBS_MOD_HEALTH:
-                case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
-                    return false;
-                default:
-                    break;
-                }
+            case SPELL_AURA_PERIODIC_DAMAGE:
+            case SPELL_AURA_PERIODIC_HEAL:
+            case SPELL_AURA_PERIODIC_TRIGGER_SPELL:
+            case SPELL_AURA_PERIODIC_ENERGIZE:
+            case SPELL_AURA_PERIODIC_MANA_LEECH:
+            case SPELL_AURA_PERIODIC_LEECH:
+            case SPELL_AURA_POWER_BURN_MANA:
+            case SPELL_AURA_OBS_MOD_MANA:
+            case SPELL_AURA_OBS_MOD_HEALTH:
+            case SPELL_AURA_PERIODIC_TRIGGER_SPELL_WITH_VALUE:
+                return false;
+            default:
+                break;
+            }
+        }
+
     }
 
     // Iterate through specifics
@@ -1627,37 +1632,12 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2, bool
     spellInfo_1 = sSpellStore.LookupEntry(GetLastSpellInChain(spellId_1));
     spellInfo_2 = sSpellStore.LookupEntry(GetLastSpellInChain(spellId_2));
 
-
-    // generic spells
-    if (!spellInfo_1->SpellFamilyName)
+    if (spellInfo_1 == spellInfo_2)
     {
-        if (!spellInfo_1->SpellIconID
-            || spellInfo_1->SpellIconID == 1
-            || spellInfo_1->SpellIconID != spellInfo_2->SpellIconID)
-            return false;
-
-        for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        {
-            if (spellInfo_1->SpellIconID == 240 && spellInfo_2->SpellIconID == 240 && (spellInfo_1->Effect[i] != spellInfo_2->Effect[i]))
-                return false;
-        }
+        return true;
     }
 
-    // check for class spells
-    else
-    {
-        if (spellInfo_1->SpellFamilyFlags != spellInfo_2->SpellFamilyFlags)
-            return false;
-    }
-
-    //if spells have exactly the same effect they cannot stack
-    for (uint32 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-        if (spellInfo_1->Effect[i] != spellInfo_2->Effect[i]
-            || spellInfo_1->EffectApplyAuraName[i] != spellInfo_2->EffectApplyAuraName[i]
-            || spellInfo_1->EffectMiscValue[i] != spellInfo_2->EffectMiscValue[i]) // paladin resist aura
-            return false; // need itemtype check? need an example to add that check
-
-    return true;
+    return false;
 }
 
 SpellSpellGroupMapBounds SpellMgr::GetSpellSpellGroupMapBounds(uint32 spell_id) const
