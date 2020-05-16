@@ -871,12 +871,20 @@ bool ScriptMgr::OnTrigger(Player* player, AreaTriggerEntry const* trigger)
 }
 
 
-std::vector<ChatCommand*> ScriptMgr::GetChatCommands()
+std::vector<ChatCommand> ScriptMgr::GetChatCommands()
 {
-    std::vector<ChatCommand*> table;
+    std::vector<ChatCommand> table;
 
     FOR_SCRIPTS_RET(CommandScript, itr, end, table)
-        table.push_back(itr->second->GetCommands());
+    {
+        std::vector<ChatCommand> cmds = itr->second->GetCommands();
+        table.insert(table.end(), cmds.begin(), cmds.end());
+    }
+
+    std::sort(table.begin(), table.end(), [](const ChatCommand& a, const ChatCommand&b)
+    {
+        return strcmp(a.Name, b.Name) < 0;
+    });
 
     return table;
 }

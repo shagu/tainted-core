@@ -124,11 +124,14 @@ public:
             {
                 Map::PlayerList const& PlayerList = me->GetMap()->GetPlayers();
                 for (Map::PlayerList::const_iterator i = PlayerList.begin(); i != PlayerList.end(); ++i)
+                {
                     if (Player* i_pl = i->GetSource())
                     {
                         float dist = me->GetDistance(i_pl);
                         if (i_pl->IsAlive() && dist < 45.0f)
                         {
+                            i_pl->RemoveAurasDueToSpell(SPELL_INHIBIT_MAGIC);
+
                             Aura* aura = i_pl->GetAura(SPELL_INHIBIT_MAGIC, NULL);
                             if (!aura)
                                 me->AddAura(SPELL_INHIBIT_MAGIC, i_pl);
@@ -139,6 +142,7 @@ public:
                         else
                             i_pl->RemoveAurasDueToSpell(SPELL_INHIBIT_MAGIC);
                     }
+                }
                 events.Repeat(3000);
                 break;
             }

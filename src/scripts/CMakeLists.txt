@@ -25,6 +25,7 @@ file(GLOB_RECURSE scripts_examples Examples/*.cpp Examples/*.h)
 file(GLOB_RECURSE scripts_kalimdor Kalimdor/*.cpp Kalimdor/*.h)
 file(GLOB_RECURSE scripts_outland Outland/*.cpp Outland/*.h)
 file(GLOB_RECURSE scripts_world World/*.cpp World/*.h)
+file(GLOB_RECURSE scripts_commands Commands/*.cpp Commands/*.h)
 
 if( USE_SCRIPTPCH AND MSVC )
   set(scripts_STAT_SRCS
@@ -59,6 +60,7 @@ if(SCRIPTS)
     ${scripts_kalimdor}
     ${scripts_outland}
     ${scripts_world}
+    ${scripts_commands}
   )
 endif()
 
@@ -88,6 +90,9 @@ include_directories(
   ${MYSQL_INCLUDE_DIR}
   ${OPENSSL_INCLUDE_DIR}
 )
+
+GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
+source_group("Modules" FILES ${AC_SCRIPTS_SOURCES})
 
 add_library(scripts STATIC ${scripts_STAT_SRCS})
 
