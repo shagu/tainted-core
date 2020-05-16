@@ -392,6 +392,38 @@ void AddSC_zangarmarsh();
 //void AddSC_onevents();
 
 #endif
+//Command Scripts
+void AddSC_gm_commandscript();
+void AddSC_misc_commandscript();
+void AddSC_reload_commandscript();
+void AddSC_account_commandscript();
+void AddSC_ticket_commandscript();
+void AddSC_npc_commandscript();
+void AddSC_go_commandscript();
+void AddSC_learn_commandscript();
+void AddSC_modify_commandscript();
+void AddSC_debug_commandscript();
+void AddSC_tele_commandscript();
+void AddSC_character_commandscript();
+void AddSC_message_commandscript();
+void AddSC_cheat_commandscript();
+void AddSC_ban_commandscript();
+void AddSC_server_commandscript();
+void AddSC_instance_commandscript();
+void AddSC_quest_commandscript();
+void AddSC_lookup_commandscript();
+void AddSC_event_commandscript();
+void AddSC_guild_commandscript();
+void AddSC_titles_commandscript();
+void AddSC_wp_commandscript();
+void AddSC_reset_commandscript();
+void AddSC_list_commandscript();
+void AddSC_honor_commandscript();
+void AddSC_cast_commandscript();
+void AddSC_group_commandscript();
+void AddSC_pet_commandscript();
+void AddSC_pdump_commandscript();
+void AddSC_gameobject_commandscript();
 
 void AddScripts()
 {
@@ -764,5 +796,38 @@ void AddScripts()
     AddSC_zangarmarsh();
     //AddSC_onevents();
     #endif
+
+    //Command Scripts
+    AddSC_gm_commandscript();
+    AddSC_debug_commandscript();
+    AddSC_misc_commandscript();
+    AddSC_reload_commandscript();
+    AddSC_account_commandscript();
+    AddSC_ticket_commandscript();
+    AddSC_npc_commandscript();
+    AddSC_go_commandscript();
+    AddSC_learn_commandscript();
+    AddSC_modify_commandscript();
+    AddSC_tele_commandscript();
+    AddSC_character_commandscript();
+    AddSC_message_commandscript();
+    AddSC_cheat_commandscript();
+    AddSC_ban_commandscript();
+    AddSC_server_commandscript();
+    AddSC_instance_commandscript();
+    AddSC_quest_commandscript();
+    AddSC_lookup_commandscript();
+    AddSC_event_commandscript();
+    AddSC_guild_commandscript();
+    AddSC_titles_commandscript();
+    AddSC_wp_commandscript();
+    AddSC_reset_commandscript();
+    AddSC_list_commandscript();
+    AddSC_honor_commandscript();
+    AddSC_cast_commandscript();
+    AddSC_group_commandscript();
+    AddSC_pet_commandscript();
+    AddSC_pdump_commandscript();
+    AddSC_gameobject_commandscript();
 }
 

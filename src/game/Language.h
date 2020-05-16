@@ -268,7 +268,7 @@ enum OregonStrings
     LANG_COMMAND_WHISPEROFF             = 286,
     LANG_COMMAND_CREATGUIDNOTFOUND      = 287,
     // TICKET STRINGS NEED REWRITE // 288-296 FREE
-
+    LANG_COMMAND_GOTAXINODENOTFOUND     = 288,
     // END
     LANG_COMMAND_SPAWNDIST              = 297,
     LANG_COMMAND_SPAWNTIME              = 298,
@@ -465,6 +465,7 @@ enum OregonStrings
     LANG_QUEST_LIST_CHAT                = 513,
     LANG_CREATURE_ENTRY_LIST_CHAT       = 514,
     LANG_CREATURE_LIST_CHAT             = 515,
+    LANG_COMMAND_NEAR_NPC_MESSAGE       = 617,
     LANG_GO_ENTRY_LIST_CHAT             = 516,
     LANG_GO_LIST_CHAT                   = 517,
     LANG_ITEMSET_LIST_CHAT              = 518,
@@ -494,6 +495,7 @@ enum OregonStrings
 
     LANG_NPCINFO_CHAR                   = 539,
     LANG_NPCINFO_LEVEL                  = 540,
+    LANG_NPCINFO_EQUIPMENT              = 616,
     LANG_NPCINFO_HEALTH                 = 541,
     LANG_NPCINFO_FLAGS                  = 542,
     LANG_NPCINFO_LOOT                   = 543,

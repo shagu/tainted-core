@@ -55,6 +55,8 @@ include(dep/drassil/cmake-utils/utils.cmake)
 
 include(cmake/ac_macros.cmake)
 
+include(cmake/GroupSources.cmake)
+
 # set default buildoptions and print them
 include(cmake/options.cmake)
 

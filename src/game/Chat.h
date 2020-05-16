@@ -20,7 +20,6 @@
 
 #include "SharedDefines.h"
 
-
 class ChatHandler;
 class WorldSession;
 class Creature;
@@ -30,13 +29,18 @@ struct GameTele;
 
 class ChatCommand
 {
+    typedef bool(*pHandler)(ChatHandler*, char const*);
+
 public:
-    const char*        Name;
-    uint32             SecurityLevel;                   // function pointer required correct align (use uint32)
-    bool               AllowConsole;
-    bool (*Handler)(ChatHandler*, const char* args);
-    std::string        Help;
-    ChatCommand*       ChildCommands;
+    ChatCommand(char const* name, uint32 securityLevel, bool allowConsole, pHandler handler, std::string help, std::vector<ChatCommand> childCommands = std::vector<ChatCommand>())
+        : Name(name), SecurityLevel(securityLevel), AllowConsole(allowConsole), Handler(handler), Help(std::move(help)), ChildCommands(std::move(childCommands)) { }
+
+    const char* Name;
+    uint32 SecurityLevel;                   
+    bool AllowConsole;
+    pHandler Handler;
+    std::string Help;
+    std::vector<ChatCommand> ChildCommands;
 };
 
 class ChatHandler
@@ -76,10 +80,11 @@ public:
     void PSendSysMessage(const char* format, ...) ATTR_PRINTF(2, 3);
     void PSendSysMessage(int32     entry, ...);
     std::string PGetParseString(int32 entry, ...);
+    std::string GetTimeString(uint32 time);
 
     int ParseCommands(const char* text);
 
-    static ChatCommand* getCommandTable();
+    static std::vector<ChatCommand> const& getCommandTable();
 
     bool isValidChatMessage(const char* msg);
     bool HasSentErrorMessage()
@@ -87,9 +92,47 @@ public:
         return sentErrorMessage;
     }
     virtual char const* GetName() const;
+
+    static bool LoadCommandTable() { return load_command_table; }
+    static void SetLoadCommandTable(bool val) { load_command_table = val; }
+    bool ShowHelpForCommand(std::vector<ChatCommand> const& table, const char* cmd);
+    bool ShowHelpForSubCommands(std::vector<ChatCommand> const& table, char const* cmd, char const* subcmd);
+
+    void SetSentErrorMessage(bool val)
+    {
+        sentErrorMessage = val;
+    };
+
+    Player*   getSelectedPlayer();
+    Player*   getSelectedPlayerOrSelf();
+    Creature* getSelectedCreature();
+    Unit*     getSelectedUnit();
+
+    struct DeletedInfo
+    {
+        uint32      lowguid;                            ///< the low GUID from the character
+        std::string name;                               ///< the character name
+        uint32      accountId;                          ///< the account id
+        std::string accountName;                        ///< the account name
+        time_t      deleteDate;                         ///< the date at which the character has been deleted
+    };
+
+    char*     extractKeyFromLink(char* text, char const* linkType, char** something1 = NULL);
+    char*     extractKeyFromLink(char* text, char const* const* linkTypes, int* found_idx, char** something1 = NULL);
+    uint32    extractSpellIdFromLink(char* text);
+    GameTele const* extractGameTeleFromLink(char* text);
+    bool GetPlayerGroupAndGUIDByName(const char* cname, Player*& plr, Group*& group, uint64& guid, bool offline = false);
+
+    GameObject* GetObjectGlobalyWithGuidOrNearWithDbGuid(uint32 lowguid, uint32 entry);
+
+    // Utility methods for commands
+    bool LookupPlayerSearchCommand(QueryResult_AutoPtr result, int32 limit);
+    bool HandleBanListHelper(QueryResult_AutoPtr result);
+    bool HandleBanHelper(BanMode mode, char const* args);
+    bool HandleBanInfoHelper(uint32 accountid, char const* accountname);
+    bool HandleUnBanHelper(BanMode mode, char const* args);
     virtual std::string GetNameLink() const { return GetNameLink(m_session->GetPlayer()); }
-protected:
-    explicit ChatHandler() : m_session(NULL), sentErrorMessage(false) { }      // for CLI subclass
+
 
     bool hasStringAbbr(const char* name, const char* part);
 
@@ -100,10 +143,11 @@ protected:
     void SendGlobalSysMessage(const char* str);
     void SendGlobalGMSysMessage(const char* str);
 
-    bool ExecuteCommandInTables(std::vector<ChatCommand*>& tables, const char* text, const std::string& fullcmd);
-    bool ExecuteCommandInTable(ChatCommand *table, const char* text, const std::string& fullcmd);
-    bool ShowHelpForCommand(ChatCommand* table, const char* cmd);
-    bool ShowHelpForSubCommands(ChatCommand* table, char const* cmd, char const* subcmd);
+protected:
+    explicit ChatHandler() : m_session(NULL), sentErrorMessage(false) { }      // for CLI subclass
+
+    static bool SetDataForCommandInTable(std::vector<ChatCommand> & table, const char* text, uint32 securityLevel, std::string const& help, std::string const& fullcommand);
+    bool ExecuteCommandInTable(std::vector<ChatCommand> const& table, const char* text, std::string const& fullcmd);
 
     bool HandleAccountCommand(const char* args);
     bool HandleAccountCreateCommand(const char* args);
@@ -315,23 +359,11 @@ protected:
     bool HandleReloadConditions(const char* args);
 
     bool HandleInstanceListBindsCommand(const char* args);
+    bool HandleServerPLimitCommand(const char* args);
     bool HandleInstanceUnbindCommand(const char* args);
     bool HandleInstanceStatsCommand(const char* args);
     bool HandleInstanceSaveDataCommand(const char* args);
 
-    bool HandleServerCorpsesCommand(const char* args);
-    bool HandleServerExitCommand(const char* args);
-    bool HandleServerIdleRestartCommand(const char* args);
-    bool HandleServerIdleShutDownCommand(const char* args);
-    bool HandleServerInfoCommand(const char* args);
-    bool HandleServerMotdCommand(const char* args);
-    bool HandleServerPLimitCommand(const char* args);
-    bool HandleServerRestartCommand(const char* args);
-    bool HandleServerSetLogMaskCommand(const char* args);
-    bool HandleServerSetMotdCommand(const char* args);
-    bool HandleServerSetDiffTimeCommand(const char* args);
-    bool HandleServerShutDownCommand(const char* args);
-    bool HandleServerShutDownCancelCommand(const char* args);
 
     bool HandleAddHonorCommand(const char* args);
     bool HandleHonorAddKillCommand(const char* args);
@@ -552,51 +584,23 @@ protected:
     bool HandlePartyResultCommand(const char* args);
     bool HandleDebugAnimationCommand(const char* args);
 
-    Player*   getSelectedPlayer();
-    Player*   getSelectedPlayerOrSelf();
-    Creature* getSelectedCreature();
-    Unit*     getSelectedUnit();
-
-    char*     extractKeyFromLink(char* text, char const* linkType, char** something1 = NULL);
-    char*     extractKeyFromLink(char* text, char const* const* linkTypes, int* found_idx, char** something1 = NULL);
-    uint32    extractSpellIdFromLink(char* text);
-    GameTele const* extractGameTeleFromLink(char* text);
-    bool GetPlayerGroupAndGUIDByName(const char* cname, Player*& plr, Group*& group, uint64& guid, bool offline = false);
-
-    GameObject* GetObjectGlobalyWithGuidOrNearWithDbGuid(uint32 lowguid, uint32 entry);
-
-    // Utility methods for commands
-    bool LookupPlayerSearchCommand(QueryResult_AutoPtr result, int32 limit);
-    bool HandleBanListHelper(QueryResult_AutoPtr result);
-    bool HandleBanHelper(BanMode mode, char const* args);
-    bool HandleBanInfoHelper(uint32 accountid, char const* accountname);
-    bool HandleUnBanHelper(BanMode mode, char const* args);
-
+    
+    
     /**
      * Stores informations about a deleted character
-     */
-    struct DeletedInfo
-    {
-        uint32      lowguid;                            ///< the low GUID from the character
-        std::string name;                               ///< the character name
-        uint32      accountId;                          ///< the account id
-        std::string accountName;                        ///< the account name
-        time_t      deleteDate;                         ///< the date at which the character has been deleted
-    };
+     
+    
 
     typedef std::list<DeletedInfo> DeletedInfoList;
     bool GetDeletedCharacterInfoList(DeletedInfoList& foundList, std::string searchString = "");
     std::string GenerateDeletedCharacterGUIDsWhereStr(DeletedInfoList::const_iterator& itr, DeletedInfoList::const_iterator const& itr_end);
     void HandleCharacterDeletedListHelper(DeletedInfoList const& foundList);
-    void HandleCharacterDeletedRestoreHelper(DeletedInfo const& delInfo);
+    void HandleCharacterDeletedRestoreHelper(DeletedInfo const& delInfo);*/
+
 
     std::string playerLink(std::string const& name) const { return m_session ? "|cffffffff|Hplayer:"+name+"|h["+name+"]|h|r" : name; }
     std::string GetNameLink(Player* chr) const;
 
-    void SetSentErrorMessage(bool val)
-    {
-        sentErrorMessage = val;
-    };
 private:
     WorldSession* m_session;                            // != NULL for chat command call and NULL for CLI command
 
