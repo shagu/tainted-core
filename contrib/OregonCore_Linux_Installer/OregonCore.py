@@ -64,7 +64,7 @@ def ServerNameRealmList():
 def DownloadSource():
     print("Getting source requirements before we continue")
     time.sleep(2)
-    cmd( "sudo apt-get update && apt-get upgrade && sudo apt-get install screen git cmake make gcc g++ clang libmysqlclient-dev libssl-dev libbz2-dev libreadline-dev libncurses-dev mysql-server libace-6.* libace-dev  build-essential cmake git binutils-dev libiberty-dev libbz2-dev openssl libssl-dev zlib1g-dev libtool mysql-client unrar libace-dev unzip libncurses-dev -y")
+    cmd( "sudo apt-get update && apt-get upgrade && sudo apt-get install screen git cmake make gcc g++ clang libmariadbclient-dev libssl-dev libbz2-dev libreadline-dev libncurses-dev mariadb-server libace-6.* libace-dev  build-essential cmake git binutils-dev libiberty-dev libbz2-dev openssl libssl-dev zlib1g-dev libtool mariadb-client unrar libace-dev unzip libncurses-dev -y")
     cmd("clear")
     cmd("** CLONING SELECTED BRANCH **\n\n")
     cmd("git clone %s -b '%s' '%s'" %(RepoToClone, git_branch, source_path))
