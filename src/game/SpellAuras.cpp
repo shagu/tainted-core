@@ -3794,16 +3794,14 @@ void Aura::HandleAuraModIncreaseFlightSpeed(bool apply, bool Real)
     if (!Real)
         return;
 
+    m_target->SetCanFly(apply, true);
+
+    if (!apply && m_target->GetTypeId() == TYPEID_UNIT && !m_target->IsLevitating())
+        m_target->GetMotionMaster()->MoveFall();
+
     // Enable Fly mode for flying mounts
     if (GetAuraType() == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED)
     {
-        if (m_target->SetCanFly(apply))
-            if (!apply && !m_target->IsLevitating())
-                m_target->GetMotionMaster()->MoveFall();
-
-        if (!apply && m_target->GetTypeId() == TYPEID_UNIT && !m_target->IsLevitating())
-            m_target->GetMotionMaster()->MoveFall();
-
         // Players on flying mounts must be immune to polymorph
         if (m_target->GetTypeId() == TYPEID_PLAYER)
             m_target->ApplySpellImmune(GetId(), IMMUNITY_MECHANIC, MECHANIC_POLYMORPH, apply);
