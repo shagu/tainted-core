@@ -2416,32 +2416,6 @@ void Player::SetInWater(bool apply)
     getHostileRefManager().updateThreatTables();
 }
 
-void Player::InitDisplayIds()
-{
-    PlayerInfo const* info = sObjectMgr.GetPlayerInfo(getRace(), getClass());
-    if (!info)
-    {
-        sLog.outError("Player has incorrect race/class pair. Not loaded.");
-        return;
-    }
-
-    uint8 gender = getGender();
-    switch (gender)
-    {
-    case GENDER_FEMALE:
-        SetDisplayId(info->displayId_f);
-        SetNativeDisplayId(info->displayId_f);
-        break;
-    case GENDER_MALE:
-        SetDisplayId(info->displayId_m);
-        SetNativeDisplayId(info->displayId_m);
-        break;
-    default:
-        sLog.outError("Invalid gender %u for player", gender);
-        return;
-    }
-}
-
 bool Player::IsInAreaTriggerRadius(const AreaTriggerEntry* trigger) const
 {
     if (!trigger || GetMapId() != trigger->mapid)
