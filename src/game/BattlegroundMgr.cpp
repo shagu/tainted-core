@@ -33,6 +33,7 @@
 #include "World.h"
 #include "Chat.h"
 #include "ArenaTeam.h"
+#include "../Custom/CrossfactionBG/CrossfactionBG.h"
 #include "DisableMgr.h"
 #include "LuaEngine.h"
 
@@ -188,8 +189,10 @@ void BattlegroundQueue::AddPlayer(Player* plr, GroupQueueInfo* ginfo)
         uint32 MinPlayers = bg->GetMinPlayersPerTeam();
         uint32 MaxPlayers = bg->GetMaxPlayersPerTeam();
 
-        uint32 qHorde = 0;
+
+        uint32 qHorde = 0; // bg->GetPlayersCountByTeam(HORDE);
         uint32 qAlliance = 0;
+
 
         for (std::map<uint64, PlayerQueueInfo>::iterator itr = m_QueuedPlayers[queue_id].begin(); itr != m_QueuedPlayers[queue_id].end(); ++itr)
         {

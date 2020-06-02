@@ -2117,6 +2117,7 @@ class Player : public Unit, public GridObject<Player>
         }
         static uint32 getFactionForRace(uint8 race);
         void setFactionForRace(uint8 race);
+        void InitDisplayIds();
 
         bool IsAtGroupRewardDistance(WorldObject const* pRewardSource) const;
         void RewardPlayerAndGroupAtKill(Unit* victim, bool isBattleGround);

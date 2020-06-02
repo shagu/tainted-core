@@ -25,6 +25,7 @@
 #include <ace/Message_Block.h>
 #include <ace/Auto_Ptr.h>
 #include <map>
+#include <string>
 
 #include <openssl/bn.h>
 #include <openssl/md5.h>

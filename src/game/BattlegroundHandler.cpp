@@ -432,7 +432,23 @@ void WorldSession::HandleBattlegroundPlayerPortOpcode(WorldPacket& recv_data)
         if (pitr != sBattlegroundMgr.m_BattlegroundQueues[bgQueueTypeId].m_QueuedPlayers[_player->GetBattlegroundQueueIdFromLevel()].end()
             && pitr->second.GroupInfo)
         {
-            team = pitr->second.GroupInfo->Team;
+            if (sWorld.getConfig(CONFIG_CROSSFACTION_BG_ENABLE) && !bg->isArena())
+            {
+                uint32 allycount = bg->GetPlayersCountByTeam(ALLIANCE);
+                uint32 hordecount = bg->GetPlayersCountByTeam(HORDE);
+
+                if (allycount == hordecount)
+                {
+                    if (roll_chance_i(50))
+                        team = urand(ALLIANCE, HORDE);
+                }
+                else  if (allycount < hordecount)
+                    team = ALLIANCE;
+                else
+                    team = HORDE;
+            }
+            else
+                team = pitr->second.GroupInfo->Team;
             arenatype = pitr->second.GroupInfo->ArenaType;
             israted = pitr->second.GroupInfo->IsRated;
             rating = pitr->second.GroupInfo->ArenaTeamRating;
@@ -472,7 +488,10 @@ void WorldSession::HandleBattlegroundPlayerPortOpcode(WorldPacket& recv_data)
                 _player->CleanupAfterTaxiFlight();
             }
             queueSlot = _player->GetBattlegroundQueueIndex(bgQueueTypeId);
-            sBattlegroundMgr.BuildBattlegroundStatusPacket(&data, bg, _player->GetTeam(), queueSlot, STATUS_IN_PROGRESS, 0, bg->GetStartTime());
+            if (sWorld.getConfig(CONFIG_CROSSFACTION_BG_ENABLE))
+                sBattlegroundMgr.BuildBattlegroundStatusPacket(&data, bg, team, queueSlot, STATUS_IN_PROGRESS, 0, bg->GetStartTime());
+            else
+                sBattlegroundMgr.BuildBattlegroundStatusPacket(&data, bg, _player->GetTeam(), queueSlot, STATUS_IN_PROGRESS, 0, bg->GetStartTime());
             _player->GetSession()->SendPacket(&data);
             // remove battleground queue status from BGmgr
             sBattlegroundMgr.m_BattlegroundQueues[bgQueueTypeId].RemovePlayer(_player->GetGUID(), false);
