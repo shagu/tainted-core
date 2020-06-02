@@ -296,7 +296,7 @@ bool ChatHandler::SetDataForCommandInTable(std::vector<ChatCommand>& table, char
     for (uint32 i = 0; i < table.size(); i++)
     {
         // for data fill use full explicit command names
-        if (table[i].Name != cmd)
+        if (table[i].Name != cmd.c_str())
             continue;
 
         // select subcommand from child commands list (including "")
