@@ -23,9 +23,15 @@ Steps to reproduce the behavior:
 **Screenshots**
 <!-- If applicable, add screenshots to help explain your problem. -->
 
+**Branch**
+<!--which branch are you currently using eg: master/eluna/elunacfbg -->
+
+
 **Additional context**
 <!-- Add any other context about the problem here. -->
 
 **AC HASH/COMMIT:**
 <!-- IF YOU DO NOT FILL THIS OUT, WE WILL CLOSE YOUR ISSUE! NEVER WRITE "LATEST", ALWAYS PUT THE ACTUAL VALUE INSTEAD.
 Find the commit hash (unique identifier) by running "git log" on your own clone of Oregoncore or by looking at here https://github.com/talamortis/OregonCore/commits/master -->
+
+<!-- PLEASE NOTE: IF THIS IS NOT FILLED OUT CORRECTLY YOU ISSUE WILL BE CLOSED -->
