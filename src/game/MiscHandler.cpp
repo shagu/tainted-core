@@ -144,7 +144,7 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
             Item* item = GetPlayer()->GetItemByGuid(guid);
             if (!item)
             {
-                DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", guid.GetString().c_str());
+                DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %u not found or you can't interact with it.", guid);
                 return;
             }
 
@@ -156,7 +156,7 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
         {
             if (GetPlayer()->GetGUIDLow() != guid || GetPlayer()->PlayerTalkClass->GetGossipMenu().GetMenuId() != menuId)
             {
-                DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %s not found or you can't interact with it.", guid.GetString().c_str());
+                DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %u not found or you can't interact with it.", guid);
                 return;
             }
 
