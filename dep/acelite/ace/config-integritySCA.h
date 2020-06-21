@@ -6,7 +6,7 @@
 /*
  * This config.h file is for version 4.0.x of the
  * Integrity RTOS with SCA from Green Hills Software
- * https://www.ghs.com/products/rtos/integrity.html
+ * http://www.ghs.com/products/rtos/integrity.html
  */
 
 #define ghs

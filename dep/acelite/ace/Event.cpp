@@ -1,3 +1,6 @@
+#ifndef EVENTCPP
+#define EVENTCPP
+
 #include "ace/Event.h"
 
 #if !defined (__ACE_INLINE__)
@@ -6,8 +9,13 @@
 
 #include "ace/Log_Category.h"
 #include "ace/Condition_Attributes.h"
+#if defined (ACE_HAS_ALLOC_HOOKS)
+# include "ace/Malloc_Base.h"
+#endif /* ACE_HAS_ALLOC_HOOKS */
 
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
+
+ACE_ALLOC_HOOK_DEFINE_Tc(ACE_Event_T)
 
 template <class TIME_POLICY>
 ACE_Event_T<TIME_POLICY>::ACE_Event_T (int manual_reset,
@@ -38,3 +46,4 @@ ACE_Event_T<TIME_POLICY>::~ACE_Event_T (void)
 }
 
 ACE_END_VERSIONED_NAMESPACE_DECL
+#endif

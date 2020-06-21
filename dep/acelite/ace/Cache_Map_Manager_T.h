@@ -23,6 +23,8 @@
 #include "ace/Global_Macros.h"
 #include "ace/Pair_T.h"
 
+#include <utility>
+
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 
 // Forward declaration.
@@ -216,6 +218,9 @@ public:
 
   /// The caching strategy used on the cache.
   CACHING_STRATEGY &caching_strategy (void);
+
+  /// Declare the dynamic allocation hooks.
+  ACE_ALLOC_HOOK_DECLARE;
 
 protected:
 

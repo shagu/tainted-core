@@ -61,6 +61,8 @@ ACE_Process_Manager::Process_Descriptor::~Process_Descriptor (void)
 {
 }
 
+ACE_ALLOC_HOOK_DEFINE(ACE_Process_Manager::Process_Descriptor)
+
 void
 ACE_Process_Manager::Process_Descriptor::dump (void) const
 {
@@ -127,12 +129,14 @@ ACE_Process_Manager::instance (void)
           ACE_Object_Manager::at_exit (ACE_Process_Manager::instance_,
                                        ACE_Process_Manager_cleanup,
                                        0,
-                                       typeid (*ACE_Process_Manager::instance_).name ());
+                                       //typeid (*ACE_Process_Manager::instance_).name ());
+                                       typeid (ACE_Process_Manager).name ()); //VS2019 work around
 #else
           ACE_Object_Manager::at_exit (ACE_Process_Manager::instance_,
                                        ACE_Process_Manager::cleanup,
                                        0,
-                                       typeid (*ACE_Process_Manager::instance_).name ());
+                                       //typeid (*ACE_Process_Manager::instance_).name ());
+                                       typeid (ACE_Process_Manager).name ()); //VS2019 work around
 #endif /* ACE_HAS_SIG_C_FUNC */
 
         }
@@ -160,12 +164,14 @@ ACE_Process_Manager::instance (ACE_Process_Manager *tm)
   ACE_Object_Manager::at_exit (ACE_Process_Manager::instance_,
                                 ACE_Process_Manager_cleanup,
                                 0,
-                                typeid (*ACE_Process_Manager::instance_).name ());
+                                //typeid (*ACE_Process_Manager::instance_).name ());
+                                typeid (ACE_Process_Manager).name ()); //VS2019 work around
 #else
   ACE_Object_Manager::at_exit (ACE_Process_Manager::instance_,
                                 ACE_Process_Manager::cleanup,
                                 0,
-                                typeid (*ACE_Process_Manager::instance_).name ());
+                                //typeid (*ACE_Process_Manager::instance_).name ());
+                                typeid (ACE_Process_Manager).name ()); //VS2019 work around
 #endif /* ACE_HAS_SIG_C_FUNC */
 
   ACE_Process_Manager::instance_ = tm;
