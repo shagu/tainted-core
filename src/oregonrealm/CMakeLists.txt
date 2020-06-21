@@ -35,6 +35,8 @@ include_directories(
 
 set(oregon-realm_LINK_FLAGS "-rdynamic")
 
+GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(oregon-realm
   ${oregon-realm_SRCS}
 )
