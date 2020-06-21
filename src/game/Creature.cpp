@@ -296,6 +296,22 @@ bool Creature::InitEntry(uint32 Entry, uint32 team, const CreatureData* data)
     // known valid are: CLASS_WARRIOR, CLASS_PALADIN, CLASS_ROGUE, CLASS_MAGE
     SetByteValue(UNIT_FIELD_BYTES_0, 1, uint8(cinfo->unit_class));
 
+    // Now we set the Unit Power type for creature
+    switch (cinfo->unit_class)
+    {
+    case CLASS_WARRIOR:
+        setPowerType(POWER_RAGE);
+        break;
+    case CLASS_PALADIN:
+    case CLASS_MAGE:
+        setPowerType(POWER_MANA);
+        break;
+    case CLASS_ROGUE:
+        setPowerType(POWER_ENERGY);
+    default:
+        break;
+    }
+
     // Cancel load if no model defined
     if (!(cinfo->GetFirstValidModelId()))
     {
