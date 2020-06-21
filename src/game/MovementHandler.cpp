@@ -27,6 +27,7 @@
 #include "Battleground.h"
 #include "WaypointMovementGenerator.h"
 #include "InstanceSaveMgr.h"
+#include "ScriptMgr.h"
 
 #define MOVEMENT_PACKET_TIME_DELAY 0
 
@@ -343,6 +344,9 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recv_data)
     uint32 mstime = getMSTime();
     if (m_clientTimeDelay == 0)
         m_clientTimeDelay = mstime - movementInfo.time;
+
+    if (plMover) // Hook for OnPlayerMove
+        sScriptMgr.OnPlayerMove(plMover, movementInfo, opcode);
 
     /* process position-change */
     recv_data.put<uint32>(5, movementInfo.time + m_clientTimeDelay + MOVEMENT_PACKET_TIME_DELAY);                  // offset flags(4) + unk(1)

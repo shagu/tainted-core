@@ -679,6 +679,15 @@ public:
     virtual void OnRelocate(Transport* transport, uint32 waypointId, uint32 mapId, float x, float y, float z) { }
 };
 
+class MovementHandlerScript : public ScriptObject
+{
+protected:
+    MovementHandlerScript(const char* name);
+
+public:
+    virtual void OnPlayerMove(Player* /*player*/, MovementInfo /*movementInfo*/, uint32 /*opcode*/) {}
+};
+
 // Placed here due to ScriptRegistry::AddScript dependency.
 #define sScriptMgr (*ACE_Singleton<ScriptMgr, ACE_Null_Mutex>::instance())
 
@@ -868,6 +877,10 @@ public: /* TransportScript */
     void OnRemovePassenger(Transport* transport, Player* player);
     void OnTransportUpdate(Transport* transport, uint32 diff);
     void OnRelocate(Transport* transport, uint32 waypointId, uint32 mapId, float x, float y, float z);
+
+public: /*MovementInfo*/
+
+    void OnPlayerMove(Player* player, MovementInfo movementInfo, uint32 opcode);
 
 public: /* ScriptRegistry */
 

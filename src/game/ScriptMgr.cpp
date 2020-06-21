@@ -431,6 +431,11 @@ void ScriptMgr::OnGetGroupRate(float& rate, uint32 count, bool isRaid)
     FOREACH_SCRIPT(FormulaScript)->OnGetGroupRate(rate, count, isRaid);
 }
 
+void ScriptMgr::OnPlayerMove(Player* player, MovementInfo movementInfo, uint32 opcode)
+{
+    FOREACH_SCRIPT(MovementHandlerScript)->OnPlayerMove(player, movementInfo, opcode);
+}
+
 #define SCR_MAP_BGN(M,V,I,E,C,T) \
     if (V->GetEntry()->T()) \
     { \
@@ -1049,6 +1054,13 @@ PlayerScript::PlayerScript(const char* name)
 	ScriptMgr::ScriptRegistry<PlayerScript>::AddScript(this);
 }
 
+// Movement
+MovementHandlerScript::MovementHandlerScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<MovementHandlerScript>::AddScript(this);
+}
+
 // Group
 void ScriptMgr::OnGroupAddMember(Group* group, Player* guid)
 {
@@ -1360,6 +1372,7 @@ template class ScriptMgr::ScriptRegistry<AuctionHouseScript>;
 template class ScriptMgr::ScriptRegistry<ConditionScript>;
 template class ScriptMgr::ScriptRegistry<DynamicObjectScript>;
 template class ScriptMgr::ScriptRegistry<TransportScript>;
+template class ScriptMgr::ScriptRegistry< MovementHandlerScript>;
 
 // Undefine utility macros.
 #undef GET_SCRIPT_RET
