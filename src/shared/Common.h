@@ -80,7 +80,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <math.h>
+#include <cmath>
 #include <errno.h>
 #include <signal.h>
 #include <assert.h>
@@ -155,7 +155,7 @@
 
 inline float finiteAlways(float f)
 {
-    return finite(f) ? f : 0.0f;
+    return std::isfinite(f) ? f : 0.0f;
 }
 
 #define atol(a) strtoul( a, NULL, 10)
