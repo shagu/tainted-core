@@ -3806,6 +3806,14 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (bg->GetStatus() == STATUS_WAIT_LEAVE)
                 return SPELL_FAILED_DONT_REPORT;
 
+    // Dont allow Stealth or Invisibility to be casted while the target is Flared
+    if (m_spellInfo->Id == 1784 || m_spellInfo->Id == 66
+        || (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellIconID == 250)
+        || (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellIconID == 103))
+        if (Player* playerCaster = m_caster->ToPlayer())
+            if (playerCaster->HasAura(1543))
+                return SPELL_FAILED_CASTER_AURASTATE;
+
     if (m_caster->GetTypeId() == TYPEID_PLAYER && VMAP::VMapFactory::createOrGetVMapManager()->isLineOfSightCalcEnabled())
     {
         if (m_spellInfo->Attributes & SPELL_ATTR0_OUTDOORS_ONLY &&
