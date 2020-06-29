@@ -18,9 +18,10 @@
 #ifndef OREGON_DEFINE_H
 #define OREGON_DEFINE_H
 
+#include <cstdint>
+
 #include <sys/types.h>
 
-#include <ace/Basic_Types.h>
 #include <ace/ACE_export.h>
 
 #include "Platform/CompilerDefs.h"
@@ -63,21 +64,16 @@
 #  define ATTR_PRINTF(F,V)
 #endif //COMPILER == COMPILER_GNU
 
-typedef ACE_INT64 int64;
-typedef ACE_INT32 int32;
-typedef ACE_INT16 int16;
-typedef ACE_INT8 int8;
-typedef ACE_UINT64 uint64;
-typedef ACE_UINT32 uint32;
-typedef ACE_UINT16 uint16;
-typedef ACE_UINT8 uint8;
+typedef std::int64_t int64;
+typedef std::int32_t int32;
+typedef std::int16_t int16;
+typedef std::int8_t int8;
+typedef std::uint64_t uint64;
+typedef std::uint32_t uint32;
+typedef std::uint16_t uint16;
+typedef std::uint8_t uint8;
 
-#if COMPILER != COMPILER_MICROSOFT
-typedef uint16      WORD;
-typedef uint32      DWORD;
-#endif //COMPILER
-
-typedef uint64 OBJECT_HANDLE;
+typedef std::uint64_t OBJECT_HANDLE;
 
 #endif //OREGON_DEFINE_H
 

@@ -22,9 +22,9 @@
 #include "Timer.h"
 #include "Policies/Singleton.h"
 #include "SharedDefines.h"
-#include "ace/Atomic_Op.h"
 #include "QueryResult.h"
 
+#include <atomic>
 #include <map>
 #include <set>
 #include <list>
@@ -811,8 +811,7 @@ class World
         uint32 m_ShutdownTimer;
         uint32 m_ShutdownMask;
 
-        //atomic op counter for active scripts amount
-        ACE_Atomic_Op<ACE_Thread_Mutex, long> m_scheduledScripts;
+        std::atomic_long m_scheduledScripts;
 
         time_t m_startTime;
         time_t m_gameTime;

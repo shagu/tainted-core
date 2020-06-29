@@ -24,9 +24,10 @@
 #include "Policies/Singleton.h"
 #include "ace/Thread_Mutex.h"
 #include "ace/Guard_T.h"
-#include "ace/Atomic_Op.h"
 #include "PreparedStatement.h"
 #include "QueryResult.h"
+
+#include <atomic>
 
 #ifdef WIN32
 #define FD_SETSIZE 1024
