@@ -570,9 +570,9 @@ void BattlegroundAV::EventPlayerDestroyedPoint(BG_AV_Nodes node)
     //send a nice message to all :)
     char buf[256];
     if (IsTower(node))
-        sprintf(buf, GetOregonString(LANG_BG_AV_TOWER_TAKEN) , GetNodeName(node), (owner == ALLIANCE) ? GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
+        snprintf(buf, sizeof(buf), GetOregonString(LANG_BG_AV_TOWER_TAKEN) , GetNodeName(node), (owner == ALLIANCE) ? GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
     else
-        sprintf(buf, GetOregonString(LANG_BG_AV_GRAVE_TAKEN) , GetNodeName(node), (owner == ALLIANCE) ? GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
+        snprintf(buf, sizeof(buf), GetOregonString(LANG_BG_AV_GRAVE_TAKEN) , GetNodeName(node), (owner == ALLIANCE) ? GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
 
     Creature* creature = GetBGCreature(AV_CPLACE_HERALD);
     if (creature)
@@ -654,7 +654,7 @@ void BattlegroundAV::ChangeMineOwner(uint8 mine, uint32 team, bool initial)
     {
         m_Mine_Reclaim_Timer[mine] = BG_AV_MINE_RECLAIM_TIMER;
         char buf[256];
-        sprintf(buf, GetOregonString(LANG_BG_AV_MINE_TAKEN), GetOregonString((mine == BG_AV_NORTH_MINE) ? LANG_BG_AV_MINE_NORTH : LANG_BG_AV_MINE_SOUTH), (team == ALLIANCE) ?  GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
+        snprintf(buf, sizeof(buf), GetOregonString(LANG_BG_AV_MINE_TAKEN), GetOregonString((mine == BG_AV_NORTH_MINE) ? LANG_BG_AV_MINE_NORTH : LANG_BG_AV_MINE_SOUTH), (team == ALLIANCE) ?  GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
         Creature* creature = GetBGCreature(AV_CPLACE_HERALD);
         if (creature)
             YellToAll(creature, buf, LANG_UNIVERSAL);
@@ -872,7 +872,7 @@ void BattlegroundAV::EventPlayerDefendsPoint(Player* player, uint32 object)
     }
     //send a nice message to all :)
     char buf[256];
-    sprintf(buf, GetOregonString((IsTower(node)) ? LANG_BG_AV_TOWER_DEFENDED : LANG_BG_AV_GRAVE_DEFENDED), GetNodeName(node), (team == ALLIANCE) ?  GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
+    snprintf(buf, sizeof(buf), GetOregonString((IsTower(node)) ? LANG_BG_AV_TOWER_DEFENDED : LANG_BG_AV_GRAVE_DEFENDED), GetNodeName(node), (team == ALLIANCE) ?  GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
     Creature* creature = GetBGCreature(AV_CPLACE_HERALD);
     if (creature)
         YellToAll(creature, buf, LANG_UNIVERSAL);
@@ -982,7 +982,7 @@ void BattlegroundAV::EventPlayerAssaultsPoint(Player* player, uint32 object)
 
     //send a nice message to all :)
     char buf[256];
-    sprintf(buf, (IsTower(node)) ? GetOregonString(LANG_BG_AV_TOWER_ASSAULTED) : GetOregonString(LANG_BG_AV_GRAVE_ASSAULTED), GetNodeName(node),  (team == ALLIANCE) ?  GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
+    snprintf(buf, sizeof(buf), (IsTower(node)) ? GetOregonString(LANG_BG_AV_TOWER_ASSAULTED) : GetOregonString(LANG_BG_AV_GRAVE_ASSAULTED), GetNodeName(node),  (team == ALLIANCE) ?  GetOregonString(LANG_BG_AV_ALLY) : GetOregonString(LANG_BG_AV_HORDE));
     Creature* creature = GetBGCreature(AV_CPLACE_HERALD);
     if (creature)
         YellToAll(creature, buf, LANG_UNIVERSAL);

@@ -203,13 +203,12 @@ inline void LoadDBC(uint32& availableDbcLocales, StoreProblemList& errlist, DBCS
     }
     else
     {
-        // sort problematic dbc to (1) non compatible and (2) non-existed
-        FILE* f = fopen(dbc_filename.c_str(), "rb");
-        if (f)
+        if (FILE* f = fopen(dbc_filename.c_str(), "rb"))
         {
-            char buf[100];
-            snprintf(buf, 100, " (exists, but has %d fields instead %d) Wrong client version of DBC files?", storage.GetFieldCount(), strlen(storage.GetFormat()));
-            errlist.push_back(dbc_filename + buf);
+            std::ostringstream stream;
+            stream << dbc_filename << " exists, and has " << storage.GetFieldCount() << " field(s) (expected " << strlen(storage.GetFormat()) << "). Extracted file might be from wrong client version or a database-update has been forgotten.";
+            std::string buf = stream.str();
+            errlist.push_back(buf);
             fclose(f);
         }
         else

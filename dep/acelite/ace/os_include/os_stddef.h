@@ -11,7 +11,7 @@
  */
 //=============================================================================
 
-// From https://publications.opengroup.org/t101
+// From http://www.UNIX-systems.org/single_unix_specification/
 
 #ifndef ACE_OS_INCLUDE_OS_STDDEF_H
 #define ACE_OS_INCLUDE_OS_STDDEF_H

@@ -55,8 +55,6 @@ include(dep/drassil/cmake-utils/utils.cmake)
 
 include(cmake/ac_macros.cmake)
 
-include(cmake/GroupSources.cmake)
-
 # set default buildoptions and print them
 include(cmake/options.cmake)
 
@@ -68,6 +66,8 @@ endif()
 
 # platform detection
 include(CheckPlatform)
+
+include(GroupSources)
 
 # basic package searching and setup
 find_package(PCHSupport)

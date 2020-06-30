@@ -47,6 +47,8 @@ include_directories(
 
 set(oregon-core_LINK_FLAGS "")
 
+GroupSources(${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(oregon-core ${oregon-core_SRCS})
 
 if( NOT WIN32 )

@@ -80,7 +80,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <math.h>
+#include <cmath>
 #include <errno.h>
 #include <signal.h>
 #include <assert.h>
@@ -126,7 +126,6 @@
 
 #define I32FMT "%08I32X"
 #define I64FMT "%016I64X"
-#define snprintf _snprintf
 #define atoll __atoi64
 #define vsnprintf _vsnprintf
 #define finite(X) _finite(X)
@@ -156,7 +155,7 @@
 
 inline float finiteAlways(float f)
 {
-    return finite(f) ? f : 0.0f;
+    return std::isfinite(f) ? f : 0.0f;
 }
 
 #define atol(a) strtoul( a, NULL, 10)

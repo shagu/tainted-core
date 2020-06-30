@@ -286,7 +286,7 @@ template<>
 void FollowMovementGenerator<Creature>::_updateSpeed(Creature& u)
 {
     // pet only sync speed with owner
-    if (!((Creature&)u).HasUnitTypeMask(UNIT_MASK_MINION) || !i_target.isValid() || i_target->GetGUID() != u.GetCharmerOrOwnerGUID())
+    if (!((Creature&)u).HasUnitTypeMask(UNIT_MASK_MINION) || !i_target.isValid() || i_target->GetGUID() != u.GetCharmerOrOwnerGUID() || !u.IsInWorld())
         return;
 
     u.UpdateSpeed(MOVE_RUN, true);

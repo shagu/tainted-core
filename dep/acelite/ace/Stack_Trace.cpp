@@ -12,7 +12,7 @@
  *    http://www.linuxselfhelp.com/gnu/glibc/html_chapter/libc_33.html
  *  - the Solaris stack generation is adapted from a 1995 post on
  *    comp.unix.solaris by Bart Smaalders,
- *    https://groups.google.com/forum/#!topic/comp.unix.solaris/i5896L4ojxw
+ *    http://groups.google.com/group/comp.unix.solaris/browse_thread/thread/8b9f3de8be288f1c/31550f93a48231d5?lnk=gst&q=how+to+get+stack+trace+on+solaris+group:comp.unix.solaris#31550f93a48231d5
  *  - VxWorks kernel-mode stack tracing is adapted from a code example
  *    in the VxWorks FAQ at http://www.xs4all.nl/~borkhuis/vxworks/vxw_pt5.html
  *    although the undocumented functions it uses are also mentioned in
@@ -27,6 +27,8 @@
 #include "ace/Min_Max.h"
 #include "ace/OS_NS_string.h"
 #include "ace/OS_NS_stdio.h"
+
+ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 
 /*
   This is ugly, simply because it's very platform-specific.
@@ -55,7 +57,16 @@ determine_starting_frame (ssize_t initial_frame, ssize_t offset)
   return ACE_MAX( initial_frame + offset, static_cast<ssize_t>(0));
 }
 
-#if (defined(__GLIBC__) || defined(ACE_HAS_EXECINFO_H)) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
+#if defined(ACE_FACE_SAFETY_BASE) && !defined(ACE_FACE_DEV)
+void
+ACE_Stack_Trace::generate_trace (ssize_t starting_frame_offset, size_t num_frames)
+{
+  ACE_UNUSED_ARG (starting_frame_offset);
+  ACE_UNUSED_ARG (num_frames);
+  ACE_OS::strcpy (&this->buf_[0], UNABLE_TO_GET_TRACE);
+}
+
+#elif (defined(__GLIBC__) || defined(ACE_HAS_EXECINFO_H)) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
 // This is the code for glibc
 #  include <execinfo.h>
 
@@ -724,3 +735,4 @@ ACE_Stack_Trace::generate_trace (ssize_t, size_t)
 }
 #endif
 
+ACE_END_VERSIONED_NAMESPACE_DECL

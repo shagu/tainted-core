@@ -236,7 +236,7 @@ FILE* Log::openGmlogPerAccount(uint64 account)
         return NULL;
 
     char namebuf[OREGON_PATH_MAX];
-    snprintf(namebuf, OREGON_PATH_MAX, m_gmlog_filename_format.c_str(), account);
+    snprintf(namebuf, sizeof(namebuf), m_gmlog_filename_format.c_str(), account);
     return fopen(namebuf, "ab");
 }
 
