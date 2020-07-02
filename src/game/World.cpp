@@ -1076,9 +1076,6 @@ void World::LoadConfigSettings(bool reload)
     // Battleground
     m_configs[CONFIG_BATTLEGROUND_CAST_DESERTER] = sConfig.GetBoolDefault("Battleground.CastDeserter", true);
     m_configs[CONFIG_BATTLEGROUND_QUEUE_ANNOUNCER_ENABLE] = sConfig.GetBoolDefault("Battleground.QueueAnnouncer.Enable", false);
-    m_configs[CONFIG_CROSSFACTION_BG_ENABLE] = sConfig.GetBoolDefault("Battleground.CrossFaction.Enable", false);
-    m_configs[CONFIG_CROSSFACTION_REPLACE_RACIALS] = sConfig.GetBoolDefault("Battleground.CrossFaction.ReplaceRacials", false);
-    m_configs[CONFIG_CROSSFACTION_REPLACE_LANGUAGE] = sConfig.GetBoolDefault("Battleground.Crossfaction.RepalceLanguage", false);
     m_configs[CONFIG_BATTLEGROUND_QUEUE_ANNOUNCER_PLAYERONLY] = sConfig.GetBoolDefault("Battleground.QueueAnnouncer.PlayerOnly", false);
     m_configs[CONFIG_BATTLEGROUND_QUEUE_ANNOUNCER_ONSTART] = sConfig.GetBoolDefault("Battleground.QueueAnnouncer.OnStart", false);
     m_configs[CONFIG_BATTLEGROUND_PREMATURE_REWARD] = sConfig.GetBoolDefault("Battleground.PrematureReward", true);

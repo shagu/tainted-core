@@ -1688,14 +1688,17 @@ bool WorldObject::CanDetect(WorldObject const* obj, bool ignoreStealth, bool che
         if (Unit* controller = thisUnit->GetCharmerOrOwner())
             seer = controller;
 
-    if (obj->IsAlwaysDetectableFor(seer))
+    if (obj->IsAlwaysDetectableFor(seer) || GetEntry() == WORLD_TRIGGER)
         return true;
 
-    if (!ignoreStealth && !seer->CanDetectInvisibilityOf(obj))
-        return false;
+    if (!ignoreStealth)
+    {
+        if (!seer->CanDetectInvisibilityOf(obj))
+            return false;
 
-    if (!ignoreStealth && !seer->CanDetectStealthOf(obj, checkAlert))
-        return false;
+        if (!seer->CanDetectStealthOf(obj, checkAlert))
+            return false;
+    }
 
     return true;
 }
@@ -1712,12 +1715,20 @@ bool WorldObject::CanDetectInvisibilityOf(WorldObject const* obj) const
     // (it's at least true for spell: 66)
     // It seems like that only Units are affected by this check (couldn't see arena doors with preparation invisibility)
     if (obj->ToUnit())
-        if ((m_invisibility.GetFlags() & obj->m_invisibilityDetect.GetFlags()) != m_invisibility.GetFlags())
+    {
+        uint32 objMask = m_invisibility.GetFlags() & obj->m_invisibilityDetect.GetFlags();
+
+        objMask |= m_invisibility.GetFlags() & obj->m_invisibility.GetFlags();
+        if (objMask != m_invisibility.GetFlags())
             return false;
+    }
 
     for (uint32 i = 0; i < TOTAL_INVISIBILITY_TYPES; ++i)
     {
         if (!(mask & (1 << i)))
+            continue;
+
+        if (m_invisibility.GetValue(InvisibilityType(i)) && obj->m_invisibility.GetValue(InvisibilityType(i)))
             continue;
 
         int32 objInvisibilityValue = obj->m_invisibility.GetValue(InvisibilityType(i));
@@ -1740,12 +1751,15 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
     if (!obj->m_stealth.GetFlags())
         return true;
 
+    if (isType(TYPEMASK_PLAYER))
+        if (!ToPlayer()->IsAlive())
+            return false;
+
     float distance = GetExactDist(obj);
     float combatReach = 0.0f;
 
-    Unit const* unit = ToUnit();
-    if (unit)
-        combatReach = unit->GetCombatReach();
+    if (isType(TYPEMASK_UNIT))
+        combatReach = ((Unit*)this)->GetCombatReach();
 
     if (distance < combatReach)
         return true;
@@ -1753,14 +1767,14 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
     if (!HasInArc(float(M_PI), obj))
         return false;
 
-    GameObject const* go = ToGameObject();
     for (uint32 i = 0; i < TOTAL_STEALTH_TYPES; ++i)
     {
         if (!(obj->m_stealth.GetFlags() & (1 << i)))
             continue;
 
-        if (unit && unit->HasAuraTypeWithMiscvalue(SPELL_AURA_DETECT_STEALTH, i))
-            return true;
+        if (isType(TYPEMASK_UNIT))
+            if (((Unit*)this)->HasAuraTypeWithMiscvalue(SPELL_AURA_DETECT_STEALTH, i))
+                return true;
 
         // Starting points
         int32 detectionValue = 30;
@@ -1772,14 +1786,19 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
 
         // Apply modifiers
         detectionValue += m_stealthDetect.GetValue(StealthType(i));
-        if (go)
-            if (Unit* owner = go->GetOwner())
+        if (obj->isType(TYPEMASK_GAMEOBJECT))
+        {
+            detectionValue += 30;
+            if (Unit* owner = ((GameObject*)obj)->GetOwner())
                 detectionValue -= int32(owner->getLevelForTarget(this) - 1) * 5;
+        }
 
         detectionValue -= obj->m_stealth.GetValue(StealthType(i));
 
         // Calculate max distance
         float visibilityRange = float(detectionValue) * 0.3f + combatReach;
+
+        Unit const* unit = ToUnit();
 
         // If this unit is an NPC then player detect range doesn't apply
         if (unit && unit->GetTypeId() == TYPEID_PLAYER && visibilityRange > MAX_PLAYER_STEALTH_DETECT_RANGE)
@@ -1789,8 +1808,9 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
         if (checkAlert)
             visibilityRange += (visibilityRange * 0.08f) + 1.5f;
 
-        // If checking for alert, and creature's visibility range is greater than aggro distance, No alert
         Unit const* tunit = obj->ToUnit();
+
+        // If checking for alert, and creature's visibility range is greater than aggro distance, No alert
         if (checkAlert && unit && unit->ToCreature() && visibilityRange >= unit->ToCreature()->GetAttackDistance(tunit) + unit->ToCreature()->m_CombatDistance)
             return false;
 

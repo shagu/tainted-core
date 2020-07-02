@@ -1168,7 +1168,7 @@ void Spell::DoSpellHitOnUnit(Unit* unit, const uint32 effectMask)
                 }
             }
         }
-        if (m_caster->IsValidAttackTarget(unit))
+        if (m_caster->_IsValidAttackTarget(unit, m_spellInfo))
         {
             unit->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_HITBYSPELL);
             if (m_customAttr & SPELL_ATTR_CU_AURA_CC)

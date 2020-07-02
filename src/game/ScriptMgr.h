@@ -21,8 +21,10 @@
 #include "ConditionMgr.h"
 #include "Player.h"
 #include "Transports.h"
+#include "WorldSession.h"
 
 class Player;
+class BattlegroundScript;
 class Creature;
 class CreatureAI;
 class InstanceData;
@@ -299,6 +301,9 @@ public:
     // Called when a player is created.
     virtual void OnCreate(Player* /*player*/) { }
 
+    // Called When player is loading data from DB
+    virtual void OnPlayerLoadFromDB(Player* /*player*/) { }
+
     // Called when a player is deleted.
     virtual void OnDelete(ObjectGuid /*guid*/, uint32 /*accountId*/) { }
 
@@ -561,6 +566,18 @@ public:
     virtual bool OnTrigger(Player* player, AreaTriggerEntry const* trigger) { return false; }
 };
 
+class BGScript : public ScriptObject
+{
+protected:
+    BGScript(const char* name);
+
+public:
+
+    virtual void OnBGAssignTeam(Player* player, Battleground* bg, uint32& team) {}
+    virtual void OnPlayerJoinBG(Player* player, Battleground* bg) {}
+    virtual void OnPlayerLeaveBG(Player* player, Battleground* bg) {}
+};
+
 class BattlegroundScript : public ScriptObject
 {
 protected:
@@ -568,7 +585,6 @@ protected:
     BattlegroundScript(const char* name);
 
 public:
-
     bool IsDatabaseBound() const { return true; }
 
     // Should return a fully valid BattleGround object for the type ID.
@@ -799,8 +815,6 @@ public: /* AreaTriggerScript */
 
     bool OnTrigger(Player* player, AreaTriggerEntry const* trigger);
 
-public: /* BattlegroundScript */
-
 
 public: /* OutdoorPvPScript */
 
@@ -859,6 +873,7 @@ public: /* PlayerScript */
     void OnPlayerLogin(Player* player, bool firstLogin);
     void OnPlayerLogout(Player* player);
     void OnPlayerCreate(Player* player);
+    void OnPlayerLoadFromDB(Player* player);
     void OnPlayerDelete(ObjectGuid guid, uint32 accountId);
     void OnPlayerFailedDelete(ObjectGuid guid, uint32 accountId);
     void OnPlayerSave(Player* player);
@@ -881,6 +896,12 @@ public: /* TransportScript */
 public: /*MovementInfo*/
 
     void OnPlayerMove(Player* player, MovementInfo movementInfo, uint32 opcode);
+
+public: /* BGScript */
+
+    void OnBGAssignTeam(Player* player, Battleground* bg, uint32& team);
+    void OnPlayerJoinBG(Player* player, Battleground* bg);
+    void OnPlayerLeaveBG(Player* player, Battleground* bg);
 
 public: /* ScriptRegistry */
 

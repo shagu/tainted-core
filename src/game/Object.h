@@ -301,8 +301,10 @@ class Object
 
         bool HasFlag(uint16 index, uint32 flag) const
         {
-            ASSERT(index < m_valuesCount || PrintIndexError(index , false));
-            return (m_uint32Values[ index ] & flag) != 0;
+            if (index >= m_valuesCount && !PrintIndexError(index, false))
+                return false;
+
+            return (m_uint32Values[index] & flag) != 0;
         }
 
         void SetByteFlag(uint16 index, uint8 offset, uint8 newFlag);

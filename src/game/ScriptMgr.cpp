@@ -438,6 +438,22 @@ void ScriptMgr::OnPlayerMove(Player* player, MovementInfo movementInfo, uint32 o
     FOREACH_SCRIPT(MovementHandlerScript)->OnPlayerMove(player, movementInfo, opcode);
 }
 
+// Battleground 
+void ScriptMgr::OnPlayerJoinBG(Player* player, Battleground* bg)
+{
+    FOREACH_SCRIPT(BGScript)->OnPlayerJoinBG(player, bg);
+}
+
+void ScriptMgr::OnPlayerLeaveBG(Player* player, Battleground* bg)
+{
+    FOREACH_SCRIPT(BGScript)->OnPlayerLeaveBG(player, bg);
+}
+
+void ScriptMgr::OnBGAssignTeam(Player* player, Battleground* bg, uint32& team)
+{
+    FOREACH_SCRIPT(BGScript)->OnBGAssignTeam(player, bg, team);
+}
+
 #define SCR_MAP_BGN(M,V,I,E,C,T) \
     if (V->GetEntry()->T()) \
     { \
@@ -1123,6 +1139,13 @@ MovementHandlerScript::MovementHandlerScript(const char* name)
     ScriptMgr::ScriptRegistry<MovementHandlerScript>::AddScript(this);
 }
 
+
+BGScript::BGScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<BGScript>::AddScript(this);
+}
+
 // Group
 void ScriptMgr::OnGroupAddMember(Group* group, Player* guid)
 {
@@ -1168,6 +1191,12 @@ void ScriptMgr::OnGroupDisband(Group* group, Player* leader)
 
 
 // Player
+
+void ScriptMgr::OnPlayerLoadFromDB(Player* player)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnPlayerLoadFromDB(player);
+}
+
 void ScriptMgr::OnPVPKill(Player* killer, Player* killed)
 {
     FOREACH_SCRIPT(PlayerScript)->OnPVPKill(killer, killed);
@@ -1440,7 +1469,8 @@ template class ScriptMgr::ScriptRegistry<AuctionHouseScript>;
 template class ScriptMgr::ScriptRegistry<ConditionScript>;
 template class ScriptMgr::ScriptRegistry<DynamicObjectScript>;
 template class ScriptMgr::ScriptRegistry<TransportScript>;
-template class ScriptMgr::ScriptRegistry< MovementHandlerScript>;
+template class ScriptMgr::ScriptRegistry<MovementHandlerScript>;
+template class ScriptMgr::ScriptRegistry<BGScript>;
 
 // Undefine utility macros.
 #undef GET_SCRIPT_RET
