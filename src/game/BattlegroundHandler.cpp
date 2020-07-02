@@ -475,10 +475,7 @@ void WorldSession::HandleBattlegroundPlayerPortOpcode(WorldPacket& recv_data)
                 _player->CleanupAfterTaxiFlight();
             }
             queueSlot = _player->GetBattlegroundQueueIndex(bgQueueTypeId);
-            if (sWorld.getConfig(CONFIG_CROSSFACTION_BG_ENABLE))
-                sBattlegroundMgr.BuildBattlegroundStatusPacket(&data, bg, team, queueSlot, STATUS_IN_PROGRESS, 0, bg->GetStartTime());
-            else
-                sBattlegroundMgr.BuildBattlegroundStatusPacket(&data, bg, _player->GetTeam(), queueSlot, STATUS_IN_PROGRESS, 0, bg->GetStartTime());
+            sBattlegroundMgr.BuildBattlegroundStatusPacket(&data, bg, _player->GetTeam() != team ? team : _player->GetTeam() , queueSlot, STATUS_IN_PROGRESS, 0, bg->GetStartTime());
             _player->GetSession()->SendPacket(&data);
             // remove battleground queue status from BGmgr
             sBattlegroundMgr.m_BattlegroundQueues[bgQueueTypeId].RemovePlayer(_player->GetGUID(), false);
