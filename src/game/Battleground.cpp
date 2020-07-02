@@ -26,7 +26,7 @@
 #include "Utilities/Util.h"
 #include "World.h"
 #include "GridNotifiersImpl.h"
-#include "../Custom/CrossfactionBG/CrossfactionBG.h"
+#include "ScriptMgr.h"
 
 namespace Oregon
 {
@@ -1018,8 +1018,7 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         if (player->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
             player->RemoveSpellsCausingAura(SPELL_AURA_MOD_SHAPESHIFT);
 
-        if (sWorld.getConfig(CONFIG_CROSSFACTION_BG_ENABLE))
-            sCrossFaction.CFLeaveBattleGround(player);
+        sScriptMgr.OnPlayerLeaveBG(player, this);
 
         player->RemoveAurasByType(SPELL_AURA_MOUNTED);
 
@@ -1177,8 +1176,7 @@ void Battleground::AddPlayer(Player* plr)
         plr->ToggleAFK();
 
     // score struct must be created in inherited class
-    if (sWorld.getConfig(CONFIG_CROSSFACTION_BG_ENABLE))
-        sCrossFaction.CFJoinBattleGround(plr);
+    sScriptMgr.OnPlayerJoinBG(plr, this);
 
     uint64 guid = plr->GetGUID();
     uint32 team = plr->GetBGTeam();

@@ -33,7 +33,6 @@
 #include "World.h"
 #include "Chat.h"
 #include "ArenaTeam.h"
-#include "../Custom/CrossfactionBG/CrossfactionBG.h"
 #include "DisableMgr.h"
 
 INSTANTIATE_SINGLETON_1(BattlegroundMgr);
