@@ -94,6 +94,19 @@ void BattlegroundWS::Update(uint32 diff)
             }
         }
 
+        if (DoorsOpen)
+        {
+            if (DespawnDoorTimer <= diff)
+            {
+                // Despawn Horde Doors only.
+                for (uint32 i = BG_WS_OBJECT_DOOR_H_1; i <= BG_WS_OBJECT_DOOR_H_2; ++i)
+                {
+                    DelObject(i);
+                }
+            }
+            else DespawnDoorTimer -= diff;
+        }
+
         if (m_FlagState[BG_TEAM_ALLIANCE] == BG_WS_FLAG_STATE_WAIT_RESPAWN)
         {
             m_FlagsTimer[BG_TEAM_ALLIANCE] -= diff;
@@ -186,7 +199,11 @@ void BattlegroundWS::StartingEventOpenDoors()
     for (uint32 i = BG_WS_OBJECT_DOOR_A_1; i <= BG_WS_OBJECT_DOOR_A_4; ++i)
         DoorOpen(i);
     for (uint32 i = BG_WS_OBJECT_DOOR_H_1; i <= BG_WS_OBJECT_DOOR_H_2; ++i)
+    {
         DoorOpen(i);
+    }
+    DoorsOpen = true;
+    DespawnDoorTimer = 10000;
 
     SpawnBGObject(BG_WS_OBJECT_DOOR_A_5, RESPAWN_ONE_DAY);
     SpawnBGObject(BG_WS_OBJECT_DOOR_A_6, RESPAWN_ONE_DAY);
