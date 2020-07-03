@@ -194,6 +194,8 @@ class BattlegroundWS : public Battleground
         void RemoveTimedAura(uint32 aura);
         bool IsBrutalTimerDone;
         bool IsForceTimerDone;
+        bool DoorsOpen;
+        uint32 DespawnDoorTimer;
 
         /* Battleground Events */
         virtual void EventPlayerDroppedFlag(Player* Source);
