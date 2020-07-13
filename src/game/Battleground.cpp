@@ -955,7 +955,7 @@ void Battleground::SendRewardMarkByMail(Player* plr, uint32 mark, uint32 count)
         uint32 itemTextId = sObjectMgr.CreateItemText(textBuf);
 
         MailDraft(subject, itemTextId)
-        .AddItem(markItem)
+        .AddItem(markItem, plr->GetGUID())
         .SendMailTo(plr, MailSender(MAIL_CREATURE, bmEntry));
     }
 }

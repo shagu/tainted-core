@@ -877,8 +877,11 @@ m_bodyId(!text.empty() ? sObjectMgr.CreateItemText(text) : 0), m_money(0), m_COD
  * @param item The item to be added to the MailDraft.
  * @returns the MailDraft the item was added to.
  */
-MailDraft& MailDraft::AddItem(Item* item)
+MailDraft& MailDraft::AddItem(Item* item, uint64 ownerguid)
 {
+    if (ownerguid)
+        item->SetOwnerGUID(ownerguid);
+
     m_items[item->GetGUIDLow()] = item;
     return *this;
 }
