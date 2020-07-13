@@ -15,7 +15,6 @@ public:
         {
             { "load",           SEC_ADMINISTRATOR,  true,  HandleLoadPDumpCommand,           "" },
             { "write",          SEC_ADMINISTRATOR,  true,  HandleWritePDumpCommand,          "" },
-            { NULL,             0,                  false, NULL,                             "" }
         };
         static std::vector<ChatCommand> commandTable =
         {

@@ -367,7 +367,7 @@ int ChatHandler::ParseCommands(const char* text)
     if (text[0] == '!' || text[0] == '.')
         ++text;
 
-    if (!ExecuteCommandInTable(getCommandTable(), text, fullcmd))
+    if (!ExecuteCommandInTable(getCommandTable(), text, fullcmd.c_str()))
     {
 
         if (m_session && m_session->GetSecurity() == SEC_PLAYER)
