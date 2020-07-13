@@ -1108,7 +1108,10 @@ public:
 
     static bool HandleMODDeMorphCommand(ChatHandler* handler, char const* /*args*/)
     {
-        Unit* target = handler->getSelectedPlayerOrSelf();
+        Unit* target = handler->getSelectedUnit();
+
+        if (!target)
+            target = handler->getSelectedPlayerOrSelf();
 
         target->DeMorph();
 
