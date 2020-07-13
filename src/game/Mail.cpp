@@ -866,8 +866,11 @@ MailReceiver::MailReceiver(Player* receiver, uint32 receiver_lowguid) : m_receiv
  * @param item The item to be added to the MailDraft.
  * @returns the MailDraft the item was added to.
  */
-MailDraft& MailDraft::AddItem(Item* item)
+MailDraft& MailDraft::AddItem(Item* item, uint64 ownerguid)
 {
+    if (ownerguid)
+        item->SetOwnerGUID(ownerguid);
+
     m_items[item->GetGUIDLow()] = item;
     return *this;
 }

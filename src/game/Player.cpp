@@ -15533,10 +15533,11 @@ void Player::_LoadInventory(QueryResult_AutoPtr result, uint32 timediff)
 
             for (int i = 0; !problematicItems.empty() && i < MAX_MAIL_ITEMS; ++i)
             {
-                draft.AddItem(problematicItems.front());
+                draft.AddItem(problematicItems.front(), this->GetGUID());
                 problematicItems.pop_front();
+   
             }
-
+            
             draft.SendMailTo(this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
         }
     }
@@ -19815,7 +19816,7 @@ void Player::AutoUnequipOffhandIfNeed()
         offItem->SaveToDB();                                // recursive and not have transaction guard into self, item not in inventory and can be save standalone
 
         std::string subject = GetSession()->GetOregonString(LANG_NOT_EQUIPPED_ITEM);
-        MailDraft(subject).AddItem(offItem).SendMailTo(this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
+        MailDraft(subject).AddItem(offItem, this->GetGUID()).SendMailTo(this, MailSender(this, MAIL_STATIONERY_GM), MAIL_CHECK_MASK_COPIED);
 
         CharacterDatabase.CommitTransaction();
     }

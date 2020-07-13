@@ -157,7 +157,7 @@ class MailDraft
             return m_COD;
         }
     public:                                                 // modifiers
-        MailDraft& AddItem(Item* item);
+        MailDraft& AddItem(Item* item, uint64 OwnerGUID = NULL);
         MailDraft& AddMoney(uint32 money)
         {
             m_money = money;
