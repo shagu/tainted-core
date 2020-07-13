@@ -23,8 +23,7 @@ public:
             { "move",           SEC_GAMEMASTER,     false, HandleMoveObjectCommand,          "" },
             { "near",           SEC_ADMINISTRATOR,  false, HandleNearObjectCommand,          "" },
             { "activate",       SEC_GAMEMASTER,     false, HandleActivateObjectCommand,      "" },
-            { "addtemp",        SEC_GAMEMASTER,     false, HandleTempGameObjectCommand,      "" },
-            { NULL,             0,                  false, NULL,                             "" } 
+            { "addtemp",        SEC_GAMEMASTER,     false, HandleTempGameObjectCommand,      "" }
         };
 
         static std::vector<ChatCommand> commandTable =
