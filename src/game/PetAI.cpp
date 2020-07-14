@@ -422,6 +422,8 @@ void PetAI::HandleReturnMovement()
         }
     }
 
+    me->DeleteThreatList();
+    me->ClearInPetCombat();
 }
 
 void PetAI::DoAttack(Unit* target, bool chase)
