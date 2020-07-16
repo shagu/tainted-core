@@ -3809,8 +3809,7 @@ void Aura::HandleAuraModIncreaseFlightSpeed(bool apply, bool Real)
         // Dragonmaw Illusion (overwrite mount model, mounted aura already applied)
         if (apply && m_target->HasAura(42016, 0) && m_target->GetMountID())
             m_target->SetUInt32Value(UNIT_FIELD_MOUNTDISPLAYID, 16314);
-    }else
-        m_target->SetCanFly(false, true);
+    }
 
     m_target->UpdateSpeed(MOVE_FLIGHT, true);
 }
