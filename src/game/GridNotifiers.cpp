@@ -294,11 +294,6 @@ void DynamicObjectUpdater::VisitHelper(Unit* target)
         if (!i_check->IsFriendlyTo(target))
             return;
     }
-    else if (i_check->GetTypeId() == TYPEID_PLAYER)
-    {
-        if (i_check->IsFriendlyTo(target))
-            return;
-    }
     else
     {
         if (!i_check->IsHostileTo(target))
