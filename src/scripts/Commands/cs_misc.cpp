@@ -52,10 +52,10 @@ public:
 
         static std::vector<ChatCommand> sendCommandTable =
         {
-            { "items",              SEC_ADMINISTRATOR,         false, &HandleSendItemCommand,                          "" },
-            { "mail",               SEC_MODERATOR,             false, &HandleSendMailCommand,                          "" },
-            { "message",            SEC_ADMINISTRATOR,         false, &HandleSendMessageCommand,                       "" },
-            { "money",              SEC_ADMINISTRATOR,         false, &HandleSendMoneyCommand,                         "" }
+            { "items",              SEC_ADMINISTRATOR,         true, &HandleSendItemCommand,                          "" },
+            { "mail",               SEC_MODERATOR,             true, &HandleSendMailCommand,                          "" },
+            { "message",            SEC_ADMINISTRATOR,         true, &HandleSendMessageCommand,                       "" },
+            { "money",              SEC_ADMINISTRATOR,         true, &HandleSendMoneyCommand,                         "" }
         };
 
         static std::vector<ChatCommand> commandTable =
@@ -66,7 +66,7 @@ public:
             { "appear",             SEC_ADMINISTRATOR,         false, &HandleAPPEARCommand,                            "" },
             { "summon",             SEC_ADMINISTRATOR,         false, &HandleSUMMONCommand,                            "" },
             { "die",                SEC_ADMINISTRATOR,         false, &HandleDIECommand,                               "" },
-            { "revive",             SEC_ADMINISTRATOR,         false, &HandleREVIVECommand,                            "" },
+            { "revive",             SEC_ADMINISTRATOR,         true, &HandleREVIVECommand,                            "" },
             { "dismount",           SEC_PLAYER,                false, &HandleDISMOUNTCommand,                          "" },
             { "guid",               SEC_GAMEMASTER,            false, &HandleGUIDCommand,                              "" },
             { "itemmove",           SEC_GAMEMASTER,            false, &HandleITEMMOVECommand,                          "" },
@@ -74,8 +74,8 @@ public:
             { "distance",           SEC_ADMINISTRATOR,         false, &HandleDISTANCECommand,                          "" },
             { "recall",             SEC_MODERATOR,             false, &HandleRECALLCommand,                            "" },
             { "save",               SEC_PLAYER,                false, &HandleSAVECommand,                              "" },
-            { "saveall",            SEC_MODERATOR,             false, &HandleSAVEALLCommand,                           "" },
-            { "kick",               SEC_GAMEMASTER,            false, &HandleKICKCommand,                              "" },
+            { "saveall",            SEC_MODERATOR,             true, &HandleSAVEALLCommand,                           "" },
+            { "kick",               SEC_GAMEMASTER,            true, &HandleKICKCommand,                              "" },
             { "linkgrave",          SEC_ADMINISTRATOR,         false, &HandleLINKGRAVECommand,                         "" },
             { "neargrave",          SEC_ADMINISTRATOR,         false, &HandleNEARGRAVECommand,                         "" },
             { "showarea",           SEC_ADMINISTRATOR,         false, &HandleSHOWAREACommand,                          "" },
@@ -112,7 +112,7 @@ public:
             { "start",              SEC_PLAYER,                false, &HandleStartCommand,                             "" },
             { "allowmove",          SEC_ADMINISTRATOR,         false, &HandleAllowMovementCommand,                     "" },
             { "raf",                SEC_ADMINISTRATOR,         true,  NULL,                                            "", referFriendCommandTable },
-            { "send",               SEC_MODERATOR,             false, nullptr,                                         "", sendCommandTable }
+            { "send",               SEC_MODERATOR,             true, nullptr,                                         "", sendCommandTable }
             
         };
         return commandTable;
