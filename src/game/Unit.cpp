@@ -9644,11 +9644,11 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellEntry const* bySpell, W
     // PvP, PvC, CvP case
     // can't attack friendly targets
     ReputationRank repThisToTarget = GetReactionTo(target);
-    ReputationRank repTargetToThis = target->GetReactionTo(this);
+    ReputationRank repTargetToThis;
 
-    /*if (repThisToTarget > REP_NEUTRAL
+    if (repThisToTarget > REP_NEUTRAL
         || (repTargetToThis = target->GetReactionTo(this)) > REP_NEUTRAL)
-        return false; */
+        return false; 
 
     // Not all neutral creatures can be attacked (even some unfriendly faction does not react aggresive to you, like Sporaggar)
     if (repThisToTarget == REP_NEUTRAL &&
@@ -9691,7 +9691,7 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellEntry const* bySpell, W
     // additional checks - only PvP case
     if (playerAffectingAttacker && playerAffectingTarget)
     {
-        if (target->IsPvP() && !target->IsFriendlyTo(this))
+        if (playerAffectingAttacker->IsPvP() && !playerAffectingTarget->IsFriendlyTo(this))
             return true;
 
         if (playerAffectingAttacker->IsFFAPvP() && playerAffectingTarget->IsFFAPvP())
@@ -9700,6 +9700,7 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellEntry const* bySpell, W
         return HasFlag(UNIT_FIELD_BYTES_2, UNIT_BYTE2_FLAG_UNK1)
             || target->HasFlag(UNIT_FIELD_BYTES_2, UNIT_BYTE2_FLAG_UNK1);
     }
+
     return true;
 }
 

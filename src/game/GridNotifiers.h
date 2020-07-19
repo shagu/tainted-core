@@ -833,10 +833,10 @@ class AnyAoETargetUnitInObjectRangeCheck
             if (u->GetTypeId() == TYPEID_UNIT && u->IsTotem())
                 return false;
 
-            if (!i_funit->IsValidAttackTarget(u))
-                return false;
+            if (i_funit->IsValidAttackTarget(u))
+                return true;
 
-            return u->IsInMap(i_obj) && i_obj->IsWithinDistInMap(u, i_range);
+            return false;
         }
     private:
         bool i_targetForPlayer;
