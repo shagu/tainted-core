@@ -7504,7 +7504,7 @@ bool Unit::Attack(Unit* victim, bool meleeAttack)
 
     // Let the pet know we've started attacking someting. Handles melee attacks only
     // Spells such as auto-shot and others handled in WorldSession::HandleCastSpellOpcode
-    if (GetTypeId() == TYPEID_PLAYER)
+    if (this->GetTypeId() == TYPEID_PLAYER)
     {
         Pet* playerPet = this->ToPlayer()->GetPet();
 

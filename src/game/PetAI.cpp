@@ -136,7 +136,7 @@ void PetAI::UpdateAI(const uint32 diff)
     }
     else
     {
-        if (me->HasReactState(REACT_AGGRESSIVE) || me->GetCharmInfo()->IsAtStay() || (owner))
+        if (owner && owner->IsInCombat() && (me->HasReactState(REACT_AGGRESSIVE) || me->GetCharmInfo()->IsAtStay()))
         {
             // Every update we need to check targets only in certain cases
             // Aggressive - Allow auto select if owner or pet don't have a target
@@ -356,6 +356,41 @@ void PetAI::AttackStart(Unit* target)
     DoAttack(target, (!me->GetCharmInfo()->HasCommandState(COMMAND_STAY) || me->GetCharmInfo()->IsCommandAttack()));
 }
 
+void PetAI::OwnerAttackedBy(Unit* attacker)
+{
+    if (!attacker)
+        return;
+
+    if (me->HasReactState(REACT_PASSIVE))
+        return;
+
+    if (me->GetVictim() && me->GetVictim()->IsAlive())
+        return;
+
+    AttackStart(attacker);
+}
+
+void PetAI::OwnerAttacked(Unit* target)
+{
+    // Called when owner attacks something. Allows defensive pets to know
+    //  that they need to assist
+
+    // Target might be NULL if called from spell with invalid cast targets
+    if (!target)
+        return;
+
+    // Passive pets don't do anything
+    if (me->HasReactState(REACT_PASSIVE))
+        return;
+
+    // Prevent pet from disengaging from current target
+    if (me->GetVictim() && me->GetVictim()->IsAlive())
+        return;
+
+    // Continue to evaluate and attack if necessary
+    AttackStart(target);
+}
+
 Unit* PetAI::SelectNextTarget()
 {
     Unit* owner = me->GetCharmerOrOwner();
@@ -559,4 +594,24 @@ void PetAI::ClearCharmInfoFlags()
         ci->SetIsFollowing(false);
         ci->SetIsReturning(false);
     }
+}
+
+void PetAI::AttackedBy(Unit* attacker)
+{
+    // Called when pet takes damage. This function helps keep pets from running off
+    //  simply due to gaining aggro.
+
+    if (!attacker)
+        return;
+
+    // Passive pets don't do anything
+    if (me->HasReactState(REACT_PASSIVE))
+        return;
+
+    // Prevent pet from disengaging from current target
+    if (me->GetVictim() && me->GetVictim()->IsAlive())
+        return;
+
+    // Continue to evaluate and attack if necessary
+    AttackStart(attacker);
 }
