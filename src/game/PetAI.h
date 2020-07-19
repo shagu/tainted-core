@@ -40,6 +40,9 @@ public:
     void MovementInform(uint32 moveType, uint32 data);
 
     void ClearCharmInfoFlags();
+    void OwnerAttackedBy(Unit* attacker);
+    void OwnerAttacked(Unit* target);
+    void AttackedBy(Unit* attacker);
 private:
     bool _isVisible(Unit*) const;
     bool _needToStop(void) const;
