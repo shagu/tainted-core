@@ -660,8 +660,6 @@ bool AuthSocket::_HandleLogonProof()
     // Check if SRP6 results match (password is correct), else send an error
     if (!memcmp(M.AsByteArray(), lp.M1, 20))
     {
-        sLog.outBasic("User '%s' successfully authenticated", _login.c_str());
-
         // Update the sessionkey, last_ip, last login time and reset number of failed logins in the account table for this account
         // No SQL injection (escaped user name) and IP address as received by socket
         const char* K_hex = K.AsHexStr();
@@ -688,11 +686,13 @@ bool AuthSocket::_HandleLogonProof()
             if (validToken != incomingToken)
             {
                 char data[] = { CMD_AUTH_LOGON_PROOF, WOW_FAIL_UNKNOWN_ACCOUNT, 3, 0 };
+                sLog.outBasic("[AuthChallenge] account '%s' used incorrect two-factor code!", _login.c_str());
                 send(data, sizeof(data));
                 return false;
             }
         }
 
+        sLog.outBasic("[AuthChallenge] account '%s' successfully authenticated", _login.c_str());
         SendProof(sha);
 
         // Set _status to authed
