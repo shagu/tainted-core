@@ -5827,8 +5827,6 @@ void Aura::PeriodicTick()
 
             Unit* target = m_target;                        // aura can be deleted in DealDamage
                                                             // Needs to be moved to aura apply
-            if (!pCaster->IsValidAttackTarget(target))
-                return;
 
             if (GetSpellProto()->Effect[GetEffIndex()] == SPELL_EFFECT_PERSISTENT_AREA_AURA &&
                 pCaster->SpellHitResult(m_target, GetSpellProto(), false) != SPELL_MISS_NONE)
