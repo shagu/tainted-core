@@ -1,1 +1,1 @@
-ALTER TABLE `account` ADD `token_key`  VARCHAR(16) NULL;
+ALTER TABLE `account` ADD `token_key`  VARCHAR(16) NOT NULL;
