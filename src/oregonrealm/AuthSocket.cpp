@@ -169,7 +169,7 @@ AuthSocket::AuthSocket()
     _status = STATUS_CHALLENGE;
 
     _accountSecurityLevel = SEC_PLAYER;
-
+    _tokenKey = "";
     _build = 0;
     patch_ = ACE_INVALID_HANDLE;
 }
@@ -480,7 +480,7 @@ bool AuthSocket::_HandleLogonChallenge()
                     uint8 securityFlags = 0;
 
                     // Check if token is used
-                    _tokenKey = (*result)[7].GetString();
+                    _tokenKey = (*result)[7].GetCppString();
                     if (!_tokenKey.empty())
                         securityFlags = 4;
 
