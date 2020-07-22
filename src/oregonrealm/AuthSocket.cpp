@@ -31,6 +31,7 @@
 #include <ace/OS_NS_unistd.h>
 #include <ace/OS_NS_fcntl.h>
 #include <ace/OS_NS_sys_stat.h>
+#include "../shared/Utilities/Util.h"
 
 extern DatabaseType LoginDatabase;
 
@@ -162,14 +163,14 @@ const AuthHandler table[] =
 #define AUTH_TOTAL_COMMANDS sizeof(table)/sizeof(AuthHandler)
 
 // Constructor - set the N and g values for SRP6
-AuthSocket::AuthSocket()
+AuthSocket::AuthSocket() :gridSeed(0)
 {
     N.SetHexStr("894B645E89E1535BBDAD5B8B290650530801B18EBFBF5E8FAB3C82872A3E9BB7");
     g.SetDword(7);
     _status = STATUS_CHALLENGE;
 
     _accountSecurityLevel = SEC_PLAYER;
-
+    _tokenKey = "";
     _build = 0;
     patch_ = ACE_INVALID_HANDLE;
 }
@@ -394,7 +395,7 @@ bool AuthSocket::_HandleLogonChallenge()
         // No SQL injection (escaped user name)
 
         result =
-            LoginDatabase.PQuery("SELECT a.sha_pass_hash,a.id,a.locked,a.last_ip,aa.gmlevel,a.v,a.s, a.token_key "
+            LoginDatabase.PQuery("SELECT a.sha_pass_hash,a.id,a.locked,a.last_ip,aa.gmlevel,a.v,a.s, a.token_key, a.security_flag "
                                  "FROM account a "
                                  "LEFT JOIN account_access aa "
                                  "ON (a.id = aa.id) "
@@ -480,16 +481,29 @@ bool AuthSocket::_HandleLogonChallenge()
                     uint8 securityFlags = 0;
 
                     // Check if token is used
-                    _tokenKey = (*result)[7].GetString();
-                    if (!_tokenKey.empty())
-                        securityFlags = 4;
+                    _tokenKey = (*result)[7].GetCppString();
+                    //if (!_tokenKey.empty())
+                     //   securityFlags = 4;
+                    securityFlags = (*result)[8].GetUInt8();
+					if (!((securityFlags & 0x01) || (securityFlags & 0x02) || (securityFlags & 0x04))) //only support pin/matrix/totp
+					{
+						securityFlags = 0;
+					}
 
+					sLog.outBasic("securityFlags (%u)", securityFlags);
+
+					uint32 gridSeedPkt = gridSeed = static_cast<uint32>(rand32());
+					EndianConvert(gridSeedPkt);
+					serverSecuritySalt.SetRand(16 * 8); // 16 bytes random
                     pkt << uint8(securityFlags);            // security flags (0x0...0x04)
 
                     if (securityFlags & 0x01)                // PIN input
                     {
-                        pkt << uint32(0);
-                        pkt << uint64(0) << uint64(0);      // 16 bytes hash?
+						//pkt << uint32(0);
+						//pkt << uint64(0) << uint64(0);      // 16 bytes hash?
+
+						pkt << gridSeedPkt;
+						pkt.append(serverSecuritySalt.AsByteArray(16), 16);
                     }
 
                     if (securityFlags & 0x02)                // Matrix input
@@ -618,6 +632,52 @@ bool AuthSocket::_HandleLogonProof()
     sha.Initialize();
     sha.UpdateData(t1, 16);
     sha.Finalize();
+
+    // Check auth token
+    if ((lp.securityFlags & 0x04) && !_tokenKey.empty()) //TOTP
+    {
+        uint8 size;
+        recv((char*)&size, 1);
+        char* token = new char[size + 1];
+        token[size] = '\0';
+        recv(token, size);
+        unsigned int validToken = TOTP::GenerateToken(_tokenKey.c_str());
+        unsigned int incomingToken = atoi(token);
+        delete[] token;
+        if (validToken != incomingToken)
+        {
+            char data[4] = { CMD_AUTH_LOGON_PROOF, WOW_FAIL_UNKNOWN_ACCOUNT, 3, 0 };
+            send(data, sizeof(data));
+            return false;
+        }
+    }
+    else if ((lp.securityFlags & 0x01) && !_tokenKey.empty()) //pin
+    {
+        PINData pinData;
+
+        if (lp.securityFlags)
+        {
+            if (!recv((char*)&pinData, sizeof(pinData)))
+                return false;
+        }
+
+        bool pinResult = true;
+        uint8* salt = pinData.salt;
+        uint8* hash = pinData.hash;
+        pinResult = VerifyPinData(std::stoi(_tokenKey), pinData);
+        sLog.outBasic("[AuthChallenge] Account '%s' using IP '%s' PIN result: %u", _login.c_str(), getRemoteAddress().c_str(), pinResult);
+        if (!pinResult)
+        {
+            char data[4] = { CMD_AUTH_LOGON_PROOF, WOW_FAIL_UNKNOWN_ACCOUNT, 3, 0 };
+            send(data, sizeof(data));
+            return false;
+        }
+    }
+    else if ((lp.securityFlags & 0x02) && !_tokenKey.empty()) //matrix
+    {
+        //TODO
+    }
+
     for (int i = 0; i < 20; ++i)
         vK[i * 2] = sha.GetDigest()[i];
     for (int i = 0; i < 16; ++i)
@@ -670,27 +730,6 @@ bool AuthSocket::_HandleLogonProof()
         sha.Initialize();
         sha.UpdateBigNumbers(&A, &M, &K, NULL);
         sha.Finalize();
-
-        // Check auth token
-        if ((lp.securityFlags & 0x04) || !_tokenKey.empty())
-        {
-            uint8 size;
-            //if (!recv((char*)&lp, sizeof(sAuthReconnectProof_C)))
-            recv((char*)&size, 1);
-            char* token = new char[size + 1];
-            token[size] = '\0';
-            recv(token, size);
-            unsigned int validToken = TOTP::GenerateToken(_tokenKey.c_str());
-            unsigned int incomingToken = atoi(token);
-            delete[] token;
-            if (validToken != incomingToken)
-            {
-                char data[] = { CMD_AUTH_LOGON_PROOF, WOW_FAIL_UNKNOWN_ACCOUNT, 3, 0 };
-                sLog.outBasic("[AuthChallenge] account '%s' used incorrect two-factor code!", _login.c_str());
-                send(data, sizeof(data));
-                return false;
-            }
-        }
 
         sLog.outBasic("[AuthChallenge] account '%s' successfully authenticated", _login.c_str());
         SendProof(sha);
@@ -1098,6 +1137,80 @@ bool AuthSocket::_HandleXferAccept()
     InitPatch();
 
     return true;
+}
+
+/// Verify PIN entry data
+bool AuthSocket::VerifyPinData(uint32 pin, const PINData& clientData)
+{
+	// remap the grid to match the client's layout
+	std::vector<uint8> grid = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+	std::vector<uint8> remappedGrid(grid.size());
+
+	uint8* remappedIndex = remappedGrid.data();
+	uint32 seed = gridSeed;
+
+	for (size_t i = grid.size(); i > 0; --i)
+	{
+		auto remainder = seed % i;
+		seed /= i;
+		*remappedIndex = grid[remainder];
+
+		size_t copySize = i;
+		copySize -= remainder;
+		--copySize;
+
+		uint8* srcPtr = grid.data() + remainder + 1;
+		uint8* dstPtr = grid.data() + remainder;
+
+		std::copy(srcPtr, srcPtr + copySize, dstPtr);
+		++remappedIndex;
+	}
+
+	// convert the PIN to bytes (for ex. '1234' to {1, 2, 3, 4})
+	std::vector<uint8> pinBytes;
+
+	while (pin != 0)
+	{
+		pinBytes.push_back(pin % 10);
+		pin /= 10;
+	}
+
+	std::reverse(pinBytes.begin(), pinBytes.end());
+
+	// validate PIN length
+	if (pinBytes.size() < 4 || pinBytes.size() > 10)
+		return false; // PIN outside of expected range
+
+	// remap the PIN to calculate the expected client input sequence
+	for (size_t i = 0; i < pinBytes.size(); ++i)
+	{
+		auto index = std::find(remappedGrid.begin(), remappedGrid.end(), pinBytes[i]);
+		pinBytes[i] = std::distance(remappedGrid.begin(), index);
+	}
+
+	// convert PIN bytes to their ASCII values
+	for (size_t i = 0; i < pinBytes.size(); ++i)
+		pinBytes[i] += 0x30;
+
+	// validate the PIN, x = H(client_salt | H(server_salt | ascii(pin_bytes)))
+	Sha1Hash sha;
+	//sha.UpdateData(serverSecuritySalt.AsByteArray());
+	sha.UpdateData(serverSecuritySalt.AsByteArray(), serverSecuritySalt.GetNumBytes());
+	sha.UpdateData(pinBytes.data(), pinBytes.size());
+	sha.Finalize();
+
+	BigNumber hash, clientHash;
+	hash.SetBinary(sha.GetDigest(), sha.GetLength());
+	clientHash.SetBinary(clientData.hash, 20);
+
+	sha.Initialize();
+	sha.UpdateData(clientData.salt, sizeof(clientData.salt));
+	sha.UpdateData(hash.AsByteArray(), hash.GetNumBytes());
+	sha.Finalize();
+	hash.SetBinary(sha.GetDigest(), sha.GetLength());
+
+	return !memcmp(hash.AsDecStr(), clientHash.AsDecStr(), 20);
 }
 
 void AuthSocket::InitPatch()

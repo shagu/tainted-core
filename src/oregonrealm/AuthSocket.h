@@ -25,6 +25,12 @@
 
 #include "BufferedSocket.h"
 
+typedef struct PINData
+{
+    uint8 salt[16];
+    uint8 hash[20];
+};
+
 enum eStatus
 {
     STATUS_CHALLENGE,
@@ -48,6 +54,7 @@ class AuthSocket: public BufferedSocket
         void OnRead();
         void SendProof(Sha1Hash sha);
         void LoadRealmlist(ByteBuffer& pkt, uint32 acctid);
+        bool VerifyPinData(uint32 pin, const PINData& clientData);
 
         bool _HandleLogonChallenge();
         bool _HandleLogonProof();
@@ -81,6 +88,9 @@ class AuthSocket: public BufferedSocket
         std::string _os;
         uint16 _build;
         AccountTypes _accountSecurityLevel;
+
+        BigNumber serverSecuritySalt;
+        uint32 gridSeed;
 
         ACE_HANDLE patch_;
 
