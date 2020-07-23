@@ -1736,7 +1736,8 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
     float distance = GetExactDist(obj);
     float combatReach = 0.0f;
 
-    if (isType(TYPEMASK_UNIT))
+    Unit const* unit = ToUnit();
+    if (unit)
         combatReach = ((Unit*)this)->GetCombatReach();
 
     if (distance < combatReach)
@@ -1745,14 +1746,14 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
     if (!HasInArc(float(M_PI), obj))
         return false;
 
+    GameObject const* go = ToGameObject();
     for (uint32 i = 0; i < TOTAL_STEALTH_TYPES; ++i)
     {
         if (!(obj->m_stealth.GetFlags() & (1 << i)))
             continue;
 
-        if (isType(TYPEMASK_UNIT))
-            if (((Unit*)this)->HasAuraTypeWithMiscvalue(SPELL_AURA_DETECT_STEALTH, i))
-                return true;
+        if (unit && unit->HasAuraTypeWithMiscvalue(SPELL_AURA_DETECT_STEALTH, i))
+            return true;
 
         // Starting points
         int32 detectionValue = 30;
@@ -1764,7 +1765,7 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
 
         // Apply modifiers
         detectionValue += m_stealthDetect.GetValue(StealthType(i));
-        if (obj->isType(TYPEMASK_GAMEOBJECT))
+        if (go)
         {
             detectionValue += 30;
             if (Unit* owner = ((GameObject*)obj)->GetOwner())
@@ -1775,8 +1776,6 @@ bool WorldObject::CanDetectStealthOf(WorldObject const* obj, bool checkAlert) co
 
         // Calculate max distance
         float visibilityRange = float(detectionValue) * 0.3f + combatReach;
-
-        Unit const* unit = ToUnit();
 
         // If this unit is an NPC then player detect range doesn't apply
         if (unit && unit->GetTypeId() == TYPEID_PLAYER && visibilityRange > MAX_PLAYER_STEALTH_DETECT_RANGE)
