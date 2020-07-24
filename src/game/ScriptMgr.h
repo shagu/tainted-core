@@ -234,6 +234,9 @@ protected:
 
 public:
 
+    // Called for player::update
+    virtual void OnBeforeUpdate(Player* /*player*/, uint32 /*p_time*/) { }
+
     // Called when a player kills another player
     virtual void OnPVPKill(Player* /*killer*/, Player* /*killed*/) { }
 
@@ -874,6 +877,7 @@ public: /* PlayerScript */
     void OnPlayerLogout(Player* player);
     void OnPlayerCreate(Player* player);
     void OnPlayerLoadFromDB(Player* player);
+    void OnBeforePlayerUpdate(Player* player, uint32 p_time);
     void OnPlayerDelete(ObjectGuid guid, uint32 accountId);
     void OnPlayerFailedDelete(ObjectGuid guid, uint32 accountId);
     void OnPlayerSave(Player* player);
