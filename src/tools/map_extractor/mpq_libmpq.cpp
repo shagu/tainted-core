@@ -15,7 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "mpq_libmpq.h"
+#include "mpq_libmpq04.h"
 #include <deque>
 #include <cstdio>
 

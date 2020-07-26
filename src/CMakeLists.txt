@@ -11,25 +11,28 @@
 set(sources_Debugging "")
 
 if( SERVERS )
+  include_directories(
+    ${CMAKE_SOURCE_DIR}/src/common/Debugging
+  )
   if (WIN32)
       set(sources_Debugging
-        ${CMAKE_SOURCE_DIR}/src/shared/Debugging/WheatyExceptionReport.cpp
-        ${CMAKE_SOURCE_DIR}/src/shared/Debugging/WheatyExceptionReport.h
+        ${CMAKE_SOURCE_DIR}/src/common/Debugging/WheatyExceptionReport.cpp
+        ${CMAKE_SOURCE_DIR}/src/common/Debugging/WheatyExceptionReport.h
       )
   else(WIN32)
     if (UNIX)
-        set(sources_Debugging ${CMAKE_SOURCE_DIR}/src/shared/Debugging/UnixDebugger.cpp)
+	set(sources_Debugging
+        ${CMAKE_SOURCE_DIR}/src/common/Debugging/UnixDebugger.cpp
+        ${CMAKE_SOURCE_DIR}/src/common/Debugging/UnixDebugger.h
+      )
     endif (UNIX)
   endif(WIN32)
 
   add_subdirectory(genrev)
   add_subdirectory(framework)
-  add_subdirectory(shared)
-  add_subdirectory(oregonrealm)
-  add_subdirectory(collision)
-  add_subdirectory(game)
-  add_subdirectory(scripts)
-  add_subdirectory(oregoncore)
+
+  add_subdirectory(common)
+  add_subdirectory(server)
 else()
   if( TOOLS )
     add_subdirectory(collision)

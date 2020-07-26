@@ -77,6 +77,13 @@ endif()
 
 message("")
 
+if( ELUNA )
+  ShowOption("Build w/ Eluna         :" "Yes")
+  add_definitions(-DELUNA)
+else()
+  ShowOption("Build w/ Eluna         :" "No (default)")
+endif()
+
 if( USE_COREPCH )
   ShowOption("Build core w/PCH       :" "Yes (default)")
 else()
