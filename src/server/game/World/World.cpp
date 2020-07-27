@@ -2043,22 +2043,31 @@ bool World::GetModuleBoolConfig(std::string conf, bool value)
 
     ModuleConfig Mod = it->second;
 
-    const char* str = Mod.value.c_str();
-    if (strcmp(str, "true") == 0 || strcmp(str, "TRUE") == 0 ||
-        strcmp(str, "yes") == 0 || strcmp(str, "YES") == 0 ||
-        strcmp(str, "1") == 0)
-        return true;
+    // If we can not find the config at all then use value
+    if (it == _moduleConfig.end())
+        return value;
     else
-        return false;
+    {
+        const char* str = Mod.value.c_str();
+        if (strcmp(str, "true") == 0 || strcmp(str, "TRUE") == 0 ||
+            strcmp(str, "yes") == 0 || strcmp(str, "YES") == 0 ||
+            strcmp(str, "1") == 0)
+            return true;
+        else
+            return false;
+    }
 }
 
-std::string World::GetModuleStringConfig(std::string conf)
+std::string World::GetModuleStringConfig(std::string conf, std::string default)
 {
     auto it = _moduleConfig.find(conf.c_str());
 
     ModuleConfig Mod = it->second;
 
-    return Mod.value.c_str();
+    if (it == _moduleConfig.end())
+        return default.c_str();
+    else
+        return Mod.value.c_str();
 }
 
 int32 World::GetModuleIntConfig(std::string conf, uint32 value)
@@ -2067,12 +2076,10 @@ int32 World::GetModuleIntConfig(std::string conf, uint32 value)
 
     ModuleConfig Mod = it->second;
 
-    uint32 defaultValue = atoi(Mod.value.c_str());
-
-    if (defaultValue != value)
-        return defaultValue;
-    else
+    if (it == _moduleConfig.end())
         return value;
+    else
+        return (uint32)atoi(Mod.value.c_str());
 }
 
 // Update the World !
