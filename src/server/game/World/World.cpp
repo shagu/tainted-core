@@ -2065,7 +2065,7 @@ std::string World::GetModuleStringConfig(std::string conf, std::string value)
     ModuleConfig Mod = it->second;
 
     if (it == _moduleConfig.end())
-        return default.c_str();
+        return value.c_str();
     else
         return Mod.value.c_str();
 }
