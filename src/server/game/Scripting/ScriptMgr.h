@@ -233,12 +233,16 @@ protected:
     PlayerScript(char const* name);
 
 public:
+    // Called when player loots money
+    virtual void OnLootMoney(Player* /*player*/, uint32 /*amount*/) { }
+
     // Called When a player Loots an item
     virtual void OnLootItem(Player* /*player*/, Item* /*item*/, uint32 /*count*/, uint64 /*itemGUID*/) { }
 
     // Called when player creates an item
     virtual void OnCreateItem(Player* /*player*/, Item* /*item*/, uint32 /*count*/) { }
 
+    // Called when player recieves item from quest reward
     virtual void OnQuestRewardItem(Player* /*player*/, Item* /*item*/, uint32 /*count*/) { }
 
     // Called for player::update
@@ -885,6 +889,7 @@ public: /* PlayerScript */
     void OnPlayerCreate(Player* player);
     void OnPlayerLoadFromDB(Player* player);
     void OnBeforePlayerUpdate(Player* player, uint32 p_time);
+    void OnLootMoney(Player* player, uint32 amount);
     void OnLootItem(Player* player, Item* item, uint32 count, uint64 lootGUID);
     void OnCreateItem(Player* player, Item* item, uint32 count);
     void OnQuestRewardItem(Player* player, Item* item, uint32 count);

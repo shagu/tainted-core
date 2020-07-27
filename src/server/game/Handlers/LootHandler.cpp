@@ -255,9 +255,11 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
                 data << uint32(money_per_player);
 
                 (*i)->GetSession()->SendPacket(&data);
+
+                sScriptMgr.OnLootMoney((*i), money_per_player);
 #ifdef ELUNA
                 sEluna->OnLootMoney((*i), money_per_player);
-#endif
+#endif   
 
             }
 
@@ -265,6 +267,8 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recv_data*/)
         else
         {
             player->ModifyMoney(pLoot->gold);
+
+            sScriptMgr.OnLootMoney(player, pLoot->gold);
 			
 #ifdef ELUNA
             sEluna->OnLootMoney(player, pLoot->gold);

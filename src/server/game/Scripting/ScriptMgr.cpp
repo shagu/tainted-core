@@ -1240,6 +1240,11 @@ void ScriptMgr::OnGroupDisband(Group* group, Player* leader)
 
 
 // Player
+void ScriptMgr::OnLootMoney(Player* player, uint32 amount)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnLootMoney(player, amount);
+}
+
 void ScriptMgr::OnBeforePlayerUpdate(Player* player, uint32 p_time)
 {
     FOREACH_SCRIPT(PlayerScript)->OnBeforeUpdate(player, p_time);
