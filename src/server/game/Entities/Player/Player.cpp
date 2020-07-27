@@ -13496,6 +13496,8 @@ void Player::RewardQuest(Quest const* pQuest, uint32 reward, Object* questGiver,
             {
                 Item* item = StoreNewItem(dest, itemId, true);
                 SendNewItem(item, pQuest->RewChoiceItemCount[reward], true, false);
+
+                sScriptMgr.OnQuestRewardItem(this, item, pQuest->RewChoiceItemCount[reward]);
             }
         }
     }
@@ -13511,6 +13513,8 @@ void Player::RewardQuest(Quest const* pQuest, uint32 reward, Object* questGiver,
                 {
                     Item* item = StoreNewItem(dest, itemId, true);
                     SendNewItem(item, pQuest->RewItemCount[i], true, false);
+
+                    sScriptMgr.OnQuestRewardItem(this, item, pQuest->RewItemCount[i]);
                 }
             }
         }
@@ -19351,7 +19355,7 @@ void Player::UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& vi
             #endif
         }
     }
-    else if (visibleNow.size() < 30)
+    else
     {
         if (CanSeeOrDetect(target, false, true))
         {

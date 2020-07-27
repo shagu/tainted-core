@@ -3132,6 +3132,8 @@ void Spell::DoCreateItem(uint32 /*i*/, uint32 itemtype)
         // send info to the client
         player->SendNewItem(pItem, num_to_add, true, true);
 
+        sScriptMgr.OnCreateItem(player, pItem, num_to_add);
+
         // we succeeded in creating at least one item, so a levelup is possible
         player->UpdateCraftSkill(m_spellInfo->Id);
     }

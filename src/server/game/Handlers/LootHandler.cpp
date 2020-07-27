@@ -28,6 +28,7 @@
 #include "Group.h"
 #include "World.h"
 #include "Utilities/Util.h"
+#include "ScriptMgr.h"
 #ifdef ELUNA
 #include "LuaEngine.h"
 #endif
@@ -150,6 +151,8 @@ void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recv_data)
         --loot->unlootedCount;
 
         player->SendNewItem(newitem, uint32(item->count), false, false, true);
+
+        sScriptMgr.OnLootItem(player, newitem, item->count, lguid);
 
 #ifdef ELUNA
         sEluna->OnLootItem(player, newitem, item->count, lguid);

@@ -1245,6 +1245,21 @@ void ScriptMgr::OnBeforePlayerUpdate(Player* player, uint32 p_time)
     FOREACH_SCRIPT(PlayerScript)->OnBeforeUpdate(player, p_time);
 }
 
+void ScriptMgr::OnLootItem(Player* player, Item* item, uint32 count, uint64 lootGUID)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnLootItem(player, item, count, lootGUID);
+}
+
+void ScriptMgr::OnCreateItem(Player* player, Item* item, uint32 count)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnCreateItem(player, item, count);
+}
+
+void ScriptMgr::OnQuestRewardItem(Player* player, Item* item, uint32 count)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnQuestRewardItem(player, item, count);
+}
+
 void ScriptMgr::OnPlayerLoadFromDB(Player* player)
 {
     FOREACH_SCRIPT(PlayerScript)->OnPlayerLoadFromDB(player);
