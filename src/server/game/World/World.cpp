@@ -2058,7 +2058,7 @@ bool World::GetModuleBoolConfig(std::string conf, bool value)
     }
 }
 
-std::string World::GetModuleStringConfig(std::string conf, std::string default)
+std::string World::GetModuleStringConfig(std::string conf, std::string value)
 {
     auto it = _moduleConfig.find(conf.c_str());
 

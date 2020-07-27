@@ -621,7 +621,7 @@ class World
         /*Module Configs*/
         void LoadModuleConfig();
         bool GetModuleBoolConfig(std::string config, bool value);
-        std::string GetModuleStringConfig(std::string config, std::string default);
+        std::string GetModuleStringConfig(std::string config, std::string value);
         int32 GetModuleIntConfig(std::string conf, uint32 value);
 
         void LoadConfigSettings(bool reload = false);
