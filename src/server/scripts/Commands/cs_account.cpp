@@ -36,6 +36,7 @@ public:
             { "addon",          SEC_ADMINISTRATOR,  true,  &HandleAccountSetAddonCommand,     "" },
             { "gmlevel",        SEC_CONSOLE,        true,  &HandleAccountSetGmLevelCommand,   "" },
             { "password",       SEC_CONSOLE,        true,  &HandleAccountSetPasswordCommand,  "" },
+            { "2fa",            SEC_PLAYER,         true,  &HandleAccountSet2FACommand,       "" },       
         };
 
         static std::vector<ChatCommand> accountCommandTable =
@@ -59,6 +60,85 @@ public:
     {
         uint32 gmlevel = handler->GetSession()->GetSecurity();
         handler->PSendSysMessage(LANG_ACCOUNT_LEVEL, gmlevel);
+        return true;
+    }
+
+    static bool HandleAccountSet2FACommand(ChatHandler* handler, const char* args)
+    {
+        if (!*args)
+            return false;
+
+        std::string accountName = strtok((char*)args, " ");
+        std::string secret = strtok(NULL, " ");
+
+        if (handler->GetSession())
+        {
+            if (handler->GetSession()->GetSecurity() < SEC_ADMINISTRATOR)
+                sAccountMgr->GetName(handler->GetSession()->GetAccountId(), accountName);
+        }
+        else if (accountName.empty() || secret.empty())
+            return false;
+
+        uint32 targetAccountId = NULL;
+
+        if (handler->GetSession())
+        {
+            if (handler->GetSession()->GetSecurity() == SEC_ADMINISTRATOR)
+                targetAccountId = sAccountMgr->GetId(accountName.c_str());
+            else
+                targetAccountId = handler->GetSession()->GetAccountId();
+        }
+        else
+            targetAccountId = sAccountMgr->GetId(accountName.c_str());
+
+        if (!targetAccountId)
+        {
+            handler->PSendSysMessage("Account %s does not exist", accountName.c_str());
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        if (secret == "off")
+        {
+            LoginDatabase.PQuery("UPDATE `account` SET `token_key` = '', `security_flag` = '0' WHERE `id` = '%u';", targetAccountId);
+            handler->PSendSysMessage("Sucessfully Removed 2FA for account %s", accountName.c_str());
+            return true;
+        }
+
+        switch (secret.size())
+        {
+        case 6: // Pin
+        {
+            //Check string only contains numbers from 0-9
+            std::size_t found = secret.find_first_not_of("0123456789 ");
+
+            if (found != std::string::npos)
+            {
+                handler->PSendSysMessage("Please only use numbers from 0-9");
+                return false;
+            }
+
+            // Players should be allowed to set this ingame.
+            LoginDatabase.PQuery("UPDATE `account` SET `token_key` = '%u', `security_flag` = '1' WHERE `id` = '%u';", atoi(secret.c_str()), targetAccountId);
+            handler->PSendSysMessage("Account %s has been sucessfully updated with [PIN] \nYour pin is %u",accountName.c_str(), atoi(secret.c_str()));
+            break;
+        }
+        case 16: // TOTP
+        {
+            if (handler->GetSession())
+                if (sAccountMgr->GetSecurity(handler->GetSession()->GetAccountId()) < SEC_ADMINISTRATOR)
+                    return false;
+
+            LoginDatabase.PQuery("UPDATE `account` SET `token_key` = '%s', `security_flag` = '4' WHERE `id` = '%u';", secret.c_str(), targetAccountId);
+            handler->PSendSysMessage("Account %s has been sucessfully updated with [TOTP]", accountName.c_str());
+            break;
+        }
+        default:
+            handler->PSendSysMessage("[PIN] Please use 6 digit numberic value \n[TOTP] Please use 16 Digit value");
+            return false;
+            break;
+        }
+
         return true;
     }
 
