@@ -101,7 +101,7 @@ public:
         if (secret == "off")
         {
             LoginDatabase.PQuery("UPDATE `account` SET `token_key` = '', `security_flag` = '0' WHERE `id` = '%u';", targetAccountId);
-            handler->PSendSysMessage("Sucessfully Removed 2FA for account %s", accountName.c_str());
+            handler->PSendSysMessage("Successfully removed 2FA for account %s", accountName.c_str());
             return true;
         }
 
@@ -120,7 +120,7 @@ public:
 
             // Players should be allowed to set this ingame.
             LoginDatabase.PQuery("UPDATE `account` SET `token_key` = '%u', `security_flag` = '1' WHERE `id` = '%u';", atoi(secret.c_str()), targetAccountId);
-            handler->PSendSysMessage("Account %s has been sucessfully updated with [PIN] \nYour pin is %u",accountName.c_str(), atoi(secret.c_str()));
+            handler->PSendSysMessage("Account %s has been successfully updated with [PIN] \nYour pin is %u",accountName.c_str(), atoi(secret.c_str()));
             break;
         }
         case 16: // TOTP
@@ -130,7 +130,7 @@ public:
                     return false;
 
             LoginDatabase.PQuery("UPDATE `account` SET `token_key` = '%s', `security_flag` = '4' WHERE `id` = '%u';", secret.c_str(), targetAccountId);
-            handler->PSendSysMessage("Account %s has been sucessfully updated with [TOTP]", accountName.c_str());
+            handler->PSendSysMessage("Account %s has been successfully updated with [TOTP]", accountName.c_str());
             break;
         }
         default:
