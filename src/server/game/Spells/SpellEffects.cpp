@@ -3737,35 +3737,19 @@ void Spell::EffectSummonType(SpellEffIndex effIndex)
 
             switch (m_spellInfo->Id)
             {
-                TempSummonType summonType = (duration == 0) ? TEMPSUMMON_DEAD_DESPAWN : TEMPSUMMON_TIMED_DESPAWN;
-                summon = m_originalCaster->SummonCreature(entry, pos, summonType, duration);
-                if (!summon)
-                    return;
-
-                if (properties->Category == SUMMON_CATEGORY_ALLY)
-                {
-                    summon->SetUInt64Value(UNIT_FIELD_SUMMONEDBY, m_originalCaster->GetGUID());
-                    summon->SetFaction(m_originalCaster->GetFaction());
-                    summon->SetLevel(m_originalCaster->getLevel());
-                    summon->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
-                }
-
-                switch (m_spellInfo->Id)
-                {
-                    case 45392:
-                        if (summon->IsAIEnabled)
-                            summon->AI()->AttackStart(m_caster);
-                        break;
-                    default:
-                        if (summon->IsAIEnabled && m_originalCaster->IsInCombat())
-                            summon->AI()->EnterCombat(nullptr);
-                        break;
-                }
-#ifdef ELUNA
-                if (Unit* summoner = m_originalCaster->ToUnit())
-                    sEluna->OnSummoned(summon, summoner);
-#endif
+            case 45392:
+                if (summon->IsAIEnabled)
+                    summon->AI()->AttackStart(m_caster);
+                break;
+            default:
+                if (summon->IsAIEnabled && m_originalCaster->IsInCombat())
+                    summon->AI()->EnterCombat(nullptr);
+                break;
             }
+#ifdef ELUNA
+            if (Unit* summoner = m_originalCaster->ToUnit())
+                sEluna->OnSummoned(summon, summoner);
+#endif
         }
         return;
         }
