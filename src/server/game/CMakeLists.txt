@@ -232,9 +232,9 @@ if( ELUNA )
   endif()
   
   if( UNIX )
-    install(DIRECTORY extensions DESTINATION bin/lua_scripts/)
+    install(DIRECTORY LuaEngine/extensions DESTINATION bin/lua_scripts/)
   elseif( WIN32 )
-    install(DIRECTORY extensions DESTINATION "${CMAKE_INSTALL_PREFIX}/lua_scripts/")
+    install(DIRECTORY LuaEngine/extensions DESTINATION "${CMAKE_INSTALL_PREFIX}/lua_scripts/")
   endif()
  
 endif()

@@ -1,5 +1,5 @@
 dist: xenial
-# language: cpp
+language: cpp
 # compiler: gcc
 
 # whitelisted packages can be obtained quickly without downloading
@@ -40,10 +40,12 @@ matrix:
         - CXX=g++-7
       install:
         - mkdir build
+        - mkdir _install
         - cd build
-        - cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DSERVERS=1 -DTOOLS=1 -DSCRIPTS=1 -DWITH_DOCS=1 -DWITH_WARNINGS=0 -DELUNA=0 -DWITH_COREDEBUG=0
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../_install -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DSERVERS=1 -DTOOLS=1 -DSCRIPTS=1 -DWITH_DOCS=1 -DWITH_WARNINGS=0 -DELUNA=0 -DWITH_COREDEBUG=0
         # we have 1.5 cpu so 2 jobs at a time are sufficient
         - make -j2
+        - make install 
         
     # linux builds with Eluna gcc x64
     - os: linux
@@ -55,10 +57,12 @@ matrix:
         - CXX=g++-7
       install:
         - mkdir build
+        - mkdir _install
         - cd build
-        - cmake .. -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DSERVERS=1 -DTOOLS=1 -DSCRIPTS=1 -DWITH_DOCS=1 -DWITH_WARNINGS=0 -DELUNA=1 -DWITH_COREDEBUG=0
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../_install -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" -DSERVERS=1 -DTOOLS=1 -DSCRIPTS=1 -DWITH_DOCS=1 -DWITH_WARNINGS=0 -DELUNA=1 -DWITH_COREDEBUG=0
         # we have 1.5 cpu so 2 jobs at a time are sufficient
         - make -j2
+        - make install 
     # linux builds without Eluna clang x64
     - os: linux
       arch: amd64
@@ -69,10 +73,12 @@ matrix:
         - CXX=clang++
       install:
         - mkdir build
+        - mkdir _install
         - cd build
-        - cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DSERVERS=1 -DTOOLS=1 -DSCRIPTS=1 -DWITH_DOCS=1 -DWITH_WARNINGS=0 -DELUNA=0 -DWITH_COREDEBUG=0
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../_install -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DSERVERS=1 -DTOOLS=1 -DSCRIPTS=1 -DWITH_DOCS=1 -DWITH_WARNINGS=0 -DELUNA=0 -DWITH_COREDEBUG=0
         # we have 1.5 cpu so 2 jobs at a time are sufficient
         - make -j2
+        - make install
         
     # linux builds with Eluna clang x64
     - os: linux
@@ -84,10 +90,12 @@ matrix:
         - CXX=clang++
       install:
         - mkdir build
+        - mkdir _install
         - cd build
-        - cmake .. -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DSERVERS=1 -DTOOLS=1 -DSCRIPTS=1 -DWITH_DOCS=1 -DWITH_WARNINGS=0 -DELUNA=1 -DWITH_COREDEBUG=0
+        - cmake .. -DCMAKE_INSTALL_PREFIX=../_install -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_COMPILER="clang++" -DSERVERS=1 -DTOOLS=1 -DSCRIPTS=1 -DWITH_DOCS=1 -DWITH_WARNINGS=0 -DELUNA=1 -DWITH_COREDEBUG=0
         # we have 1.5 cpu so 2 jobs at a time are sufficient
-        - make -j2   
+        - make -j2  
+        - make install        
         
 # apply all updates to db and catch possible errors
 script:
