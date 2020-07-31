@@ -26,11 +26,20 @@ Steps to reproduce the behavior:
 **Branch**
 <!--which branch are you currently using eg: master/eluna/elunacfbg -->
 
+**Eluna**
+- [ ] Enabled
+- [ ] Disabled
+
+**Script**
+<!--Script name assigned to the object/creature -->
+
+**Crash**
+<!--Crash log please upload a .txt file do not paste in here -->
 
 **Additional context**
 <!-- Add any other context about the problem here. -->
 
-**AC HASH/COMMIT:**
+**HASH/COMMIT:**
 <!-- IF YOU DO NOT FILL THIS OUT, WE WILL CLOSE YOUR ISSUE! NEVER WRITE "LATEST", ALWAYS PUT THE ACTUAL VALUE INSTEAD.
 Find the commit hash (unique identifier) by running "git log" on your own clone of Oregoncore or by looking at here https://github.com/talamortis/OregonCore/commits/master -->
 
