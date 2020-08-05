@@ -9660,7 +9660,7 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellEntry const* bySpell, W
             else if (!obj)
             {
                 // ignore stealth for aoe spells. Ignore stealth if target is player and unit in combat with same player
-                bool const ignoreStealthCheck = target->GetTypeId() == TYPEID_PLAYER && target->HasStealthAura();
+                bool const ignoreStealthCheck = target->ToCreature() ? true : false;
 
                 if (!CanSeeOrDetect(target, ignoreStealthCheck))
                     return false;
@@ -9688,42 +9688,50 @@ bool Unit::_IsValidAttackTarget(Unit const* target, SpellEntry const* bySpell, W
     // CvC case - can attack each other only when one of them is hostile
     if (!HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) && !target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE))
         return GetReactionTo(target) <= REP_HOSTILE || target->GetReactionTo(this) <= REP_HOSTILE;
-
-    // PvP, PvC, CvP case
-    // can't attack friendly targets
+    
+   // PvC, CvP case
+   // can't attack friendly targets
     ReputationRank repThisToTarget = GetReactionTo(target);
     ReputationRank repTargetToThis;
-
-    if (repThisToTarget > REP_NEUTRAL
-        || (repTargetToThis = target->GetReactionTo(this)) > REP_NEUTRAL)
-        return false; 
-
-    // Not all neutral creatures can be attacked (even some unfriendly faction does not react aggresive to you, like Sporaggar)
-    if (repThisToTarget == REP_NEUTRAL &&
-        repTargetToThis <= REP_NEUTRAL)
+    if (target && target->ToCreature())
     {
-        Player const* owner = GetAffectingPlayer();
-        const Unit* const thisUnit = owner ? owner : this;
 
-        if (!(target->GetTypeId() == TYPEID_PLAYER && thisUnit->GetTypeId() == TYPEID_PLAYER) &&
-            !(target->GetTypeId() == TYPEID_UNIT && thisUnit->GetTypeId() == TYPEID_UNIT))
+        if (repThisToTarget > REP_NEUTRAL
+            || (repTargetToThis = target->GetReactionTo(this)) > REP_NEUTRAL)
+            return false;
+
+        // Not all neutral creatures can be attacked (even some unfriendly faction does not react aggresive to you, like Sporaggar)
+        if (repThisToTarget == REP_NEUTRAL &&
+            repTargetToThis <= REP_NEUTRAL)
         {
-            Player const* player = target->GetTypeId() == TYPEID_PLAYER ? target->ToPlayer() : thisUnit->ToPlayer();
-            Unit const* creature = target->GetTypeId() == TYPEID_UNIT ? target : thisUnit;
+            Player const* owner = GetAffectingPlayer();
+            const Unit* const thisUnit = owner ? owner : this;
 
-            if (FactionTemplateEntry const* factionTemplate = creature->GetFactionTemplateEntry())
+            if (!(target->GetTypeId() == TYPEID_PLAYER && thisUnit->GetTypeId() == TYPEID_PLAYER) &&
+                !(target->GetTypeId() == TYPEID_UNIT && thisUnit->GetTypeId() == TYPEID_UNIT))
             {
-                if (!(player->GetReputationMgr().GetForcedRankIfAny(factionTemplate)))
-                    if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionTemplate->faction))
-                        if (FactionState const* repState = player->GetReputationMgr().GetState(factionEntry))
-                            if (!(repState->Flags & FACTION_FLAG_AT_WAR))
-                                return false;
+                Player const* player = target->GetTypeId() == TYPEID_PLAYER ? target->ToPlayer() : thisUnit->ToPlayer();
+                Unit const* creature = target->GetTypeId() == TYPEID_UNIT ? target : thisUnit;
 
+                if (FactionTemplateEntry const* factionTemplate = creature->GetFactionTemplateEntry())
+                {
+                    if (!(player->GetReputationMgr().GetForcedRankIfAny(factionTemplate)))
+                        if (FactionEntry const* factionEntry = sFactionStore.LookupEntry(factionTemplate->faction))
+                            if (FactionState const* repState = player->GetReputationMgr().GetState(factionEntry))
+                                if (!(repState->Flags & FACTION_FLAG_AT_WAR))
+                                    return false;
+
+                }
             }
-        }
 
+        }
     }
 
+    Unit* owner = this->GetOwner();
+    if (target == owner)
+        return false;
+
+    //PvP 
     Player const* playerAffectingAttacker = HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) ? GetAffectingPlayer() : NULL;
     Player const* playerAffectingTarget = target->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE) ? target->GetAffectingPlayer() : NULL;
 
