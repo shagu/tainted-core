@@ -233,6 +233,9 @@ protected:
     PlayerScript(char const* name);
 
 public:
+    // Called when player completes quest
+    virtual void OnPlayerCompleteQuest(Player* /*player*/, Quest const* /*quest*/) { }
+
     // Called when player loots money
     virtual void OnLootMoney(Player* /*player*/, uint32 /*amount*/) { }
 
@@ -863,6 +866,7 @@ public: /* GroupScript */
 
 public: /* PlayerScript */
 
+    void OnPlayerCompleteQuest(Player* player, Quest const* quest);
     void OnPVPKill(Player* killer, Player* killed);
     void OnCreatureKill(Player* killer, Creature* killed);
     void OnPlayerKilledByCreature(Creature* killer, Player* killed);
