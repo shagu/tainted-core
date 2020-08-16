@@ -2041,13 +2041,13 @@ bool World::GetModuleBoolConfig(std::string conf, bool value)
 {
     auto it = _moduleConfig.find(conf.c_str());
 
-    ModuleConfig Mod = it->second;
-
     // If we can not find the config at all then use value
     if (it == _moduleConfig.end())
         return value;
     else
     {
+        ModuleConfig Mod = it->second;
+
         const char* str = Mod.value.c_str();
         if (strcmp(str, "true") == 0 || strcmp(str, "TRUE") == 0 ||
             strcmp(str, "yes") == 0 || strcmp(str, "YES") == 0 ||
@@ -2062,24 +2062,28 @@ std::string World::GetModuleStringConfig(std::string conf, std::string value)
 {
     auto it = _moduleConfig.find(conf.c_str());
 
-    ModuleConfig Mod = it->second;
-
     if (it == _moduleConfig.end())
         return value.c_str();
     else
+    {
+        ModuleConfig Mod = it->second;
         return Mod.value.c_str();
+    }
+
 }
 
 int32 World::GetModuleIntConfig(std::string conf, uint32 value)
 {
     auto it = _moduleConfig.find(conf.c_str());
 
-    ModuleConfig Mod = it->second;
-
     if (it == _moduleConfig.end())
         return value;
     else
+    {
+        ModuleConfig Mod = it->second;
         return (uint32)atoi(Mod.value.c_str());
+    }
+        
 }
 
 // Update the World !
