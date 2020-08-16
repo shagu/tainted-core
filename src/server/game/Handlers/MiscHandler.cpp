@@ -128,13 +128,6 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
             DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %u not found.", guid);
             return;
         }
-
-#ifdef ELUNA
-		// used by eluna
-		sEluna->HandleGossipSelectOption(GetPlayer(), item, GetPlayer()->PlayerTalkClass->GossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(gossipListId), code);
-		return;
-#endif
-
     }
     else if (IS_PLAYER_GUID(guid))
     {
@@ -144,43 +137,9 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recv_data)
             return;
         }
 
-#ifdef ELUNA
-		// used by eluna
-		sEluna->HandleGossipSelectOption(GetPlayer(), menuId, GetPlayer()->PlayerTalkClass->GossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(gossipListId), code);
-		return;
-#endif
-
     }
     else
     {
-
-#ifdef ELUNA
-        if (IS_ITEM_GUID(guid))
-        {
-            Item* item = GetPlayer()->GetItemByGuid(guid);
-            if (!item)
-            {
-                DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %u not found or you can't interact with it.", guid);
-                return;
-            }
-            // used by eluna
-            sEluna->HandleGossipSelectOption(GetPlayer(), item, GetPlayer()->PlayerTalkClass->GossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(gossipListId), code);
-            return;
-        }
-        else if (IS_PLAYER_GUID(guid))
-        {
-            if (GetPlayer()->GetGUIDLow() != guid || GetPlayer()->PlayerTalkClass->GetGossipMenu().GetMenuId() != menuId)
-            {
-                DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - %u not found or you can't interact with it.", guid);
-                return;
-            }
-
-            // used by eluna
-            sEluna->HandleGossipSelectOption(GetPlayer(), menuId, GetPlayer()->PlayerTalkClass->GossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GossipOptionAction(gossipListId), code);
-            return;
-        }
-#endif
-
         DEBUG_LOG("WORLD: HandleGossipSelectOptionOpcode - unsupported GUID type for highguid %u. lowpart %u.", uint32(GUID_HIPART(guid)), uint32(GUID_LOPART(guid)));
         return;
     }
