@@ -69,6 +69,7 @@ public:
             { "movetype",       SEC_ADMINISTRATOR,   false, &HandleNpcSetMoveTypeCommand,        "" },
             { "spawntime",      SEC_ADMINISTRATOR,   false, &HandleNpcSetSpawnTimeCommand,       "" },
             { "flag",           SEC_ADMINISTRATOR,   false, &HandleNpcSetFlagCommand,            "" },
+            { "setphase",       SEC_GAMEMASTER,      false, HandleNpcSetPhaseCommand,            "" },
             { "faction",        SEC_ADMINISTRATOR,   false, nullptr,                             "", npcFactionCommandTable },
         };
 
@@ -308,6 +309,36 @@ public:
 
         return true;
     }
+
+    static bool HandleNpcSetPhaseCommand(ChatHandler* handler, const char* args)
+    {
+        if (!*args)
+            return false;
+
+        uint32 phasemask = (uint32)atoi((char*)args);
+        if (phasemask == 0)
+        {
+            handler->SendSysMessage(LANG_BAD_VALUE);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        Creature* pCreature = handler->getSelectedCreature();
+        if (!pCreature)
+        {
+            handler->SendSysMessage(LANG_SELECT_CREATURE);
+            handler->SetSentErrorMessage(true);
+            return false;
+        }
+
+        pCreature->SetPhaseMask(phasemask, true);
+
+        if (!pCreature->IsPet())
+            pCreature->SaveToDB();
+
+        return true;
+    }
+
 
     static bool HandleNpcSetFlagCommand(ChatHandler* handler, const char* args)
     {
@@ -969,13 +1000,13 @@ public:
         Map* map = chr->GetMap();
 
         Creature* creature = new Creature;
-        if (!creature->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), map, id, (uint32)teamval, x, y, z, o))
+        if (!creature->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), map, PHASEMASK_NORMAL, id, (uint32)teamval, x, y, z, o))
         {
             delete creature;
             return false;
         }
 
-        creature->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()));
+        creature->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()), chr->GetPhaseMaskForSpawn());
 
         uint32 db_guid = creature->GetDBTableGUIDLow();
 

@@ -1205,7 +1205,7 @@ GameObject* ChatHandler::GetObjectGlobalyWithGuidOrNearWithDbGuid(uint32 lowguid
         Cell cell(p);
 
         Oregon::GameObjectWithDbGUIDCheck go_check(*pl, lowguid);
-        Oregon::GameObjectSearcher<Oregon::GameObjectWithDbGUIDCheck> checker(obj, go_check);
+        Oregon::GameObjectSearcher<Oregon::GameObjectWithDbGUIDCheck> checker(pl, obj, go_check);
 
         TypeContainerVisitor<Oregon::GameObjectSearcher<Oregon::GameObjectWithDbGUIDCheck>, GridTypeMapContainer > object_checker(checker);
         cell.Visit(p, object_checker, *pl->GetMap(), *pl, pl->GetGridActivationRange());

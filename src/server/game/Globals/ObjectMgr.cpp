@@ -1264,7 +1264,7 @@ void ObjectMgr::LoadCreatures()
                                  //4             5           6           7           8            9              10         11
                                  "equipment_id, position_x, position_y, position_z, orientation, spawntimesecs, spawndist, currentwaypoint,"
                                  //12        13       14            15         16     17
-                                 "curhealth, curmana, MovementType, spawnMask, event, pool_entry, creature.npcflag, creature.unit_flags, creature.dynamicflags  "
+                                 "curhealth, curmana, MovementType, spawnMask, phaseMask,  event, pool_entry, creature.npcflag, creature.unit_flags, creature.dynamicflags  "
                                  "FROM creature LEFT OUTER JOIN game_event_creature ON creature.guid = game_event_creature.guid "
                                  "LEFT OUTER JOIN pool_creature ON creature.guid = pool_creature.guid");
 
@@ -1315,11 +1315,12 @@ void ObjectMgr::LoadCreatures()
         data.curmana        = fields[13].GetUInt32();
         data.movementType   = fields[14].GetUInt8();
         data.spawnMask      = fields[15].GetUInt8();
-        int16 gameEvent     = fields[16].GetInt16();
-        int32 PoolId        = fields[17].GetInt32();
-        data.npcflag        = fields[18].GetUInt32();
-        data.unit_flags     = fields[19].GetUInt32();
-        data.dynamicflags   = fields[20].GetUInt32();
+        data.phaseMask      = fields[16].GetUInt16();
+        int16 gameEvent     = fields[17].GetInt16();
+        int32 PoolId        = fields[18].GetInt32();
+        data.npcflag        = fields[19].GetUInt32();
+        data.unit_flags     = fields[20].GetUInt32();
+        data.dynamicflags   = fields[21].GetUInt32();
 
         MapEntry const* mapEntry = sMapStore.LookupEntry(data.mapid);
         if (!mapEntry)
@@ -1509,7 +1510,7 @@ void ObjectMgr::LoadGameobjects()
     uint32 count = 0;
 
     //                                                       0                1   2    3           4           5           6
-    QueryResult_AutoPtr result = WorldDatabase.Query("SELECT gameobject.guid, id, map, position_x, position_y, position_z, orientation,"
+    QueryResult_AutoPtr result = WorldDatabase.Query("SELECT gameobject.guid, id, map, phaseMask,  position_x, position_y, position_z, orientation,"
                                  //   7          8          9          10         11             12            13     14         15     16
                                  "rotation0, rotation1, rotation2, rotation3, spawntimesecs, animprogress, state, spawnMask, event, pool_entry "
                                  "FROM gameobject LEFT OUTER JOIN game_event_gameobject ON gameobject.guid = game_event_gameobject.guid "
@@ -1542,19 +1543,20 @@ void ObjectMgr::LoadGameobjects()
 
         data.id             = entry;
         data.mapid          = fields[ 2].GetUInt32();
-        data.posX           = fields[ 3].GetFloat();
-        data.posY           = fields[ 4].GetFloat();
-        data.posZ           = fields[ 5].GetFloat();
-        data.orientation    = fields[ 6].GetFloat();
-        data.rotation0      = fields[ 7].GetFloat();
-        data.rotation1      = fields[ 8].GetFloat();
-        data.rotation2      = fields[ 9].GetFloat();
-        data.rotation3      = fields[10].GetFloat();
-        data.spawntimesecs  = fields[11].GetInt32();
-        data.animprogress   = fields[12].GetUInt32();
+        data.phaseMask      = fields[ 3].GetUInt32();
+        data.posX           = fields[ 4].GetFloat();
+        data.posY           = fields[ 5].GetFloat();
+        data.posZ           = fields[ 6].GetFloat();
+        data.orientation    = fields[ 7].GetFloat();
+        data.rotation0      = fields[ 8].GetFloat();
+        data.rotation1      = fields[ 9].GetFloat();
+        data.rotation2      = fields[10].GetFloat();
+        data.rotation3      = fields[11].GetFloat();
+        data.spawntimesecs  = fields[12].GetInt32();
+        data.animprogress   = fields[13].GetUInt32();
         data.artKit         = 0;
 
-        uint32 go_state     = fields[13].GetUInt32();
+        uint32 go_state     = fields[14].GetUInt32();
         if (go_state >= MAX_GO_STATE)
         {
             sLog.outErrorDb("Table `gameobject` has gameobject (GUID: %u Entry: %u) with invalid `state` (%u) value, skipped.", guid, data.id, go_state);
@@ -1562,9 +1564,9 @@ void ObjectMgr::LoadGameobjects()
         }
         data.go_state       = GOState(go_state);
 
-        data.spawnMask      = fields[14].GetUInt8();
-        int16 gameEvent     = fields[15].GetInt16();
-        int32 PoolId        = fields[16].GetInt32();
+        data.spawnMask      = fields[15].GetUInt8();
+        int16 gameEvent     = fields[16].GetInt16();
+        int32 PoolId        = fields[17].GetInt32();
 
 
         if (data.rotation2 < -1.0f || data.rotation2 > 1.0f)
@@ -6063,7 +6065,7 @@ void ObjectMgr::LoadCorpses()
 {
     uint32 count = 0;
     //                                                           0           1           2           3            4    5          6          7       8       9      10     11        12    13           14        15    16
-    QueryResult_AutoPtr result = CharacterDatabase.Query("SELECT position_x, position_y, position_z, orientation, map, displayId, itemCache, bytes1, bytes2, guild, flags, dynFlags, time, corpse_type, instance, guid, player FROM corpse WHERE corpse_type <> 0");
+    QueryResult_AutoPtr result = CharacterDatabase.Query("SELECT position_x, position_y, position_z, orientation, map, displayId, itemCache, bytes1, bytes2, guild, flags, dynFlags, time, corpse_type, instance, guid, player, phaseMask FROM corpse WHERE corpse_type <> 0");
 
     if (!result)
     {

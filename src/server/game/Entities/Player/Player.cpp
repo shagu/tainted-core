@@ -2461,10 +2461,12 @@ void Player::SetGameMaster(bool on)
 
         getHostileRefManager().setOnlineOfflineState(false);
         CombatStopWithPets();
+        SetPhaseMask(uint32(PHASEMASK_ANYWHERE), false);    // see and visible in all phases
         m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GM, GetSession()->GetSecurity());
     }
     else
     {
+        RestorePhase();
         m_ExtraFlags &= ~ PLAYER_EXTRA_GM_ON;
         setFactionForRace(getRace());
         RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_GM);
@@ -16185,6 +16187,27 @@ void Player::_LoadSkills(QueryResult_AutoPtr result)
         SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(count), 0);
         SetUInt32Value(PLAYER_SKILL_BONUS_INDEX(count), 0);
     }
+}
+
+uint32 Player::GetPhaseMaskForSpawn() const
+{
+    uint32 phase = PHASEMASK_NORMAL;
+    if (!IsGameMaster())
+        phase = GetPhaseMask();
+    else
+    {
+        AuraList const& phases = GetAurasByType(SPELL_AURA_PHASE);
+        if (phases.empty())
+            phase = GetPhaseMask();
+        else
+            phase = phases.front()->GetMiscValue();
+    }
+
+    // some aura phases include 1 normal map in addition to phase itself
+    if (uint32 n_phase = phase & ~PHASEMASK_NORMAL)
+        return n_phase;
+
+    return PHASEMASK_NORMAL;
 }
 
 void Player::_LoadSpells(QueryResult_AutoPtr result)

@@ -1130,7 +1130,7 @@ public:
             cell.SetNoCreate();
 
             Oregon::AllCreaturesOfEntryInRange check(me, NPC_SENTRY, 20);
-            Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange> searcher(lCreatureList, check);
+            Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange> searcher(me, lCreatureList, check);
             TypeContainerVisitor<Oregon::CreatureListSearcher<Oregon::AllCreaturesOfEntryInRange>, GridTypeMapContainer> cSearcher(searcher);
             cell.Visit(pair, cSearcher, *(me->GetMap()), *me, me->GetGridActivationRange());
 
