@@ -6815,6 +6815,7 @@ void Player::DuelComplete(DuelCompleteType type)
     }
 
  
+    sScriptMgr.OnPlayerDuelEnd(duel->opponent, this, type);
 #ifdef ELUNA
    // used by eluna
     sEluna->OnDuelEnd(duel->opponent, this, type);
@@ -17585,6 +17586,7 @@ void Player::UpdateDuelFlag(time_t currTime)
     if (!duel || duel->startTimer == 0 || currTime < duel->startTimer + 3)
         return;
 
+    sScriptMgr.OnPlayerDuelStart(this, duel->opponent);
 
 #ifdef ELUNA
     // used by eluna
