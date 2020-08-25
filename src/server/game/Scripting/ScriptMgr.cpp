@@ -530,6 +530,8 @@ void ScriptMgr::OnPlayerEnter(Map* map, Player* player)
     ASSERT(map);
     ASSERT(player);
 
+    FOREACH_SCRIPT(PlayerScript)->OnMapChanged(player);
+
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
     itr->second->OnPlayerEnter(map, player);
     SCR_MAP_END;
