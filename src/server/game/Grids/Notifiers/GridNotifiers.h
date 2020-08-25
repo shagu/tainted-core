@@ -221,6 +221,7 @@ struct WorldObjectSearcher
 template<class Check>
 struct WorldObjectLastSearcher
 {
+    uint32 i_phaseMask;
     WorldObject* &i_object;
     Check &i_check;
 
