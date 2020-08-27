@@ -1145,6 +1145,7 @@ public:
                     }
                 }
             }
+
         }
 
         void UpdateAI(const uint32 uiDiff)
@@ -1192,6 +1193,7 @@ public:
                         m_uiEventTimer -= uiDiff;
                 }
             }
+            DoMeleeAttackIfReady();
             return;
         }
 
