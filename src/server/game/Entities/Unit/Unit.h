@@ -1704,7 +1704,7 @@ class Unit : public WorldObject
         // common function for visibility checks for player/creatures with detection code
         bool isValid() const override { return WorldObject::isValid(); }       
         void RestorePhase();
-        void SetPhaseMask(uint32 newPhaseMask, bool update) override;// overwrite WorldObject::SetPhaseMask
+        void SetPhaseMask(uint32 newPhaseMask, bool update, bool Individual) override;// overwrite WorldObject::SetPhaseMask
         void UpdateObjectVisibility(bool forced = true) override;
 
         bool isInvisibleForAlive() const;

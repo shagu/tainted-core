@@ -85,7 +85,7 @@ public:
             target = handler->GetSession()->GetPlayer();
 
 
-        target->SetPhaseMask(phasemask, true);
+        target->SetPhaseMask(phasemask, true, false);
 
         return true;
     }

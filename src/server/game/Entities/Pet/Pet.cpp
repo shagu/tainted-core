@@ -1771,7 +1771,7 @@ bool Pet::Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 Entry, uint3
 {
     ASSERT(map);
     SetMap(map);
-    SetPhaseMask(phaseMask, false);
+    SetPhaseMask(phaseMask, false, false);
 
     Object::_Create(guidlow, pet_number, HIGHGUID_PET);
 

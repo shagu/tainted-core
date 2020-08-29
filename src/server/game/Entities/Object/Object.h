@@ -701,9 +701,9 @@ class WorldObject : public Object, public WorldLocation
             return m_InstanceId;
         }
 
-        virtual void SetPhaseMask(uint32 newPhaseMask, bool update);
+        virtual void SetPhaseMask(uint32 newPhaseMask, bool update, bool Individual);
         uint32 GetPhaseMask() const { return m_phaseMask; }
-        bool InSamePhase(uint32 phasemask) const { return (GetPhaseMask() & phasemask) != 0; }
+        bool InSamePhase(uint32 phasemask) const;
         bool InSamePhase(WorldObject const* obj) const { return obj && InSamePhase(obj->GetPhaseMask()); }
         static bool InSamePhase(WorldObject const* a, WorldObject const* b) { return a && a->InSamePhase(b); }
 
@@ -966,6 +966,7 @@ class WorldObject : public Object, public WorldLocation
         //uint32 m_mapId;                                     // object at map with map_id
         uint32 m_InstanceId;                                // in map copy with instance id
         uint32 m_phaseMask;                                 // in area phase state
+        bool m_individual;                                  // For individual phases
 
         uint16 m_notifyflags;
         uint16 m_executed_notifies;

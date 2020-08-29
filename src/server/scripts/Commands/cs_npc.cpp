@@ -331,7 +331,7 @@ public:
             return false;
         }
 
-        pCreature->SetPhaseMask(phasemask, true);
+        pCreature->SetPhaseMask(phasemask, true, false);
 
         if (!pCreature->IsPet())
             pCreature->SaveToDB();

@@ -523,7 +523,7 @@ public:
             return false;
         }
 
-        obj->SetPhaseMask(phasemask, true);
+        obj->SetPhaseMask(phasemask, true, false);
         obj->SaveToDB();
         return true;
     }

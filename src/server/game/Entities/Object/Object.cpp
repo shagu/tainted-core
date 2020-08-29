@@ -2657,12 +2657,22 @@ void WorldObject::MovePositionToFirstCollision(Position& pos, float dist, float 
     pos.SetOrientation(GetOrientation());
 }
 
-void WorldObject::SetPhaseMask(uint32 newPhaseMask, bool update)
+void WorldObject::SetPhaseMask(uint32 newPhaseMask, bool update, bool Individual)
 {
     m_phaseMask = newPhaseMask;
+    m_individual = Individual;
 
     if (update && IsInWorld())
         UpdateObjectVisibility();
+}
+
+bool WorldObject::InSamePhase(uint32 phasemask) const 
+{ 
+
+    if (m_individual)
+        return GetPhaseMask() == phasemask;
+    else
+        return (GetPhaseMask() & phasemask) != 0; 
 }
 
 void WorldObject::PlayDistanceSound(uint32 sound_id, Player* target /*= NULL*/)

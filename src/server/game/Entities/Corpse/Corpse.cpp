@@ -187,7 +187,7 @@ bool Corpse::LoadCorpseFromDB(uint32 guid, Field* fields)
     // place
     SetLocationInstanceId(instanceid);
     SetLocationMapId(mapid);
-    SetPhaseMask(phaseMask, false);
+    SetPhaseMask(phaseMask, false, false);
     Relocate(positionX, positionY, positionZ, ort);
 
     if (!IsPositionValid())

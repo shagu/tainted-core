@@ -6863,7 +6863,7 @@ void Aura::HandlePhase(bool apply, bool /*Real*/)
         if (player->IsGameMaster())
             newPhase = 0xFFFFFFFF;
 
-        player->SetPhaseMask(newPhase, false);
+        player->SetPhaseMask(newPhase, false, false);
         //player->GetSession()->SendSetPhaseShift(newPhase);
     }
 

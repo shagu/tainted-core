@@ -13704,28 +13704,28 @@ void Unit::RestorePhase()
     if (!newPhase)
         newPhase = PHASEMASK_NORMAL;
 
-    SetPhaseMask(newPhase, false);
+    SetPhaseMask(newPhase, false, false);
 }
 
-void Unit::SetPhaseMask(uint32 newPhaseMask, bool update)
+void Unit::SetPhaseMask(uint32 newPhaseMask, bool update, bool individual)
 {
     if (newPhaseMask == GetPhaseMask())
         return;
 
     // Phase player, dont update
-    WorldObject::SetPhaseMask(newPhaseMask, false);
+    WorldObject::SetPhaseMask(newPhaseMask, false, individual);
 
     // Phase pets and summons
     if (IsInWorld())
     {
         for (ControlList::const_iterator itr = m_Controlled.begin(); itr != m_Controlled.end(); ++itr)
             if ((*itr)->GetTypeId() == TYPEID_UNIT)
-                (*itr)->SetPhaseMask(newPhaseMask, true);
+                (*itr)->SetPhaseMask(newPhaseMask, true, individual);
 
         for (uint8 i = 0; i < MAX_SUMMON_SLOT; ++i)
             if (m_SummonSlot[i])
                 if (Creature* summon = GetMap()->GetCreature(m_SummonSlot[i]))
-                    summon->SetPhaseMask(newPhaseMask, true);
+                    summon->SetPhaseMask(newPhaseMask, true, individual);
     }
 
     // Update visibility after phasing pets and summons so they wont despawn

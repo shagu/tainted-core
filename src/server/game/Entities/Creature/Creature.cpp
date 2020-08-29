@@ -798,7 +798,7 @@ bool Creature::Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 entry, 
 {
     ASSERT(map);
     SetMap(map);
-    SetPhaseMask(phaseMask, false);
+    SetPhaseMask(phaseMask, false, false);
 
     CreatureInfo const* cinfo = sObjectMgr.GetCreatureTemplate(entry);
     if (!cinfo)
@@ -1682,7 +1682,7 @@ void Creature::setDeathState(DeathState s)
             SetMeleeDamageSchool(SpellSchools(cinfo->dmgschool));
 
             if (creatureData && GetPhaseMask() != creatureData->phaseMask)
-                SetPhaseMask(creatureData->phaseMask, false);
+                SetPhaseMask(creatureData->phaseMask, false, false);
         }
 
         Unit::setDeathState(ALIVE);

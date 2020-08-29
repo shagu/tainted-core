@@ -2461,7 +2461,7 @@ void Player::SetGameMaster(bool on)
 
         getHostileRefManager().setOnlineOfflineState(false);
         CombatStopWithPets();
-        SetPhaseMask(uint32(PHASEMASK_ANYWHERE), false);    // see and visible in all phases
+        SetPhaseMask(uint32(PHASEMASK_ANYWHERE), false, false);    // see and visible in all phases
         m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GM, GetSession()->GetSecurity());
     }
     else
@@ -6691,7 +6691,7 @@ void Player::UpdateZone(uint32 newZone)
             Weather::SendFineWeatherUpdateToPlayer(this);
     }
 
-
+    sScriptMgr.OnPlayerUpdateZone(this, newZone, GetAreaId());
 #ifdef ELUNA
     // used by eluna
     sEluna->OnUpdateZone(this, newZone, GetAreaId());
