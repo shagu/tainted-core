@@ -2372,6 +2372,10 @@ class Player : public Unit, public GridObject<Player>
         bool CanUseBattlegroundObject(GameObject* gameobject);
         bool CanCaptureTowerPoint();
 
+        uint8 GetORace() { return m_oRace; }
+        void SetORace(uint8 OriginalRace) { m_oRace = OriginalRace; }
+        uint8 m_oRace;
+
         /*********************************************************/
         /***              OUTDOOR PVP SYSTEM                  ***/
         /*********************************************************/
@@ -2821,7 +2825,6 @@ class Player : public Unit, public GridObject<Player>
         void outDebugValues() const;
         bool _removeSpell(uint16 spell_id);
         uint64 m_lootGuid;
-
         uint32 m_team;
         uint32 m_nextSave;
         time_t m_speakTime;

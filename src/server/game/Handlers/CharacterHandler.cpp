@@ -381,6 +381,7 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
     pNewChar->SetAtLoginFlag(AT_LOGIN_FIRST);               // First login
 
     // Player created, save it now
+    pNewChar->SetORace(race_);
     pNewChar->SaveToDB();
     charcount += 1;
 
@@ -796,6 +797,8 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         pCurrChar->AddAura(SPELL_INVISIBILITY, pCurrChar);
         SendNotification(LANG_INVISIBLE_INVISIBLE);
     }
+
+    pCurrChar->SetORace(pCurrChar->getRace());
 
     std::string IP_str = GetRemoteAddress();
     sLog.outChar("Account: %d (IP: %s) Login Character:[%s] (guid: %u)",

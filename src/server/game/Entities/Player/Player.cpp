@@ -16718,7 +16718,7 @@ void Player::SaveToDB()
     uint32 mapid = IsBeingTeleported() ? GetTeleportDest().GetMapId() : GetMapId();
     const MapEntry* me = sMapStore.LookupEntry(mapid);
     // players aren't saved on arena maps
-    if (!me || me->IsBattleArena() || me->IsBattleground())
+    if (!me || me->IsBattleArena())
         return;
 
     int is_save_resting = HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_RESTING) ? 1 : 0;
@@ -16766,7 +16766,7 @@ void Player::SaveToDB()
        << GetGUIDLow() << ", "
        << GetSession()->GetAccountId() << ", '"
        << sql_name << "', "
-       << uint32(getRace()) << ", "
+       << uint32(GetORace()) << ", "
        << uint32(getClass()) << ", "
        << uint32(getGender()) << ", "
        << uint32(getLevel()) << ", "
