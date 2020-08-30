@@ -363,6 +363,8 @@ protected:
     GuildScript(const char* name);
 
 public:
+
+    bool IsDatabaseBound() const { return false; }
     
     // Called when a guild is created.
     virtual void OnCreate(Guild* /*guild*/, Player* /*leader*/, const std::string& /*name*/) { }

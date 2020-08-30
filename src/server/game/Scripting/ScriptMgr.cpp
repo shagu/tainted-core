@@ -1190,7 +1190,6 @@ MovementHandlerScript::MovementHandlerScript(const char* name)
     ScriptMgr::ScriptRegistry<MovementHandlerScript>::AddScript(this);
 }
 
-
 BGScript::BGScript(const char* name)
     : ScriptObject(name)
 {
