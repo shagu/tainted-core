@@ -25,6 +25,7 @@
 #include "SocialMgr.h"
 #include "Utilities/Util.h"
 #include "Language.h"
+#include "ScriptMgr.h"
 
 #ifdef ELUNA
 #include "LuaEngine.h"
@@ -108,6 +109,7 @@ bool Guild::Create(Player* leader, std::string gname)
 
     CreateDefaultGuildRanks(lSession->GetSessionDbLocaleIndex());
 
+    sScriptMgr.OnGuildCreate(this, leader, gname.c_str());
 
 #ifdef ELUNA
     // used by eluna
@@ -248,7 +250,9 @@ bool Guild::AddMember(uint64 plGuid, uint32 plRank)
 
     UpdateAccountsNumber();
 
- 
+    // Call scripts if member was succesfully added (and stored to database)
+    sScriptMgr.OnGuildAddMember(this, pl, newmember.RankId);
+
 #ifdef ELUNA
    // used by eluna
     sEluna->OnAddMember(this, pl, newmember.RankId);
@@ -635,8 +639,10 @@ void Guild::DelMember(uint64 guid, bool isDisbanding)
 
     CharacterDatabase.PExecute("DELETE FROM guild_member WHERE guid = '%u'", GUID_LOPART(guid));
 
-#ifdef ELUNA
+    // Call script on remove before member is actually removed from guild (and database)
+    sScriptMgr.OnGuildRemoveMember(this, player, isDisbanding);
 
+#ifdef ELUNA
     // used by eluna
     sEluna->OnRemoveMember(this, player, isDisbanding); // IsKicked not a part of Mangos, implement?
 #endif
@@ -840,6 +846,7 @@ void Guild::Disband()
     CharacterDatabase.PExecute("DELETE FROM guild_eventlog WHERE guildid = '%u'", m_Id);
     CharacterDatabase.CommitTransaction();
 
+    sScriptMgr.OnGuildDisband(this);
  
 #ifdef ELUNA
    // used by eluna

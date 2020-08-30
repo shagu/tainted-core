@@ -1197,6 +1197,12 @@ BGScript::BGScript(const char* name)
     ScriptMgr::ScriptRegistry<BGScript>::AddScript(this);
 }
 
+GuildScript::GuildScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<GuildScript>::AddScript(this);
+}
+
 // Group
 void ScriptMgr::OnGroupAddMember(Group* group, Player* guid)
 {
@@ -1453,6 +1459,27 @@ void ScriptMgr::OnQuestObjectiveProgress(Player* player, Quest const* quest, uin
     FOREACH_SCRIPT(PlayerScript)->OnQuestObjectiveProgress(player, quest, objectiveIndex, progress);
 }
 
+// Guild
+void ScriptMgr::OnGuildRemoveMember(Guild* guild, Player* player, bool isDisbanding)
+{
+    FOREACH_SCRIPT(GuildScript)->OnRemoveMember(guild, player, isDisbanding);
+}
+
+void ScriptMgr::OnGuildAddMember(Guild* guild, Player* player, uint32& plRank)
+{
+    FOREACH_SCRIPT(GuildScript)->OnAddMember(guild, player, plRank);
+}
+
+void ScriptMgr::OnGuildCreate(Guild* guild, Player* leader, const std::string& name)
+{
+    FOREACH_SCRIPT(GuildScript)->OnCreate(guild, leader, name);
+}
+
+void ScriptMgr::OnGuildDisband(Guild* guild)
+{
+    FOREACH_SCRIPT(GuildScript)->OnDisband(guild);
+}
+
 template<class TScript>
 void ScriptMgr::ScriptRegistry<TScript>::AddScript(TScript* const script)
 {
@@ -1551,6 +1578,7 @@ template class ScriptMgr::ScriptRegistry<DynamicObjectScript>;
 template class ScriptMgr::ScriptRegistry<TransportScript>;
 template class ScriptMgr::ScriptRegistry<MovementHandlerScript>;
 template class ScriptMgr::ScriptRegistry<BGScript>;
+template class ScriptMgr::ScriptRegistry<GuildScript>;
 
 // Undefine utility macros.
 #undef GET_SCRIPT_RET
