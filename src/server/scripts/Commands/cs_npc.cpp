@@ -983,12 +983,19 @@ public:
         if (!charID)
             return false;
 
+        char* phaseMask = strtok(NULL, " ");
         char* team = strtok(NULL, " ");
         int32 teamval = 0;
+        int32 phase = 1;
+
         if (team)
             teamval = atoi(team);
+
         if (teamval < 0)
             teamval = 0;
+
+        if (phaseMask)
+            phase = atoi(phaseMask);
 
         uint32 id = atoi(charID);
 
@@ -1000,13 +1007,13 @@ public:
         Map* map = chr->GetMap();
 
         Creature* creature = new Creature;
-        if (!creature->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), map, PHASEMASK_NORMAL, id, (uint32)teamval, x, y, z, o))
+        if (!creature->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_UNIT), map, phase, id, (uint32)teamval, x, y, z, o))
         {
             delete creature;
             return false;
         }
 
-        creature->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()), chr->GetPhaseMaskForSpawn());
+        creature->SaveToDB(map->GetId(), (1 << map->GetSpawnMode()), phase);
 
         uint32 db_guid = creature->GetDBTableGUIDLow();
 
