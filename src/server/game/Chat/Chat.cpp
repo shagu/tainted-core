@@ -182,9 +182,9 @@ void ChatHandler::PSendSysMessage(int32 entry, ...)
 {
     const char* format = GetOregonString(entry);
     va_list ap;
-    char str[1024];
+    char str [2048];
     va_start(ap, entry);
-    vsnprintf(str, 1024, format, ap);
+    vsnprintf(str, 2048, format, ap);
     va_end(ap);
     SendSysMessage(str);
 }
@@ -192,9 +192,9 @@ void ChatHandler::PSendSysMessage(int32 entry, ...)
 void ChatHandler::PSendSysMessage(const char* format, ...)
 {
     va_list ap;
-    char str[1024];
+    char str [2048];
     va_start(ap, format);
-    vsnprintf(str, 1024, format, ap);
+    vsnprintf(str, 2048, format, ap);
     va_end(ap);
     SendSysMessage(str);
 }
