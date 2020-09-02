@@ -2770,6 +2770,7 @@ void Spell::_handle_immediate_phase()
         if (m_spellInfo->Effect[j] == SPELL_EFFECT_PERSISTENT_AREA_AURA)
         {
             HandleEffects(NULL, NULL, NULL, SpellEffIndex(j));
+            continue;
         }
 
         // apply Send Event effect to ground in case empty target lists
@@ -2786,6 +2787,7 @@ void Spell::_handle_immediate_phase()
                 m_targets.setDst(m_caster);
 
             HandleEffects(m_originalCaster, nullptr, nullptr, SpellEffIndex(j));
+            continue;
         }
 
         if (sSpellMgr.EffectTargetType[m_spellInfo->Effect[j]] == SPELL_REQUIRE_NONE)
