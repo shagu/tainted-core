@@ -51,6 +51,7 @@
 #include "MovementGenerator.h"
 #include "MoveSplineInit.h"
 #include "MoveSpline.h"
+#include "ScriptMgr.h"
 
 #ifdef ELUNA
 #include "LuaEngine.h"
@@ -1090,6 +1091,8 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
             victim->ToCreature()->SetPlayerDamaged(true);
     }
 
+    sScriptMgr.OnDealDamage(this, damage);
+
     if (health <= damage)
     {
         DEBUG_LOG("DealDamage: victim just died");
@@ -1215,7 +1218,6 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
             he->DuelComplete(DUEL_WON);
         }
     }
-
     DEBUG_LOG("DealDamageEnd returned %d damage", damage);
 
     return damage;

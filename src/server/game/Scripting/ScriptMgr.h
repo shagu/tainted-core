@@ -744,6 +744,14 @@ public:
     virtual void OnPlayerMove(Player* /*player*/, MovementInfo /*movementInfo*/, uint32 /*opcode*/) {}
 };
 
+class UnitScript : public ScriptObject
+{
+protected: 
+    UnitScript(const char* name);
+public:
+    virtual void OnDealDamage(Unit* /*unit*/, uint32& /*Damage*/) {}
+};
+
 // Placed here due to ScriptRegistry::AddScript dependency.
 #define sScriptMgr (*ACE_Singleton<ScriptMgr, ACE_Null_Mutex>::instance())
 
@@ -955,6 +963,10 @@ public : /* GuildScript*/
     void OnGuildAddMember(Guild* guild, Player* player, uint32& plRank);
     void OnGuildCreate(Guild* guild, Player* leader, const std::string& name);
     void OnGuildDisband(Guild* guild);
+
+public: /* Unit Script */
+
+    void OnDealDamage(Unit* unit, uint32& amount);
 
 public: /* ScriptRegistry */
 
