@@ -200,6 +200,17 @@ void AuthSocket::OnRead()
         if(!recv_soft((char*)&_cmd, 1))
             return;
 
+        if (_cmd == 16) // realmlist packet
+        {
+            ++challengesInARow;
+            if (challengesInARow == MAX_AUTH_LOGON_CHALLENGES_IN_A_ROW)
+            {
+                sLog.outError("Got %u AUTH_LOGON_CHALLENGE in a row from '%s', possible ongoing DoS", challengesInARow, getRemoteAddress().c_str());
+                close_connection();
+                return;
+            }
+        }
+
         if (_cmd == CMD_AUTH_LOGON_CHALLENGE)
         {
             ++challengesInARow;
@@ -485,25 +496,25 @@ bool AuthSocket::_HandleLogonChallenge()
                     //if (!_tokenKey.empty())
                      //   securityFlags = 4;
                     securityFlags = (*result)[8].GetUInt8();
-					if (!((securityFlags & 0x01) || (securityFlags & 0x02) || (securityFlags & 0x04))) //only support pin/matrix/totp
-					{
-						securityFlags = 0;
-					}
+                    if (!((securityFlags & 0x01) || (securityFlags & 0x02) || (securityFlags & 0x04))) //only support pin/matrix/totp
+                    {
+                        securityFlags = 0;
+                    }
 
-					sLog.outBasic("securityFlags (%u)", securityFlags);
+                    sLog.outBasic("securityFlags (%u)", securityFlags);
 
-					uint32 gridSeedPkt = gridSeed = static_cast<uint32>(rand32());
-					EndianConvert(gridSeedPkt);
-					serverSecuritySalt.SetRand(16 * 8); // 16 bytes random
+                    uint32 gridSeedPkt = gridSeed = static_cast<uint32>(rand32());
+                    EndianConvert(gridSeedPkt);
+                    serverSecuritySalt.SetRand(16 * 8); // 16 bytes random
                     pkt << uint8(securityFlags);            // security flags (0x0...0x04)
 
                     if (securityFlags & 0x01)                // PIN input
                     {
-						//pkt << uint32(0);
-						//pkt << uint64(0) << uint64(0);      // 16 bytes hash?
+                        //pkt << uint32(0);
+                        //pkt << uint64(0) << uint64(0);      // 16 bytes hash?
 
-						pkt << gridSeedPkt;
-						pkt.append(serverSecuritySalt.AsByteArray(16), 16);
+                        pkt << gridSeedPkt;
+                        pkt.append(serverSecuritySalt.AsByteArray(16), 16);
                     }
 
                     if (securityFlags & 0x02)                // Matrix input
@@ -1142,75 +1153,75 @@ bool AuthSocket::_HandleXferAccept()
 /// Verify PIN entry data
 bool AuthSocket::VerifyPinData(uint32 pin, const PINData& clientData)
 {
-	// remap the grid to match the client's layout
-	std::vector<uint8> grid = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    // remap the grid to match the client's layout
+    std::vector<uint8> grid = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-	std::vector<uint8> remappedGrid(grid.size());
+    std::vector<uint8> remappedGrid(grid.size());
 
-	uint8* remappedIndex = remappedGrid.data();
-	uint32 seed = gridSeed;
+    uint8* remappedIndex = remappedGrid.data();
+    uint32 seed = gridSeed;
 
-	for (size_t i = grid.size(); i > 0; --i)
-	{
-		auto remainder = seed % i;
-		seed /= i;
-		*remappedIndex = grid[remainder];
+    for (size_t i = grid.size(); i > 0; --i)
+    {
+        auto remainder = seed % i;
+        seed /= i;
+        *remappedIndex = grid[remainder];
 
-		size_t copySize = i;
-		copySize -= remainder;
-		--copySize;
+        size_t copySize = i;
+        copySize -= remainder;
+        --copySize;
 
-		uint8* srcPtr = grid.data() + remainder + 1;
-		uint8* dstPtr = grid.data() + remainder;
+        uint8* srcPtr = grid.data() + remainder + 1;
+        uint8* dstPtr = grid.data() + remainder;
 
-		std::copy(srcPtr, srcPtr + copySize, dstPtr);
-		++remappedIndex;
-	}
+        std::copy(srcPtr, srcPtr + copySize, dstPtr);
+        ++remappedIndex;
+    }
 
-	// convert the PIN to bytes (for ex. '1234' to {1, 2, 3, 4})
-	std::vector<uint8> pinBytes;
+    // convert the PIN to bytes (for ex. '1234' to {1, 2, 3, 4})
+    std::vector<uint8> pinBytes;
 
-	while (pin != 0)
-	{
-		pinBytes.push_back(pin % 10);
-		pin /= 10;
-	}
+    while (pin != 0)
+    {
+        pinBytes.push_back(pin % 10);
+        pin /= 10;
+    }
 
-	std::reverse(pinBytes.begin(), pinBytes.end());
+    std::reverse(pinBytes.begin(), pinBytes.end());
 
-	// validate PIN length
-	if (pinBytes.size() < 4 || pinBytes.size() > 10)
-		return false; // PIN outside of expected range
+    // validate PIN length
+    if (pinBytes.size() < 4 || pinBytes.size() > 10)
+        return false; // PIN outside of expected range
 
-	// remap the PIN to calculate the expected client input sequence
-	for (size_t i = 0; i < pinBytes.size(); ++i)
-	{
-		auto index = std::find(remappedGrid.begin(), remappedGrid.end(), pinBytes[i]);
-		pinBytes[i] = std::distance(remappedGrid.begin(), index);
-	}
+    // remap the PIN to calculate the expected client input sequence
+    for (size_t i = 0; i < pinBytes.size(); ++i)
+    {
+        auto index = std::find(remappedGrid.begin(), remappedGrid.end(), pinBytes[i]);
+        pinBytes[i] = std::distance(remappedGrid.begin(), index);
+    }
 
-	// convert PIN bytes to their ASCII values
-	for (size_t i = 0; i < pinBytes.size(); ++i)
-		pinBytes[i] += 0x30;
+    // convert PIN bytes to their ASCII values
+    for (size_t i = 0; i < pinBytes.size(); ++i)
+        pinBytes[i] += 0x30;
 
-	// validate the PIN, x = H(client_salt | H(server_salt | ascii(pin_bytes)))
-	Sha1Hash sha;
-	//sha.UpdateData(serverSecuritySalt.AsByteArray());
-	sha.UpdateData(serverSecuritySalt.AsByteArray(), serverSecuritySalt.GetNumBytes());
-	sha.UpdateData(pinBytes.data(), pinBytes.size());
-	sha.Finalize();
+    // validate the PIN, x = H(client_salt | H(server_salt | ascii(pin_bytes)))
+    Sha1Hash sha;
+    //sha.UpdateData(serverSecuritySalt.AsByteArray());
+    sha.UpdateData(serverSecuritySalt.AsByteArray(), serverSecuritySalt.GetNumBytes());
+    sha.UpdateData(pinBytes.data(), pinBytes.size());
+    sha.Finalize();
 
-	BigNumber hash, clientHash;
-	hash.SetBinary(sha.GetDigest(), sha.GetLength());
-	clientHash.SetBinary(clientData.hash, 20);
+    BigNumber hash, clientHash;
+    hash.SetBinary(sha.GetDigest(), sha.GetLength());
+    clientHash.SetBinary(clientData.hash, 20);
 
-	sha.Initialize();
-	sha.UpdateData(clientData.salt, sizeof(clientData.salt));
-	sha.UpdateData(hash.AsByteArray(), hash.GetNumBytes());
-	sha.Finalize();
-	hash.SetBinary(sha.GetDigest(), sha.GetLength());
+    sha.Initialize();
+    sha.UpdateData(clientData.salt, sizeof(clientData.salt));
+    sha.UpdateData(hash.AsByteArray(), hash.GetNumBytes());
+    sha.Finalize();
+    hash.SetBinary(sha.GetDigest(), sha.GetLength());
 
-	return !memcmp(hash.AsDecStr(), clientHash.AsDecStr(), 20);
+    return !memcmp(hash.AsDecStr(), clientHash.AsDecStr(), 20);
 }
 
 void AuthSocket::InitPatch()
