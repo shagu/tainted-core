@@ -53,7 +53,7 @@ std::vector<ChatCommand> const& ChatHandler::getCommandTable()
         std::vector<ChatCommand> cmds = sScriptMgr.GetChatCommands();
         commandTableCache.swap(cmds);
 
-        QueryResult_AutoPtr result = WorldDatabase.Query("SELECT name,security,help FROM command");
+        QueryResult* result = WorldDatabase.Query("SELECT name,security,help FROM command");
         if (result)
         {
             do

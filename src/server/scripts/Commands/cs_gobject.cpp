@@ -154,7 +154,7 @@ public:
     static bool HandleTargetObjectCommand(ChatHandler* handler, const char* args)
     {
         Player* pl = handler->GetSession()->GetPlayer();
-        QueryResult_AutoPtr result;
+        QueryResult* result;
         GameEventMgr::ActiveEvents const& activeEventsList = sGameEventMgr.GetActiveEventList();
         if (*args)
         {
@@ -385,7 +385,7 @@ public:
         uint32 count = 0;
 
         Player* pl = handler->GetSession()->GetPlayer();
-        QueryResult_AutoPtr result = WorldDatabase.PQuery("SELECT guid, id, position_x, position_y, position_z, map, "
+        QueryResult* result = WorldDatabase.PQuery("SELECT guid, id, position_x, position_y, position_z, map, "
             "(POW(position_x - '%f', 2) + POW(position_y - '%f', 2) + POW(position_z - '%f', 2)) AS order_ "
             "FROM gameobject WHERE map='%u' AND (POW(position_x - '%f', 2) + POW(position_y - '%f', 2) + POW(position_z - '%f', 2)) <= '%f' ORDER BY order_",
             pl->GetPositionX(), pl->GetPositionY(), pl->GetPositionZ(),

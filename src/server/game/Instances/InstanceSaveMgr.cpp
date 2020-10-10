@@ -227,7 +227,7 @@ void InstanceSaveManager::_DelHelper(DatabaseType& db, const char* fields, const
     vsnprintf(szQueryTail, MAX_QUERY_LEN, queryTail, ap);
     va_end(ap);
 
-    QueryResult_AutoPtr result = db.PQuery("SELECT %s FROM %s %s", fields, table, szQueryTail);
+    QueryResult* result = db.PQuery("SELECT %s FROM %s %s", fields, table, szQueryTail);
     if (result)
     {
         do
@@ -240,7 +240,7 @@ void InstanceSaveManager::_DelHelper(DatabaseType& db, const char* fields, const
                 db.escape_string(fieldValue);
                 ss << (i != 0 ? " AND " : "") << fieldTokens[i] << " = '" << fieldValue << "'";
             }
-            db.DirectPExecute("DELETE FROM %s WHERE %s", table, ss.str().c_str());
+            db.PExecute("DELETE FROM %s WHERE %s", table, ss.str().c_str());
         }
         while (result->NextRow());
     }
@@ -251,7 +251,7 @@ void InstanceSaveManager::CleanupInstances()
 
     // load reset times and clean expired instances
     sInstanceSaveMgr.LoadResetTimes();
-
+    CharacterDatabase.BeginTransaction();
     // clean character/group - instance binds with invalid group/characters
     _DelHelper(CharacterDatabase, "character_instance.guid, instance", "character_instance", "LEFT JOIN characters ON character_instance.guid = characters.guid WHERE characters.guid IS NULL");
     _DelHelper(CharacterDatabase, "group_instance.leaderGuid, instance", "group_instance", "LEFT JOIN characters ON group_instance.leaderGuid = characters.guid LEFT JOIN groups ON group_instance.leaderGuid = groups.leaderGuid WHERE characters.guid IS NULL OR groups.leaderGuid IS NULL");
@@ -266,7 +266,7 @@ void InstanceSaveManager::CleanupInstances()
     // creature_respawn and gameobject_respawn are in another database
     // first, obtain total instance set
     std::set<uint32> InstanceSet;
-    QueryResult_AutoPtr result = CharacterDatabase.Query("SELECT id FROM instance");
+    QueryResult* result = CharacterDatabase.Query("SELECT id FROM instance");
     if (result)
     {
         do
@@ -328,7 +328,8 @@ void InstanceSaveManager::CleanupInstances()
         }
         while (result->NextRow());
     }
-
+    //execute transaction directly
+    CharacterDatabase.CommitTransaction();
     sLog.outString(">> Initialized %u instances", (uint32)InstanceSet.size());
 }
 
@@ -342,7 +343,7 @@ void InstanceSaveManager::PackInstances()
     // all valid ids are in the instance table
     // any associations to ids not in this table are assumed to be
     // cleaned already in CleanupInstances
-    if (QueryResult_AutoPtr result = CharacterDatabase.Query("SELECT id FROM instance ORDER BY id ASC"))
+    if (QueryResult* result = CharacterDatabase.Query("SELECT id FROM instance ORDER BY id ASC"))
     {
         do
         {
@@ -368,6 +369,7 @@ void InstanceSaveManager::PackInstances()
     {
         if (*i != InstanceNumber)
         {
+            CharacterDatabase.BeginTransaction();
             // remap instance id
             WorldDatabase.PExecute(    "SET @i=%u", InstanceNumber);
             WorldDatabase.PExecute(    "SET @j=%u", *i);
@@ -381,6 +383,8 @@ void InstanceSaveManager::PackInstances()
             CharacterDatabase.Execute("EXECUTE stmt4 USING @i,@j");
             CharacterDatabase.Execute("EXECUTE stmt5 USING @i,@j");
             CharacterDatabase.Execute("EXECUTE stmt6 USING @i,@j");
+            //execute transaction synchronously
+            CharacterDatabase.CommitTransaction();
         }
 
         ++InstanceNumber;
@@ -409,7 +413,7 @@ void InstanceSaveManager::LoadResetTimes()
     // resettime = 0 in the DB for raid/heroic instances so those are skipped
     typedef std::map<uint32, std::pair<uint32, uint64> > ResetTimeMapType;
     ResetTimeMapType InstResetTime;
-    QueryResult_AutoPtr result = CharacterDatabase.Query("SELECT id, map, resettime FROM instance WHERE resettime > 0");
+    QueryResult* result = CharacterDatabase.Query("SELECT id, map, resettime FROM instance WHERE resettime > 0");
     if (result)
     {
         do
@@ -479,7 +483,7 @@ void InstanceSaveManager::LoadResetTimes()
 
     // calculate new global reset times for expired instances and those that have never been reset yet
     // add the global reset times to the priority queue
-    for (uint32 i = 0; i < sInstanceTemplate.MaxEntry; i++)
+    for (uint32 i = 0; i < sInstanceTemplate.GetMaxEntry(); i++)
     {
         InstanceTemplate const* temp = sObjectMgr.GetInstanceTemplate(i);
         if (!temp) continue;

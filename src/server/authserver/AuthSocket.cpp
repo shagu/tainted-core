@@ -391,7 +391,7 @@ bool AuthSocket::_HandleLogonChallenge()
     // No SQL injection possible (paste the IP address as passed by the socket)
     std::string address = getRemoteAddress();
     LoginDatabase.escape_string(address);
-    QueryResult_AutoPtr result = LoginDatabase.PQuery("SELECT unbandate FROM ip_banned WHERE "
+    QueryResult* result = LoginDatabase.PQuery("SELECT unbandate FROM ip_banned WHERE "
                                  //    permanent                    still banned
                                  "(unbandate = bandate OR unbandate > UNIX_TIMESTAMP()) AND ip = '%s'", address.c_str());
     if (result)
@@ -434,7 +434,7 @@ bool AuthSocket::_HandleLogonChallenge()
             if (!locked)
             {
                 // If the account is banned, reject the logon attempt
-                QueryResult_AutoPtr banresult = LoginDatabase.PQuery("SELECT bandate,unbandate FROM account_banned WHERE "
+                QueryResult* banresult = LoginDatabase.PQuery("SELECT bandate,unbandate FROM account_banned WHERE "
                                                 "id = %u AND active = 1 AND (unbandate > UNIX_TIMESTAMP() OR unbandate = bandate)", (*result)[1].GetUInt32());
                 if (banresult)
                 {
@@ -769,7 +769,7 @@ bool AuthSocket::_HandleLogonProof()
             // Increment number of failed logins by one and if it reaches the limit temporarily ban that account or IP
             LoginDatabase.PExecute("UPDATE account SET failed_logins = failed_logins + 1 WHERE username = '%s'", _safelogin.c_str());
 
-            if (QueryResult_AutoPtr loginfail = LoginDatabase.PQuery("SELECT id, failed_logins FROM account WHERE username = '%s'", _safelogin.c_str()))
+            if (QueryResult* loginfail = LoginDatabase.PQuery("SELECT id, failed_logins FROM account WHERE username = '%s'", _safelogin.c_str()))
             {
                 Field* fields = loginfail->Fetch();
                 uint32 failed_logins = fields[1].GetUInt32();
@@ -851,7 +851,7 @@ bool AuthSocket::_HandleReconnectChallenge()
     // Restore string order as its byte order is reversed
     std::reverse(_os.begin(), _os.end());
 
-    QueryResult_AutoPtr result = LoginDatabase.PQuery ("SELECT sessionkey FROM account WHERE username = '%s'", _safelogin.c_str ());
+    QueryResult* result = LoginDatabase.PQuery ("SELECT sessionkey FROM account WHERE username = '%s'", _safelogin.c_str ());
 
     // Stop if the account is not found
     if (!result)
@@ -934,7 +934,7 @@ bool AuthSocket::_HandleRealmList()
     // Get the user id (else close the connection)
     // No SQL injection (escaped user name)
 
-    QueryResult_AutoPtr result = LoginDatabase.PQuery("SELECT id,sha_pass_hash FROM account WHERE username = '%s'", _safelogin.c_str());
+    QueryResult* result = LoginDatabase.PQuery("SELECT id,sha_pass_hash FROM account WHERE username = '%s'", _safelogin.c_str());
     if (!result)
     {
         sLog.outError("[ERROR] user %s tried to login and we cannot find him in the database.", _login.c_str());
@@ -977,7 +977,7 @@ void AuthSocket::LoadRealmlist(ByteBuffer& pkt, uint32 acctid)
                 uint8 AmountOfCharacters;
 
                 // No SQL injection. id of realm is controlled by the database.
-                QueryResult_AutoPtr result = LoginDatabase.PQuery( "SELECT numchars FROM realmcharacters WHERE realmid = '%d' AND acctid='%u'", i->second.m_ID, acctid);
+                QueryResult* result = LoginDatabase.PQuery( "SELECT numchars FROM realmcharacters WHERE realmid = '%d' AND acctid='%u'", i->second.m_ID, acctid);
                 if ( result )
                 {
                     Field* fields = result->Fetch();
@@ -1038,7 +1038,7 @@ void AuthSocket::LoadRealmlist(ByteBuffer& pkt, uint32 acctid)
                 uint8 AmountOfCharacters;
 
                 // No SQL injection. id of realm is controlled by the database.
-                QueryResult_AutoPtr result = LoginDatabase.PQuery("SELECT numchars FROM realmcharacters WHERE realmid = '%d' AND acctid='%u'", i->second.m_ID, acctid);
+                QueryResult* result = LoginDatabase.PQuery("SELECT numchars FROM realmcharacters WHERE realmid = '%d' AND acctid='%u'", i->second.m_ID, acctid);
                 if ( result )
                 {
                     Field* fields = result->Fetch();

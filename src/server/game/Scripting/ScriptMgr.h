@@ -9,7 +9,8 @@
 #define SC_SCRIPTMGR_H
 
 #include "Common.h"
-
+#include <ace/Singleton.h>
+#include <ace/Null_Mutex.h>
 #include "DBCStructure.h"
 #include "ObjectMgr.h"
 #include "Battleground.h"

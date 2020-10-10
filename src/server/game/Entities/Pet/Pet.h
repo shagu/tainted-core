@@ -176,7 +176,7 @@ class Pet : public Guardian
         bool LoadPetFromDB(Player* owner, uint32 petentry = 0, uint32 petnumber = 0, bool current = false);
         void SavePetToDB(PetSaveMode mode);
         void Remove(PetSaveMode mode, bool returnreagent = false);
-        static void DeleteFromDB(uint32 guidlow);
+        static void DeleteFromDB(uint32 guidlow, bool separate_transaction = true);
 
         void setDeathState(DeathState s) override;                   // overwrite virtual Creature::setDeathState and Unit::setDeathState
         void Update(uint32 diff) override;                           // overwrite virtual Creature::Update and Unit::Update
