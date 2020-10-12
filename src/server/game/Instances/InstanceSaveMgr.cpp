@@ -278,27 +278,27 @@ void InstanceSaveManager::CleanupInstances()
     }
 
     // creature_respawn
-    result = WorldDatabase.Query("SELECT DISTINCT(instance) FROM creature_respawn WHERE instance <> 0");
+    result = CharacterDatabase.Query("SELECT DISTINCT(instance) FROM creature_respawn WHERE instance <> 0");
     if (result)
     {
         do
         {
             Field* fields = result->Fetch();
             if (InstanceSet.find(fields[0].GetUInt32()) == InstanceSet.end())
-                WorldDatabase.DirectPExecute("DELETE FROM creature_respawn WHERE instance = '%u'", fields[0].GetUInt32());
+                CharacterDatabase.DirectPExecute("DELETE FROM creature_respawn WHERE instance = '%u'", fields[0].GetUInt32());
         }
         while (result->NextRow());
     }
 
     // gameobject_respawn
-    result = WorldDatabase.Query("SELECT DISTINCT(instance) FROM gameobject_respawn WHERE instance <> 0");
+    result = CharacterDatabase.Query("SELECT DISTINCT(instance) FROM gameobject_respawn WHERE instance <> 0");
     if (result)
     {
         do
         {
             Field* fields = result->Fetch();
             if (InstanceSet.find(fields[0].GetUInt32()) == InstanceSet.end())
-                WorldDatabase.DirectPExecute("DELETE FROM gameobject_respawn WHERE instance = '%u'", fields[0].GetUInt32());
+                CharacterDatabase.DirectPExecute("DELETE FROM gameobject_respawn WHERE instance = '%u'", fields[0].GetUInt32());
         }
         while (result->NextRow());
     }
@@ -356,8 +356,8 @@ void InstanceSaveManager::PackInstances()
 
     uint32 InstanceNumber = 1;
 
-    WorldDatabase.Execute(    "PREPARE stmt0 FROM \"UPDATE creature_respawn   SET instance    = ? WHERE instance    = ?\"");
-    WorldDatabase.Execute(    "PREPARE stmt1 FROM \"UPDATE gameobject_respawn SET instance    = ? WHERE instance    = ?\"");
+    CharacterDatabase.Execute("PREPARE stmt0 FROM \"UPDATE creature_respawn   SET instance    = ? WHERE instance    = ?\"");
+    CharacterDatabase.Execute("PREPARE stmt1 FROM \"UPDATE gameobject_respawn SET instance    = ? WHERE instance    = ?\"");
     CharacterDatabase.Execute("PREPARE stmt2 FROM \"UPDATE characters         SET instance_id = ? WHERE instance_id = ?\"");
     CharacterDatabase.Execute("PREPARE stmt3 FROM \"UPDATE corpse             SET instance    = ? WHERE instance    = ?\"");
     CharacterDatabase.Execute("PREPARE stmt4 FROM \"UPDATE character_instance SET instance    = ? WHERE instance    = ?\"");
@@ -427,7 +427,7 @@ void InstanceSaveManager::LoadResetTimes()
         } while (result->NextRow());
 
         // update reset time for normal instances with the max creature respawn time + X hours
-        result = WorldDatabase.Query("SELECT MAX(respawntime), instance FROM creature_respawn WHERE instance > 0 GROUP BY instance");
+        result = CharacterDatabase.Query("SELECT MAX(respawntime), instance FROM creature_respawn WHERE instance > 0 GROUP BY instance");
         if (result)
         {
             do
