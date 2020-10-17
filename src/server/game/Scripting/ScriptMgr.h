@@ -750,7 +750,12 @@ class UnitScript : public ScriptObject
 protected: 
     UnitScript(const char* name);
 public:
+
+    // Called when a unit deals damage to another unit
     virtual void OnDealDamage(Unit* /*unit*/, uint32& /*Damage*/) {}
+
+    // Called when a unit deals healing to another unit
+    virtual void OnHeal(Unit* /*healer*/, Unit* /*reciever*/, uint32& /*gain*/) { }
 };
 
 // Placed here due to ScriptRegistry::AddScript dependency.
@@ -968,6 +973,7 @@ public : /* GuildScript*/
 public: /* Unit Script */
 
     void OnDealDamage(Unit* unit, uint32& amount);
+    void OnHeal(Unit* healer, Unit* reciever, uint32& gain);
 
 public: /* ScriptRegistry */
 

@@ -46,6 +46,7 @@
 #include "DisableMgr.h"
 #include "ConditionMgr.h"
 #include "MoveMap.h"
+#include "ScriptMgr.h"
 #ifdef ELUNA
 #include "LuaEngine.h"
 #endif
@@ -1006,6 +1007,10 @@ void Spell::DoAllEffectOnTarget(TargetInfo* target)
     {
         bool crit = caster->isSpellCrit(NULL, m_spellInfo, m_spellSchoolMask);
         uint32 addhealth = m_healing;
+        
+        // Hook for OnHeal Event
+        sScriptMgr.OnHeal(m_caster, m_targets.getUnitTarget(), (uint32&)addhealth);
+
         if (crit)
         {
             procEx |= PROC_EX_CRITICAL_HIT;

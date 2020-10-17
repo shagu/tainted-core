@@ -28,8 +28,8 @@
 #include "CreatureAIImpl.h"
 #include "ScriptLoader.h"
 #include "ScriptSystem.h"
-#ifdef ELUNA
 #include "Player.h"
+#ifdef ELUNA
 #include "LuaEngine.h"
 #endif
 
@@ -1489,6 +1489,11 @@ void ScriptMgr::OnGuildDisband(Guild* guild)
 void ScriptMgr::OnDealDamage(Unit* unit, uint32& amount)
 {
     FOREACH_SCRIPT(UnitScript)->OnDealDamage(unit, amount);
+}
+
+void ScriptMgr::OnHeal(Unit* healer, Unit* reciever, uint32& gain)
+{
+    FOREACH_SCRIPT(UnitScript)->OnHeal(healer, reciever, gain);
 }
 
 template<class TScript>
