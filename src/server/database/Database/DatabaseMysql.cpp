@@ -29,6 +29,10 @@
 #include "Threading.h"
 #include "DatabaseEnv.h"
 #include "Timer.h"
+#if PLATFORM == PLATFORM_UNIX
+#include <sys/file.h>
+#endif
+
 
 size_t DatabaseMysql::db_count = 0;
 
