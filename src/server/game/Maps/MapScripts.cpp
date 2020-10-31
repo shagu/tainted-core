@@ -946,8 +946,6 @@ void Map::ScriptsProcess()
                 }
             }
             break;
-			
-		 break;
 		 
         default:
             sLog.outError("Unknown script command %s.", step.script->GetDebugInfo().c_str());
