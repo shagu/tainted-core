@@ -534,6 +534,8 @@ void ScriptMgr::OnPlayerEnter(Map* map, Player* player)
 
     FOREACH_SCRIPT(PlayerScript)->OnMapChanged(player);
 
+    FOREACH_SCRIPT(AllMapScript)->OnPlayerEnterAll(map, player);
+
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
     itr->second->OnPlayerEnter(map, player);
     SCR_MAP_END;
@@ -547,6 +549,8 @@ void ScriptMgr::OnPlayerLeave(Map* map, Player* player)
 {
     ASSERT(map);
     ASSERT(player);
+
+    FOREACH_SCRIPT(AllMapScript)->OnPlayerLeaveAll(map, player);
 
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsContinent);
     itr->second->OnPlayerLeave(map, player);
@@ -1210,6 +1214,12 @@ GuildScript::GuildScript(const char* name)
     ScriptMgr::ScriptRegistry<GuildScript>::AddScript(this);
 }
 
+AllMapScript::AllMapScript(const char* name)
+    : ScriptObject(name)
+{
+    ScriptMgr::ScriptRegistry<AllMapScript>::AddScript(this);
+}
+
 // Group
 void ScriptMgr::OnGroupAddMember(Group* group, Player* guid)
 {
@@ -1598,6 +1608,7 @@ template class ScriptMgr::ScriptRegistry<MovementHandlerScript>;
 template class ScriptMgr::ScriptRegistry<BGScript>;
 template class ScriptMgr::ScriptRegistry<GuildScript>;
 template class ScriptMgr::ScriptRegistry<UnitScript>;
+template class ScriptMgr::ScriptRegistry<AllMapScript>;
 
 // Undefine utility macros.
 #undef GET_SCRIPT_RET
