@@ -817,10 +817,6 @@ bool Creature::Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 entry, 
         return false;
     }
 
-    // Allow players to see those units while dead, do it here (mayby altered by addon auras)
-    if (cinfo->type_flags & CREATURE_TYPE_FLAG_GHOST_VISIBLE)
-        m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE | GHOST_VISIBILITY_GHOST);
-
     if (!CreateFromProto(guidlow, entry, team, data))
         return false;
 
@@ -843,12 +839,29 @@ bool Creature::Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 entry, 
             break;
     }
 
+    LoadCreaturesAddon();
+
+    uint32 displayID = GetNativeDisplayId();
+    CreatureModelInfo const* minfo = sObjectMgr.GetCreatureModelRandomGender(displayID);
+    if (minfo && !IsTotem())                               // Cancel load if no model defined or if totem
+    {
+        SetDisplayId(displayID);
+        SetNativeDisplayId(displayID);
+        SetByteValue(UNIT_FIELD_BYTES_0, 2, minfo->gender);
+    }
+
+    LastUsedScriptID = GetCreatureTemplate()->ScriptID;
+
     /// @todo Replace with spell, handle from DB
     if (IsSpiritHealer() || IsSpiritGuide())
     {
         m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_GHOST);
         m_serverSideVisibilityDetect.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_GHOST);
-    }
+    } else if (cinfo->type_flags & CREATURE_TYPE_FLAG_GHOST_VISIBLE)
+        m_serverSideVisibility.SetValue(SERVERSIDE_VISIBILITY_GHOST, GHOST_VISIBILITY_ALIVE | GHOST_VISIBILITY_GHOST);
+
+    if (entry == VISUAL_WAYPOINT)
+        SetVisible(false);
 
     return true;
 }

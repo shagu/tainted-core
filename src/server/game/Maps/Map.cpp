@@ -966,52 +966,24 @@ bool Map::UnloadGrid(NGridType& ngrid, bool unloadAll)
     const uint32 y = ngrid.getY();
 
     {
-        if (!unloadAll)
-        {
-            //pets, possessed creatures (must be active), transport passengers
-            if (ngrid.GetWorldObjectCountInNGrid<Creature>())
-                return false;
-
-            if (ActiveObjectsNearGrid(ngrid))
-                return false;
-        }
-
-        DEBUG_LOG("Unloading grid[%u,%u] for map %u", x, y, GetId());
-
-        if (!unloadAll)
-        {
-            // Finish creature moves, remove and delete all creatures with delayed remove before moving to respawn grids
-            // Must know real mob position before move
-            MoveAllCreaturesInMoveList();
-
-            // move creatures to respawn grids if this is diff.grid or to remove list
-            ObjectGridEvacuator worker;
-            TypeContainerVisitor<ObjectGridEvacuator, GridTypeMapContainer> visitor(worker);
-            ngrid.VisitAllGrids(visitor);
-
-            // Finish creature moves, remove and delete all creatures with delayed remove before unload
-            MoveAllCreaturesInMoveList();
-        }
-
-        {
-            ObjectGridCleaner worker;
-            TypeContainerVisitor<ObjectGridCleaner, GridTypeMapContainer> visitor(worker);
-            ngrid.VisitAllGrids(visitor);
-        }
-
-        RemoveAllObjectsInRemoveList();
-
-        {
-            ObjectGridUnloader worker;
-            TypeContainerVisitor<ObjectGridUnloader, GridTypeMapContainer> visitor(worker);
-            ngrid.VisitAllGrids(visitor);
-        }
-
-        ASSERT(i_objectsToRemove.empty());
-
-        delete &ngrid;
-        setNGrid(NULL, x, y);
+        ObjectGridCleaner worker;
+        TypeContainerVisitor<ObjectGridCleaner, GridTypeMapContainer> visitor(worker);
+        ngrid.VisitAllGrids(visitor);
     }
+
+    RemoveAllObjectsInRemoveList();
+
+    {
+        ObjectGridUnloader worker;
+        TypeContainerVisitor<ObjectGridUnloader, GridTypeMapContainer> visitor(worker);
+        ngrid.VisitAllGrids(visitor);
+    }
+
+    ASSERT(i_objectsToRemove.empty());
+
+    delete& ngrid;
+    setNGrid(NULL, x, y);
+
 
     int gx = (MAX_NUMBER_OF_GRIDS - 1) - x;
     int gy = (MAX_NUMBER_OF_GRIDS - 1) - y;

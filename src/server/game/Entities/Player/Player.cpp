@@ -2369,7 +2369,7 @@ Creature* Player::GetNPCIfCanInteractWith(uint64 guid, uint32 npcflagmask)
         return nullptr;
 
     // not too far, taken from CGGameUI::SetInteractTarget
-    if (!creature->IsWithinDistInMap(this, creature->GetCombatReach() + 4.0f))
+    if (!creature->IsWithinDistInMap(this, 4.0f))
         return nullptr;
 
     return creature;
@@ -19367,8 +19367,6 @@ void Player::UpdateTriggerVisibility()
 template<class T>
 void Player::UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& visibleNow)
 {
-    if (!target)
-        return;
     if (HaveAtClient(target))
     {
         if (!CanSeeOrDetect(target, false, true))

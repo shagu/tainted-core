@@ -266,7 +266,6 @@ bool GameObject::Create(uint32 guidlow, uint32 name_id, Map* map, uint32 phaseMa
 
     AIM_Initialize();
 
-
 #ifdef ELUNA
     sEluna->OnSpawn(this);
 #endif
