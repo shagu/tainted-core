@@ -13615,8 +13615,10 @@ void Unit::GetPartyMember(std::list<Unit*>& TagUnitMap, float radius)
     }
     else
     {
-        if ((owner == this || IsInMap(owner)) && owner->IsAlive())
+
+        if ((owner == this || IsInMap(owner)) && owner->IsAlive() && IsWithinDist(owner, radius))
             TagUnitMap.push_back(owner);
+
         if (Guardian* pet = owner->GetGuardianPet())
             if ((pet == this || IsInMap(pet)) && pet->IsAlive())
                 TagUnitMap.push_back(pet);
