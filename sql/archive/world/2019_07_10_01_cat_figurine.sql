@@ -1,1 +1,0 @@
-UPDATE `gameobject_template` SET `ScriptName` = 'go_cat_figurine' WHERE `entry` IN (13359, 13873);

@@ -1,1 +1,0 @@
-UPDATE `creature_template` SET `unit_flags` = '4096' WHERE `entry` = 12423;
