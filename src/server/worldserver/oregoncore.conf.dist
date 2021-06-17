@@ -54,7 +54,7 @@ LogsDir = ""
 LoginDatabase.Info              = "127.0.0.1;3306;oregon;oregon;realmd"
 LoginDatabase.Connections       = 1
 LoginDatabase.WorkerThreads     = 1
-WorldDatabase.Info              = "127.0.0.1;3306;oregon;oregon;mangos"
+WorldDatabase.Info              = "127.0.0.1;3306;oregon;oregon;world"
 WorldDatabase.Connections       = 1
 WorldDatabase.WorkerThreads     = 1
 CharacterDatabase.Info          = "127.0.0.1;3306;oregon;oregon;characters"
@@ -283,13 +283,13 @@ MapUpdate.Threads = 1
 #        MMAP = 32768, NETWORK = 65536
 #        Example: I want to see basic output and errors:
 #                 STRING + BASIC + ERROR + ERROR_DB + SQL =
-#                 1      + 2     + 16    + 32       + 64  = 115 
+#                 1      + 2     + 16    + 32       + 64  = 115
 #        Default: 51
 #
 #    WorldLogFile
 #       Name of log where network packets should go.
 #       Example: "Network.log"
-#       Default: "" - disabled 
+#       Default: "" - disabled
 #
 #    LogFile
 #        Logfile name, here will go all messages you don't have specific log for.
@@ -554,7 +554,7 @@ ChatLogTimestamp = 0
 #        Allow players to access content from expansion 1
 #        Default: 1 - check for expansion 1 maps.  If client supports
 #                      expansion 1 and account has expansion 1 setting, then
-#                      allow visiting expansion 1 maps, and creating new 
+#                      allow visiting expansion 1 maps, and creating new
 #                      character races.
 #                 0 - Do not check for expansion 1 maps.  Do not allow players
 #                      to visit expansion 1 maps or create new character races.
@@ -1001,7 +1001,7 @@ TalentsInspecting = 1
 #        Examples: 2 - creatures have 2x health, 1.7 - 1.7x.
 #
 #    Creature.PickPocketRefillDelay
-#        Description: Time in seconds that the server will wait before refilling the pickpocket loot 
+#        Description: Time in seconds that the server will wait before refilling the pickpocket loot
 #                     for a creature
 #        Default:     600
 #
@@ -1313,9 +1313,9 @@ Visibility.Notify.Period.InBGArenas   = 1000
 #        Default: 1
 #
 #    Rate.InstanceResetTime
-#        Multiplier for the rate between global raid/heroic instance resets 
-#        (dbc value). Higher value increases the time between resets, 
-#        lower value lowers the time, you need clean instance_reset in 
+#        Multiplier for the rate between global raid/heroic instance resets
+#        (dbc value). Higher value increases the time between resets,
+#        lower value lowers the time, you need clean instance_reset in
 #        characters db in order to let new values work.
 #        Default: 1
 #
@@ -2188,7 +2188,7 @@ Eluna.ScriptPath = "lua_scripts"
 #        Values 1 - on, 0 - off
 #
 #	Console.RestartTimer
-#		Time in seconds for when selecting restart in console 
+#		Time in seconds for when selecting restart in console
 #		window the server will restart
 #		Default = 10
 #
