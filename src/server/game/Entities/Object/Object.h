@@ -38,7 +38,7 @@
 #define INSPECT_DISTANCE            28.0f
 #define MAX_VISIBILITY_DISTANCE     SIZE_OF_GRIDS       // max distance for visible object show
 #define SIGHT_RANGE_UNIT            50.0f
-#define DEFAULT_VISIBILITY_DISTANCE 90.0f                   // default visible distance, 90 yards on continents
+#define DEFAULT_VISIBILITY_DISTANCE 110.0f              // default visible distance, ~110 yards on continents
 #define DEFAULT_VISIBILITY_INSTANCE 170.0f              // default visible distance in instances, 120 yards
 #define DEFAULT_VISIBILITY_BGARENAS 533.0f              // default visible distance in BG/Arenas, 180 yards
 
@@ -938,11 +938,11 @@ class WorldObject : public Object, public WorldLocation
         uint64 lootingGroupLeaderGUID;                      // used to find group which is looting corpse
 
         MovementInfo m_movementInfo;
-		
+
 #ifdef ELUNA
         ElunaEventProcessor* elunaEvents;
 #endif
-		
+
     protected:
         explicit WorldObject(bool isWorldObject); //note: here it means if it is in grid object list or world object list
         std::string m_name;

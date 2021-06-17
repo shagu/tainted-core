@@ -1215,7 +1215,7 @@ GM.TicketSystem.ChanceOfGMSurvey = 0
 #    Visibility.Distance.Instances
 #    Visibility.Distance.BGArenas
 #        Visibility distance for different ingame object in different maps.
-#        Visibility on continents on retail ~90 yards. In BG/Arenas ~533.
+#        Visibility on continents on retail ~110 yards. In BG/Arenas ~533.
 #        For instances default ~170.
 #        Max limited by active player zone: ~ 533
 #        Min limit is max aggro radius (45) * Rate.Creature.Aggro
@@ -1223,7 +1223,7 @@ GM.TicketSystem.ChanceOfGMSurvey = 0
 ###############################################################################
 
 Visibility.GroupMode = 1
-Visibility.Distance.Continents = 90
+Visibility.Distance.Continents = 110
 Visibility.Distance.Instances = 170
 Visibility.Distance.BGArenas = 533
 
