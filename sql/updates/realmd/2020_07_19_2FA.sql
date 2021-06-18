@@ -1,1 +1,0 @@
-ALTER TABLE `account` ADD `token_key`  VARCHAR(16) NULL;

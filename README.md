@@ -30,19 +30,25 @@ to your mysql database (oregon:oregon). You might want to delete or
 change its password later.
 
     mysql -u'root' -p < source/sql/create/create_mysql.sql
-    mysql -u'oregon' -p'oregon' world < source/sql/base/world.sql
-    mysql -u'oregon' -p'oregon' characters < source/sql/base/characters.sql
     mysql -u'oregon' -p'oregon' realmd < source/sql/base/realmd.sql
+    mysql -u'oregon' -p'oregon' characters < source/sql/base/characters.sql
 
-    cd source/sql/updates/characters
-    for i in *.sql; do echo "$i"; mysql -u"oregon" -p"oregon" characters < $i; done
-    cd -
+    mysql -u'oregon' -p'oregon' world < source/sql/base/world.sql
+    mysql -u'oregon' -p'oregon' world < source/sql/base/world_locales.sql
 
     cd source/sql/updates/realmd
     for i in *.sql; do echo "$i"; mysql -u"oregon" -p"oregon" realmd < $i; done
     cd -
 
+    cd source/sql/updates/characters
+    for i in *.sql; do echo "$i"; mysql -u"oregon" -p"oregon" characters < $i; done
+    cd -
+
     cd source/sql/updates/world
+    for i in *.sql; do echo "$i"; mysql -u"oregon" -p"oregon" world < $i; done
+    cd -
+
+    cd source/sql/updates/world_locales
     for i in *.sql; do echo "$i"; mysql -u"oregon" -p"oregon" world < $i; done
     cd -
 

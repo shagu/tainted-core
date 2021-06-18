@@ -45,6 +45,8 @@ script:
   - mysql -u oregon -poregon realmd < base/realmd.sql
   - mysql -u oregon -poregon characters < base/characters.sql
   - mysql -u oregon -poregon world < base/world.sql
+  - mysql -u oregon -poregon world < base/world_locales.sql
   - cat updates/realmd/*.sql | mysql -u oregon -poregon realmd
   - cat updates/characters/*.sql | mysql -u oregon -poregon characters
   - cat updates/world/*.sql | mysql -u oregon -poregon world
+  - cat updates/world_locales/*.sql | mysql -u oregon -poregon world
