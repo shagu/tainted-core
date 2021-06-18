@@ -35,15 +35,15 @@ change its password later.
     mysql -u'oregon' -p'oregon' realmd < source/sql/base/realmd.sql
 
     cd source/sql/updates/characters
-    for i in *; do mysql -u"oregon" -p"oregon" characters < $i; done
+    for i in *.sql; do echo "$i"; mysql -u"oregon" -p"oregon" characters < $i; done
     cd -
 
     cd source/sql/updates/realmd
-    for i in *.sql; do mysql -u"oregon" -p"oregon" realmd < $i; done
+    for i in *.sql; do echo "$i"; mysql -u"oregon" -p"oregon" realmd < $i; done
     cd -
 
     cd source/sql/updates/world
-    for i in *.sql; do mysql -u"oregon" -p"oregon" world < $i; done
+    for i in *.sql; do echo "$i"; mysql -u"oregon" -p"oregon" world < $i; done
     cd -
 
 ### Compile
