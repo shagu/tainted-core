@@ -197,10 +197,12 @@ public:
     npc_weegli_blastfuseAI(Creature *c) : ScriptedAI(c) {
       instance = (ScriptedInstance *)c->GetInstanceData();
       destroyingDoor = false;
+      canDespawn = false;
     }
 
     ScriptedInstance *instance;
     bool destroyingDoor;
+    bool canDespawn;
 
     void Reset() {}
 
@@ -218,11 +220,16 @@ public:
         DoCastAOE(SPELL_BARREL_EXPLOSION, true);
 
         GameObject* Door = me->FindNearestGameObject(GO_END_DOOR, 20);
-        if (Door) Door->SetGoState(GO_STATE_ACTIVE);
+        if (Door) {
+          Door->SetGoState(GO_STATE_ACTIVE);
+          canDespawn = true;
+        }
 
         /// @todo leave the area...
-        me->Say(SAY_WEEGLI_BYE, LANG_UNIVERSAL, 0);
-        me->DisappearAndDie();
+        if(canDespawn) {
+          me->Say(SAY_WEEGLI_BYE, LANG_UNIVERSAL, 0);
+          me->DisappearAndDie();
+        }
       };
     }
 
