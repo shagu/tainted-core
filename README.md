@@ -29,14 +29,16 @@ The first command will create all empty databases and also a new user
 to your mysql database (oregon:oregon). You might want to delete or
 change its password later.
 
-    # core database
+**core database**:
+
     mysql -u'root' -p < source/sql/create/create_mysql.sql
     mysql -u'oregon' -p'oregon' realmd < source/sql/base/realmd.sql
     mysql -u'oregon' -p'oregon' characters < source/sql/base/characters.sql
     mysql -u'oregon' -p'oregon' world < source/sql/base/world.sql
     mysql -u'oregon' -p'oregon' world < source/sql/base/world_locales.sql
 
-    # database updates
+**database updates**:
+
     cat source/sql/updates/realmd/*.sql | mysql -u"oregon" -p"oregon" realmd
     cat source/sql/updates/characters/*.sql | mysql -u"oregon" -p"oregon" characters
     cat source/sql/updates/world/*.sql | mysql -u"oregon" -p"oregon" world
