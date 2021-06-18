@@ -1,4 +1,4 @@
-# ![icon](img/logo.png) Tainted Core [![Build Status](https://travis-ci.org/shagu/tainted-core.svg?branch=master)](https://travis-ci.org/shagu/tainted-core)
+# ![icon](img/logo.png) Tainted Core ![Build Status](https://github.com/shagu/tainted-core/actions/workflows/oregoncore.yml/badge.svg)
 
 Tainted Core is a piece of software that targets emulation of a World of Warcraft: The Burning Crusade game server.
 This is my personal fork of [Talamortis'](https://github.com/talamortis) [OregonCore](https://github.com/talamortis/OregonCore) fork which itself was derived from
