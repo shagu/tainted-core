@@ -41,7 +41,7 @@ enum blySays { SAY_1 = -1209002, SAY_2 = -1209003 };
 
 enum blySpells { SPELL_SHIELD_BASH = 11972, SPELL_REVENGE = 12170 };
 
-#define GOSSIP_BLY "[PH] In that case, I will take my reward!"
+#define GOSSIP_BLY "In that case, I will take my reward!"
 
 /*######
 ## npc_weegli_blastfuse
@@ -55,9 +55,13 @@ enum weegliSpells {
   SPELL_BARREL_EXPLOSION = 11195
 };
 
-enum weegliSays { SAY_WEEGLI_OHNO = -1209000, SAY_WEEGLI_OK_I_GO = -1209001 };
+enum weegliSays {
+  SAY_WEEGLI_OHNO = -1209000,
+  SAY_WEEGLI_OK_I_GO = -1209001,
+  SAY_WEEGLI_BYE = -1209004
+};
 
-#define GOSSIP_WEEGLI "[PH] Please blow up the door."
+#define GOSSIP_WEEGLI "Please blow up the door."
 
 /*######
 ## go_shallow_grave
@@ -212,7 +216,12 @@ public:
       } else if (destroyingDoor) {
         /// @todo Spell needs proper implementation.
         DoCastAOE(SPELL_BARREL_EXPLOSION, true);
+
+        GameObject* Door = me->FindNearestGameObject(GO_END_DOOR, 20);
+        if (Door) Door->SetGoState(GO_STATE_ACTIVE);
+
         /// @todo leave the area...
+        me->Say(SAY_WEEGLI_BYE, LANG_UNIVERSAL, 0);
         me->DisappearAndDie();
       };
     }
