@@ -34,116 +34,88 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "ScriptedEscortAI.h"
 
-enum eGalen
-{
-    GILAN_SAY_START_1         = -1000582,
-    GILAN_SAY_START_2         = -1000583,
-    GILAN_SAY_UNDER_ATTACK_1  = -1000584,
-    GILAN_SAY_UNDER_ATTACK_2  = -1000585,
-    GILAN_SAY_END             = -1000586,
-    GILAN_EMOTE_END_1         = -1000587,
-    GILAN_EMOTE_END_2         = -1000588,
+enum eGalen {
+  GILAN_SAY_START_1 = -1000582,
+  GILAN_SAY_START_2 = -1000583,
+  GILAN_SAY_UNDER_ATTACK_1 = -1000584,
+  GILAN_SAY_UNDER_ATTACK_2 = -1000585,
+  GILAN_SAY_END = -1000586,
+  GILAN_EMOTE_END_1 = -1000587,
+  GILAN_EMOTE_END_2 = -1000588,
 
-    QUEST_GALENS_ESCAPE       = 1393,
-    GO_GALENS_CAGE            = 37118
+  QUEST_GALENS_ESCAPE = 1393,
+  GO_GALENS_CAGE = 37118
 };
 
+class npc_galen_goodward : public CreatureScript {
+public:
+  npc_galen_goodward() : CreatureScript("npc_galen_goodward") {}
+  struct npc_galen_goodwardAI : public npc_escortAI {
+    npc_galen_goodwardAI(Creature *pCreature) : npc_escortAI(pCreature) {}
 
-class npc_galen_goodward : public CreatureScript
-{
-public: 
-    npc_galen_goodward() : CreatureScript("npc_galen_goodward") { }
-    struct npc_galen_goodwardAI : public npc_escortAI
-    {
-        npc_galen_goodwardAI(Creature* pCreature) : npc_escortAI(pCreature) { }
-    
-        uint32 m_uiPostEventTimer;
-    
-        void Reset()
-        {
-            m_uiPostEventTimer = 0;
-        }
-    
-        void EnterCombat(Unit*)
-        {
-            DoScriptText(RAND(GILAN_SAY_UNDER_ATTACK_1, GILAN_SAY_UNDER_ATTACK_2), me);
-        }
-    
-        void WaypointReached(uint32 uiPointId)
-        {
-            Player* pPlayer = GetPlayerForEscort();
-            if (!pPlayer)
-                return;
-    
-            switch (uiPointId)
-            {
-            case 1:
-                DoScriptText(GILAN_SAY_START_2, me);
-                break;
-            case 16:
-                m_uiPostEventTimer = 10000;
-                DoScriptText(GILAN_SAY_END, me, pPlayer);
-                SetRun(true);
-                if (Player* pPlayer = GetPlayerForEscort())
-                    pPlayer->GroupEventHappens(QUEST_GALENS_ESCAPE, me);
-                break;
-            case 17:
-                DoScriptText(GILAN_EMOTE_END_2, me, pPlayer);
-                break;
-            }
-        }
-    
-        void UpdateEscortAI(const uint32 uiDiff)
-        {
-            if (!UpdateVictim())
-            {
-                if (m_uiPostEventTimer && m_uiPostEventTimer <= uiDiff)
-                {
-                    if (!me->GetVictim() && me->IsAlive())
-                    {
-                        Player* pPlayer = GetPlayerForEscort();
-    
-                        DoScriptText(GILAN_EMOTE_END_1, me, pPlayer);
-                        Reset();
-                        return;
-                    }
-    
-                }
-                else m_uiPostEventTimer -= uiDiff;
-    
-                return;
-            }
-    
-            DoMeleeAttackIfReady();
-        }
-    
-    };
-    
-    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, const Quest* pQuest) override
-    {
-        if (pQuest->GetQuestId() == QUEST_GALENS_ESCAPE)
-        {
-            pCreature->SetFaction(113);
-            DoScriptText(GILAN_SAY_START_1, pCreature);
-            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
-    
-            if (GameObject* pGo = pCreature->FindNearestGameObject(GO_GALENS_CAGE, INTERACTION_DISTANCE))
-                pGo->UseDoorOrButton();
-    
-            if (npc_galen_goodwardAI* pEscortAI = CAST_AI(npc_galen_goodwardAI, pCreature->AI()))
-                pEscortAI->Start(false, false, pPlayer->GetGUID(), pQuest);
-        }
-        return true;
+    uint32 m_uiPostEventTimer;
+
+    void Reset() { m_uiPostEventTimer = 0; }
+
+    void EnterCombat(Unit *) { DoScriptText(RAND(GILAN_SAY_UNDER_ATTACK_1, GILAN_SAY_UNDER_ATTACK_2), me); }
+
+    void WaypointReached(uint32 uiPointId) {
+      Player *pPlayer = GetPlayerForEscort();
+      if (!pPlayer)
+        return;
+
+      switch (uiPointId) {
+      case 1:
+        DoScriptText(GILAN_SAY_START_2, me);
+        break;
+      case 16:
+        m_uiPostEventTimer = 10000;
+        DoScriptText(GILAN_SAY_END, me, pPlayer);
+        SetRun(true);
+        if (Player *pPlayer = GetPlayerForEscort())
+          pPlayer->GroupEventHappens(QUEST_GALENS_ESCAPE, me);
+        break;
+      case 17:
+        DoScriptText(GILAN_EMOTE_END_2, me, pPlayer);
+        break;
+      }
     }
-     CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new npc_galen_goodwardAI(pCreature);
+
+    void UpdateEscortAI(const uint32 uiDiff) {
+      if (!UpdateVictim()) {
+        if (m_uiPostEventTimer && m_uiPostEventTimer <= uiDiff) {
+          if (!me->GetVictim() && me->IsAlive()) {
+            Player *pPlayer = GetPlayerForEscort();
+
+            DoScriptText(GILAN_EMOTE_END_1, me, pPlayer);
+            Reset();
+            return;
+          }
+
+        } else
+          m_uiPostEventTimer -= uiDiff;
+
+        return;
+      }
+
+      DoMeleeAttackIfReady();
     }
-    
-    
+  };
+
+  bool OnQuestAccept(Player *pPlayer, Creature *pCreature, const Quest *pQuest) override {
+    if (pQuest->GetQuestId() == QUEST_GALENS_ESCAPE) {
+      pCreature->SetFaction(113);
+      DoScriptText(GILAN_SAY_START_1, pCreature);
+      pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_IMMUNE_TO_PC);
+
+      if (GameObject *pGo = pCreature->FindNearestGameObject(GO_GALENS_CAGE, INTERACTION_DISTANCE))
+        pGo->UseDoorOrButton();
+
+      if (npc_galen_goodwardAI *pEscortAI = CAST_AI(npc_galen_goodwardAI, pCreature->AI()))
+        pEscortAI->Start(false, false, pPlayer->GetGUID(), pQuest);
+    }
+    return true;
+  }
+  CreatureAI *GetAI(Creature *pCreature) const { return new npc_galen_goodwardAI(pCreature); }
 };
-void AddSC_swamp_of_sorrows()
-{
-    new npc_galen_goodward();
-}
-
+void AddSC_swamp_of_sorrows() { new npc_galen_goodward(); }

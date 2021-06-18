@@ -33,4 +33,3 @@
 #define DATA_SULFURONISDEAD 13
 #define DATA_GOLEMAGG 14
 #endif
-

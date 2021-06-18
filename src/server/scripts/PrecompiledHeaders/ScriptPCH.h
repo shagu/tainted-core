@@ -18,20 +18,20 @@
 #ifndef SC_PRECOMPILED_H
 #define SC_PRECOMPILED_H
 
-#include "ScriptMgr.h"
 #include "Cell.h"
 #include "CellImpl.h"
+#include "CombatAI.h"
+#include "GameObject.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
-#include "Unit.h"
-#include "GameObject.h"
-#include "SpellMgr.h"
+#include "ObjectAccessor.h"
+#include "PassiveAI.h"
+#include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "ScriptedGossip.h"
 #include "ScriptedInstance.h"
-#include "CombatAI.h"
-#include "PassiveAI.h"
-#include "ObjectAccessor.h"
+#include "SpellMgr.h"
+#include "Unit.h"
 
 #ifdef WIN32
 #include <windows.h>

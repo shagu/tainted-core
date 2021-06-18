@@ -34,73 +34,55 @@ EndContentData */
 ## npcs_riverbreeze_and_silversky
 ######*/
 
-#define GOSSIP_ITEM_BEACON  "Please make me a Cenarion Beacon"
+#define GOSSIP_ITEM_BEACON "Please make me a Cenarion Beacon"
 
-class npcs_riverbreeze_and_silversky : public CreatureScript
-{
+class npcs_riverbreeze_and_silversky : public CreatureScript {
 public:
-    npcs_riverbreeze_and_silversky() : CreatureScript("npcs_riverbreeze_and_silversky") { }
-    struct npcs_riverbreeze_and_silverskyAI : public ScriptedAI
-    {
-        npcs_riverbreeze_and_silverskyAI(Creature* c) : ScriptedAI(c) {}
+  npcs_riverbreeze_and_silversky() : CreatureScript("npcs_riverbreeze_and_silversky") {}
+  struct npcs_riverbreeze_and_silverskyAI : public ScriptedAI {
+    npcs_riverbreeze_and_silverskyAI(Creature *c) : ScriptedAI(c) {}
 
-        bool OnGossipHello(Player* pPlayer, Creature* pCreature)
-        {
-            uint32 eCreature = pCreature->GetEntry();
+    bool OnGossipHello(Player *pPlayer, Creature *pCreature) {
+      uint32 eCreature = pCreature->GetEntry();
 
-            if (pCreature->IsQuestGiver())
-                pPlayer->PrepareQuestMenu(pCreature->GetGUID());
+      if (pCreature->IsQuestGiver())
+        pPlayer->PrepareQuestMenu(pCreature->GetGUID());
 
-            if (eCreature == 9528)
-            {
-                if (pPlayer->GetQuestRewardStatus(4101))
-                {
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BEACON, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                    pPlayer->SEND_GOSSIP_MENU(2848, pCreature->GetGUID());
-                }
-                else if (pPlayer->GetTeam() == HORDE)
-                    pPlayer->SEND_GOSSIP_MENU(2845, pCreature->GetGUID());
-                else
-                    pPlayer->SEND_GOSSIP_MENU(2844, pCreature->GetGUID());
-            }
+      if (eCreature == 9528) {
+        if (pPlayer->GetQuestRewardStatus(4101)) {
+          pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BEACON, GOSSIP_SENDER_MAIN,
+                                   GOSSIP_ACTION_INFO_DEF + 1);
+          pPlayer->SEND_GOSSIP_MENU(2848, pCreature->GetGUID());
+        } else if (pPlayer->GetTeam() == HORDE)
+          pPlayer->SEND_GOSSIP_MENU(2845, pCreature->GetGUID());
+        else
+          pPlayer->SEND_GOSSIP_MENU(2844, pCreature->GetGUID());
+      }
 
-            if (eCreature == 9529)
-            {
-                if (pPlayer->GetQuestRewardStatus(4102))
-                {
-                    pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BEACON, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
-                    pPlayer->SEND_GOSSIP_MENU(2849, pCreature->GetGUID());
-                }
-                else if (pPlayer->GetTeam() == ALLIANCE)
-                    pPlayer->SEND_GOSSIP_MENU(2843, pCreature->GetGUID());
-                else
-                    pPlayer->SEND_GOSSIP_MENU(2842, pCreature->GetGUID());
-            }
+      if (eCreature == 9529) {
+        if (pPlayer->GetQuestRewardStatus(4102)) {
+          pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_BEACON, GOSSIP_SENDER_MAIN,
+                                   GOSSIP_ACTION_INFO_DEF + 1);
+          pPlayer->SEND_GOSSIP_MENU(2849, pCreature->GetGUID());
+        } else if (pPlayer->GetTeam() == ALLIANCE)
+          pPlayer->SEND_GOSSIP_MENU(2843, pCreature->GetGUID());
+        else
+          pPlayer->SEND_GOSSIP_MENU(2842, pCreature->GetGUID());
+      }
 
-            return true;
-        }
-
-        
-    };
-
-    bool OnGossipSelect(Player* pPlayer, Creature* pCreature, uint32 /*uiSender*/, uint32 uiAction) override
-    {
-        if (uiAction == GOSSIP_ACTION_INFO_DEF + 1)
-        {
-            pPlayer->CLOSE_GOSSIP_MENU();
-            pCreature->CastSpell(pPlayer, 15120, false);
-        }
-        return true;
+      return true;
     }
+  };
 
-     CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new npcs_riverbreeze_and_silverskyAI(pCreature);
+  bool OnGossipSelect(Player *pPlayer, Creature *pCreature, uint32 /*uiSender*/, uint32 uiAction) override {
+    if (uiAction == GOSSIP_ACTION_INFO_DEF + 1) {
+      pPlayer->CLOSE_GOSSIP_MENU();
+      pCreature->CastSpell(pPlayer, 15120, false);
     }
+    return true;
+  }
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new npcs_riverbreeze_and_silverskyAI(pCreature); }
 };
 
-void AddSC_felwood()
-{
-    new npcs_riverbreeze_and_silversky();
-}
-
+void AddSC_felwood() { new npcs_riverbreeze_and_silversky(); }

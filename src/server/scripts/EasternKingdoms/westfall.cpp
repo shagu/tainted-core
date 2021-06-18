@@ -34,80 +34,58 @@ EndContentData */
 ## npc_defias_traitor
 ######*/
 
-#define SAY_START                   -1000101
-#define SAY_PROGRESS                -1000102
-#define SAY_END                     -1000103
-#define SAY_AGGRO_1                 -1000104
-#define SAY_AGGRO_2                 -1000105
+#define SAY_START -1000101
+#define SAY_PROGRESS -1000102
+#define SAY_END -1000103
+#define SAY_AGGRO_1 -1000104
+#define SAY_AGGRO_2 -1000105
 
-#define QUEST_DEFIAS_BROTHERHOOD    155
+#define QUEST_DEFIAS_BROTHERHOOD 155
 
+class npc_defias_traitor : public CreatureScript {
+public:
+  npc_defias_traitor() : CreatureScript("npc_defias_traitor") {}
+  struct npc_defias_traitorAI : public npc_escortAI {
+    npc_defias_traitorAI(Creature *c) : npc_escortAI(c) { Reset(); }
 
-class npc_defias_traitor : public CreatureScript
-{
-public: 
-    npc_defias_traitor() : CreatureScript("npc_defias_traitor") { }
-    struct npc_defias_traitorAI : public npc_escortAI
-    {
-        npc_defias_traitorAI(Creature* c) : npc_escortAI(c)
+    void WaypointReached(uint32 i) {
+      Player *pPlayer = GetPlayerForEscort();
+
+      if (!pPlayer)
+        return;
+
+      switch (i) {
+      case 35:
+        SetRun(false);
+        break;
+      case 36:
+        DoScriptText(SAY_PROGRESS, me, pPlayer);
+        break;
+      case 44:
+        DoScriptText(SAY_END, me, pPlayer);
         {
-            Reset();
+          if (pPlayer)
+            pPlayer->GroupEventHappens(QUEST_DEFIAS_BROTHERHOOD, me);
         }
-    
-        void WaypointReached(uint32 i)
-        {
-            Player* pPlayer = GetPlayerForEscort();
-    
-            if (!pPlayer)
-                return;
-    
-            switch (i)
-            {
-            case 35:
-                SetRun(false);
-                break;
-            case 36:
-                DoScriptText(SAY_PROGRESS, me, pPlayer);
-                break;
-            case 44:
-                DoScriptText(SAY_END, me, pPlayer);
-                {
-                    if (pPlayer)
-                        pPlayer->GroupEventHappens(QUEST_DEFIAS_BROTHERHOOD, me);
-                }
-                break;
-            }
-        }
-        void EnterCombat(Unit* who)
-        {
-            DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2), me, who);
-        }
-    
-        void Reset() {}
-    };
-    
-    bool OnQuestAccept(Player* pPlayer, Creature* pCreature, Quest const* quest) override
-    {
-        if (quest->GetQuestId() == QUEST_DEFIAS_BROTHERHOOD)
-        {
-            if (npc_escortAI* pEscortAI = CAST_AI(npc_defias_traitorAI, pCreature->AI()))
-                pEscortAI->Start(true, true, pPlayer->GetGUID());
-    
-            DoScriptText(SAY_START, pCreature, pPlayer);
-        }
-    
-        return true;
+        break;
+      }
     }
-    
-     CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new npc_defias_traitorAI(pCreature);
+    void EnterCombat(Unit *who) { DoScriptText(RAND(SAY_AGGRO_1, SAY_AGGRO_2), me, who); }
+
+    void Reset() {}
+  };
+
+  bool OnQuestAccept(Player *pPlayer, Creature *pCreature, Quest const *quest) override {
+    if (quest->GetQuestId() == QUEST_DEFIAS_BROTHERHOOD) {
+      if (npc_escortAI *pEscortAI = CAST_AI(npc_defias_traitorAI, pCreature->AI()))
+        pEscortAI->Start(true, true, pPlayer->GetGUID());
+
+      DoScriptText(SAY_START, pCreature, pPlayer);
     }
-    
-    
+
+    return true;
+  }
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new npc_defias_traitorAI(pCreature); }
 };
-void AddSC_westfall()
-{
-    new npc_defias_traitor();
-}
-
+void AddSC_westfall() { new npc_defias_traitor(); }

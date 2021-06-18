@@ -15,90 +15,72 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /* ScriptData
- SDName: Boss_Firemaw
- SD%Complete: 100
- SDComment:
- SDCategory: Blackwing Lair
- EndScriptData */
+/* ScriptData
+SDName: Boss_Firemaw
+SD%Complete: 100
+SDComment:
+SDCategory: Blackwing Lair
+EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-#define SPELL_SHADOWFLAME       22539
-#define SPELL_WINGBUFFET        23339
-#define SPELL_FLAMEBUFFET       23341
+#define SPELL_SHADOWFLAME 22539
+#define SPELL_WINGBUFFET 23339
+#define SPELL_FLAMEBUFFET 23341
 
-
-class boss_firemaw : public CreatureScript
-{
+class boss_firemaw : public CreatureScript {
 public:
-    boss_firemaw() : CreatureScript("boss_firemaw") { }
+  boss_firemaw() : CreatureScript("boss_firemaw") {}
 
-    struct boss_firemawAI : public ScriptedAI
-    {
-        boss_firemawAI(Creature* c) : ScriptedAI(c) {}
+  struct boss_firemawAI : public ScriptedAI {
+    boss_firemawAI(Creature *c) : ScriptedAI(c) {}
 
-        uint32 ShadowFlame_Timer;
-        uint32 WingBuffet_Timer;
-        uint32 FlameBuffet_Timer;
+    uint32 ShadowFlame_Timer;
+    uint32 WingBuffet_Timer;
+    uint32 FlameBuffet_Timer;
 
-        void Reset()
-        {
-            ShadowFlame_Timer = 30000;                          //These times are probably wrong
-            WingBuffet_Timer = 24000;
-            FlameBuffet_Timer = 5000;
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-            DoZoneInCombat();
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            if (!UpdateVictim())
-                return;
-
-            //ShadowFlame_Timer
-            if (ShadowFlame_Timer <= diff)
-            {
-                DoCastVictim(SPELL_SHADOWFLAME);
-                ShadowFlame_Timer = urand(15000, 18000);
-            }
-            else ShadowFlame_Timer -= diff;
-
-            //WingBuffet_Timer
-            if (WingBuffet_Timer <= diff)
-            {
-                DoCastVictim(SPELL_WINGBUFFET);
-                if (DoGetThreat(me->GetVictim()))
-                    DoModifyThreatPercent(me->GetVictim(), -75);
-
-                WingBuffet_Timer = 25000;
-            }
-            else WingBuffet_Timer -= diff;
-
-            //FlameBuffet_Timer
-            if (FlameBuffet_Timer <= diff)
-            {
-                DoCastVictim(SPELL_FLAMEBUFFET);
-                FlameBuffet_Timer = 5000;
-            }
-            else FlameBuffet_Timer -= diff;
-
-            DoMeleeAttackIfReady();
-        }
-    };
-
-    CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new boss_firemawAI(pCreature);
+    void Reset() {
+      ShadowFlame_Timer = 30000; // These times are probably wrong
+      WingBuffet_Timer = 24000;
+      FlameBuffet_Timer = 5000;
     }
 
+    void EnterCombat(Unit * /*who*/) { DoZoneInCombat(); }
+
+    void UpdateAI(const uint32 diff) {
+      if (!UpdateVictim())
+        return;
+
+      // ShadowFlame_Timer
+      if (ShadowFlame_Timer <= diff) {
+        DoCastVictim(SPELL_SHADOWFLAME);
+        ShadowFlame_Timer = urand(15000, 18000);
+      } else
+        ShadowFlame_Timer -= diff;
+
+      // WingBuffet_Timer
+      if (WingBuffet_Timer <= diff) {
+        DoCastVictim(SPELL_WINGBUFFET);
+        if (DoGetThreat(me->GetVictim()))
+          DoModifyThreatPercent(me->GetVictim(), -75);
+
+        WingBuffet_Timer = 25000;
+      } else
+        WingBuffet_Timer -= diff;
+
+      // FlameBuffet_Timer
+      if (FlameBuffet_Timer <= diff) {
+        DoCastVictim(SPELL_FLAMEBUFFET);
+        FlameBuffet_Timer = 5000;
+      } else
+        FlameBuffet_Timer -= diff;
+
+      DoMeleeAttackIfReady();
+    }
+  };
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new boss_firemawAI(pCreature); }
 };
 
-void AddSC_boss_firemaw()
-{
-    new boss_firemaw();
-}
+void AddSC_boss_firemaw() { new boss_firemaw(); }

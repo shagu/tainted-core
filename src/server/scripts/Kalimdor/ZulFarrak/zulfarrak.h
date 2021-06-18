@@ -15,51 +15,44 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-enum zfEntries
-{
-    ENTRY_ZUM_RAH = 7271,
-    ENTRY_BLY = 7604,
-    ENTRY_RAVEN = 7605,
-    ENTRY_ORO = 7606,
-    ENTRY_WEEGLI = 7607,
-    ENTRY_MURTA = 7608,
+enum zfEntries {
+  ENTRY_ZUM_RAH = 7271,
+  ENTRY_BLY = 7604,
+  ENTRY_RAVEN = 7605,
+  ENTRY_ORO = 7606,
+  ENTRY_WEEGLI = 7607,
+  ENTRY_MURTA = 7608,
 
-    GO_END_DOOR = 146084,
+  GO_END_DOOR = 146084,
 
-    EVENT_PYRAMID = 1,
-    EVENT_GAHZRILLA
+  EVENT_PYRAMID = 1,
+  EVENT_GAHZRILLA
 };
 
-enum DataTypes
-{
-    DATA_ZUM_RAH = 0
+enum DataTypes { DATA_ZUM_RAH = 0 };
+
+enum zfPyramidPhases {
+  PYRAMID_NOT_STARTED,      // default
+  PYRAMID_CAGES_OPEN,       // happens in GO hello for cages
+  PYRAMID_ARRIVED_AT_STAIR, // happens in Weegli's movementinform
+  PYRAMID_WAVE_1,
+  PYRAMID_PRE_WAVE_2,
+  PYRAMID_WAVE_2,
+  PYRAMID_PRE_WAVE_3,
+  PYRAMID_WAVE_3,
+  PYRAMID_KILLED_ALL_TROLLS,
 };
 
-enum zfPyramidPhases
-{
-    PYRAMID_NOT_STARTED, //default
-    PYRAMID_CAGES_OPEN, //happens in GO hello for cages
-    PYRAMID_ARRIVED_AT_STAIR, //happens in Weegli's movementinform
-    PYRAMID_WAVE_1,
-    PYRAMID_PRE_WAVE_2,
-    PYRAMID_WAVE_2,
-    PYRAMID_PRE_WAVE_3,
-    PYRAMID_WAVE_3,
-    PYRAMID_KILLED_ALL_TROLLS,
+enum Misc {
+  // Creatures
+  NPC_GAHZRILLA = 7273,
+
+  // Paths
+  PATH_ADDS = 81553
 };
 
-enum Misc
-{
-    // Creatures
-    NPC_GAHZRILLA = 7273,
-
-    // Paths
-    PATH_ADDS = 81553
-};
-
-enum blyAndCrewFactions
-{
-    FACTION_HOSTILE = 14,
-    FACTION_FRIENDLY = 35, //while in cages (so the trolls won't attack them while they're caged)
-    FACTION_FREED = 250 //after release (so they'll be hostile towards trolls)
+enum blyAndCrewFactions {
+  FACTION_HOSTILE = 14,
+  FACTION_FRIENDLY = 35, // while in cages (so the trolls won't attack them while they're caged)
+  FACTION_FREED = 250    // after release (so they'll be hostile towards trolls)
 };

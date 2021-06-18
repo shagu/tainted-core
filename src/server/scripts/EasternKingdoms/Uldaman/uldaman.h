@@ -28,4 +28,3 @@
 #define DATA_IRONAYA_SEAL 6
 
 #endif
-

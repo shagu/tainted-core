@@ -15,93 +15,74 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /* ScriptData
- SDName: Boss_Flamegor
- SD%Complete: 100
- SDComment:
- SDCategory: Blackwing Lair
- EndScriptData */
+/* ScriptData
+SDName: Boss_Flamegor
+SD%Complete: 100
+SDComment:
+SDCategory: Blackwing Lair
+EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-#define EMOTE_FRENZY            -1469031
+#define EMOTE_FRENZY -1469031
 
-#define SPELL_SHADOWFLAME        22539
-#define SPELL_WINGBUFFET         23339
-#define SPELL_FRENZY             23342                      //This spell periodically triggers fire nova
+#define SPELL_SHADOWFLAME 22539
+#define SPELL_WINGBUFFET 23339
+#define SPELL_FRENZY 23342 // This spell periodically triggers fire nova
 
-
-class boss_flamegor : public CreatureScript
-{
+class boss_flamegor : public CreatureScript {
 public:
-    boss_flamegor() : CreatureScript("boss_flamegor") { }
+  boss_flamegor() : CreatureScript("boss_flamegor") {}
 
-    struct boss_flamegorAI : public ScriptedAI
-    {
-        boss_flamegorAI(Creature* c) : ScriptedAI(c) {}
+  struct boss_flamegorAI : public ScriptedAI {
+    boss_flamegorAI(Creature *c) : ScriptedAI(c) {}
 
-        uint32 ShadowFlame_Timer;
-        uint32 WingBuffet_Timer;
-        uint32 Frenzy_Timer;
+    uint32 ShadowFlame_Timer;
+    uint32 WingBuffet_Timer;
+    uint32 Frenzy_Timer;
 
-        void Reset()
-        {
-            ShadowFlame_Timer = 21000;                          //These times are probably wrong
-            WingBuffet_Timer = 35000;
-            Frenzy_Timer = 10000;
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-            DoZoneInCombat();
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            if (!UpdateVictim())
-                return;
-
-            //ShadowFlame_Timer
-            if (ShadowFlame_Timer <= diff)
-            {
-                DoCastVictim(SPELL_SHADOWFLAME);
-                ShadowFlame_Timer = 15000 + rand() % 7000;
-            }
-            else ShadowFlame_Timer -= diff;
-
-            //WingBuffet_Timer
-            if (WingBuffet_Timer <= diff)
-            {
-                DoCastVictim(SPELL_WINGBUFFET);
-                if (DoGetThreat(me->GetVictim()))
-                    DoModifyThreatPercent(me->GetVictim(), -75);
-
-                WingBuffet_Timer = 25000;
-            }
-            else WingBuffet_Timer -= diff;
-
-            //Frenzy_Timer
-            if (Frenzy_Timer <= diff)
-            {
-                DoScriptText(EMOTE_FRENZY, me);
-                DoCast(me, SPELL_FRENZY);
-                Frenzy_Timer = urand(8000, 10000);
-            }
-            else Frenzy_Timer -= diff;
-
-            DoMeleeAttackIfReady();
-        }
-    };
-
-    CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new boss_flamegorAI(pCreature);
+    void Reset() {
+      ShadowFlame_Timer = 21000; // These times are probably wrong
+      WingBuffet_Timer = 35000;
+      Frenzy_Timer = 10000;
     }
 
-};
-void AddSC_boss_flamegor()
-{
-    new boss_flamegor();
-}
+    void EnterCombat(Unit * /*who*/) { DoZoneInCombat(); }
 
+    void UpdateAI(const uint32 diff) {
+      if (!UpdateVictim())
+        return;
+
+      // ShadowFlame_Timer
+      if (ShadowFlame_Timer <= diff) {
+        DoCastVictim(SPELL_SHADOWFLAME);
+        ShadowFlame_Timer = 15000 + rand() % 7000;
+      } else
+        ShadowFlame_Timer -= diff;
+
+      // WingBuffet_Timer
+      if (WingBuffet_Timer <= diff) {
+        DoCastVictim(SPELL_WINGBUFFET);
+        if (DoGetThreat(me->GetVictim()))
+          DoModifyThreatPercent(me->GetVictim(), -75);
+
+        WingBuffet_Timer = 25000;
+      } else
+        WingBuffet_Timer -= diff;
+
+      // Frenzy_Timer
+      if (Frenzy_Timer <= diff) {
+        DoScriptText(EMOTE_FRENZY, me);
+        DoCast(me, SPELL_FRENZY);
+        Frenzy_Timer = urand(8000, 10000);
+      } else
+        Frenzy_Timer -= diff;
+
+      DoMeleeAttackIfReady();
+    }
+  };
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new boss_flamegorAI(pCreature); }
+};
+void AddSC_boss_flamegor() { new boss_flamegor(); }

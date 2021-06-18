@@ -17,18 +17,8 @@
 
 #ifndef DEF_SERPENT_SHRINE_H
 #define DEF_SERPENT_SHRINE_H
-enum LurkerEventState
-{
-    LURKER_NOT_STARTED = 0,
-    LURKER_FISHING     = 1,
-    LURKER_HOOKED      = 2
-};
-enum WaterEventState
-{
-    WATERSTATE_NONE     = 0,
-    WATERSTATE_FRENZY   = 1,
-    WATERSTATE_SCALDING = 2
-};
+enum LurkerEventState { LURKER_NOT_STARTED = 0, LURKER_FISHING = 1, LURKER_HOOKED = 2 };
+enum WaterEventState { WATERSTATE_NONE = 0, WATERSTATE_FRENZY = 1, WATERSTATE_SCALDING = 2 };
 #define DATA_CANSTARTPHASE3 1
 #define DATA_CARIBDIS 2
 #define DATA_HYDROSSTHEUNSTABLEEVENT 3
@@ -55,4 +45,3 @@ enum WaterEventState
 #define DATA_WATER 24
 #define DATA_TRASH 25
 #endif
-

@@ -15,105 +15,79 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /* ScriptData
- SDName: Boss_Emperor_Dagran_Thaurissan
- SD%Complete: 99
- SDComment:
- SDCategory: Blackrock Depths
- EndScriptData */
+/* ScriptData
+SDName: Boss_Emperor_Dagran_Thaurissan
+SD%Complete: 99
+SDComment:
+SDCategory: Blackrock Depths
+EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-enum Yells
-{
-    SAY_AGGRO = -1230001,
-    SAY_SLAY = -1230002
-};
+enum Yells { SAY_AGGRO = -1230001, SAY_SLAY = -1230002 };
 
-enum Spells
-{
-    SPELL_HANDOFTHAURISSAN = 17492,
-    SPELL_AVATAROFFLAME = 15636
-};
+enum Spells { SPELL_HANDOFTHAURISSAN = 17492, SPELL_AVATAROFFLAME = 15636 };
 
-
-class boss_emperor_dagran_thaurissan : public CreatureScript
-{
+class boss_emperor_dagran_thaurissan : public CreatureScript {
 public:
-    boss_emperor_dagran_thaurissan() : CreatureScript("boss_emperor_dagran_thaurissan") { }
+  boss_emperor_dagran_thaurissan() : CreatureScript("boss_emperor_dagran_thaurissan") {}
 
-    struct boss_emperor_dagran_thaurissanAI : public ScriptedAI
-    {
-        boss_emperor_dagran_thaurissanAI(Creature* c) : ScriptedAI(c) {}
+  struct boss_emperor_dagran_thaurissanAI : public ScriptedAI {
+    boss_emperor_dagran_thaurissanAI(Creature *c) : ScriptedAI(c) {}
 
-        uint32 HandOfThaurissan_Timer;
-        uint32 AvatarOfFlame_Timer;
-        //uint32 Counter;
+    uint32 HandOfThaurissan_Timer;
+    uint32 AvatarOfFlame_Timer;
+    // uint32 Counter;
 
-        void Reset()
-        {
-            HandOfThaurissan_Timer = 4000;
-            AvatarOfFlame_Timer = 25000;
-            //Counter= 0;
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-            DoScriptText(SAY_AGGRO, me);
-            me->CallForHelp(VISIBLE_RANGE);
-        }
-
-        void KilledUnit(Unit* /*victim*/)
-        {
-            DoScriptText(SAY_SLAY, me);
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            //Return since we have no target
-            if (!UpdateVictim())
-                return;
-
-            if (HandOfThaurissan_Timer <= diff)
-            {
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                    DoCast(pTarget, SPELL_HANDOFTHAURISSAN);
-
-                //3 Hands of Thaurissan will be casted
-                //if (Counter < 3)
-                //{
-                //    HandOfThaurissan_Timer = 1000;
-                //    ++Counter;
-                //}
-                //else
-                //{
-                HandOfThaurissan_Timer = 5000;
-                //Counter = 0;
-                //}
-            }
-            else HandOfThaurissan_Timer -= diff;
-
-            //AvatarOfFlame_Timer
-            if (AvatarOfFlame_Timer <= diff)
-            {
-                DoCastVictim(SPELL_AVATAROFFLAME);
-                AvatarOfFlame_Timer = 18000;
-            }
-            else AvatarOfFlame_Timer -= diff;
-
-            DoMeleeAttackIfReady();
-        }
-    };
-
-    CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new boss_emperor_dagran_thaurissanAI(pCreature);
+    void Reset() {
+      HandOfThaurissan_Timer = 4000;
+      AvatarOfFlame_Timer = 25000;
+      // Counter= 0;
     }
+
+    void EnterCombat(Unit * /*who*/) {
+      DoScriptText(SAY_AGGRO, me);
+      me->CallForHelp(VISIBLE_RANGE);
+    }
+
+    void KilledUnit(Unit * /*victim*/) { DoScriptText(SAY_SLAY, me); }
+
+    void UpdateAI(const uint32 diff) {
+      // Return since we have no target
+      if (!UpdateVictim())
+        return;
+
+      if (HandOfThaurissan_Timer <= diff) {
+        if (Unit *pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+          DoCast(pTarget, SPELL_HANDOFTHAURISSAN);
+
+        // 3 Hands of Thaurissan will be casted
+        // if (Counter < 3)
+        //{
+        //    HandOfThaurissan_Timer = 1000;
+        //    ++Counter;
+        //}
+        // else
+        //{
+        HandOfThaurissan_Timer = 5000;
+        // Counter = 0;
+        //}
+      } else
+        HandOfThaurissan_Timer -= diff;
+
+      // AvatarOfFlame_Timer
+      if (AvatarOfFlame_Timer <= diff) {
+        DoCastVictim(SPELL_AVATAROFFLAME);
+        AvatarOfFlame_Timer = 18000;
+      } else
+        AvatarOfFlame_Timer -= diff;
+
+      DoMeleeAttackIfReady();
+    }
+  };
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new boss_emperor_dagran_thaurissanAI(pCreature); }
 };
 
-void AddSC_boss_draganthaurissan()
-{
-    new boss_emperor_dagran_thaurissan();
-}
-
+void AddSC_boss_draganthaurissan() { new boss_emperor_dagran_thaurissan(); }

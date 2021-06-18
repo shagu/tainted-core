@@ -15,126 +15,107 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /* ScriptData
- SDName: Boss_Noxxion
- SD%Complete: 100
- SDComment:
- SDCategory: Maraudon
- EndScriptData */
+/* ScriptData
+SDName: Boss_Noxxion
+SD%Complete: 100
+SDComment:
+SDCategory: Maraudon
+EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-#define SPELL_TOXICVOLLEY           21687
-#define SPELL_UPPERCUT              22916
+#define SPELL_TOXICVOLLEY 21687
+#define SPELL_UPPERCUT 22916
 
-class boss_noxxion : public CreatureScript
-{
+class boss_noxxion : public CreatureScript {
 public:
-    boss_noxxion() : CreatureScript("boss_noxxion") { }
+  boss_noxxion() : CreatureScript("boss_noxxion") {}
 
-    struct boss_noxxionAI : public ScriptedAI
-    {
-        boss_noxxionAI(Creature* c) : ScriptedAI(c) {}
+  struct boss_noxxionAI : public ScriptedAI {
+    boss_noxxionAI(Creature *c) : ScriptedAI(c) {}
 
-        uint32 ToxicVolley_Timer;
-        uint32 Uppercut_Timer;
-        uint32 Adds_Timer;
-        uint32 Invisible_Timer;
-        bool Invisible;
+    uint32 ToxicVolley_Timer;
+    uint32 Uppercut_Timer;
+    uint32 Adds_Timer;
+    uint32 Invisible_Timer;
+    bool Invisible;
 
-        void Reset()
-        {
-            ToxicVolley_Timer = 7000;
-            Uppercut_Timer = 16000;
-            Adds_Timer = 19000;
-            Invisible_Timer = 15000;                            //Too much too low?
-            Invisible = false;
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-        }
-
-        void SummonAdds(Unit* pVictim)
-        {
-            if (Creature* Add = DoSpawnCreature(13456, irand(-7, 7), irand(-7, 7), 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 90000))
-                Add->AI()->AttackStart(pVictim);
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            if (Invisible && Invisible_Timer <= diff)
-            {
-                //Become visible again
-                me->SetFaction(14);
-                me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                //Noxxion model
-                me->SetDisplayId(11172);
-                Invisible = false;
-                //me->m_canMove = true;
-            }
-            else if (Invisible)
-            {
-                Invisible_Timer -= diff;
-                //Do nothing while invisible
-                return;
-            }
-
-            //Return since we have no target
-            if (!UpdateVictim())
-                return;
-
-            //ToxicVolley_Timer
-            if (ToxicVolley_Timer <= diff)
-            {
-                DoCastVictim(SPELL_TOXICVOLLEY);
-                ToxicVolley_Timer = 9000;
-            }
-            else ToxicVolley_Timer -= diff;
-
-            //Uppercut_Timer
-            if (Uppercut_Timer <= diff)
-            {
-                DoCastVictim(SPELL_UPPERCUT);
-                Uppercut_Timer = 12000;
-            }
-            else Uppercut_Timer -= diff;
-
-            //Adds_Timer
-            if (!Invisible && Adds_Timer <= diff)
-            {
-                //Inturrupt any spell casting
-                //me->m_canMove = true;
-                me->InterruptNonMeleeSpells(false);
-                me->SetFaction(35);
-                me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                // Invisible Model
-                me->SetDisplayId(11686);
-                SummonAdds(me->GetVictim());
-                SummonAdds(me->GetVictim());
-                SummonAdds(me->GetVictim());
-                SummonAdds(me->GetVictim());
-                SummonAdds(me->GetVictim());
-                Invisible = true;
-                Invisible_Timer = 15000;
-
-                Adds_Timer = 40000;
-            }
-            else Adds_Timer -= diff;
-
-            DoMeleeAttackIfReady();
-        }
-    };
-
-    CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new boss_noxxionAI(pCreature);
+    void Reset() {
+      ToxicVolley_Timer = 7000;
+      Uppercut_Timer = 16000;
+      Adds_Timer = 19000;
+      Invisible_Timer = 15000; // Too much too low?
+      Invisible = false;
     }
+
+    void EnterCombat(Unit * /*who*/) {}
+
+    void SummonAdds(Unit *pVictim) {
+      if (Creature *Add =
+              DoSpawnCreature(13456, irand(-7, 7), irand(-7, 7), 0, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 90000))
+        Add->AI()->AttackStart(pVictim);
+    }
+
+    void UpdateAI(const uint32 diff) {
+      if (Invisible && Invisible_Timer <= diff) {
+        // Become visible again
+        me->SetFaction(14);
+        me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        // Noxxion model
+        me->SetDisplayId(11172);
+        Invisible = false;
+        // me->m_canMove = true;
+      } else if (Invisible) {
+        Invisible_Timer -= diff;
+        // Do nothing while invisible
+        return;
+      }
+
+      // Return since we have no target
+      if (!UpdateVictim())
+        return;
+
+      // ToxicVolley_Timer
+      if (ToxicVolley_Timer <= diff) {
+        DoCastVictim(SPELL_TOXICVOLLEY);
+        ToxicVolley_Timer = 9000;
+      } else
+        ToxicVolley_Timer -= diff;
+
+      // Uppercut_Timer
+      if (Uppercut_Timer <= diff) {
+        DoCastVictim(SPELL_UPPERCUT);
+        Uppercut_Timer = 12000;
+      } else
+        Uppercut_Timer -= diff;
+
+      // Adds_Timer
+      if (!Invisible && Adds_Timer <= diff) {
+        // Inturrupt any spell casting
+        // me->m_canMove = true;
+        me->InterruptNonMeleeSpells(false);
+        me->SetFaction(35);
+        me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        // Invisible Model
+        me->SetDisplayId(11686);
+        SummonAdds(me->GetVictim());
+        SummonAdds(me->GetVictim());
+        SummonAdds(me->GetVictim());
+        SummonAdds(me->GetVictim());
+        SummonAdds(me->GetVictim());
+        Invisible = true;
+        Invisible_Timer = 15000;
+
+        Adds_Timer = 40000;
+      } else
+        Adds_Timer -= diff;
+
+      DoMeleeAttackIfReady();
+    }
+  };
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new boss_noxxionAI(pCreature); }
 };
 
-void AddSC_boss_noxxion()
-{
-    new boss_noxxion();
-}
-
+void AddSC_boss_noxxion() { new boss_noxxion(); }

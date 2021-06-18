@@ -33,79 +33,57 @@ EndContentData */
 # npc_blood_knight_stillblade
 #######*/
 
-enum
-{
-    SAY_HEAL                        = -1000193,
+enum {
+  SAY_HEAL = -1000193,
 
-    QUEST_REDEEMING_THE_DEAD        = 9685,
-    SPELL_SHIMMERING_VESSEL         = 31225,
-    SPELL_REVIVE_SELF               = 32343
+  QUEST_REDEEMING_THE_DEAD = 9685,
+  SPELL_SHIMMERING_VESSEL = 31225,
+  SPELL_REVIVE_SELF = 32343
 };
 
+class npc_blood_knight_stillblade : public CreatureScript {
+public:
+  npc_blood_knight_stillblade() : CreatureScript("npc_blood_knight_stillblade") {}
+  struct npc_blood_knight_stillbladeAI : public ScriptedAI {
+    npc_blood_knight_stillbladeAI(Creature *c) : ScriptedAI(c) {}
 
-class npc_blood_knight_stillblade : public CreatureScript
-{
-public: 
-    npc_blood_knight_stillblade() : CreatureScript("npc_blood_knight_stillblade") { }
-    struct npc_blood_knight_stillbladeAI : public ScriptedAI
-    {
-        npc_blood_knight_stillbladeAI(Creature* c) : ScriptedAI(c) {}
-    
-        uint32 lifeTimer;
-        bool spellHit;
-    
-        void Reset()
-        {
-            lifeTimer = 120000;
-            me->SetStandState(UNIT_STAND_STATE_DEAD);
-            me->SetUInt32Value(UNIT_FIELD_BYTES_1, 7);  // lay down
-            spellHit = false;
-        }
-    
-        void EnterCombat(Unit* /*who*/)
-        {
-        }
-    
-        void MoveInLineOfSight(Unit* /*who*/)
-        {
-        }
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (me->IsStandState())
-            {
-                if (lifeTimer <= diff)
-                    me->AI()->EnterEvadeMode();
-                else
-                    lifeTimer -= diff;
-            }
-        }
-    
-        void SpellHit(Unit* Hitter, const SpellEntry* Spellkind)
-        {
-            if ((Spellkind->Id == SPELL_SHIMMERING_VESSEL) && !spellHit &&
-                (Hitter->GetTypeId() == TYPEID_PLAYER) && (CAST_PLR(Hitter)->IsActiveQuest(QUEST_REDEEMING_THE_DEAD)))
-            {
-                CAST_PLR(Hitter)->AreaExploredOrEventHappens(QUEST_REDEEMING_THE_DEAD);
-                DoCast(me, SPELL_REVIVE_SELF);
-                me->SetStandState(UNIT_STAND_STATE_STAND);
-                me->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
-                //me->RemoveAllAuras();
-                DoScriptText(SAY_HEAL, me, Hitter);
-                spellHit = true;
-            }
-        }
-    };
-    
-     CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new npc_blood_knight_stillbladeAI (pCreature);
+    uint32 lifeTimer;
+    bool spellHit;
+
+    void Reset() {
+      lifeTimer = 120000;
+      me->SetStandState(UNIT_STAND_STATE_DEAD);
+      me->SetUInt32Value(UNIT_FIELD_BYTES_1, 7); // lay down
+      spellHit = false;
     }
-    
-    
-};
-void AddSC_silvermoon_city()
-{
-    new npc_blood_knight_stillblade();
-}
 
+    void EnterCombat(Unit * /*who*/) {}
+
+    void MoveInLineOfSight(Unit * /*who*/) {}
+
+    void UpdateAI(const uint32 diff) {
+      if (me->IsStandState()) {
+        if (lifeTimer <= diff)
+          me->AI()->EnterEvadeMode();
+        else
+          lifeTimer -= diff;
+      }
+    }
+
+    void SpellHit(Unit *Hitter, const SpellEntry *Spellkind) {
+      if ((Spellkind->Id == SPELL_SHIMMERING_VESSEL) && !spellHit && (Hitter->GetTypeId() == TYPEID_PLAYER) &&
+          (CAST_PLR(Hitter)->IsActiveQuest(QUEST_REDEEMING_THE_DEAD))) {
+        CAST_PLR(Hitter)->AreaExploredOrEventHappens(QUEST_REDEEMING_THE_DEAD);
+        DoCast(me, SPELL_REVIVE_SELF);
+        me->SetStandState(UNIT_STAND_STATE_STAND);
+        me->SetUInt32Value(UNIT_DYNAMIC_FLAGS, 0);
+        // me->RemoveAllAuras();
+        DoScriptText(SAY_HEAL, me, Hitter);
+        spellHit = true;
+      }
+    }
+  };
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new npc_blood_knight_stillbladeAI(pCreature); }
+};
+void AddSC_silvermoon_city() { new npc_blood_knight_stillblade(); }

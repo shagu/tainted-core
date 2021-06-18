@@ -34,141 +34,101 @@ EndContentData */
 ## npc_converted_sentry
 ######*/
 
-enum eConv
-{
-    SAY_CONVERTED_1         = -1000188,
-    SAY_CONVERTED_2         = -1000189,
+enum eConv {
+  SAY_CONVERTED_1 = -1000188,
+  SAY_CONVERTED_2 = -1000189,
 
-    SPELL_CONVERT_CREDIT    = 45009
+  SPELL_CONVERT_CREDIT = 45009
 };
-
-
-
 
 /*######
 ## npc_greengill_slave
 ######*/
 
-#define ENRAGE  45111
-#define ORB     45109
-#define QUESTG  11541
-#define DM      25060
+#define ENRAGE 45111
+#define ORB 45109
+#define QUESTG 11541
+#define DM 25060
 
+class npc_converted_sentry : public CreatureScript {
+public:
+  npc_converted_sentry() : CreatureScript("npc_converted_sentry") {}
+  struct npc_converted_sentryAI : public ScriptedAI {
+    npc_converted_sentryAI(Creature *c) : ScriptedAI(c) {}
 
+    bool Credit;
+    uint32 Timer;
 
-class npc_converted_sentry : public CreatureScript
-{
-public: 
-    npc_converted_sentry() : CreatureScript("npc_converted_sentry") { }
-    struct npc_converted_sentryAI : public ScriptedAI
-    {
-        npc_converted_sentryAI(Creature* c) : ScriptedAI(c) {}
-    
-        bool Credit;
-        uint32 Timer;
-    
-        void Reset()
-        {
-            Credit = false;
-            Timer = 2500;
-        }
-    
-        void MoveInLineOfSight(Unit* /*who*/) {}
-        void EnterCombat(Unit* /*who*/) {}
-    
-        void UpdateAI(const uint32 diff)
-        {
-            if (!Credit)
-            {
-                if (Timer <= diff)
-                {
-                    uint32 i = urand(1, 2);
-                    if (i == 1)
-                        DoScriptText(SAY_CONVERTED_1, me);
-                    else
-                        DoScriptText(SAY_CONVERTED_2, me);
-    
-                    DoCast(me, SPELL_CONVERT_CREDIT);
-                    if (me->IsPet())
-                        CAST_PET(me)->SetDuration(7500);
-                    Credit = true;
-                    me->GetMotionMaster()->MoveConfused();
-                }
-                else Timer -= diff;
-            }
-        }
-    };
-
-    
-
-     CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new npc_converted_sentryAI (pCreature);
+    void Reset() {
+      Credit = false;
+      Timer = 2500;
     }
 
-    
+    void MoveInLineOfSight(Unit * /*who*/) {}
+    void EnterCombat(Unit * /*who*/) {}
 
-    
-};
+    void UpdateAI(const uint32 diff) {
+      if (!Credit) {
+        if (Timer <= diff) {
+          uint32 i = urand(1, 2);
+          if (i == 1)
+            DoScriptText(SAY_CONVERTED_1, me);
+          else
+            DoScriptText(SAY_CONVERTED_2, me);
 
-class npc_greengill_slave : public CreatureScript
-{
-public: 
-    npc_greengill_slave() : CreatureScript("npc_greengill_slave") { }
-    struct npc_greengill_slaveAI : public ScriptedAI
-    {
-        npc_greengill_slaveAI(Creature* c) : ScriptedAI(c) {}
-    
-        uint64 PlayerGUID;
-    
-        void EnterCombat(Unit* /*who*/) {}
-    
-        void Reset()
-        {
-            PlayerGUID = 0;
-        }
-    
-        void SpellHit(Unit* caster, const SpellEntry* spell)
-        {
-            if (!caster)
-                return;
-    
-            if (caster->GetTypeId() == TYPEID_PLAYER && spell->Id == ORB && !me->HasAura(ENRAGE, 0))
-            {
-                PlayerGUID = caster->GetGUID();
-                if (PlayerGUID)
-                {
-                    Player* plr = Unit::GetPlayer(*me, PlayerGUID);
-                    if (plr && plr->GetQuestStatus(QUESTG) == QUEST_STATUS_INCOMPLETE)
-                        plr->KilledMonsterCredit(25086, me->GetGUID());
-                }
-                DoCast(me, ENRAGE);
-                Unit* Myrmidon = me->FindNearestCreature(DM, 70);
-                if (Myrmidon)
-                {
-                    me->AddThreat(Myrmidon, 100000.0f);
-                    AttackStart(Myrmidon);
-                }
-            }
-        }
-    
-        void UpdateAI(const uint32 /*diff*/)
-        {
-            DoMeleeAttackIfReady();
-        }
-    };
-
-     CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new npc_greengill_slaveAI(pCreature);
+          DoCast(me, SPELL_CONVERT_CREDIT);
+          if (me->IsPet())
+            CAST_PET(me)->SetDuration(7500);
+          Credit = true;
+          me->GetMotionMaster()->MoveConfused();
+        } else
+          Timer -= diff;
+      }
     }
+  };
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new npc_converted_sentryAI(pCreature); }
 };
 
+class npc_greengill_slave : public CreatureScript {
+public:
+  npc_greengill_slave() : CreatureScript("npc_greengill_slave") {}
+  struct npc_greengill_slaveAI : public ScriptedAI {
+    npc_greengill_slaveAI(Creature *c) : ScriptedAI(c) {}
 
-void AddSC_isle_of_queldanas()
-{
-    new npc_converted_sentry();
-    new npc_greengill_slave();
+    uint64 PlayerGUID;
 
+    void EnterCombat(Unit * /*who*/) {}
+
+    void Reset() { PlayerGUID = 0; }
+
+    void SpellHit(Unit *caster, const SpellEntry *spell) {
+      if (!caster)
+        return;
+
+      if (caster->GetTypeId() == TYPEID_PLAYER && spell->Id == ORB && !me->HasAura(ENRAGE, 0)) {
+        PlayerGUID = caster->GetGUID();
+        if (PlayerGUID) {
+          Player *plr = Unit::GetPlayer(*me, PlayerGUID);
+          if (plr && plr->GetQuestStatus(QUESTG) == QUEST_STATUS_INCOMPLETE)
+            plr->KilledMonsterCredit(25086, me->GetGUID());
+        }
+        DoCast(me, ENRAGE);
+        Unit *Myrmidon = me->FindNearestCreature(DM, 70);
+        if (Myrmidon) {
+          me->AddThreat(Myrmidon, 100000.0f);
+          AttackStart(Myrmidon);
+        }
+      }
+    }
+
+    void UpdateAI(const uint32 /*diff*/) { DoMeleeAttackIfReady(); }
+  };
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new npc_greengill_slaveAI(pCreature); }
+};
+
+void AddSC_isle_of_queldanas() {
+  new npc_converted_sentry();
+  new npc_greengill_slave();
 }
-

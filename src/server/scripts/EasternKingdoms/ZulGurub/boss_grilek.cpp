@@ -15,87 +15,71 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /* ScriptData
- SDName: Boss_Grilek
- SD%Complete: 100
- SDComment:
- SDCategory: Zul'Gurub
- EndScriptData */
+/* ScriptData
+SDName: Boss_Grilek
+SD%Complete: 100
+SDComment:
+SDCategory: Zul'Gurub
+EndScriptData */
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 #include "zulgurub.h"
 
-#define SPELL_AVARTAR                24646                  //The Enrage Spell
-#define SPELL_GROUNDTREMOR            6524
+#define SPELL_AVARTAR 24646 // The Enrage Spell
+#define SPELL_GROUNDTREMOR 6524
 
-
-class boss_grilek : public CreatureScript
-{
+class boss_grilek : public CreatureScript {
 public:
-    boss_grilek() : CreatureScript("boss_grilek") { }
+  boss_grilek() : CreatureScript("boss_grilek") {}
 
-    struct boss_grilekAI : public ScriptedAI
-    {
-        boss_grilekAI(Creature* c) : ScriptedAI(c) {}
+  struct boss_grilekAI : public ScriptedAI {
+    boss_grilekAI(Creature *c) : ScriptedAI(c) {}
 
-        uint32 Avartar_Timer;
-        uint32 GroundTremor_Timer;
+    uint32 Avartar_Timer;
+    uint32 GroundTremor_Timer;
 
-        void Reset()
-        {
-            Avartar_Timer = 15000 + rand() % 10000;
-            GroundTremor_Timer = 8000 + rand() % 8000;
-        }
-
-        void EnterCombat(Unit* /*who*/)
-        {
-        }
-
-        void UpdateAI(const uint32 diff)
-        {
-            //Return since we have no target
-            if (!UpdateVictim())
-                return;
-
-            //Avartar_Timer
-            if (Avartar_Timer <= diff)
-            {
-
-                DoCast(me, SPELL_AVARTAR);
-                Unit* pTarget = NULL;
-
-                pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
-
-                if (DoGetThreat(me->GetVictim()))
-                    DoModifyThreatPercent(me->GetVictim(), -50);
-                if (pTarget)
-                    AttackStart(pTarget);
-
-                Avartar_Timer = 25000 + rand() % 10000;
-            }
-            else Avartar_Timer -= diff;
-
-            //GroundTremor_Timer
-            if (GroundTremor_Timer <= diff)
-            {
-                DoCastVictim(SPELL_GROUNDTREMOR);
-                GroundTremor_Timer = 12000 + rand() % 4000;
-            }
-            else GroundTremor_Timer -= diff;
-
-            DoMeleeAttackIfReady();
-        }
-    };
-
-    CreatureAI* GetAI(Creature* pCreature) const
-    {
-        return new boss_grilekAI(pCreature);
+    void Reset() {
+      Avartar_Timer = 15000 + rand() % 10000;
+      GroundTremor_Timer = 8000 + rand() % 8000;
     }
+
+    void EnterCombat(Unit * /*who*/) {}
+
+    void UpdateAI(const uint32 diff) {
+      // Return since we have no target
+      if (!UpdateVictim())
+        return;
+
+      // Avartar_Timer
+      if (Avartar_Timer <= diff) {
+
+        DoCast(me, SPELL_AVARTAR);
+        Unit *pTarget = NULL;
+
+        pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
+
+        if (DoGetThreat(me->GetVictim()))
+          DoModifyThreatPercent(me->GetVictim(), -50);
+        if (pTarget)
+          AttackStart(pTarget);
+
+        Avartar_Timer = 25000 + rand() % 10000;
+      } else
+        Avartar_Timer -= diff;
+
+      // GroundTremor_Timer
+      if (GroundTremor_Timer <= diff) {
+        DoCastVictim(SPELL_GROUNDTREMOR);
+        GroundTremor_Timer = 12000 + rand() % 4000;
+      } else
+        GroundTremor_Timer -= diff;
+
+      DoMeleeAttackIfReady();
+    }
+  };
+
+  CreatureAI *GetAI(Creature *pCreature) const { return new boss_grilekAI(pCreature); }
 };
 
-void AddSC_boss_grilek()
-{
-    new boss_grilek();
-}
-
+void AddSC_boss_grilek() { new boss_grilek(); }

@@ -25,5 +25,4 @@ EndScriptData */
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
 
-#define EMOTE_TARGET        -1509002
-
+#define EMOTE_TARGET -1509002

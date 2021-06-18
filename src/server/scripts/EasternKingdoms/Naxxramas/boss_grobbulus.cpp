@@ -30,4 +30,3 @@ Enrages 26527*/
 
 #include "ScriptMgr.h"
 #include "ScriptedCreature.h"
-
