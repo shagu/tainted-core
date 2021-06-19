@@ -1,10 +1,6 @@
 # ![icon](img/logo.png) Tainted Core ![Build Status](https://github.com/shagu/tainted-core/actions/workflows/oregoncore.yml/badge.svg)
 
-Tainted Core is a piece of software that targets emulation of a World of Warcraft: The Burning Crusade game server.
-This is my personal fork of [Talamortis'](https://github.com/talamortis) [OregonCore](https://github.com/talamortis/OregonCore) fork which itself was derived from
-[TrinityCore](https://github.com/TrinityCore/TrinityCore) long ago.
-
-Why [**[Tainted Core]**](https://wowwiki-archive.fandom.com/wiki/Tainted_Core)? Because you're not supposed to keep it for yourself.
+Tainted Core is a fork of [Talamortis'](https://github.com/talamortis) [OregonCore](https://github.com/talamortis/OregonCore) with translations from [MaNGOS One](https://github.com/MangosExtras/MangosOne_Localised) and some minor adjustments. The project is not under active development and only exists out of my curiosity.
 
 ## Getting started
 
